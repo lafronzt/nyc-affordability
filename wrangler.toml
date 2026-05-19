@@ -6,3 +6,10 @@ main = "functions/[[path]].js"
 directory = "public"
 binding = "ASSETS"
 run_worker_first = true
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+
+[observability.traces]
+enabled = true
