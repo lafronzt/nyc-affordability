@@ -580,6 +580,10 @@ table.acct-tbl {
 .snap-row.mansion-row { background: rgba(245,158,11,.06); border-radius: 4px; padding-left: 4px; padding-right: 4px; }
 .snap-row.mansion-row .sr-lbl { color: #92400e; }
 .snap-row.mansion-row .sr-val { color: #92400e; font-weight: 700; }
+/* PMI row highlight */
+.snap-row.pmi-row { background: rgba(239,68,68,.05); border-radius: 4px; padding-left: 4px; padding-right: 4px; }
+.snap-row.pmi-row .sr-lbl { color: #991b1b; }
+.snap-row.pmi-row .sr-val { color: #991b1b; font-weight: 700; }
 hr.snap-div {
   border: none; border-top: 1px dashed var(--g200); margin: 5px 0;
 }
@@ -1576,6 +1580,10 @@ hr.snap-div {
             <span class="sr-lbl">Mortgage (P+I)</span>
             <span class="sr-val" id="s-mtg">—</span>
           </div>
+          <div class="snap-row indent pmi-row" id="pmi-snap-row" style="display:none">
+            <span class="sr-lbl">PMI <span class="sr-note">(auto — dp &lt; 20%)</span></span>
+            <span class="sr-val" id="s-pmi">—</span>
+          </div>
           <div class="snap-row">
             <span class="sr-lbl">Maintenance</span>
             <span class="sr-val" id="s-maint">—</span>
@@ -1861,6 +1869,8 @@ hr.snap-div {
       <p>Whichever constraint produces the <em>lower</em> max price is your binding limit — you can't spend more than both allow simultaneously.</p>
       <h3>Closing? checkbox vs. Reserve %</h3>
       <p>Each account has two independent settings. <strong>Closing?</strong> — check this for any account you can fully liquidate and wire on closing day (cash, HYSA, brokerage you plan to sell). The full balance then counts toward the down payment and closing costs. <strong>Reserve %</strong> — the fraction of the balance your board credits toward post-closing reserves. Boards typically credit 100% for cash and HYSA, 70–80% for brokerage (market-volatility haircut), and 0% for retirement accounts (401k, IRA, Roth IRA), which appear on Schedule D of the REBNY financial statement rather than as liquid reserves. You can check Closing? on a brokerage account while setting its Reserve % to 80% — meaning you'd wire the full amount at closing but only 80% counts toward your post-close cushion in the board's eyes.</p>
+      <h3>PMI — automatic when down payment is under 20%</h3>
+      <p>Private mortgage insurance (PMI) is required on conventional co-op share loans with less than 20% down. It protects the lender — not you — and is added to your monthly payment. The calculator applies PMI automatically based on your down payment percentage using typical rates for a borrower with good credit (~720–740 FICO): roughly 0.52%/yr at 15–20% down, 0.70% at 10–15%, 0.95% at 5–10%, and 1.20% below 5%. PMI is factored into your DTI and reserve calculations. <strong>Note:</strong> many NYC co-op boards require 20–25% or more down — if your building's minimum already clears 20%, PMI won't apply. Under the Homeowners Protection Act, lenders must cancel PMI automatically once your loan reaches 78% of the original purchase price; you can request cancellation at 80% LTV.</p>
       <h3>Mansion tax is tiered</h3>
       <p>New York's <a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">mansion tax</a> applies to co-op purchases just as it does to condos — you're buying shares in a corporation, but the tax follows the consideration paid. It starts at 1% on purchases of $1M–$2M and steps up to 3.9% above $25M. The tax is <strong>not marginal</strong>: crossing a tier raises the entire bill, so $999,999 owes $0 while $1,000,001 owes ~$10,000. The calculator applies this automatically and shows it as a separate line in the closing cost waterfall. The variable rate field covers loan origination fees and any buyer-side flip tax only — do not add mansion tax there. Flip tax (typically 1–3% of sale price) is usually paid by the seller, but some buildings charge the buyer — check the proprietary lease.</p>
       <h3>This is an estimate — verify everything</h3>
@@ -1885,6 +1895,7 @@ hr.snap-div {
         <li><a href="https://www.consumerfinance.gov/owning-a-home/" target="_blank" rel="noopener noreferrer">CFPB: Owning a Home Guide</a></li>
         <li><a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">Verify Your Mortgage Broker (NMLS)</a></li>
         <li><a href="https://www.federalreserve.gov/releases/h15/" target="_blank" rel="noopener noreferrer">Current Interest Rate Data (Fed)</a></li>
+        <li><a href="https://www.consumerfinance.gov/ask-cfpb/when-can-i-stop-paying-private-mortgage-insurance-pmi-en-202/" target="_blank" rel="noopener noreferrer">CFPB: When Can I Cancel PMI?</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -1910,6 +1921,7 @@ hr.snap-div {
       This calculator is for informational purposes only and does not constitute financial, legal, or mortgage advice.
       Co-op board requirements, tax rates, and closing costs vary by building and transaction. Always verify all figures
       with a licensed mortgage professional and real estate attorney before making any purchase decisions.
+      PMI rates are estimates based on typical conventional loan pricing; your actual rate depends on credit score, lender, and loan type.
     </p>
   </div>
 </footer>
@@ -2097,6 +2109,23 @@ function calcMansionTax(price) {
   return price * 0.039;
 }
 
+/**
+ * PMI annual rate by down payment tier (conventional loan, avg credit ~720-740).
+ * Source: Urban Institute / MGIC/Radian published rate cards.
+ * Rate drops to 0 at 20%+ down; applies to loan balance per year.
+ */
+function calcPmiRate(dp) {
+  if (dp >= 0.20) return 0;
+  if (dp >= 0.15) return 0.0052; // LTV 80–85%
+  if (dp >= 0.10) return 0.0070; // LTV 85–90%
+  if (dp >= 0.05) return 0.0095; // LTV 90–95%
+  return 0.0120;                  // LTV 95%+
+}
+
+function calcPmiMonthly(loanAmt, dp) {
+  return loanAmt * calcPmiRate(dp) / 12;
+}
+
 // Binary search: largest price where testFn(price) is true (testFn must be monotone decreasing)
 function bsearchMaxP(testFn, hi = 50000000) {
   if (!testFn(0)) return 0;
@@ -2147,10 +2176,14 @@ function calculate(inp) {
     }
   }
 
+  // PMI effective monthly rate on the loan
+  const pmiRate   = calcPmiRate(dp);
+  const effK      = K + pmiRate / 12;
+
   // Total variable+mansion cash needed for the DP/CC pool at a given price
   const ccAtP     = p => p * varFrac + calcMansionTax(p);  // variable + mansion (both proportional to price)
   const closeAtP  = p => fixedCC + ccAtP(p) + p * dp;      // total closing cash
-  const resAtP    = p => closeAtP(p) + resMo * (maintMo + p * (1 - dp) * K); // total cash with reserves
+  const resAtP    = p => closeAtP(p) + resMo * (maintMo + p * (1 - dp) * effK); // total cash with reserves (PMI in monthly)
 
   // --- Reserve-constrained max price (all weighted assets cover DP+CC+reserves) ---
   // If no post-close reserve is required, this constraint does not cap price.
@@ -2167,9 +2200,9 @@ function calculate(inp) {
   // --- Effective cash ceiling is the tighter of the two constraints ---
   const cashMax = Math.min(reserveMax, isFinite(dpCCMax) ? dpCCMax : reserveMax);
 
-  // --- DTI-constrained max price (linear — closed form still applies) ---
+  // --- DTI-constrained max price (PMI raises effective monthly loan cost) ---
   const maxMoMtg    = dtiMax * moInc - maintMo - oDebts;
-  const maxLoan     = (K > 0) ? Math.max(0, maxMoMtg) / K : Infinity;
+  const maxLoan     = (effK > 0) ? Math.max(0, maxMoMtg) / effK : Infinity;
   const dtiMaxPrice = ((1 - dp) > 0) ? Math.max(0, maxLoan / (1 - dp)) : Infinity;
 
   const maxPrice = Math.min(cashMax, isFinite(dtiMaxPrice) ? dtiMaxPrice : cashMax);
@@ -2188,12 +2221,13 @@ function calculate(inp) {
   const maintRes     = resMo * maintMo;
   const loanAmt      = tgt * (1 - dp);
   const moMtg        = loanAmt * K;
-  const mtgRes       = resMo * moMtg;
+  const moPmi        = calcPmiMonthly(loanAmt, dp);
+  const mtgRes       = resMo * (moMtg + moPmi);
   const totalCash    = totalAtClose + maintRes + mtgRes;
   const dpSurplus    = totLiquid - totalAtClose;
   const surplus      = avail - totalCash;
   const pcLiquid     = avail - totalAtClose;
-  const moTotal      = moMtg + maintMo;
+  const moTotal      = moMtg + moPmi + maintMo;
   const pcMonths     = moTotal > 0 ? pcLiquid / moTotal : 0;
   const dtiActual    = moInc > 0 ? (moTotal + oDebts) / moInc : 0;
 
@@ -2206,7 +2240,7 @@ function calculate(inp) {
     cashMax, dtiMaxPrice: isFinite(dtiMaxPrice) ? dtiMaxPrice : null,
     maxPrice, binding, moInc,
     tgt, downPmt, varCC, mansion, totalAtClose,
-    maintRes, loanAmt, moMtg, mtgRes,
+    maintRes, loanAmt, moMtg, moPmi, mtgRes,
     totalCash, dpSurplus, surplus, pcLiquid, pcMonths,
     maintMo, moTotal, dtiActual, dtiMax,
     cashOk, dtiOk, resOk, resMo
@@ -2472,6 +2506,15 @@ function updateResults(r) {
   moEl.textContent = fmtMo(r.pcMonths);
   moEl.className = 'sr-val ' + (r.resOk ? '' : 'neg');
 
+  // PMI row — show when dp < 20%
+  const pmiRow = $('pmi-snap-row');
+  if (r.moPmi > 0) {
+    pmiRow.style.display = '';
+    tx('s-pmi', fmt$(r.moPmi));
+  } else {
+    pmiRow.style.display = 'none';
+  }
+
   // Monthly costs
   tx('s-mtg',          fmt$(r.moMtg));
   tx('s-maint',        fmt$(r.maintMo));
@@ -2540,11 +2583,14 @@ function deriveConstants(inp) {
   return { avail, totLiquid, moInc, dtiMax, resMo, maintMo, oDebts, fixedCC, varFrac, minDp, K, A, B, dpCCNum };
 }
 
-// Price ceilings as a function of dp (0..1) — uses binary search to account for mansion tax
+// Price ceilings as a function of dp (0..1) — uses binary search to account for mansion tax and PMI
 function priceAtDp(c, dp) {
-  // Reserve constraint: avail covers DP + fixedCC + varCC + mansion + reserves
+  const pmiRate = calcPmiRate(dp);
+  const effK    = c.K + pmiRate / 12;
+
+  // Reserve constraint: avail covers DP + fixedCC + varCC + mansion + reserves (PMI in monthly)
   const pRes = c.resMo > 0
-    ? bsearchMaxP(p => p * dp + c.fixedCC + p * c.varFrac + calcMansionTax(p) + c.resMo * (c.maintMo + p * (1 - dp) * c.K) <= c.avail)
+    ? bsearchMaxP(p => p * dp + c.fixedCC + p * c.varFrac + calcMansionTax(p) + c.resMo * (c.maintMo + p * (1 - dp) * effK) <= c.avail)
     : Infinity;
 
   // DP/CC constraint: only Closing?-checked accounts cover DP + variable CC + mansion
@@ -2558,7 +2604,8 @@ function priceAtDp(c, dp) {
   // Effective cash ceiling: tighter of reserve and DP/CC constraints
   const pCash = isFinite(pDpCC) ? Math.min(pRes, pDpCC) : pRes;
 
-  const denomDti = (1 - dp) * c.K;
+  // DTI ceiling uses effective K (P+I + PMI per dollar of loan)
+  const denomDti = (1 - dp) * effK;
   const pDti = (denomDti > 0 && c.A > 0) ? c.A / denomDti : (c.A > 0 ? Infinity : 0);
   const pAch = Math.min(pCash, isFinite(pDti) ? pDti : pCash);
   return { pCash, pDti, pAch };
@@ -2569,19 +2616,20 @@ function dealAtPriceDp(c, price, dp) {
   const downPmt      = price * dp;
   const loanAmt      = price * (1 - dp);
   const moMtg        = loanAmt * c.K;
+  const moPmi        = calcPmiMonthly(loanAmt, dp);
   const varCC        = price * c.varFrac;
   const mansion      = calcMansionTax(price);
   const totalAtClose = downPmt + c.fixedCC + varCC + mansion;
   const maintRes     = c.resMo * c.maintMo;
-  const mtgRes       = c.resMo * moMtg;
+  const mtgRes       = c.resMo * (moMtg + moPmi);
   const totalCash    = totalAtClose + maintRes + mtgRes;
   const dpSurplus    = c.totLiquid - totalAtClose;
   const surplus      = c.avail - totalCash;
-  const moTotal      = moMtg + c.maintMo;
+  const moTotal      = moMtg + moPmi + c.maintMo;
   const dti          = c.moInc > 0 ? (moTotal + c.oDebts) / c.moInc : 0;
   const pcLiquid     = c.avail - totalAtClose;
   const pcMonths     = moTotal > 0 ? pcLiquid / moTotal : 0;
-  return { downPmt, loanAmt, moMtg, varCC, mansion, totalAtClose, maintRes, mtgRes, totalCash, dpSurplus, surplus, moTotal, dti, pcLiquid, pcMonths };
+  return { downPmt, loanAmt, moMtg, moPmi, varCC, mansion, totalAtClose, maintRes, mtgRes, totalCash, dpSurplus, surplus, moTotal, dti, pcLiquid, pcMonths };
 }
 
 function computeOptimizer(inp) {
@@ -2605,23 +2653,30 @@ function computeOptimizer(inp) {
   }
 
   // Unclamped intersection of the reserve curve (pRes) and DTI curve.
-  // This is the analytical optimum when the DP/CC constraint is not binding.
-  const num = c.K * c.B - c.A * (c.varFrac + c.resMo * c.K);
-  const den = c.A * (1 - c.resMo * c.K) + c.K * c.B;
-  const dpAnalytical = c.resMo > 0 && den !== 0 ? num / den : c.minDp;
-
-  // Also find intersection of pDpCC and DTI curve:
-  //   dpCCNum / (dp + varFrac) = A / ((1-dp)*K)
-  //   => A*(dp+varFrac) = dpCCNum*(1-dp)*K
-  //   => dp*(A + dpCCNum*K) = dpCCNum*K - A*varFrac
+  // Computed for each PMI tier (effK = K + pmiRate/12) since the curves shift between tiers.
+  // The plain-K version is the no-PMI zone baseline; tier versions cover dp < 20%.
+  const PMI_TIER_RATES = [0, 0.0052, 0.0070, 0.0095, 0.0120]; // 0 = no PMI (dp>=0.20)
+  const pmiTierCandidates = [];
+  for (const rate of PMI_TIER_RATES) {
+    const eK = c.K + rate / 12;
+    const num = eK * c.B - c.A * (c.varFrac + c.resMo * eK);
+    const den = c.A * (1 - c.resMo * eK) + eK * c.B;
+    if (c.resMo > 0 && den !== 0) pmiTierCandidates.push(num / den);
+    const dpCCDen = c.A + c.dpCCNum * eK;
+    if (dpCCDen !== 0) pmiTierCandidates.push((c.dpCCNum * eK - c.A * c.varFrac) / dpCCDen);
+  }
+  // Baseline no-PMI analytical candidates (kept for dpUnclamped tracking below)
+  const baseNum = c.K * c.B - c.A * (c.varFrac + c.resMo * c.K);
+  const baseDen = c.A * (1 - c.resMo * c.K) + c.K * c.B;
+  const dpAnalytical = c.resMo > 0 && baseDen !== 0 ? baseNum / baseDen : c.minDp;
   const dpCCDen2 = c.A + c.dpCCNum * c.K;
   const dpDpCC = (dpCCDen2 !== 0) ? (c.dpCCNum * c.K - c.A * c.varFrac) / dpCCDen2 : c.minDp;
 
   const dpHardMax = Math.max(HARD_DP_MAX, c.minDp);
 
-  // Mansion tax creates price cliffs at tier boundaries. The true optimal dp may sit at a kink
-  // where crossing to the next tier makes a higher price unaffordable. Evaluate dp candidates
-  // derived from each tier-boundary price so the optimizer doesn't miss these kinks.
+  // Mansion tax creates price cliffs at tier boundaries; PMI creates a kink at dp=0.20 where the
+  // rate drops to 0. Evaluate dp candidates derived from each price boundary so the optimizer
+  // doesn't miss these kinks.
   const MANSION_KINKS = [1000000, 2000000, 3000000, 5000000, 10000000, 15000000, 20000000, 25000000];
   const kinkCandidates = [];
   const denom = 1 - c.resMo * c.K;
@@ -2637,7 +2692,10 @@ function computeOptimizer(inp) {
 
   // Evaluate both candidate dp values and the minDp; pick the one yielding highest pAch.
   // Store pAch for each clamped candidate to avoid redundant calls later.
-  const candidates = [dpAnalytical, dpDpCC, c.minDp, ...kinkCandidates];
+  // PMI creates a kink at each tier boundary (0.20, 0.15, 0.10, 0.05) where the effective K
+  // changes. Include both the exact boundary and an epsilon-below value to sample both sides.
+  const PMI_DP_KINKS = [0.20, 0.20 - 1e-6, 0.15, 0.15 - 1e-6, 0.10, 0.10 - 1e-6, 0.05, 0.05 - 1e-6];
+  const candidates = [dpAnalytical, dpDpCC, c.minDp, ...kinkCandidates, ...PMI_DP_KINKS, ...pmiTierCandidates];
   let dpOptimal = c.minDp;
   let bestPAch = -Infinity;
   const candidatePAch = {};
@@ -3146,15 +3204,19 @@ function computeAffordTarget(inp) {
 
   // At dp = min_dp_required and target price:
   const mansion        = calcMansionTax(target);
-  const mortAtTarget   = target * (1 - c.minDp) * c.K;
-  const cashNeededAtT  = target * (c.minDp + c.varFrac + c.resMo * (1 - c.minDp) * c.K) + c.fixedCC + mansion + c.resMo * c.maintMo;
+  const pmiRateAtMin   = calcPmiRate(c.minDp);
+  const effKAtMin      = c.K + pmiRateAtMin / 12;
+  const loanAtTarget   = target * (1 - c.minDp);
+  const mortAtTarget   = loanAtTarget * c.K;
+  const pmiAtTarget    = calcPmiMonthly(loanAtTarget, c.minDp);
+  const cashNeededAtT  = target * (c.minDp + c.varFrac + c.resMo * (1 - c.minDp) * effKAtMin) + c.fixedCC + mansion + c.resMo * c.maintMo;
   const resGap         = c.resMo > 0 ? Math.max(0, cashNeededAtT - c.avail) : 0;
   // DP/CC gap: only Closing?-checked accounts can cover DP + closing costs
   const dpCCNeededAtT  = target * (c.minDp + c.varFrac) + c.fixedCC + mansion;
   const dpCCGap        = Math.max(0, dpCCNeededAtT - c.totLiquid);
   const cashGap        = Math.max(resGap, dpCCGap);
 
-  const incomeNeededMo  = c.dtiMax > 0 ? (mortAtTarget + c.maintMo + c.oDebts) / c.dtiMax : Infinity;
+  const incomeNeededMo  = c.dtiMax > 0 ? (mortAtTarget + pmiAtTarget + c.maintMo + c.oDebts) / c.dtiMax : Infinity;
   const incomeNeededAnn = incomeNeededMo * 12;
   const incomeGap       = Math.max(0, incomeNeededAnn - (inp.annualIncome || 0));
 
@@ -3170,23 +3232,51 @@ function computeAffordTarget(inp) {
   }
 
   // -- Lever 3: dp feasibility range at target_price --
-  // dp_for_dti: minimum dp such that DTI is satisfied
+  // dp_for_dti: minimum dp such that DTI is satisfied (PMI-aware: effective K shifts at each tier)
   let dpForDti;
   if (c.A <= 0) {
-    dpForDti = Infinity;             // income can't cover any loan at this maint+debts
+    dpForDti = Infinity;
   } else if (target <= 0 || c.K <= 0) {
     dpForDti = 0;
   } else {
-    dpForDti = 1 - c.A / (target * c.K);
+    // Try no-PMI zone first (dp >= 0.20 uses plain K)
+    const dp20 = 1 - c.A / (target * c.K);
+    if (dp20 >= 0.20) {
+      dpForDti = dp20;
+    } else {
+      // dp20 < 0.20 → dp=0.20 satisfies DTI; check if a lower dp (in a PMI tier) also works.
+      // Tiers ordered from highest dp to lowest dp; check both lo and hi bounds so a solution
+      // that falls above the tier's upper bound returns exactly hi (the PMI-drop boundary).
+      // If the loop exhausts without breaking, all tiers pass → DTI satisfied at any dp → 0.
+      const PMI_TIERS = [[0.15, 0.20, 0.0052], [0.10, 0.15, 0.0070], [0.05, 0.10, 0.0095], [0, 0.05, 0.0120]];
+      dpForDti = 0; // loop-exhaustion fallback: DTI satisfied at every dp, so minimum is 0
+      for (const [lo, hi, rate] of PMI_TIERS) {
+        const effK = c.K + rate / 12;
+        const dpTier = 1 - c.A / (target * effK);
+        if (dpTier >= hi) { dpForDti = hi; break; } // whole tier fails; minimum is hi
+        if (dpTier >= lo) { dpForDti = dpTier; break; } // solution within this tier
+        // dpTier < lo: entire tier satisfied, continue to lower tier
+      }
+    }
   }
   // dp_for_cash: maximum dp such that cash covers everything (both reserve and DP/CC constraints)
+  // Reserve requirement includes PMI, so effective K varies by dp tier — solve piecewise.
   let dpForCash;
-  const cashDen = (1 - c.resMo * c.K);
-  const dpForCashReserve = c.resMo > 0
-    ? ((c.B <= 0 || target <= 0) ? -Infinity
-      : (cashDen <= 0) ? Infinity
-      : ((c.B - mansion) / target - c.varFrac - c.resMo * c.K) / cashDen)
-    : Infinity;
+  let dpForCashReserve;
+  if (c.resMo === 0 || c.B <= 0 || target <= 0) {
+    dpForCashReserve = c.resMo === 0 ? Infinity : -Infinity;
+  } else {
+    // Try no-PMI zone (dp >= 0.20) first, then each PMI tier from highest dp down
+    const CASH_TIERS = [[0.20, 0], [0.15, 0.0052], [0.10, 0.0070], [0.05, 0.0095], [0, 0.0120]];
+    dpForCashReserve = -Infinity;
+    for (const [lo, rate] of CASH_TIERS) {
+      const eK = c.K + rate / 12;
+      const cd = 1 - c.resMo * eK;
+      if (cd <= 0) continue;
+      const dp = ((c.B - mansion) / target - c.varFrac - c.resMo * eK) / cd;
+      if (dp >= lo) { dpForCashReserve = dp; break; }
+    }
+  }
   // DP/CC constraint: dp * target + varFrac*target + fixedCC + mansion ≤ totLiquid
   const dpForCashDpCC = (target > 0 && c.dpCCNum > 0)
     ? ((c.dpCCNum - mansion) / target - c.varFrac)

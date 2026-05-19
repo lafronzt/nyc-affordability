@@ -321,6 +321,10 @@ hr.snap-div { border: none; border-top: 1px dashed var(--g200); margin: 5px 0; }
 .snap-row.mrt-row { background: rgba(37,99,235,.04); border-radius: 4px; padding-left: 4px; padding-right: 4px; }
 .snap-row.mrt-row .sr-lbl { color: #1e40af; }
 .snap-row.mrt-row .sr-val { color: #1e40af; }
+/* PMI row highlight */
+.snap-row.pmi-row { background: rgba(239,68,68,.05); border-radius: 4px; padding-left: 4px; padding-right: 4px; }
+.snap-row.pmi-row .sr-lbl { color: #991b1b; }
+.snap-row.pmi-row .sr-val { color: #991b1b; font-weight: 700; }
 /* Feasibility pills */
 .feas-title { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--g400); margin-bottom: 7px; }
 .pill {
@@ -875,6 +879,10 @@ hr.snap-div { border: none; border-top: 1px dashed var(--g200); margin: 5px 0; }
             <span class="sr-lbl">Mortgage (P+I)</span>
             <span class="sr-val" id="s-mtg">—</span>
           </div>
+          <div class="snap-row indent pmi-row" id="pmi-snap-row" style="display:none">
+            <span class="sr-lbl">PMI <span class="sr-note">(auto — dp &lt; 20%)</span></span>
+            <span class="sr-val" id="s-pmi">—</span>
+          </div>
           <div class="snap-row">
             <span class="sr-lbl">Common Charges</span>
             <span class="sr-val" id="s-common">—</span>
@@ -1100,6 +1108,8 @@ hr.snap-div { border: none; border-top: 1px dashed var(--g200); margin: 5px 0; }
         <li><strong>DTI / Income:</strong> Your total monthly housing payment (mortgage P+I + common charges + property taxes + HO-6 insurance + other debts) must stay within the lender's back-end DTI limit on your gross monthly income. Standard conforming limit is 43%; conservative target is 36%.</li>
       </ul>
       <p>Whichever constraint produces the <em>lower</em> max price is your binding limit.</p>
+      <h3>PMI — automatic when down payment is under 20%</h3>
+      <p>Private mortgage insurance (PMI) is required on conventional loans with less than 20% down. It protects the lender — not you — against default, and is added to your monthly payment. The calculator applies PMI automatically based on your down payment percentage using typical rates for a borrower with good credit (~720–740 FICO): roughly 0.52%/yr at 15–20% down, 0.70% at 10–15%, 0.95% at 5–10%, and 1.20% below 5%. Your actual rate varies by lender, credit score, and loan type. PMI is included in the DTI calculation and in reserve requirements. <strong>PMI drops off once your loan balance reaches 80% of the original purchase price</strong> — under the Homeowners Protection Act, lenders must cancel it automatically at 78% LTV. Reaching 20% equity sooner (via appreciation or extra payments) lets you request cancellation. Note: jumbo loans (typically above $1.2M in NYC's high-cost area) usually require 20%+ down and don't carry conventional PMI.</p>
       <h3>Mansion tax — watch the $1M cliff</h3>
       <p>New York's <a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">mansion tax</a> applies to the full purchase price once you cross $1,000,000 — it is <strong>not a marginal bracket</strong>. A $999,999 purchase owes $0; a $1,000,001 purchase owes roughly $10,000 (1.00%). The tax steps up to 3.90% above $25M. This creates a real price cliff — worth negotiating around on deals near tier boundaries. Calculated automatically from the price you model.</p>
       <h3>Mortgage Recording Tax</h3>
@@ -1130,6 +1140,7 @@ hr.snap-div { border: none; border-top: 1px dashed var(--g200); margin: 5px 0; }
         <li><a href="https://www.consumerfinance.gov/owning-a-home/" target="_blank" rel="noopener noreferrer">CFPB: Owning a Home Guide</a></li>
         <li><a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">Verify Your Mortgage Broker (NMLS)</a></li>
         <li><a href="https://www.freddiemac.com/pmms" target="_blank" rel="noopener noreferrer">Freddie Mac PMMS (Current Rates)</a></li>
+        <li><a href="https://www.consumerfinance.gov/ask-cfpb/when-can-i-stop-paying-private-mortgage-insurance-pmi-en-202/" target="_blank" rel="noopener noreferrer">CFPB: When Can I Cancel PMI?</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -1153,6 +1164,7 @@ hr.snap-div { border: none; border-top: 1px dashed var(--g200); margin: 5px 0; }
       This calculator is for informational purposes only and does not constitute financial, legal, or mortgage advice.
       Tax rates, closing costs, lender requirements, and building policies vary by transaction and are subject to change.
       Mortgage recording tax and mansion tax estimates should be verified with a closing attorney and NYC DOF / ACRIS.
+      PMI rates are estimates based on typical conventional loan pricing; your actual rate depends on credit score, lender, and loan type.
       Always consult a licensed mortgage professional and real estate attorney before making any purchase decisions.
     </p>
   </div>
@@ -1190,6 +1202,23 @@ const state = {
 function calcMortgageRecordingTax(loanAmt) {
   if (loanAmt <= 0) return 0;
   return loanAmt < 500000 ? loanAmt * 0.018 : loanAmt * 0.01925;
+}
+
+/**
+ * PMI annual rate by down payment tier (conventional loan, avg credit ~720-740).
+ * Source: Urban Institute / MGIC/Radian published rate cards.
+ * Rate drops to 0 at 20%+ down; applies to loan balance per year.
+ */
+function calcPmiRate(dp) {
+  if (dp >= 0.20) return 0;
+  if (dp >= 0.15) return 0.0052; // LTV 80–85%
+  if (dp >= 0.10) return 0.0070; // LTV 85–90%
+  if (dp >= 0.05) return 0.0095; // LTV 90–95%
+  return 0.0120;                  // LTV 95%+
+}
+
+function calcPmiMonthly(loanAmt, dp) {
+  return loanAmt * calcPmiRate(dp) / 12;
 }
 
 /**
@@ -1274,8 +1303,9 @@ function priceAtDp(c, dp) {
   const { weightedAssets, K, resMo, carrying, A, inp } = c;
   const PMAX = 20000000;
 
-  // DTI ceiling — analytical (linear)
-  const denom = (1 - dp) * K;
+  // DTI ceiling — PMI increases effective monthly cost on the loan
+  const effK = K + calcPmiRate(dp) / 12;
+  const denom = (1 - dp) * effK;
   const pDti = (denom > 0 && A > 0) ? A / denom : (A > 0 ? Infinity : 0);
 
   // DP+CC ceiling — binary search: liquidity-weighted assets >= dp*P + CC(P,dp).total
@@ -1284,14 +1314,15 @@ function priceAtDp(c, dp) {
     return weightedAssets >= dp * p + cc.total;
   }, PMAX);
 
-  // Reserve ceiling — binary search (only when resMo > 0)
+  // Reserve ceiling — binary search (only when resMo > 0); includes PMI in monthly cost
   let pReserve = Infinity;
   if (resMo > 0) {
     pReserve = bsearchMaxPrice(p => {
       const loanAmt = p * (1 - dp);
       const moMtg   = loanAmt * K;
+      const moPmi   = calcPmiMonthly(loanAmt, dp);
       const cc      = computeCC(p, dp, inp);
-      const resReq  = resMo * (moMtg + carrying);
+      const resReq  = resMo * (moMtg + moPmi + carrying);
       return weightedAssets >= dp * p + cc.total + resReq;
     }, PMAX);
   }
@@ -1328,14 +1359,15 @@ function calculate(inp) {
   const downPmt  = tgt * dp;
   const loanAmt  = tgt * (1 - dp);
   const moMtg    = loanAmt * K;
+  const moPmi    = calcPmiMonthly(loanAmt, dp);
   const cc       = computeCC(tgt, dp, inp);
   const totalAtClose = downPmt + cc.total;
-  const resReq   = resMo * (moMtg + carrying);
+  const resReq   = resMo * (moMtg + moPmi + carrying);
   const totalCash = totalAtClose + resReq;
   const dpSurplus = weightedAssets - totalAtClose;
   const surplus   = weightedAssets - totalCash;
   const pcLiquid  = weightedAssets - totalAtClose;
-  const moTotal   = moMtg + carrying;
+  const moTotal   = moMtg + moPmi + carrying;
   const pcMonths  = moTotal > 0 ? pcLiquid / moTotal : 0;
   const dtiActual = moInc > 0 ? (moTotal + oDebts) / moInc : 0;
 
@@ -1347,7 +1379,7 @@ function calculate(inp) {
     weightedAssets, moInc, K, cc, carrying,
     cashMax, dtiMaxPrice: dtiMaxP,
     maxPrice, binding,
-    tgt, downPmt, loanAmt, moMtg,
+    tgt, downPmt, loanAmt, moMtg, moPmi,
     totalAtClose, resReq, totalCash,
     dpSurplus, surplus, pcLiquid, pcMonths,
     moTotal, dtiActual, dtiMax, resMo,
@@ -1362,17 +1394,18 @@ function dealAtPriceDp(c, price, dp) {
   const { weightedAssets, K, resMo, carrying, oDebts, moInc, inp } = c;
   const loanAmt      = price * (1 - dp);
   const moMtg        = loanAmt * K;
+  const moPmi        = calcPmiMonthly(loanAmt, dp);
   const cc           = computeCC(price, dp, inp);
   const totalAtClose = price * dp + cc.total;
-  const resReq       = resMo * (moMtg + carrying);
+  const resReq       = resMo * (moMtg + moPmi + carrying);
   const totalCash    = totalAtClose + resReq;
   const dpSurplus    = weightedAssets - totalAtClose;
   const surplus      = weightedAssets - totalCash;
-  const moTotal      = moMtg + carrying;
+  const moTotal      = moMtg + moPmi + carrying;
   const dti          = moInc > 0 ? (moTotal + oDebts) / moInc : 0;
   const pcLiquid     = weightedAssets - totalAtClose;
   const pcMonths     = moTotal > 0 ? pcLiquid / moTotal : 0;
-  return { loanAmt, moMtg, cc, totalAtClose, resReq, totalCash, dpSurplus, surplus, moTotal, dti, pcLiquid, pcMonths, downPmt: price*dp };
+  return { loanAmt, moMtg, moPmi, cc, totalAtClose, resReq, totalCash, dpSurplus, surplus, moTotal, dti, pcLiquid, pcMonths, downPmt: price*dp };
 }
 
 // ═══════════════════════════════════════
@@ -1653,6 +1686,15 @@ function updateResults(r) {
     const moEl = $('s-pc-months');
     moEl.textContent = fmtMo(r.pcMonths);
     moEl.className = 'sr-val ' + (r.resOk ? '' : 'neg');
+  }
+
+  // PMI row — show when dp < 20%
+  const pmiRow = $('pmi-snap-row');
+  if (r.moPmi > 0) {
+    pmiRow.style.display = '';
+    tx('s-pmi', fmt$(r.moPmi));
+  } else {
+    pmiRow.style.display = 'none';
   }
 
   // Monthly costs
@@ -1975,15 +2017,16 @@ function computeAffordTarget(inp) {
   // Check feasibility at target with minDp
   const loanAtT     = target * (1 - c.minDp);
   const moMtgAtT    = loanAtT * c.K;
+  const moPmiAtT    = calcPmiMonthly(loanAtT, c.minDp);
   const ccAtT       = computeCC(target, c.minDp, inp);
   const totalAtCloseT = target * c.minDp + ccAtT.total;
-  const resReqAtT   = c.resMo * (moMtgAtT + c.carrying);
+  const resReqAtT   = c.resMo * (moMtgAtT + moPmiAtT + c.carrying);
 
   const dpCCGap  = Math.max(0, totalAtCloseT - c.weightedAssets);
   const resGap   = c.resMo > 0 ? Math.max(0, totalAtCloseT + resReqAtT - c.weightedAssets) : 0;
   const cashGap  = Math.max(dpCCGap, resGap);
 
-  const incomeNeededMo  = c.dtiMax > 0 ? (moMtgAtT + c.carrying + c.oDebts) / c.dtiMax : Infinity;
+  const incomeNeededMo  = c.dtiMax > 0 ? (moMtgAtT + moPmiAtT + c.carrying + c.oDebts) / c.dtiMax : Infinity;
   const incomeNeededAnn = incomeNeededMo * 12;
   const incomeGap       = Math.max(0, incomeNeededAnn - (inp.annualIncome||0));
 
@@ -2000,7 +2043,26 @@ function computeAffordTarget(inp) {
   let dpForDti;
   if (c.A <= 0) { dpForDti = Infinity; }
   else if (target <= 0 || c.K <= 0) { dpForDti = 0; }
-  else { dpForDti = 1 - c.A / (target * c.K); }
+  else {
+    const dp20 = 1 - c.A / (target * c.K);
+    if (dp20 >= 0.20) {
+      dpForDti = dp20;
+    } else {
+      // dp20 < 0.20 → dp=0.20 satisfies DTI; check if a lower dp (in a PMI tier) also works.
+      // Tiers ordered from highest dp to lowest dp; check both lo and hi bounds so a solution
+      // that falls above the tier's upper bound returns exactly hi (the PMI-drop boundary).
+      // If the loop exhausts without breaking, all tiers pass → DTI satisfied at any dp → 0.
+      const PMI_TIERS = [[0.15, 0.20, 0.0052], [0.10, 0.15, 0.0070], [0.05, 0.10, 0.0095], [0, 0.05, 0.0120]];
+      dpForDti = 0; // loop-exhaustion fallback: DTI satisfied at every dp, so minimum is 0
+      for (const [lo, hi, rate] of PMI_TIERS) {
+        const effK = c.K + rate / 12;
+        const dpTier = 1 - c.A / (target * effK);
+        if (dpTier >= hi) { dpForDti = hi; break; } // whole tier fails; minimum is hi
+        if (dpTier >= lo) { dpForDti = dpTier; break; } // solution within this tier
+        // dpTier < lo: entire tier satisfied, continue to lower tier
+      }
+    }
+  }
 
   // Cash ceiling dp: binary search max dp such that weighted assets cover dp*target + cc(target,dp)
   let dpForCash;
@@ -2031,8 +2093,8 @@ function computeAffordTarget(inp) {
   else if (dpForDti < c.minDp) dpOutcome = 'C';
   else dpOutcome = 'A';
 
-  // Lever 4: max common charges
-  const maintDtiMax  = c.dtiMax * c.moInc - moMtgAtT - (inp.propTaxes||0) - (inp.hoInsurance||0) - c.oDebts;
+  // Lever 4: max common charges (PMI reduces DTI budget available for common charges)
+  const maintDtiMax  = c.dtiMax * c.moInc - moMtgAtT - moPmiAtT - (inp.propTaxes||0) - (inp.hoInsurance||0) - c.oDebts;
   const maxCC        = Math.max(0, maintDtiMax);
   const ccGap        = Math.max(0, (inp.commonCharges||0) - maxCC);
 
