@@ -1,5 +1,4 @@
 google.com, pub-4149057501235815, DIRECT, f08c47fec0942fa0
-media.net, <MEDIANET_PUB_ID>, DIRECT
 ezoic.com, <EZOIC_PUB_ID>, RESELLER
 # Ezoic manages additional demand-partner lines for your account beyond the
 # entry above. Copy the exact block from the Ezoic dashboard
