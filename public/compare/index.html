@@ -204,6 +204,16 @@ tbody tr:last-child td { border-bottom:none; }
   .profile-panel { grid-template-columns:1fr; }
   .option-value { font-size:28px; }
 }
+.prose-body { padding:16px 18px 18px; }
+.prose-body h4 { font-size:13px; font-weight:700; color:var(--g800); margin:14px 0 5px; }
+.prose-body h4:first-child { margin-top:0; }
+.prose-body p { font-size:13px; color:var(--g600); line-height:1.7; margin-bottom:8px; }
+.prose-body p:last-child { margin-bottom:0; }
+.prose-body ul { padding-left:18px; color:var(--g600); font-size:13px; line-height:1.75; margin-bottom:8px; }
+.prose-body li { margin-bottom:4px; }
+.prose-body a { color:var(--blue); text-decoration:none; }
+.prose-body a:hover { text-decoration:underline; }
+.updated-note { font-size:11px; color:var(--g400); font-weight:600; }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4149057501235815" crossorigin="anonymous"></script>
 </head>
@@ -226,6 +236,7 @@ tbody tr:last-child td { border-bottom:none; }
         <div class="eyebrow">Cross-calculator dashboard</div>
         <h2>Rent vs co-op vs condo, side by side.</h2>
         <p>Uses the profile saved locally by the calculators. Your numbers stay in this browser; this page only reads your saved browser profile from localStorage.</p>
+        <p class="updated-note" style="margin-top:8px;color:#6b8ab8;">Last updated: August 2, 2026</p>
       </div>
       <div class="profile-panel" aria-label="Saved profile summary">
         <div><div class="profile-k">Annual income</div><div class="profile-v" id="profile-income">&mdash;</div></div>
@@ -417,6 +428,56 @@ tbody tr:last-child td { border-bottom:none; }
       </div>
     </details>
   </section>
+
+  <section class="section-card">
+    <div class="section-title">How to read this comparison</div>
+    <div class="prose-body">
+      <p>The three summary cards above and the comparison table below both come from the same saved profile — your annual income, other monthly debts, and the accounts listed in the Profile editor. Each calculator applies that profile to its own math (rent's income multiplier, a co-op board's reserve and DTI rules, a condo lender's DTI and closing-cost math) and this page just lines the results up next to each other.</p>
+      <h4>What each row means</h4>
+      <ul>
+        <li><strong>Maximum</strong> — the highest monthly rent or purchase price your profile supports for that housing type.</li>
+        <li><strong>Cash required</strong> — total cash needed at move-in or closing: deposit/down payment, closing costs, and any required reserve.</li>
+        <li><strong>Monthly housing cost</strong> — rent, or mortgage payment plus maintenance/common charges, before other debts.</li>
+        <li><strong>DTI</strong> — your total monthly housing cost plus other debts, as a percentage of gross monthly income.</li>
+        <li><strong>Reserve requirement</strong> — cash held back after closing, if that housing type requires it (co-op boards typically do; condos and rentals may not by default).</li>
+      </ul>
+      <p>Every number here recalculates instantly as you edit the profile or the assumptions below — nothing is cached beyond what's saved to this browser.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">What &ldquo;binding constraint&rdquo; means</div>
+    <div class="prose-body">
+      <p>Each calculator computes two independent ceilings and reports whichever one is lower as your real limit — that's the &ldquo;binding constraint&rdquo; shown in the Constraint row. It's the same idea across all three housing types, but which side binds tends to differ:</p>
+      <ul>
+        <li><strong>Cash / Move-In or Cash / Reserves or DP / Closing Costs</strong> — your liquid assets are the limiting factor, not your income. Common for buyers with strong income but modest savings, or renters without much cushion beyond first month + deposit.</li>
+        <li><strong>DTI / Income (or the 40&times; rule for rent)</strong> — a lender's or landlord's debt-to-income ceiling caps you before your cash runs out. Common for buyers with substantial savings but a income-to-debt ratio near the limit.</li>
+      </ul>
+      <p>Knowing which constraint binds matters because it tells you what actually moves the number: if cash is binding, a larger down payment or more savings raises your ceiling; if DTI is binding, paying down other debt or increasing income does. The same profile can be cash-bound for a co-op (12&ndash;24 months of reserves is a lot to hold back) and DTI-bound for a condo (no reserve requirement by default, so income becomes the limit) &mdash; which is exactly the kind of difference this dashboard is built to surface.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Rent vs. buy in NYC</div>
+    <div class="prose-body">
+      <p>The math above answers &ldquo;what can I afford,&rdquo; not &ldquo;which is right for me&rdquo; &mdash; that depends on factors these calculators can't see. A few NYC-specific tradeoffs worth weighing alongside the numbers:</p>
+      <h4>Co-ops: approval risk in exchange for price</h4>
+      <p>Co-ops are typically cheaper per square foot than condos in the same building or neighborhood, but a board can reject a financially qualified buyer for almost any non-discriminatory reason, and your reserves are locked up as a condition of ownership rather than available as a rainy-day fund. That illiquidity is real: the cash this calculator marks as &ldquo;reserve&rdquo; is money you commit to holding, not spending, for as long as you own the unit.</p>
+      <h4>Condos: fewer hoops, more carrying cost exposure</h4>
+      <p>Condos don't require board approval for most sales and don't impose reserve requirements the way co-op boards do &mdash; the tradeoff is a higher purchase price and full exposure to property tax and common-charge increases with no board negotiating on your behalf. There's also no ceiling on how much of your net worth ends up in the property versus liquid savings, since nothing forces you to keep post-close reserves.</p>
+      <h4>Renting: the FARE Act changed the cash math</h4>
+      <p>Since the FARE Act took effect in June 2025, landlords &mdash; not tenants &mdash; generally pay the listing broker's fee, which removed what used to be one of the largest move-in cash requirements in NYC rentals. That's part of why the cash-required gap between renting and buying in this comparison is often larger than it would be in most other cities: buying still carries closing costs and (for co-ops) reserves that renting no longer does.</p>
+      <p>None of this is a recommendation &mdash; it's context for reading the numbers above. See each calculator's own &ldquo;How this works&rdquo; section for the full mechanics, or the <a href="/about/">About page</a> for the sourcing behind every default.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Methodology &amp; assumptions</div>
+    <div class="prose-body">
+      <p>This dashboard doesn't recompute anything from scratch &mdash; it reuses each calculator's own default assumptions (mortgage rate, DTI limits, reserve requirements, and so on), which you can see and edit in the &ldquo;Adjust assumptions&rdquo; panel above. Changing an assumption here updates the same shared value the individual calculator uses, so the two stay in sync.</p>
+      <p>For the sourcing behind each default &mdash; Freddie Mac PMMS mortgage rates, NYC DOF/ACRIS closing cost figures, HUD income data, StreetEasy rent data, and NYC DCWP's FARE Act guidance &mdash; see the &ldquo;How this works&rdquo; section on the <a href="/rent/">rent</a>, <a href="/coop/">co-op</a>, and <a href="/condo/">condo</a> calculators, or the consolidated source list on the <a href="/about/">About page</a>. This page intentionally doesn't re-derive those sources to avoid duplicating content that already lives on each calculator.</p>
+    </div>
+  </section>
 </main>
 
 <div style="max-width:1300px;margin:0 auto;padding:8px 20px 0;text-align:center;">
@@ -440,6 +501,14 @@ tbody tr:last-child td { border-bottom:none; }
         <li><a href="/condo/">NYC Condo Affordability</a></li>
         <li><a href="/compare/">Compare All Options</a></li>
         <li><a href="/">NYC Affordability Hub</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-heading">About</div>
+      <ul>
+        <li><a href="/about/">About This Project</a></li>
+        <li><a href="/privacy/">Privacy Policy</a></li>
+        <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
       </ul>
     </div>
     <p class="footer-disclaimer">
