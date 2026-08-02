@@ -81,7 +81,8 @@ body {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12.5px;
   background:var(--g100); color:var(--g800); padding:1px 5px; border-radius:4px;
 }
-.key-table { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:6px; }
+.table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:6px; }
+.key-table { width:100%; min-width:520px; border-collapse:collapse; font-size:12.5px; }
 .key-table th { text-align:left; color:var(--g500); font-weight:700; text-transform:uppercase; letter-spacing:.5px; font-size:10.5px; padding:6px 10px 6px 0; border-bottom:1px solid var(--g100); }
 .key-table td { padding:8px 10px 8px 0; border-bottom:1px solid var(--g100); color:var(--g700); vertical-align:top; }
 .key-table tr:last-child td { border-bottom:none; }
@@ -125,19 +126,21 @@ body {
   <div class="card">
     <h3>Local storage (stays on your device)</h3>
     <p>If you use the "Save inputs" or "Save profile" toggle on a calculator, your entries are written to your browser's <code>localStorage</code> — a storage mechanism built into every browser that is scoped to this site and never sent anywhere automatically. It exists purely so your numbers are still there the next time you open the same calculator in the same browser. If you don't enable saving, nothing is written and your session resets when you close the tab.</p>
-    <table class="key-table">
-      <thead><tr><th>Key</th><th>Used by</th><th>Purpose</th></tr></thead>
-      <tbody>
-        <tr><td><code>nyc_shared_profile</code></td><td>All calculators, Compare</td><td>Income, other debts, and account balances shared across every tool so you don't re-enter them</td></tr>
-        <tr><td><code>nyc_shared_assumptions_rent</code></td><td>Rent, Compare</td><td>Rent calculator assumptions (income multiplier, insurance, reserve buffer)</td></tr>
-        <tr><td><code>nyc_shared_assumptions_coop</code></td><td>Co-op, Compare</td><td>Co-op assumptions (mortgage rate, down payment %, maintenance, DTI limit, reserve months)</td></tr>
-        <tr><td><code>nyc_shared_assumptions_condo</code></td><td>Condo, Compare</td><td>Condo assumptions (mortgage rate, down payment %, common charges, taxes, DTI limit)</td></tr>
-        <tr><td><code>nyc_coop_inputs</code></td><td>Co-op calculator</td><td>Full set of co-op-specific calculator inputs</td></tr>
-        <tr><td><code>nyc_condo_inputs</code></td><td>Condo calculator</td><td>Full set of condo-specific calculator inputs</td></tr>
-        <tr><td><code>nyc_rent_inputs</code></td><td>Rent calculator</td><td>Full set of rent-specific calculator inputs</td></tr>
-        <tr><td><code>nyc_affordable_inputs</code></td><td>Affordable Housing Finder</td><td>Household size, income, and unit-size inputs for AMI eligibility</td></tr>
-      </tbody>
-    </table>
+    <div class="table-wrap">
+      <table class="key-table">
+        <thead><tr><th>Key</th><th>Used by</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>nyc_shared_profile</code></td><td>All calculators, Compare</td><td>Income, other debts, and account balances shared across every tool so you don't re-enter them</td></tr>
+          <tr><td><code>nyc_shared_assumptions_rent</code></td><td>Rent, Compare</td><td>Rent calculator assumptions (income multiplier, insurance, reserve buffer)</td></tr>
+          <tr><td><code>nyc_shared_assumptions_coop</code></td><td>Co-op, Compare</td><td>Co-op assumptions (mortgage rate, down payment %, maintenance, DTI limit, reserve months)</td></tr>
+          <tr><td><code>nyc_shared_assumptions_condo</code></td><td>Condo, Compare</td><td>Condo assumptions (mortgage rate, down payment %, common charges, taxes, DTI limit)</td></tr>
+          <tr><td><code>nyc_coop_inputs</code></td><td>Co-op calculator</td><td>Full set of co-op-specific calculator inputs</td></tr>
+          <tr><td><code>nyc_condo_inputs</code></td><td>Condo calculator</td><td>Full set of condo-specific calculator inputs</td></tr>
+          <tr><td><code>nyc_rent_inputs</code></td><td>Rent calculator</td><td>Full set of rent-specific calculator inputs</td></tr>
+          <tr><td><code>nyc_affordable_inputs</code></td><td>Affordable Housing Finder</td><td>Household size, income, and unit-size inputs for AMI eligibility</td></tr>
+        </tbody>
+      </table>
+    </div>
     <p>These values persist until you clear your browser's site data or storage for nyc-affordability.com, or until you turn off saving. The <a href="https://www.nyc-co-op-affordability.com/">legacy co-op domain</a> uses a one-time redirect that copies <code>nyc_coop_inputs</code> and <code>nyc_shared_profile</code> into a URL fragment so a saved profile can carry over to the canonical domain — that fragment is read once by your browser and then removed from the address bar; it is never sent to any server in the process.</p>
   </div>
 
