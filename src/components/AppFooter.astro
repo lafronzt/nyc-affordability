@@ -7,7 +7,6 @@ const { disclaimer } = Astro.props;
 <footer class="app-footer">
   <div class="footer-inner">
     <slot />
-    <p class="footer-support"><a href="https://buymeacoffee.com/lafronzt" target="_blank" rel="noopener noreferrer">☕ Support this project</a></p>
     <p class="footer-disclaimer">{disclaimer}</p>
   </div>
 </footer>
@@ -43,7 +42,6 @@ const { disclaimer } = Astro.props;
 }
 .app-footer :global(a:hover) { color: #e2e8f0; text-decoration: underline; }
 .app-footer :global(ul) { list-style: none; padding: 0; margin: 0; }
-.footer-support { width: 100%; margin-top: 4px; }
 .footer-disclaimer {
   width: 100%;
   border-top: 1px solid #1e3a5f;
