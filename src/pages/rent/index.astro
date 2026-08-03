@@ -1,0 +1,1170 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AppHeader from '../../components/AppHeader.astro';
+import AppFooter from '../../components/AppFooter.astro';
+import AdSlot from '../../components/AdSlot.astro';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'NYC Apartment Rent Affordability Calculator',
+  url: 'https://www.nyc-affordability.com/rent/',
+  description: 'Find your maximum affordable NYC apartment rent with a rental housing affordability calculator that covers income screening, FARE Act broker fee rules, and move-in cash requirements.',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  areaServed: { '@type': 'City', name: 'New York City', sameAs: 'https://www.wikidata.org/wiki/Q60' },
+};
+---
+<BaseLayout
+  variant="app"
+  ads
+  pageTitle="NYC Rent Affordability Calculator | Calculate Your Max Affordable Rent"
+  metaDescription="Free NYC housing affordability calculator for apartment rentals. Estimate how much rent you can afford from income, assets, the 40× rule, and move-in cash."
+  canonicalPath="/rent/"
+  ogTitle="NYC Rent Affordability Finder | Calculate Your Max Affordable Rent"
+  ogDescription="Free NYC housing affordability calculator for apartment rentals. Find your max affordable monthly rent from your financial profile — covering income screening and move-in cash."
+  ogImage="/images/rent-og.png"
+  ogImageAlt="Can you afford NYC rent? NYC Rent Affordability Calculator from NYC Affordability."
+  twitterTitle="NYC Rent Affordability Finder"
+  twitterDescription="Free NYC housing affordability calculator for apartment rentals. Reverse-engineer your max affordable monthly rent from income, assets, and move-in assumptions."
+  jsonLd={jsonLd}
+>
+<AppHeader titleHtml="NYC <em>Rent</em> Affordability Finder" tagline="Instantly calculate your maximum affordable monthly rent from income, assets, and NYC move-in costs." />
+
+<main class="app-layout">
+
+  <!-- ===== INPUTS PANEL ===== -->
+  <div class="inputs-panel">
+
+    <!-- Card 1: Account Balances -->
+    <div class="card">
+      <div class="card-title" id="card-title-1" aria-expanded="true" aria-controls="card-body-1">
+        <span class="snum">1</span> Account Balances
+        <span class="card-chev" aria-hidden="true">▲</span>
+      </div>
+      <div class="card-body" id="card-body-1">
+        <div class="acct-wrap">
+          <table class="acct-tbl" aria-label="Account balances">
+            <thead>
+              <tr>
+                <th>Account</th>
+                <th class="r">Balance ($)</th>
+                <th class="r">Liquidity %</th>
+                <th class="r">Move-In <span class="th-note">(weighted)</span></th>
+                <th class="r">Reserve</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="acct-tbody"></tbody>
+          </table>
+        </div>
+        <button class="btn-add-row" id="btn-add-acct" type="button">+ Add Account</button>
+        <div class="acct-totals">
+          <div>
+            <div class="tot-lbl">Move-In Available</div>
+            <div class="tot-val primary" id="tot-liquid">$0</div>
+          </div>
+          <div>
+            <div class="tot-lbl">Reserve Available</div>
+            <div class="tot-val" id="tot-reserve">$0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Income -->
+    <div class="card">
+      <div class="card-title" id="card-title-2" aria-expanded="true" aria-controls="card-body-2">
+        <span class="snum">2</span> Income
+        <span class="card-chev" aria-hidden="true">▲</span>
+      </div>
+      <div class="card-body" id="card-body-2">
+        <div class="form-row">
+          <label class="lbl" for="annual-income">Annual gross income<small>Pre-tax, all sources</small></label>
+          <div class="iw"><span class="px">$</span><input type="number" id="annual-income" class="w120" min="0" step="1000" value="75000"></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="monthly-income">Monthly gross income<small>Calculated automatically</small></label>
+          <div class="iw"><span class="px">$</span><input type="number" id="monthly-income" class="w120 ro" readonly tabindex="-1"></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="other-debts">Other monthly debts<small>Car, student loans, credit cards, etc.</small></label>
+          <div class="iw"><span class="px">$</span><input type="number" id="other-debts" class="w120" min="0" step="50" value="0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Income Screening -->
+    <div class="card">
+      <div class="card-title" id="card-title-3" aria-expanded="true" aria-controls="card-body-3">
+        <span class="snum">3</span> Income Screening
+        <span class="card-chev" aria-hidden="true">▲</span>
+      </div>
+      <div class="card-body" id="card-body-3">
+        <div class="form-row">
+          <label class="lbl" for="income-mult">Income multiplier (× rule)<small>Landlords typically require 40× monthly rent</small></label>
+          <div class="iw"><input type="number" id="income-mult" class="w60" min="20" max="80" step="1" value="40"><span class="sx">×</span></div>
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" id="dti-enabled">
+          Enable debt-to-income screening <small>(common for larger buildings)</small>
+        </label>
+        <div class="form-row" id="dti-row" hidden>
+          <label class="lbl" for="dti-pct">Max rent-to-income ratio<small>30–35% is standard for DTI screening</small></label>
+          <div class="iw"><input type="number" id="dti-pct" class="w60" min="10" max="60" step="1" value="35"><span class="sx">%</span></div>
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" id="guarantor-enabled">
+          I have / plan to use a guarantor <small>(co-signer)</small>
+        </label>
+        <div class="form-row" id="guarantor-row" hidden>
+          <label class="lbl" for="guarantor-mult">Guarantor income multiplier<small>NYC guarantors typically need 80× monthly rent — the Afford Target tab will show the exact income your guarantor must earn</small></label>
+          <div class="iw"><input type="number" id="guarantor-mult" class="w60" min="20" max="120" step="1" value="80"><span class="sx">×</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Move-In Costs -->
+    <div class="card">
+      <div class="card-title" id="card-title-4" aria-expanded="true" aria-controls="card-body-4">
+        <span class="snum">4</span> Move-In Costs
+        <span class="card-chev" aria-hidden="true">▲</span>
+      </div>
+      <div class="card-body" id="card-body-4">
+        <div class="form-row">
+          <label class="lbl" for="sec-deposit">Security deposit<small>NYC law limits security deposit to 1 month's rent</small></label>
+          <div class="iw"><select id="sec-deposit" class="w120">
+            <option value="0">None</option>
+            <option value="0.5">Half month</option>
+            <option value="1" selected>1 month</option>
+          </select></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="app-fee">Application fee<small>NYC cap: $20 (HSTPA 2019)</small></label>
+          <div class="iw"><span class="px">$</span><input type="number" id="app-fee" class="w100" min="0" step="5" value="20"></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="building-fee">Building/admin fee<small>Move-in, key deposit, elevator, etc.</small></label>
+          <div class="iw"><span class="px">$</span><input type="number" id="building-fee" class="w100" min="0" step="50" value="500"></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="utility-setup">Utility setup<small>Con Ed deposit, internet install, etc.</small></label>
+          <div class="iw"><span class="px">$</span><input type="number" id="utility-setup" class="w100" min="0" step="50" value="250"></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="pet-fee">Pet deposit / fee<small>One-time; leave $0 if no pets</small></label>
+          <div class="iw"><span class="px">$</span><input type="number" id="pet-fee" class="w100" min="0" step="50" value="0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5: Broker Fees -->
+    <div class="card">
+      <div class="card-title" id="card-title-5" aria-expanded="true" aria-controls="card-body-5">
+        <span class="snum">5</span> Broker Fees
+        <span class="card-chev" aria-hidden="true">▲</span>
+      </div>
+      <div class="card-body" id="card-body-5">
+        <div class="broker-note">
+          <strong>FARE Act (effective June 11, 2025):</strong> NYC prohibits landlord/listing agents from charging broker fees to tenants.
+          If the landlord's agent listed the apartment, you pay no broker fee. You may still choose to hire and pay your own tenant's broker.
+          <a href="https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page" target="_blank" rel="noopener noreferrer">NYC DCWP FAQ ↗</a>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="broker-type">Broker fee type</label>
+          <div class="iw"><select id="broker-type" class="w160">
+            <option value="none" selected>No broker fee</option>
+            <option value="pct_annual">% of annual rent</option>
+            <option value="months">× months of rent</option>
+            <option value="flat">Flat fee ($)</option>
+          </select></div>
+        </div>
+        <div class="form-row" id="broker-pct-row" hidden>
+          <label class="lbl" for="broker-pct">Broker fee %<small>Standard NYC rate is ~15% of annual rent (≈1.8 months)</small></label>
+          <div class="iw"><input type="number" id="broker-pct" class="w60" min="0" max="100" step="1" value="15"><span class="sx">%</span></div>
+        </div>
+        <div class="form-row" id="broker-months-row" hidden>
+          <label class="lbl" for="broker-months-val">Broker fee (months of rent)</label>
+          <div class="iw"><input type="number" id="broker-months-val" class="w60" min="0" max="6" step="0.5" value="1"><span class="sx">mo</span></div>
+        </div>
+        <div class="form-row" id="broker-flat-row" hidden>
+          <label class="lbl" for="broker-flat-val">Flat broker fee</label>
+          <div class="iw"><span class="px">$</span><input type="number" id="broker-flat-val" class="w120" min="0" step="100" value="3000"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6: Monthly & Reserves -->
+    <div class="card">
+      <div class="card-title" id="card-title-6" aria-expanded="true" aria-controls="card-body-6">
+        <span class="snum">6</span> Monthly &amp; Reserves
+        <span class="card-chev" aria-hidden="true">▲</span>
+      </div>
+      <div class="card-body" id="card-body-6">
+        <div class="form-row">
+          <label class="lbl" for="renters-insurance">Renters insurance<small>Monthly; NYC average ~$15–25/mo</small></label>
+          <div class="iw"><span class="px">$</span><input type="number" id="renters-insurance" class="w100" min="0" step="1" value="15"><span class="sx">/mo</span></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="reserve-months">Reserve buffer<small>Months of total housing costs kept in savings</small></label>
+          <div class="iw"><select id="reserve-months" class="w120">
+            <option value="0">None</option>
+            <option value="1">1 month</option>
+            <option value="2" selected>2 months</option>
+            <option value="3">3 months</option>
+            <option value="6">6 months</option>
+          </select></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /inputs-panel -->
+
+  <!-- ===== RESULTS PANEL ===== -->
+  <div class="results-panel">
+    <div class="results-tabs" role="tablist" aria-label="Results views">
+      <button class="tab-btn active" id="tab-standard" role="tab" aria-selected="true" aria-controls="view-standard" tabindex="0" data-tab="standard">Standard</button>
+      <button class="tab-btn" id="tab-analysis" role="tab" aria-selected="false" aria-controls="view-analysis" tabindex="-1" data-tab="analysis">Analysis</button>
+      <button class="tab-btn" id="tab-afford" role="tab" aria-selected="false" aria-controls="view-afford" tabindex="-1" data-tab="afford">🎯 Afford Target</button>
+    </div>
+
+    <div class="results-card" id="view-standard" role="tabpanel" aria-labelledby="tab-standard">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-eyebrow">Max Affordable Rent</div>
+        <div class="hero-price" id="hero-price">$—</div>
+        <span class="hero-mo">per month</span>
+        <div style="margin-top:8px">
+          <span class="hero-binding" id="hero-binding">
+            Limiting factor: <span class="binding-val" id="hero-binding-val">—</span>
+          </span>
+        </div>
+        <div class="hero-warn" id="hero-warn" role="alert" aria-live="polite"></div>
+      </div>
+
+      <div class="results-body">
+        <!-- ── Standard Tab ── -->
+
+          <!-- Target rent row -->
+          <div class="target-row">
+            <span class="tgt-lbl">Target Rent:</span>
+            <div class="tgt-wrap">
+              <span class="px">$</span>
+              <input type="number" id="target-rent" min="0" step="50" placeholder="Max">
+            </div>
+            <button class="btn-reset" id="btn-reset-tgt" type="button">Reset to max</button>
+          </div>
+
+          <!-- Borough presets -->
+          <div class="presets-row">
+            <span class="presets-lbl">Median rents:</span>
+            <button class="btn-preset" data-preset="3995" type="button">🏙 Citywide $3,995</button>
+            <button class="btn-preset" data-preset="4750" type="button">🗽 Manhattan $4,750</button>
+            <button class="btn-preset" data-preset="3750" type="button">🌉 Brooklyn $3,750</button>
+            <button class="btn-preset" data-preset="3100" type="button">🚇 Queens $3,100</button>
+          </div>
+
+          <!-- Move-in signing costs -->
+          <div class="snap-block">
+            <div class="snap-title">At Signing — Move-In Costs</div>
+            <div class="snap-row"><span class="sr-lbl">First month's rent</span><span class="sr-val" id="s-first-month">—</span></div>
+            <div class="snap-row"><span class="sr-lbl">Security deposit</span><span class="sr-val" id="s-sec-deposit">—</span></div>
+            <div class="snap-row"><span class="sr-lbl">Broker fee</span><span class="sr-val" id="s-broker-fee">—</span></div>
+            <div class="snap-row indent"><span class="sr-lbl">Application fee</span><span class="sr-val" id="s-app-fee">—</span></div>
+            <div class="snap-row indent"><span class="sr-lbl">Building/admin fee</span><span class="sr-val" id="s-building-fee">—</span></div>
+            <div class="snap-row indent"><span class="sr-lbl">Utility setup</span><span class="sr-val" id="s-utility-setup">—</span></div>
+            <div class="snap-row indent"><span class="sr-lbl">Pet deposit</span><span class="sr-val" id="s-pet-fee">—</span></div>
+            <div class="snap-row subtot"><span class="sr-lbl">Total at signing</span><span class="sr-val" id="s-total-signing">—</span></div>
+            <div class="snap-row avail"><span class="sr-lbl">Move-in available (weighted)</span><span class="sr-val" id="s-movein-avail">—</span></div>
+            <div class="snap-row"><span class="sr-lbl">Surplus / (Shortfall)</span><span class="sr-val" id="s-movein-surplus">—</span></div>
+          </div>
+
+          <hr class="snap-div">
+
+          <!-- Reserve buffer -->
+          <div class="snap-block">
+            <div class="snap-title">Reserve Buffer</div>
+            <div class="snap-row"><span class="sr-lbl">Reserve buffer (<span id="s-reserve-months-lbl">2</span> months)</span><span class="sr-val" id="s-reserve-buffer">—</span></div>
+            <div class="snap-row subtot"><span class="sr-lbl">Total cash needed</span><span class="sr-val" id="s-total-cash">—</span></div>
+            <div class="snap-row avail"><span class="sr-lbl">Reserve available</span><span class="sr-val" id="s-reserve-avail">—</span></div>
+            <div class="snap-row"><span class="sr-lbl">Surplus / (Shortfall)</span><span class="sr-val" id="s-reserve-surplus">—</span></div>
+          </div>
+
+          <hr class="snap-div">
+
+          <!-- Monthly obligations -->
+          <div class="snap-block">
+            <div class="snap-title">Monthly Obligations</div>
+            <div class="snap-row"><span class="sr-lbl">Monthly rent</span><span class="sr-val" id="s-monthly-rent">—</span></div>
+            <div class="snap-row indent"><span class="sr-lbl">Renters insurance</span><span class="sr-val" id="s-renters-ins">—</span></div>
+            <div class="snap-row indent"><span class="sr-lbl">Other debts</span><span class="sr-val" id="s-other-debts-mo">—</span></div>
+            <div class="snap-row subtot"><span class="sr-lbl">Total monthly</span><span class="sr-val" id="s-monthly-total">—</span></div>
+            <div class="snap-row"><span class="sr-lbl">Rent-to-income ratio</span><span class="sr-val" id="s-rent-burden">—</span></div>
+            <div class="snap-row"><span class="sr-lbl">Total DTI (all debts)</span><span class="sr-val" id="s-total-dti">—</span></div>
+          </div>
+
+          <hr class="snap-div">
+
+          <!-- Feasibility pills -->
+          <div class="feas-title">Qualification Check</div>
+          <div class="feas-wrap">
+            <div class="pill" id="pill-cash">
+              <span class="p-icon">✓</span>
+              <span class="p-name">Cash</span>
+              <span class="p-detail" id="pd-cash">—</span>
+            </div>
+            <div class="pill" id="pill-mult">
+              <span class="p-icon">✓</span>
+              <span class="p-name">Income (×)</span>
+              <span class="p-detail" id="pd-mult">—</span>
+            </div>
+            <div class="pill" id="pill-dti">
+              <span class="p-icon">✓</span>
+              <span class="p-name">Income (DTI)</span>
+              <span class="p-detail" id="pd-dti">—</span>
+            </div>
+          </div>
+
+      </div><!-- /results-body -->
+    </div><!-- /results-card view-standard -->
+
+    <!-- ── Analysis Tab ── -->
+    <div class="results-card" id="view-analysis" role="tabpanel" aria-labelledby="tab-analysis" hidden>
+      <div class="results-body">
+
+          <!-- Mini hero -->
+          <div class="anl-hero">
+            <div class="anl-hero-col">
+              <div class="anl-eyebrow">Income Limit</div>
+              <div class="anl-price" id="anl-income-max">$—</div>
+              <div class="anl-sub">max from income rules</div>
+            </div>
+            <div class="anl-hero-col border-l">
+              <div class="anl-eyebrow">Cash Limit</div>
+              <div class="anl-price" id="anl-cash-max">$—</div>
+              <div class="anl-sub">binding: <strong id="anl-binding">—</strong></div>
+            </div>
+          </div>
+
+          <!-- Broker fee scenarios -->
+          <div class="anl-section-title">Broker Fee Impact on Move-In Budget</div>
+          <table class="scen-tbl" id="broker-scen-tbl" aria-label="Broker fee scenarios">
+            <thead><tr>
+              <th>Broker Scenario</th>
+              <th>Fee</th>
+              <th>Cash Max Rent</th>
+            </tr></thead>
+            <tbody id="broker-scen-tbody"></tbody>
+          </table>
+
+          <!-- Reserve buffer scenarios -->
+          <div class="anl-section-title">Reserve Buffer vs. Max Rent</div>
+          <table class="scen-tbl" id="reserve-scen-tbl" aria-label="Reserve scenarios">
+            <thead><tr>
+              <th>Reserve Buffer</th>
+              <th>Cash Needed</th>
+              <th>Cash Max Rent</th>
+            </tr></thead>
+            <tbody id="reserve-scen-tbody"></tbody>
+          </table>
+
+          <!-- Income multiplier sensitivity -->
+          <div class="anl-section-title">Income Multiplier Sensitivity</div>
+          <table class="scen-tbl" id="mult-scen-tbl" aria-label="Multiplier sensitivity">
+            <thead><tr>
+              <th>Multiplier</th>
+              <th>Income Max Rent</th>
+              <th>vs. Current</th>
+            </tr></thead>
+            <tbody id="mult-scen-tbody"></tbody>
+          </table>
+
+          <!-- DTI sensitivity (shown only if DTI enabled) -->
+          <div id="dti-scen-section" hidden>
+            <div class="anl-section-title">DTI Ratio Sensitivity</div>
+            <table class="scen-tbl" aria-label="DTI sensitivity">
+              <thead><tr>
+                <th>DTI Ratio</th>
+                <th>DTI Max Rent</th>
+                <th>vs. Current</th>
+              </tr></thead>
+              <tbody id="dti-scen-tbody"></tbody>
+            </table>
+          </div>
+
+      </div><!-- /results-body -->
+    </div><!-- /results-card view-analysis -->
+
+    <!-- ── Afford Target Tab ── -->
+    <div class="results-card" id="view-afford" role="tabpanel" aria-labelledby="tab-afford" hidden>
+      <div class="results-body">
+
+          <!-- Target bar -->
+          <div class="aft-tgt-bar">
+            <span class="aft-lbl">Target Rent:</span>
+            <div class="aft-tgt-wrap">
+              <span class="px">$</span>
+              <input type="number" id="aft-target-rent" min="0" step="50" placeholder="e.g. 3500">
+            </div>
+            <button class="btn-reset" id="btn-aft-reset" type="button">Reset to max</button>
+          </div>
+
+          <!-- Prompt when no target -->
+          <div class="aft-prompt" id="aft-prompt">
+            <strong>Enter a target rent above</strong>
+            Type the rent you want to qualify for and we'll show exactly what income or savings you need.
+          </div>
+
+          <!-- Success banner -->
+          <div class="aft-success" id="aft-success" hidden>
+            <div class="aft-ok-icon" id="aft-ok-icon">✅</div>
+            <div class="aft-success-title" id="aft-success-title">You qualify!</div>
+            <div class="aft-success-sub" id="aft-success-sub"></div>
+          </div>
+
+          <!-- Analysis section -->
+          <div id="aft-analysis" hidden>
+
+            <!-- 3-col summary -->
+            <div class="aft-summary">
+              <div>
+                <div class="aft-sum-lbl">Target</div>
+                <div class="aft-sum-val" id="aft-sum-target">—</div>
+              </div>
+              <div>
+                <div class="aft-sum-lbl">Your Max</div>
+                <div class="aft-sum-val" id="aft-sum-max">—</div>
+              </div>
+              <div>
+                <div class="aft-sum-lbl">Gap</div>
+                <div class="aft-sum-val neg" id="aft-sum-gap">—</div>
+              </div>
+            </div>
+
+            <!-- Lever grid -->
+            <div class="aft-section-title">What It Would Take</div>
+            <div class="lever-grid">
+
+              <!-- Income lever -->
+              <div class="lever">
+                <div class="lever-hd">
+                  💰 Income
+                  <span class="lbadge" id="lev-inc-badge">—</span>
+                </div>
+                <div class="lever-big" id="lev-inc-big">—</div>
+                <div class="lever-sub" id="lev-inc-sub">—</div>
+              </div>
+
+              <!-- Cash lever -->
+              <div class="lever">
+                <div class="lever-hd">
+                  🏦 Savings
+                  <span class="lbadge" id="lev-cash-badge">—</span>
+                </div>
+                <div class="lever-big" id="lev-cash-big">—</div>
+                <div class="lever-sub" id="lev-cash-sub">—</div>
+                <div class="lever-extra" id="lev-cash-extra" hidden>
+                  <span id="lev-cash-months"></span>
+                  <span id="aft-savings-rate" style="color:var(--g500)"></span>
+                </div>
+              </div>
+
+              <!-- Guarantor lever (shown only if enabled) -->
+              <div class="lever" id="lev-guar-row" hidden>
+                <div class="lever-hd">
+                  🤝 Guarantor
+                  <span class="lbadge info" id="lev-guar-badge">info</span>
+                </div>
+                <div class="lever-big" id="lev-guar-big">—</div>
+                <div class="lever-sub" id="lev-guar-sub">—</div>
+              </div>
+
+            </div><!-- /lever-grid -->
+
+            <!-- Broker lever table -->
+            <div class="aft-section-title">Reduce Broker Fee</div>
+            <table class="scen-tbl" aria-label="Broker lever scenarios">
+              <thead><tr>
+                <th>If broker fee is…</th>
+                <th>Cash saved</th>
+                <th>Cash max rent</th>
+              </tr></thead>
+              <tbody id="lev-broker-tbody"></tbody>
+            </table>
+
+            <!-- Reserve lever note -->
+            <p id="reserve-lever-note" style="font-size:11.5px;color:var(--g500);margin:8px 0 4px"></p>
+
+            <!-- Combined income × cash grid -->
+            <div class="aft-section-title">Combined Income &amp; Savings Scenarios</div>
+            <div class="aft-grid-wrap">
+              <table class="aft-gap-tbl" id="aft-gap-grid" aria-label="Income and cash gap grid"></table>
+            </div>
+
+          </div><!-- /aft-analysis -->
+
+      </div><!-- /results-body -->
+    </div><!-- /results-card view-afford -->
+  </div><!-- /results-panel -->
+
+</main>
+
+<!-- ===== INFO COLLAPSIBLES ===== -->
+<div class="info-wrap">
+  <button class="info-btn" id="how-btn" aria-expanded="false" aria-controls="how-body" type="button">
+    <em class="info-caret" aria-hidden="true">▼</em> How This Calculator Works
+  </button>
+  <div class="info-body" id="how-body" role="region" aria-labelledby="how-btn">
+    <h3>Two Constraints, One Result</h3>
+    <p>Your maximum affordable rent is the lower of two limits:</p>
+    <ul>
+      <li><strong>Income constraint:</strong> Most NYC landlords require annual income ≥ 40× monthly rent (the "40× rule"). Some also screen by DTI — your total rent-to-income ratio.</li>
+      <li><strong>Cash constraint:</strong> You must cover first month + security deposit + broker fee + other move-in costs from liquidity-weighted assets, and still maintain a reserve buffer.</li>
+    </ul>
+    <h3>Security Deposit Law</h3>
+    <p>The Housing Stability and Tenant Protection Act (HSTPA, 2019) caps security deposits at one month's rent for most NYC rentals. The calculator defaults to 1 month.</p>
+    <h3>FARE Act &amp; Broker Fees</h3>
+    <p>The FARE Act (effective June 11, 2025) prohibits landlord/listing agents from passing their broker fee to tenants. If the landlord hired the listing broker, you owe nothing. You may still choose to hire and pay your own tenant's broker. Select "No broker fee" unless you engage a tenant's broker yourself.</p>
+    <h3>Reserve Buffer</h3>
+    <p>The calculator keeps N months of total housing costs (rent + insurance + debts) in savings after paying all move-in costs. This is a personal finance cushion — landlords don't require it, but it's good practice.</p>
+    <h3>Guarantor</h3>
+    <p>A guarantor (co-signer) vouches for your rent obligations. NYC landlords typically require the guarantor's annual income to be ≥ 80× the monthly rent. Enabling the guarantor option does not change your own max rent — it surfaces a lever in the <strong>Afford Target</strong> tab showing exactly how much annual income the guarantor must demonstrate to qualify at any rent you enter.</p>
+  </div>
+
+  <button class="info-btn" id="assump-btn" aria-expanded="false" aria-controls="assump-body" type="button">
+    <em class="info-caret" aria-hidden="true">▼</em> Assumptions &amp; Sources
+  </button>
+  <div class="info-body" id="assump-body" role="region" aria-labelledby="assump-btn">
+    <dl class="sources-dl">
+      <dt>Median Rents (Borough Presets)</dt>
+      <dd>StreetEasy Market Reports, March 2026. Citywide $3,995 · Manhattan $4,750 · Brooklyn $3,750 · Queens $3,100. <a href="https://streeteasy.com/research/market-reports" target="_blank" rel="noopener noreferrer">streeteasy.com/research ↗</a></dd>
+      <dt>40× Income Rule</dt>
+      <dd>Standard NYC landlord practice. Some buildings use 36× or 45×; adjust the multiplier in Card 3.</dd>
+      <dt>Security Deposit Cap</dt>
+      <dd>HSTPA 2019 (NY RPL §227-g) caps deposits at 1 month for most NYC residential leases. <a href="https://www.nysenate.gov/legislation/laws/RPP/227-G" target="_blank" rel="noopener noreferrer">NY Senate ↗</a></dd>
+      <dt>FARE Act</dt>
+      <dd>FARE Act, effective June 11, 2025. Prohibits landlord/listing agents from passing broker fees to tenants. You may still hire and pay your own tenant's broker. <a href="https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page" target="_blank" rel="noopener noreferrer">NYC DCWP FAQ ↗</a></dd>
+      <dt>Application Fee Cap</dt>
+      <dd>HSTPA 2019 caps rental application fees at $20. <a href="https://www1.nyc.gov/site/hpd/renters/tenantrights.page" target="_blank" rel="noopener noreferrer">NYC HPD ↗</a></dd>
+      <dt>Renters Insurance</dt>
+      <dd>NYC average ~$15–25/month. <a href="https://www.valuepenguin.com/renters-insurance/new-york" target="_blank" rel="noopener noreferrer">ValuePenguin estimate ↗</a></dd>
+    </dl>
+    <p style="margin-top:10px;font-size:11px;color:var(--g400)">This calculator is for informational purposes only and does not constitute financial, legal, or real estate advice. Individual landlord requirements vary. See our <a href="/about/">full sourcing methodology</a> for where every default above comes from.</p>
+  </div>
+</div>
+
+<AdSlot maxWidth="1300px" sidePadding="20px" />
+
+<AppFooter disclaimer="Median rent figures: StreetEasy Market Reports, March 2026. Calculator results are estimates — individual landlord requirements vary. Not financial or legal advice.">
+  <div class="footer-col">
+    <div class="footer-heading">More Calculators</div>
+    <ul>
+      <li><a href="https://www.nyc-affordability.com/coop/">Co-op Affordability</a></li>
+      <li><a href="https://www.nyc-affordability.com/condo/">Condo Affordability</a></li>
+      <li><a href="https://www.nyc-affordability.com/affordable/">Affordable Housing Calculator</a></li>
+      <li><a href="https://www.nyc-affordability.com/compare/">Compare All Options</a></li>
+      <li><a href="https://www.nyc-affordability.com/">NYC Affordability Hub</a></li>
+      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <div class="footer-heading">NYC Renter Resources</div>
+    <ul>
+      <li><a href="https://streeteasy.com" target="_blank" rel="noopener noreferrer">StreetEasy ↗</a></li>
+      <li><a href="https://www.nyc.gov/site/hpd/renters/tenantrights.page" target="_blank" rel="noopener noreferrer">NYC HPD Tenant Rights ↗</a></li>
+      <li><a href="https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page" target="_blank" rel="noopener noreferrer">FARE Act FAQ ↗</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <div class="footer-heading">Legal</div>
+    <ul>
+      <li><a href="https://www.nysenate.gov/legislation/laws/RPP/227-G" target="_blank" rel="noopener noreferrer">HSTPA Security Deposit Law ↗</a></li>
+      <li>For informational purposes only</li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <div class="footer-heading">About</div>
+    <ul>
+      <li><a href="/about/">About This Project</a></li>
+      <li><a href="/privacy/">Privacy Policy</a></li>
+    </ul>
+  </div>
+</AppFooter>
+</BaseLayout>
+
+<script>
+  import '../../scripts/rent';
+</script>
+
+<style>
+/* ===== MAIN LAYOUT ===== */
+main.app-layout {
+  display: grid;
+  grid-template-columns: 1fr 430px;
+  gap: 20px;
+  max-width: 1300px;
+  margin: 20px auto;
+  padding: 0 20px 60px;
+  align-items: start;
+}
+@media (max-width: 1060px) {
+  main.app-layout { grid-template-columns: 1fr; }
+}
+
+.inputs-panel { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.results-panel {
+  position: sticky;
+  top: calc(var(--header-h) + 20px);
+  max-height: calc(100vh - var(--header-h) - 40px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--g300) transparent;
+}
+@media (max-width: 1060px) { .results-panel { position: static; max-height: none; } }
+
+/* ===== COLLAPSIBLE SECTIONS (How/Assumptions) ===== */
+.info-wrap { max-width: 1300px; margin: 0 auto 20px; padding: 0 20px; }
+.info-btn {
+  display: flex; align-items: center; gap: 6px;
+  width: 100%; text-align: left;
+  background: none; border: none; cursor: pointer;
+  font-size: 13px; color: var(--blue);
+  font-family: inherit; font-weight: 500; padding: 8px 0;
+}
+.info-btn:hover { color: #1d4ed8; }
+.info-caret { transition: transform .2s; font-style: normal; }
+.info-btn.open .info-caret { transform: rotate(180deg); }
+.info-body {
+  display: none; background: #fff;
+  border: 1px solid var(--border); border-radius: var(--r);
+  padding: 16px 20px; font-size: 13px; color: var(--g600); line-height: 1.65;
+}
+.info-body.open { display: block; }
+.info-body h3 { font-size: 13px; font-weight: 700; color: var(--g800); margin: 12px 0 4px; }
+.info-body h3:first-child { margin-top: 0; }
+.info-body p { margin-bottom: 7px; }
+.info-body ul { padding-left: 18px; margin-bottom: 7px; }
+.info-body li { margin-bottom: 3px; }
+.info-body a { color: var(--blue); }
+.sources-dl dt { font-weight: 700; color: var(--g700); font-size: 12px; margin-top: 8px; }
+.sources-dl dd { padding-left: 12px; font-size: 12px; color: var(--g500); margin-top: 2px; }
+.sources-dl dd a { color: var(--blue); }
+
+/* ===== INPUT CARD ===== */
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  overflow: hidden;
+}
+.card-title {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--g500);
+  padding: 12px 16px 11px;
+  border-bottom: 1px solid var(--g100);
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; user-select: none;
+  transition: background .12s;
+}
+.card-title:hover { background: var(--g50); }
+.card-title.no-toggle { cursor: default; }
+.card-title.no-toggle:hover { background: transparent; }
+.snum {
+  background: var(--navy); color: #fff;
+  border-radius: 50%; width: 17px; height: 17px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; flex-shrink: 0;
+}
+.card-chev { font-size: 10px; color: var(--g400); margin-left: auto; transition: transform .2s; }
+.card-chev.open { transform: rotate(180deg); }
+.card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.card-body.collapsed { display: none; }
+
+/* ===== FORM ROWS ===== */
+.form-row {
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.lbl {
+  flex: 1;
+  font-size: 12.5px; color: var(--g700); font-weight: 500;
+  padding-top: 8px;
+}
+.lbl small {
+  display: block; font-size: 11px;
+  color: var(--g400); font-weight: 400;
+  margin-top: 2px; line-height: 1.4;
+}
+.src {
+  background: none; border: none; cursor: pointer;
+  color: var(--g400); font-size: 11px; padding: 0 2px;
+  font-family: inherit; vertical-align: middle;
+  border-radius: 3px; transition: color .12s;
+}
+.src:hover, .src:focus { color: var(--blue); outline: 1px dashed var(--blue-lt); outline-offset: 1px; }
+
+/* Input wrappers */
+.iw {
+  display: flex; align-items: stretch;
+  border: 1px solid var(--g300); border-radius: 5px;
+  background: #fff; overflow: hidden; flex-shrink: 0;
+  transition: border-color .15s, box-shadow .15s;
+}
+.iw:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.iw .px, .iw .sx {
+  background: var(--g50); padding: 0 8px;
+  font-size: 13px; color: var(--g500); font-weight: 500;
+  display: flex; align-items: center; user-select: none; white-space: nowrap;
+}
+.iw .px { border-right: 1px solid var(--g200); }
+.iw .sx { border-left:  1px solid var(--g200); }
+.iw input, .iw select {
+  border: none; outline: none; background: transparent;
+  padding: 7px 9px; font-size: 13px; font-family: inherit;
+  color: var(--g900); min-width: 0; -moz-appearance: textfield;
+}
+.iw input::-webkit-inner-spin-button,
+.iw input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.iw input.ro { background: var(--g50); color: var(--g500); cursor: default; }
+.iw select { cursor: pointer; }
+.w60  { width: 60px;  }
+.w80  { width: 80px;  }
+.w100 { width: 100px; }
+.w120 { width: 120px; }
+.w160 { width: 160px; }
+.w200 { width: 200px; }
+
+/* Toggle row */
+.toggle-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12.5px; color: var(--g700); font-weight: 500;
+  cursor: pointer;
+}
+.toggle-row input[type="checkbox"] {
+  width: 14px; height: 14px; accent-color: var(--blue); flex-shrink: 0; cursor: pointer;
+}
+.toggle-row small { font-size: 11px; color: var(--g400); font-weight: 400; }
+
+/* Broker note box */
+.broker-note {
+  background: var(--blue-xlt); border: 1px solid var(--blue-lt);
+  border-radius: 5px; padding: 8px 10px;
+  font-size: 11.5px; color: var(--g600); line-height: 1.5;
+}
+.broker-note a { color: var(--blue); }
+
+/* ===== ACCOUNTS TABLE ===== */
+.acct-wrap { overflow-x: auto; }
+table.acct-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.acct-tbl th {
+  text-align: left; font-size: 10px; font-weight: 600;
+  color: var(--g400); text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 3px 6px 7px; border-bottom: 1px solid var(--g200); white-space: nowrap;
+}
+.acct-tbl th.r { text-align: right; }
+/* tbody rows are injected via innerHTML at runtime — stays :global(). */
+:global(.acct-tbl td) { padding: 3px 3px; vertical-align: middle; }
+.acct-tbl th:last-child { width: 26px; text-align: center; }
+:global(.acct-tbl td:nth-child(2)),
+:global(.acct-tbl td:nth-child(3)),
+:global(.acct-tbl td:nth-child(4)),
+:global(.acct-tbl td:nth-child(5)) { text-align: right; }
+:global(.acct-tbl td input[type="text"]) {
+  border: 1px solid var(--g200); border-radius: 4px;
+  padding: 5px 7px; font-size: 12px; color: var(--g800);
+  outline: none; width: 120px; font-family: inherit; transition: border-color .12s;
+}
+:global(.acct-tbl td input[type="text"]:focus) { border-color: var(--blue); }
+:global(.acct-tbl td input[type="number"]) {
+  border: 1px solid var(--g200); border-radius: 4px;
+  padding: 5px 7px; font-size: 12px; color: var(--g800);
+  outline: none; text-align: right; width: 85px;
+  -moz-appearance: textfield; font-family: inherit; transition: border-color .12s;
+}
+:global(.acct-tbl td input[type="number"]::-webkit-inner-spin-button),
+:global(.acct-tbl td input[type="number"]::-webkit-outer-spin-button) { -webkit-appearance: none; }
+:global(.acct-tbl td input[type="number"]:focus) { border-color: var(--blue); }
+/* .avail-cell / .btn-del are injected via innerHTML in the account rows — stay :global(). */
+:global(.avail-cell) {
+  background: var(--g50); border: 1px solid var(--g100);
+  border-radius: 4px; text-align: right;
+  font-variant-numeric: tabular-nums; color: var(--g700); font-weight: 600;
+  padding: 5px 8px; min-width: 80px; font-size: 12px; white-space: nowrap;
+}
+:global(.avail-cell.dim) { color: var(--g400); font-weight: 400; }
+:global(.btn-del) {
+  background: none; border: none; color: var(--g300);
+  font-size: 17px; cursor: pointer; padding: 0 4px; line-height: 1;
+  font-family: inherit; border-radius: 3px; transition: color .12s, background .12s;
+}
+:global(.btn-del:hover) { color: var(--red); background: var(--red-bg); }
+.btn-add-row {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--blue); background: none;
+  border: 1px solid var(--blue-lt); border-radius: 4px;
+  padding: 5px 11px; cursor: pointer; margin-top: 10px;
+  font-family: inherit; font-weight: 500; transition: background .12s;
+}
+.btn-add-row:hover { background: var(--blue-xlt); }
+.acct-totals {
+  display: flex; gap: 28px; margin-top: 12px; padding-top: 11px;
+  border-top: 1px solid var(--g200);
+}
+.tot-lbl { font-size: 10px; color: var(--g500); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 2px; }
+.tot-val { font-size: 16px; font-weight: 700; color: var(--g900); font-variant-numeric: tabular-nums; }
+.tot-val.primary { color: var(--blue); }
+
+/* ===== RESULTS CARD ===== */
+.results-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.07);
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+  padding: 22px 20px 17px; text-align: center;
+}
+.hero-eyebrow {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; color: #ffffff; margin-bottom: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: ""; height: 1px; width: 24px; background: var(--navy-border);
+}
+.hero-price {
+  font-size: 46px; font-weight: 800; font-variant-numeric: tabular-nums;
+  letter-spacing: -2px; color: var(--sky-lt); line-height: 1.05;
+  margin-bottom: 11px;
+}
+.hero-price.zero { color: var(--navy-muted); }
+.hero-mo { display: block; font-size: 13px; font-weight: 400; color: var(--navy-subtext); margin-top: 1px; }
+.hero-binding {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.09);
+  border-radius: 20px; padding: 5px 14px;
+  font-size: 12px; color: #ffffff; margin-bottom: 0;
+}
+.binding-val { color: var(--gold); font-weight: 700; }
+.hero-warn {
+  margin-top: 10px; padding: 7px 12px;
+  background: rgba(220,38,38,.15); border: 1px solid rgba(220,38,38,.3);
+  border-radius: 6px; font-size: 12px; color: #fca5a5; display: none;
+}
+
+/* Results body + tabs */
+.results-body { padding: 15px 17px; }
+.results-tabs {
+  display: flex; gap: 0; margin-bottom: 13px;
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  flex: 1; background: none;
+  border: none; border-bottom: 2px solid transparent;
+  padding: 10px 12px; font-size: 12px; font-weight: 600;
+  color: var(--g500); cursor: pointer; font-family: inherit;
+  transition: color .12s, border-color .12s, background .12s;
+  margin-bottom: -1px; text-align: center;
+}
+.tab-btn:hover { color: var(--g800); background: var(--g50); }
+.tab-btn.active { color: var(--navy); border-bottom-color: var(--gold); }
+.tab-btn[aria-selected="true"] { color: var(--navy); border-bottom-color: var(--gold); }
+
+/* Target rent row */
+.target-row {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  background: var(--g50); border: 1px solid var(--g200);
+  border-radius: 6px; padding: 9px 11px; margin-bottom: 7px;
+}
+.tgt-lbl { font-size: 11.5px; font-weight: 600; color: var(--g600); white-space: nowrap; }
+.tgt-wrap {
+  display: flex; align-items: stretch;
+  border: 1px solid var(--g300); border-radius: 5px;
+  background: #fff; overflow: hidden; flex: 1; min-width: 110px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.tgt-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.tgt-wrap .px { background: var(--g50); border-right: 1px solid var(--g200); padding: 0 8px; font-size: 14px; color: var(--g500); font-weight: 600; display: flex; align-items: center; }
+.tgt-wrap input {
+  border: none; outline: none; background: transparent;
+  padding: 7px 9px; font-size: 15px; font-weight: 700;
+  color: var(--g900); width: 100%; font-family: inherit;
+  font-variant-numeric: tabular-nums; -moz-appearance: textfield;
+}
+.tgt-wrap input::-webkit-inner-spin-button,
+.tgt-wrap input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.btn-reset {
+  font-size: 11px; color: var(--blue);
+  background: none; border: none; cursor: pointer;
+  font-family: inherit; padding: 0; font-weight: 500; white-space: nowrap;
+}
+.btn-reset:hover { text-decoration: underline; }
+
+/* Borough presets */
+.presets-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
+.presets-lbl { font-size: 11px; color: var(--g500); font-weight: 600; white-space: nowrap; }
+.btn-preset {
+  font-size: 11px; padding: 3px 8px;
+  background: #fff; border: 1px solid var(--g300);
+  border-radius: 10px; cursor: pointer; color: var(--g600);
+  font-family: inherit; font-weight: 500; transition: background .1s, border-color .1s, color .1s;
+}
+.btn-preset:hover { background: var(--g50); border-color: var(--blue); color: var(--blue); }
+
+/* Snap blocks */
+.snap-block { margin-bottom: 14px; }
+.snap-title {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.9px; color: var(--g400); margin-bottom: 5px;
+}
+.snap-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 3px 0; font-size: 12.5px;
+  border-bottom: 1px solid var(--g100);
+}
+.snap-row:last-child { border-bottom: none; }
+.sr-lbl { color: var(--g500); }
+.sr-val { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--g800); }
+.snap-row.indent .sr-lbl { padding-left: 12px; color: var(--g400); font-size: 12px; }
+.snap-row.indent .sr-val { color: var(--g500); font-size: 12px; font-weight: 500; }
+.snap-row.subtot { border-top: 1px solid var(--g200); padding-top: 5px; border-bottom: none; margin-top: 1px; }
+.snap-row.subtot .sr-lbl, .snap-row.subtot .sr-val { font-weight: 700; color: var(--g900); font-size: 13px; }
+.snap-row.avail .sr-val { color: var(--blue); font-weight: 700; }
+hr.snap-div { border: none; border-top: 1px dashed var(--g200); margin: 4px 0; }
+/* .sr-val.pos / .neg get toggled via JS on an already-static node — no :global() needed,
+   but keep as normal scoped rules since they target existing static elements by class. */
+.sr-val.pos { color: var(--green) !important; }
+.sr-val.neg { color: var(--red) !important; }
+
+/* Feasibility pills */
+.feas-wrap { display: flex; flex-direction: column; gap: 5px; }
+.pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border-radius: 6px; font-size: 12.5px;
+}
+.pill.ok   { background: var(--green-bg); border: 1px solid var(--green-bd); }
+.pill.fail { background: var(--red-bg);   border: 1px solid var(--red-bd);   }
+.p-icon { font-size: 13px; flex-shrink: 0; }
+.pill.ok   .p-icon  { color: var(--green); }
+.pill.fail .p-icon  { color: var(--red);   }
+.p-name { font-weight: 700; min-width: 82px; font-size: 12px; flex-shrink: 0; }
+.pill.ok   .p-name  { color: #14532d; }
+.pill.fail .p-name  { color: #7f1d1d; }
+.p-detail { color: var(--g600); font-size: 12px; }
+.feas-title {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.9px; color: var(--g400); margin-bottom: 5px;
+}
+
+/* ===== ANALYSIS TAB ===== */
+.anl-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  padding: 15px 18px; margin: -14px -16px 14px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  text-align: center;
+}
+.anl-hero-col .anl-eyebrow {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--gold); margin-bottom: 3px;
+}
+.anl-hero-col .anl-price {
+  font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums;
+  letter-spacing: -1px; color: var(--sky-lt); line-height: 1.05;
+}
+.anl-hero-col .anl-sub {
+  font-size: 11px; color: var(--navy-subtext); margin-top: 2px;
+}
+.anl-hero-col .anl-sub strong { color: #fff; }
+.anl-hero-col.border-l { border-left: 1px solid rgba(255,255,255,.12); }
+.anl-section-title {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.9px; color: var(--g400); margin-bottom: 7px; margin-top: 16px;
+}
+.anl-section-title:first-child { margin-top: 0; }
+
+/* Scenario tables — <tbody> rows for these are injected via innerHTML, so cell/row
+   selectors below (thead cells are static in the template, so those stay scoped). */
+.scen-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 4px; }
+.scen-tbl th, .scen-tbl td {
+  padding: 5px 7px; text-align: right; font-variant-numeric: tabular-nums;
+  border-bottom: 1px solid var(--g100);
+}
+.scen-tbl th:first-child, .scen-tbl td:first-child { text-align: left; color: var(--g600); font-weight: 500; }
+.scen-tbl thead th {
+  font-size: 9.5px; font-weight: 700; color: var(--g500);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--g300); padding-bottom: 6px;
+}
+:global(.scen-tbl tr.cur) { background: rgba(37,99,235,.06); font-weight: 600; }
+:global(.scen-tbl tr.cur td:first-child::after) { content: " •"; color: var(--blue); font-size: 10px; }
+:global(.val-pos) { color: var(--green); font-weight: 700; }
+:global(.val-neg) { color: var(--red); font-weight: 700; }
+
+/* Sensitivity table (also injected via innerHTML — delta classes stay :global()) */
+.sens-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.sens-tbl th, .sens-tbl td { padding: 5px 7px; border-bottom: 1px solid var(--g100); }
+.sens-tbl th { font-size: 9.5px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--g300); }
+.sens-tbl th.r, .sens-tbl td.r { text-align: right; font-variant-numeric: tabular-nums; }
+:global(.delta-pos) { color: var(--green); font-weight: 600; }
+:global(.delta-neg) { color: var(--red);   font-weight: 600; }
+:global(.delta-zero) { color: var(--g400); }
+
+/* ===== AFFORD TARGET TAB ===== */
+.aft-card[hidden] { display: none; }
+.aft-tgt-bar {
+  background: var(--navy); padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: -14px -16px 14px;
+}
+.aft-tgt-bar .aft-lbl {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;
+  font-weight: 700; color: var(--gold); white-space: nowrap;
+}
+.aft-tgt-wrap {
+  display: flex; align-items: stretch;
+  border: 1px solid var(--navy-border);
+  background: var(--navy-deep); border-radius: 5px; overflow: hidden;
+  flex: 1; min-width: 120px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.aft-tgt-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(37,99,235,.3); }
+.aft-tgt-wrap .px { background: var(--navy-mid); border-right: 1px solid var(--navy-border); padding: 0 8px; font-size: 14px; color: var(--navy-subtext); font-weight: 600; display: flex; align-items: center; }
+.aft-tgt-wrap input {
+  border: none; outline: none; background: transparent;
+  padding: 7px 9px; font-size: 15px; font-weight: 700;
+  color: #fff; width: 100%; font-family: inherit;
+  font-variant-numeric: tabular-nums; -moz-appearance: textfield;
+}
+.aft-tgt-wrap input::-webkit-inner-spin-button,
+.aft-tgt-wrap input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.aft-tgt-bar .btn-reset { font-size: 11px; color: var(--gold); background: none; border: none; cursor: pointer; font-family: inherit; padding: 0; font-weight: 500; white-space: nowrap; }
+.aft-tgt-bar .btn-reset:hover { text-decoration: underline; }
+
+.aft-prompt { padding: 28px 20px; text-align: center; font-size: 13px; color: var(--g500); line-height: 1.65; }
+.aft-prompt strong { display: block; color: var(--g800); font-size: 15px; margin-bottom: 6px; }
+
+/* .aft-success also gets className swapped to .aft-negative via JS on the same static node. */
+.aft-success { padding: 20px 18px; text-align: center; background: var(--green-bg); border-bottom: 1px solid var(--green-bd); }
+.aft-negative { padding: 20px 18px; text-align: center; background: var(--red-bg); border-bottom: 1px solid var(--red-bd); }
+.aft-ok-icon { font-size: 28px; line-height: 1; margin-bottom: 8px; }
+.aft-success-title { font-size: 15px; font-weight: 700; color: #14532d; margin-bottom: 4px; }
+.aft-negative .aft-success-title { color: #7f1d1d; }
+.aft-success-sub   { font-size: 12.5px; color: #166534; }
+.aft-negative .aft-success-sub { color: #991b1b; }
+
+.aft-summary {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; padding: 12px 16px;
+  background: var(--g50); border-bottom: 1px solid var(--border);
+  margin: 0 -16px 14px;
+}
+@media (max-width: 480px) { .aft-summary { grid-template-columns: 1fr 1fr; } }
+.aft-summary > div { padding: 0 8px; border-right: 1px solid var(--g200); }
+.aft-summary > div:last-child { border-right: none; }
+.aft-sum-lbl { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--g500); margin-bottom: 2px; }
+.aft-sum-val { font-size: 16px; font-weight: 700; color: var(--g900); font-variant-numeric: tabular-nums; }
+.aft-sum-val.neg { color: var(--red); }
+
+.aft-section-title { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--g400); margin-bottom: 7px; margin-top: 16px; }
+.aft-section-title:first-child { margin-top: 0; }
+
+/* Lever grid */
+.lever-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+@media (max-width: 480px) { .lever-grid { grid-template-columns: 1fr; } }
+.lever {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 6px; padding: 11px 13px;
+}
+.lever-hd {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.9px; color: var(--g500);
+  display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+}
+.lbadge {
+  font-size: 9px; font-weight: 700; padding: 2px 5px;
+  border-radius: 8px; letter-spacing: 0.3px;
+  background: var(--g200); color: var(--g600);
+}
+.lbadge.ok   { background: var(--green-bg); color: #14532d; }
+.lbadge.warn { background: var(--red-bg);   color: #7f1d1d; }
+.lbadge.info { background: var(--blue-xlt); color: #1d4ed8; }
+.lever-big {
+  font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px; color: var(--g900); line-height: 1.1; margin-bottom: 3px;
+}
+.lever-big.ok  { color: var(--green); }
+.lever-big.neg { color: var(--red);   }
+.lever-sub { font-size: 11.5px; color: var(--g600); line-height: 1.45; }
+.lever-sub strong { color: var(--g800); }
+.lever-extra {
+  margin-top: 8px; padding-top: 7px;
+  border-top: 1px dashed var(--g200);
+  font-size: 11.5px; color: var(--g600);
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+}
+
+/* Full-width levers */
+.lever.full { grid-column: 1 / -1; }
+
+/* Reserve lever table (rows injected via innerHTML — row/cell selectors stay :global()) */
+.res-lev-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 7px; }
+.res-lev-tbl th, .res-lev-tbl td { padding: 5px 7px; text-align: right; font-variant-numeric: tabular-nums; border-bottom: 1px solid var(--g100); }
+.res-lev-tbl th:first-child, .res-lev-tbl td:first-child { text-align: left; }
+.res-lev-tbl thead th { font-size: 9.5px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--g300); }
+:global(.res-lev-tbl tr.cur-row) { background: rgba(37,99,235,.06); font-weight: 600; }
+:global(.res-lev-tbl tr.cur-row td:first-child::after) { content: " •"; color: var(--blue); font-size: 10px; }
+
+/* Combined gap grid — the entire <table id="aft-gap-grid"> is built via innerHTML/DOM
+   at runtime, so every selector touching its rows/cells must stay :global(). */
+.aft-grid-wrap { overflow-x: auto; }
+:global(.aft-gap-tbl) { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: 12px; font-variant-numeric: tabular-nums; }
+:global(.aft-gap-tbl th) { font-size: 9.5px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: 0.4px; padding: 3px 5px; text-align: center; white-space: nowrap; }
+:global(.aft-gap-tbl th.row-h) { text-align: right; }
+:global(.aft-gap-tbl td) { padding: 6px 5px; text-align: center; border-radius: 4px; font-weight: 600; white-space: nowrap; }
+:global(.aft-gap-tbl td.cell-green)  { background: var(--green-bg); border: 1px solid var(--green-bd); color: #14532d; }
+:global(.aft-gap-tbl td.cell-yellow) { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+:global(.aft-gap-tbl td.cell-red)    { background: var(--red-bg);   border: 1px solid var(--red-bd);   color: #7f1d1d; }
+:global(.aft-gap-tbl .corner) { font-size: 9px; color: var(--g400); font-weight: 600; }
+
+/* Guarantor info row */
+.guarantor-row {
+  margin-top: 14px; padding: 9px 12px;
+  background: var(--blue-xlt); border: 1px solid var(--blue-lt);
+  border-radius: 6px; font-size: 12.5px; color: var(--g700); line-height: 1.5;
+}
+.guarantor-row strong { color: var(--blue); }
+
+/* Screen-reader only */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* Print */
+@media print {
+  .inputs-panel, .info-wrap { display: none !important; }
+  :global(.app-header), :global(.app-footer) { display: none !important; }
+  :global(body) { background: #fff; }
+  main.app-layout { display: block; padding: 0; margin: 0; }
+  .results-panel { position: static; max-height: none; overflow: visible; }
+  .results-card { border: none; box-shadow: none; }
+  .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+.th-note { font-weight:400; text-transform:none; letter-spacing:0; color:var(--g300); font-size:9px; }
+.del-cell { text-align:center; width:26px; }
+
+/* Page-specific navy theme token extensions (rent/calculator family) */
+:global(:root) {
+  --navy-dark:    #0f2a54;
+  --navy-deep:    #0d1f3c;
+  --navy-border:  #1e3a5f;
+  --navy-muted:   #4a6fa5;
+  --navy-text:    #e2e8f0;
+  --navy-link:    #6b8ab8;
+  --navy-subtext: #c0d8f0;
+  --sky-lt:       #f0f9ff;
+}
+</style>
