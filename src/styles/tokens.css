@@ -1,0 +1,56 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:     #0a1628;
+  --navy-mid: #142240;
+  --blue:     #2563eb;
+  --blue-lt:  #dbeafe;
+  --blue-xlt: #eff6ff;
+  --gold:     #f59e0b;
+  --green:    #16a34a;
+  --green-bg: #f0fdf4;
+  --green-bd: #bbf7d0;
+  --red:      #dc2626;
+  --red-bg:   #fef2f2;
+  --red-bd:   #fecaca;
+  --g50:      #f9fafb;
+  --g100:     #f3f4f6;
+  --g200:     #e5e7eb;
+  --g300:     #d1d5db;
+  --g400:     #9ca3af;
+  --g500:     #6b7280;
+  --g600:     #4b5563;
+  --g700:     #374151;
+  --g800:     #1f2937;
+  --g900:     #111827;
+  --border:   #e2e4e9;
+  --header-h: 56px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  background: #eef0f4;
+  color: var(--g900);
+}
+
+/* "site" pages (hub, about, privacy) */
+body.variant-site {
+  --r: 10px;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* "app" pages (calculators) */
+body.variant-app {
+  --r: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}

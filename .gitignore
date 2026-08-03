@@ -1,3 +1,6 @@
 .wrangler/
 .DS_Store
 _archive/
+node_modules/
+dist/
+.astro/

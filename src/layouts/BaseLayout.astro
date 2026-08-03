@@ -1,0 +1,60 @@
+---
+import SEOHead from '../components/SEOHead.astro';
+import '../styles/tokens.css';
+
+interface Props {
+  pageTitle: string;
+  metaDescription: string;
+  canonicalPath: string;
+  ogTitle: string;
+  ogDescription: string;
+  ogImage: string;
+  ogImageAlt: string;
+  twitterTitle: string;
+  twitterDescription: string;
+  jsonLd: Record<string, unknown>;
+  variant: 'site' | 'app';
+  ads?: boolean;
+}
+
+const {
+  pageTitle,
+  metaDescription,
+  canonicalPath,
+  ogTitle,
+  ogDescription,
+  ogImage,
+  ogImageAlt,
+  twitterTitle,
+  twitterDescription,
+  jsonLd,
+  variant,
+  ads = false,
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <SEOHead
+    pageTitle={pageTitle}
+    metaDescription={metaDescription}
+    canonicalPath={canonicalPath}
+    ogTitle={ogTitle}
+    ogDescription={ogDescription}
+    ogImage={ogImage}
+    ogImageAlt={ogImageAlt}
+    twitterTitle={twitterTitle}
+    twitterDescription={twitterDescription}
+    jsonLd={jsonLd}
+  />
+  <slot name="head-extra" />
+  {ads && (
+    <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4149057501235815" crossorigin="anonymous"></script>
+  )}
+</head>
+<body class={`variant-${variant}`}>
+  <slot />
+</body>
+</html>
