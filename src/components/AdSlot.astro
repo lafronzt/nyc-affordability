@@ -1,0 +1,17 @@
+---
+interface Props {
+  maxWidth?: string;
+  sidePadding?: string;
+}
+const { maxWidth = '1120px', sidePadding = '24px' } = Astro.props;
+---
+<div style={`max-width:${maxWidth};margin:0 auto;padding:8px ${sidePadding} 0;text-align:center;`}>
+  <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">Advertisement</div>
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-4149057501235815"
+       data-ad-slot="9625225067"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script is:inline>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
