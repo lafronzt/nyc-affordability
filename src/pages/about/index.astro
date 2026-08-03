@@ -1,0 +1,166 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About NYC Affordability',
+  url: 'https://www.nyc-affordability.com/about/',
+  description: 'Why these calculators exist, how the math and sourced assumptions work, and who maintains this free, open-source NYC housing project.',
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: 'https://www.nyc-affordability.com/' },
+};
+---
+<BaseLayout
+  variant="site"
+  pageTitle="About NYC Affordability | Free NYC Housing Calculators"
+  metaDescription="About NYC Affordability: why these calculators exist, how the math and sourced assumptions work, and who maintains this free, open-source NYC housing project."
+  canonicalPath="/about/"
+  ogTitle="About NYC Affordability"
+  ogDescription="Why these calculators exist, how the math and sourced assumptions work, and who maintains this free, open-source NYC housing project."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
+  twitterTitle="About NYC Affordability"
+  twitterDescription="Why these calculators exist, how the math and sourced assumptions work, and who maintains this free, open-source NYC housing project."
+  jsonLd={jsonLd}
+>
+<SiteHeader backLink />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">About This Project</div>
+  <h2>Built because NYC housing math<br>doesn't fit generic calculators.</h2>
+  <p>NYC Affordability is a free, open-source set of tools that model how buying and renting actually work in New York City — board reserves, mansion tax cliffs, mortgage recording tax, FARE Act broker rules, and HPD's AMI framework — instead of the national rules of thumb most calculators fall back on.</p>
+  <span class="updated">Last updated: August 2, 2026</span>
+</div>
+
+<div class="page">
+
+  <div class="card">
+    <h3>Why this exists</h3>
+    <p>Most rent-affordability and mortgage calculators are built around generic national assumptions: a flat debt-to-income ceiling, a simple down payment percentage, maybe a property tax estimate. NYC housing doesn't work that way. A co-op board can require 12–24 months of post-closing reserves on top of the down payment. A condo purchase over $1,000,000 crosses a mansion tax cliff that adds tens of thousands of dollars at a single dollar boundary. Renters are protected — and priced — differently since the FARE Act changed who pays broker fees. Affordable housing eligibility runs on HUD's Area Median Income bands, not a simple income cutoff.</p>
+    <p>We built five tools that model these mechanics directly, so the numbers reflect how a co-op board, a condo lender, a landlord, or HPD's Housing Connect lottery actually evaluates an applicant — not a generic estimate.</p>
+  </div>
+
+  <div class="card">
+    <h3>What's here</h3>
+    <p>Five calculators, all free and running entirely in your browser:</p>
+    <div class="tool-grid">
+      <a href="/coop/">NYC Co-op Affordability</a>
+      <a href="/condo/">NYC Condo Affordability</a>
+      <a href="/rent/">NYC Rent Affordability</a>
+      <a href="/affordable/">NYC Affordable Housing Finder</a>
+      <a href="/compare/">Compare All Options</a>
+      <a href="/">NYC Affordability Hub</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Methodology &amp; sourcing</h3>
+    <p>Every default value in these calculators — mortgage rates, board DTI limits, reserve requirements, closing cost percentages, median rents, AMI income limits — is pulled from a named, checkable source rather than invented. The sources used across the site include:</p>
+    <ul>
+      <li><a href="https://www.freddiemac.com/pmms" target="_blank" rel="noopener noreferrer">Freddie Mac Primary Mortgage Market Survey (PMMS)</a> — current conventional mortgage rates</li>
+      <li><a href="https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page" target="_blank" rel="noopener noreferrer">NYC Department of Finance / ACRIS</a> — mortgage recording tax, transfer tax, and real property records</li>
+      <li><a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">New York State Department of Taxation and Finance</a> — mansion tax tiers</li>
+      <li><a href="https://www.huduser.gov/portal/datasets/il.html" target="_blank" rel="noopener noreferrer">HUD Income Limits</a> — Area Median Income (AMI) figures used for affordable housing eligibility</li>
+      <li><a href="https://www.nyc.gov/site/hpd/renters/affordable-housing.page" target="_blank" rel="noopener noreferrer">NYC Housing Preservation &amp; Development (HPD)</a> — affordable rent methodology and Housing Connect band structure</li>
+      <li><a href="https://streeteasy.com" target="_blank" rel="noopener noreferrer">StreetEasy Market Reports</a> — median asking rent used as a default reference point</li>
+      <li><a href="https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page" target="_blank" rel="noopener noreferrer">NYC Department of Consumer and Worker Protection (DCWP)</a> — FARE Act broker-fee guidance</li>
+      <li><a href="https://ag.ny.gov/publications/residential-tenants-rights-guide" target="_blank" rel="noopener noreferrer">New York State Attorney General</a> — tenant rights and security deposit law</li>
+    </ul>
+    <p>Every calculator links its individual sources inline in its own "How this works" section, and each default is editable — the sourced value is a starting point, not a constraint. Defaults are reviewed and refreshed periodically as rates, tax tiers, and income limits change; each page's footer or "How this works" panel notes the date a given figure was last checked.</p>
+  </div>
+
+  <div class="card">
+    <h3>How the math works, at a high level</h3>
+    <p>Every calculator on this site — rent, co-op, and condo — reduces the same question to two competing constraints, then takes whichever one is lower:</p>
+    <ol>
+      <li><strong>Cash / reserves:</strong> what your liquid assets can actually cover — move-in costs and a security deposit for rent, or a down payment plus closing costs plus a post-close reserve cushion for a purchase.</li>
+      <li><strong>DTI / income:</strong> what a landlord, co-op board, or mortgage lender will approve based on your monthly housing cost relative to your gross income.</li>
+    </ol>
+    <p>Whichever constraint produces the lower number is your real ceiling — you can't spend more than either allows. The <a href="/compare/">comparison dashboard</a> shows this "binding constraint" side by side across all three housing types, since which one binds (and by how much) varies a lot between renting, buying a co-op, and buying a condo.</p>
+  </div>
+
+  <div class="card">
+    <h3>Who maintains this</h3>
+    <div class="maintainer-row">
+      <span class="maintainer-badge" aria-hidden="true">L</span>
+      <p style="margin:0;">NYC Affordability is an independent, open-source project maintained by <strong>lafronzt</strong>. The full source code, including every formula and assumption used in these calculators, is public on GitHub.</p>
+    </div>
+    <p style="margin-top:14px;">
+      <a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View the source on GitHub &rarr;</a><br>
+      Found an error, an outdated rate, or have a feature request? <a href="https://github.com/lafronzt/nyc-affordability/issues" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a> — that's the fastest way to reach the maintainer.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Disclaimer</h3>
+    <p>These calculators are for informational purposes only and do not constitute financial, legal, or mortgage advice. Tax rates, board requirements, lender guidelines, and closing costs vary by building, lender, and transaction, and change over time. Always verify figures with a licensed mortgage professional and a real estate attorney before making a housing decision. See the <a href="/privacy/">privacy policy</a> for how your data (and it stays only in your browser) is handled.</p>
+  </div>
+
+</div>
+</main>
+
+<SiteFooter disclaimer="These calculators are for informational purposes only and do not constitute financial, legal, or mortgage advice. Always verify all figures with a licensed mortgage professional and real estate attorney before making housing decisions.">
+  <div class="footer-col">
+    <div class="footer-heading">Calculators</div>
+    <ul>
+      <li><a href="/coop/">NYC Co-op Affordability</a></li>
+      <li><a href="/condo/">NYC Condo Affordability</a></li>
+      <li><a href="/rent/">NYC Rent Affordability</a></li>
+      <li><a href="/affordable/">NYC Affordable Housing Calculator</a></li>
+      <li><a href="/compare/">Compare All Options</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <div class="footer-heading">About</div>
+    <ul>
+      <li><a href="/about/">About This Project</a></li>
+      <li><a href="/privacy/">Privacy Policy</a></li>
+      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
+    </ul>
+  </div>
+</SiteFooter>
+</BaseLayout>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+.hero .updated { display: inline-block; margin-top: 16px; font-size: 11px; color: #6b8ab8; letter-spacing: .4px; }
+
+.page { max-width: 820px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 30px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.75; margin-bottom: 10px; }
+.card p:last-child { margin-bottom: 0; }
+.card ul, .card ol { padding-left: 20px; color: var(--g600); font-size: 14px; line-height: 1.75; margin-bottom: 10px; }
+.card li { margin-bottom: 4px; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin-top: 6px; }
+.tool-grid a {
+  display: block; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;
+  font-weight: 650; font-size: 13.5px; color: var(--g800); text-decoration: none; background: var(--g50);
+}
+.tool-grid a:hover { border-color: var(--blue-lt); background: var(--blue-lt); color: var(--blue); }
+.maintainer-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.maintainer-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%; background: var(--navy); color: #f0f9ff;
+  font-weight: 800; font-size: 13px; flex-shrink: 0;
+}
+
+@media (max-width: 560px) {
+  .tool-grid { grid-template-columns: 1fr; }
+  .card { padding: 22px 18px 24px; }
+}
+</style>
