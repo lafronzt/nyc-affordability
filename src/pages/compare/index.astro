@@ -1,0 +1,523 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AppFooter from '../../components/AppFooter.astro';
+import AdSlot from '../../components/AdSlot.astro';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'NYC Housing Affordability Comparison Dashboard',
+  url: 'https://www.nyc-affordability.com/compare/',
+  description: 'Compare rent, co-op, and condo affordability from a saved local NYC housing affordability profile.',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  areaServed: { '@type': 'City', name: 'New York City', sameAs: 'https://www.wikidata.org/wiki/Q60' },
+};
+---
+<BaseLayout
+  variant="app"
+  ads
+  pageTitle="NYC Housing Affordability Comparison | Rent vs Co-op vs Condo"
+  metaDescription="Compare NYC rent, co-op, and condo affordability from your saved local financial profile. See max rent, max purchase price, cash needed, DTI, reserves, and binding constraints."
+  canonicalPath="/compare/"
+  ogTitle="NYC Affordability Comparison | Rent vs Co-op vs Condo"
+  ogDescription="Compare NYC rent, co-op, and condo affordability from your saved local financial profile."
+  ogImage="/images/compare-og.png"
+  ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
+  twitterTitle="NYC Affordability Comparison"
+  twitterDescription="Compare rent, co-op, and condo affordability from your saved local profile."
+  jsonLd={jsonLd}
+>
+<!--
+  Header is hand-rolled here rather than reused via AppHeader: this page's
+  header has a "Hub" nav-link and a "Save" toggle label that don't fit
+  AppHeader's fixed markup/prop shape (no nav-link slot, hardcoded "Save
+  inputs" label) — see task notes on preferring not to reshape a component
+  four other already-migrated pages depend on. Ported verbatim from source.
+-->
+<header class="app-header">
+  <h1>NYC <em>Affordability</em> Comparison</h1>
+  <span class="tagline">Compare rent, co-op, and condo ceilings from one saved profile</span>
+  <label class="save-toggle" title="Save profile edits to this browser">
+    <input type="checkbox" id="save-toggle-cb" aria-label="Save profile">
+    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+    <span class="toggle-label">Save</span>
+  </label>
+  <a class="nav-link" href="/">Hub</a>
+</header>
+
+<main class="page">
+  <section class="hero">
+    <div class="hero-main">
+      <div>
+        <div class="eyebrow">Cross-calculator dashboard</div>
+        <h2>Rent vs co-op vs condo, side by side.</h2>
+        <p>Uses the profile saved locally by the calculators. Your numbers stay in this browser; this page only reads your saved browser profile from localStorage.</p>
+        <p class="updated-note" style="margin-top:8px;color:#6b8ab8;">Last updated: August 2, 2026</p>
+      </div>
+      <div class="profile-panel" aria-label="Saved profile summary">
+        <div><div class="profile-k">Annual income</div><div class="profile-v" id="profile-income">&mdash;</div></div>
+        <div><div class="profile-k">Monthly debts</div><div class="profile-v" id="profile-debts">&mdash;</div></div>
+        <div><div class="profile-k">Weighted cash</div><div class="profile-v" id="profile-cash">&mdash;</div></div>
+        <div><div class="profile-k">Accounts</div><div class="profile-v" id="profile-accounts">&mdash;</div></div>
+      </div>
+    </div>
+    <div class="notice" id="missing-profile">No saved profile was found. The dashboard is showing a sample profile until you save inputs from any calculator.</div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Profile</div>
+    <div class="editor-body">
+      <div class="editor-grid">
+        <div class="field">
+          <label for="edit-income">Annual gross income</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="edit-income" min="0" step="1000"></div>
+        </div>
+        <div class="field">
+          <label for="edit-debts">Other monthly debts</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="edit-debts" min="0" step="100"></div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="account-table" aria-label="Profile accounts">
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th class="num">Balance</th>
+              <th class="num">Liquidity %</th>
+              <th>Closing?</th>
+              <th class="num">Weighted value</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="profile-acct-tbody"></tbody>
+        </table>
+      </div>
+      <div class="btn-row">
+        <button class="btn-add" id="add-account" type="button">Add Account</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="summary-grid" aria-label="Affordability summary">
+    <article class="option-card">
+      <div class="option-top rent">
+        <div class="option-title">Rent</div>
+        <div class="option-value" id="rent-max">&mdash;</div>
+        <div class="option-sub">max affordable monthly rent</div>
+      </div>
+      <div class="option-body">
+        <div class="mini-row"><span class="mini-k">Cash required</span><span class="mini-v" id="rent-cash">&mdash;</span></div>
+        <div class="mini-row"><span class="mini-k">Monthly housing</span><span class="mini-v" id="rent-monthly">&mdash;</span></div>
+        <div class="mini-row"><span class="mini-k">DTI</span><span class="mini-v" id="rent-dti">&mdash;</span></div>
+        <div class="mini-row"><span class="mini-k">Constraint</span><span class="mini-v binding" id="rent-binding">&mdash;</span></div>
+        <a class="calc-link" href="/rent/">Open Rent Calculator &rarr;</a>
+      </div>
+    </article>
+
+    <article class="option-card">
+      <div class="option-top coop">
+        <div class="option-title">Co-op</div>
+        <div class="option-value" id="coop-max">&mdash;</div>
+        <div class="option-sub">max purchase price</div>
+      </div>
+      <div class="option-body">
+        <div class="mini-row"><span class="mini-k">Cash required</span><span class="mini-v" id="coop-cash">&mdash;</span></div>
+        <div class="mini-row"><span class="mini-k">Monthly housing</span><span class="mini-v" id="coop-monthly">&mdash;</span></div>
+        <div class="mini-row"><span class="mini-k">DTI</span><span class="mini-v" id="coop-dti">&mdash;</span></div>
+        <div class="mini-row"><span class="mini-k">Constraint</span><span class="mini-v binding" id="coop-binding">&mdash;</span></div>
+        <a class="calc-link" href="/coop/">Open Co-op Calculator &rarr;</a>
+      </div>
+    </article>
+
+    <article class="option-card">
+      <div class="option-top condo">
+        <div class="option-title">Condo</div>
+        <div class="option-value" id="condo-max">&mdash;</div>
+        <div class="option-sub">max purchase price</div>
+      </div>
+      <div class="option-body">
+        <div class="mini-row"><span class="mini-k">Cash required</span><span class="mini-v" id="condo-cash">&mdash;</span></div>
+        <div class="mini-row"><span class="mini-k">Monthly housing</span><span class="mini-v" id="condo-monthly">&mdash;</span></div>
+        <div class="mini-row"><span class="mini-k">DTI</span><span class="mini-v" id="condo-dti">&mdash;</span></div>
+        <div class="mini-row"><span class="mini-k">Constraint</span><span class="mini-v binding" id="condo-binding">&mdash;</span></div>
+        <a class="calc-link" href="/condo/">Open Condo Calculator &rarr;</a>
+      </div>
+    </article>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Comparison table <span>Calculator links keep using the same saved browser profile</span></div>
+    <div class="table-wrap">
+      <table aria-label="Rent co-op condo comparison">
+        <thead><tr><th>Metric</th><th>Rent</th><th>Co-op</th><th>Condo</th></tr></thead>
+        <tbody>
+          <tr><td>Maximum</td><td id="t-rent-max-rent">&mdash;</td><td id="t-coop-max-price">&mdash;</td><td id="t-condo-max-price">&mdash;</td></tr>
+          <tr><td>Cash required</td><td id="t-rent-cash">&mdash;</td><td id="t-coop-cash">&mdash;</td><td id="t-condo-cash">&mdash;</td></tr>
+          <tr><td>Monthly housing cost</td><td id="t-rent-monthly">&mdash;</td><td id="t-coop-monthly">&mdash;</td><td id="t-condo-monthly">&mdash;</td></tr>
+          <tr><td>DTI</td><td id="t-rent-dti">&mdash;</td><td id="t-coop-dti">&mdash;</td><td id="t-condo-dti">&mdash;</td></tr>
+          <tr><td>Reserve requirement</td><td id="t-rent-reserve">&mdash;</td><td id="t-coop-reserve">&mdash;</td><td id="t-condo-reserve">&mdash;</td></tr>
+          <tr><td>Primary binding constraint</td><td id="t-rent-binding">&mdash;</td><td id="t-coop-binding">&mdash;</td><td id="t-condo-binding">&mdash;</td></tr>
+          <tr><td>Calculator</td><td><a href="/rent/">Rent calculator</a></td><td><a href="/coop/">Co-op calculator</a></td><td><a href="/condo/">Condo calculator</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details class="asmp-details" id="asmp-details">
+      <summary>Adjust assumptions <span>Click to expand</span></summary>
+      <div class="assumptions">
+        <div class="assumption-col">
+          <h3>Rent</h3>
+          <div class="asmp-fields">
+            <div class="asmp-field">
+              <label for="a-rent-mult">Income multiplier</label>
+              <div class="input-wrap"><span>×</span><input type="number" id="a-rent-mult" min="10" max="60" step="1" value="40"></div>
+            </div>
+            <div class="asmp-field">
+              <label for="a-rent-insurance">Renters insurance</label>
+              <div class="input-wrap"><span>$/mo</span><input type="number" id="a-rent-insurance" min="0" step="1" value="15"></div>
+            </div>
+            <div class="asmp-field">
+              <label for="a-rent-reserve">Reserve buffer</label>
+              <div class="input-wrap"><select id="a-rent-reserve">
+                <option value="0">None</option>
+                <option value="1">1 month</option>
+                <option value="2" selected>2 months</option>
+                <option value="3">3 months</option>
+                <option value="6">6 months</option>
+              </select></div>
+            </div>
+          </div>
+        </div>
+        <div class="assumption-col">
+          <h3>Co-op</h3>
+          <div class="asmp-fields">
+            <div class="asmp-field">
+              <label for="a-coop-dp">Down payment</label>
+              <div class="input-wrap"><span>%</span><input type="number" id="a-coop-dp" min="10" max="50" step="1" value="20"></div>
+            </div>
+            <div class="asmp-field">
+              <label for="a-coop-rate">Mortgage rate</label>
+              <div class="input-wrap"><span>%</span><input type="number" id="a-coop-rate" min="1" max="15" step="0.05" value="6.25"></div>
+            </div>
+            <div class="asmp-field">
+              <label for="a-coop-maint">Monthly maintenance</label>
+              <div class="input-wrap"><span>$</span><input type="number" id="a-coop-maint" min="0" step="50" value="1200"></div>
+            </div>
+            <div class="asmp-field">
+              <label for="a-coop-dti">Board DTI limit</label>
+              <div class="input-wrap"><span>%</span><input type="number" id="a-coop-dti" min="10" max="50" step="1" value="28"></div>
+            </div>
+            <div class="asmp-field">
+              <label for="a-coop-reserve">Reserve requirement</label>
+              <div class="input-wrap"><span>mo</span><input type="number" id="a-coop-reserve" min="0" max="36" step="1" value="12"></div>
+            </div>
+          </div>
+        </div>
+        <div class="assumption-col">
+          <h3>Condo</h3>
+          <div class="asmp-fields">
+            <div class="asmp-field">
+              <label for="a-condo-dp">Down payment</label>
+              <div class="input-wrap"><span>%</span><input type="number" id="a-condo-dp" min="10" max="50" step="1" value="20"></div>
+            </div>
+            <div class="asmp-field">
+              <label for="a-condo-rate">Mortgage rate</label>
+              <div class="input-wrap"><span>%</span><input type="number" id="a-condo-rate" min="1" max="15" step="0.05" value="6.30"></div>
+            </div>
+            <div class="asmp-field">
+              <label for="a-condo-cc">Common charges</label>
+              <div class="input-wrap"><span>$/mo</span><input type="number" id="a-condo-cc" min="0" step="50" value="1000"></div>
+            </div>
+            <div class="asmp-field">
+              <label for="a-condo-tax">Property taxes</label>
+              <div class="input-wrap"><span>$/mo</span><input type="number" id="a-condo-tax" min="0" step="50" value="1250"></div>
+            </div>
+            <div class="asmp-field">
+              <label for="a-condo-ins">HO insurance</label>
+              <div class="input-wrap"><span>$/mo</span><input type="number" id="a-condo-ins" min="0" step="5" value="75"></div>
+            </div>
+            <div class="asmp-field">
+              <label for="a-condo-dti">Lender DTI limit</label>
+              <div class="input-wrap"><span>%</span><input type="number" id="a-condo-dti" min="10" max="60" step="1" value="43"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">How to read this comparison</div>
+    <div class="prose-body">
+      <p>The three summary cards above and the comparison table below both come from the same saved profile — your annual income, other monthly debts, and the accounts listed in the Profile editor. Each calculator applies that profile to its own math (rent's income multiplier, a co-op board's reserve and DTI rules, a condo lender's DTI and closing-cost math) and this page just lines the results up next to each other.</p>
+      <h4>What each row means</h4>
+      <ul>
+        <li><strong>Maximum</strong> — the highest monthly rent or purchase price your profile supports for that housing type.</li>
+        <li><strong>Cash required</strong> — total cash needed at move-in or closing: deposit/down payment, closing costs, and any required reserve.</li>
+        <li><strong>Monthly housing cost</strong> — rent, or mortgage payment plus maintenance/common charges, before other debts.</li>
+        <li><strong>DTI</strong> — your total monthly housing cost plus other debts, as a percentage of gross monthly income.</li>
+        <li><strong>Reserve requirement</strong> — cash held back after closing, if that housing type requires it (co-op boards typically do; condos and rentals may not by default).</li>
+      </ul>
+      <p>Every number here recalculates instantly as you edit the profile or the assumptions below — nothing is cached beyond what's saved to this browser.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">What &ldquo;binding constraint&rdquo; means</div>
+    <div class="prose-body">
+      <p>Each calculator computes two independent ceilings and reports whichever one is lower as your real limit — that's the &ldquo;binding constraint&rdquo; shown in the Constraint row. It's the same idea across all three housing types, but which side binds tends to differ:</p>
+      <ul>
+        <li><strong>Cash / Move-In or Cash / Reserves or DP / Closing Costs</strong> — your liquid assets are the limiting factor, not your income. Common for buyers with strong income but modest savings, or renters without much cushion beyond first month + deposit.</li>
+        <li><strong>DTI / Income (or the 40&times; rule for rent)</strong> — a lender's or landlord's debt-to-income ceiling caps you before your cash runs out. Common for buyers with substantial savings but a income-to-debt ratio near the limit.</li>
+      </ul>
+      <p>Knowing which constraint binds matters because it tells you what actually moves the number: if cash is binding, a larger down payment or more savings raises your ceiling; if DTI is binding, paying down other debt or increasing income does. The same profile can be cash-bound for a co-op (12&ndash;24 months of reserves is a lot to hold back) and DTI-bound for a condo (no reserve requirement by default, so income becomes the limit) &mdash; which is exactly the kind of difference this dashboard is built to surface.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Rent vs. buy in NYC</div>
+    <div class="prose-body">
+      <p>The math above answers &ldquo;what can I afford,&rdquo; not &ldquo;which is right for me&rdquo; &mdash; that depends on factors these calculators can't see. A few NYC-specific tradeoffs worth weighing alongside the numbers:</p>
+      <h4>Co-ops: approval risk in exchange for price</h4>
+      <p>Co-ops are typically cheaper per square foot than condos in the same building or neighborhood, but a board can reject a financially qualified buyer for almost any non-discriminatory reason, and your reserves are locked up as a condition of ownership rather than available as a rainy-day fund. That illiquidity is real: the cash this calculator marks as &ldquo;reserve&rdquo; is money you commit to holding, not spending, for as long as you own the unit.</p>
+      <h4>Condos: fewer hoops, more carrying cost exposure</h4>
+      <p>Condos don't require board approval for most sales and don't impose reserve requirements the way co-op boards do &mdash; the tradeoff is a higher purchase price and full exposure to property tax and common-charge increases with no board negotiating on your behalf. There's also no ceiling on how much of your net worth ends up in the property versus liquid savings, since nothing forces you to keep post-close reserves.</p>
+      <h4>Renting: the FARE Act changed the cash math</h4>
+      <p>Since the FARE Act took effect in June 2025, landlords &mdash; not tenants &mdash; generally pay the listing broker's fee, which removed what used to be one of the largest move-in cash requirements in NYC rentals. That's part of why the cash-required gap between renting and buying in this comparison is often larger than it would be in most other cities: buying still carries closing costs and (for co-ops) reserves that renting no longer does.</p>
+      <p>None of this is a recommendation &mdash; it's context for reading the numbers above. See each calculator's own &ldquo;How this works&rdquo; section for the full mechanics, or the <a href="/about/">About page</a> for the sourcing behind every default.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Methodology &amp; assumptions</div>
+    <div class="prose-body">
+      <p>This dashboard doesn't recompute anything from scratch &mdash; it reuses each calculator's own default assumptions (mortgage rate, DTI limits, reserve requirements, and so on), which you can see and edit in the &ldquo;Adjust assumptions&rdquo; panel above. Changing an assumption here updates the same shared value the individual calculator uses, so the two stay in sync.</p>
+      <p>For the sourcing behind each default &mdash; Freddie Mac PMMS mortgage rates, NYC DOF/ACRIS closing cost figures, HUD income data, StreetEasy rent data, and NYC DCWP's FARE Act guidance &mdash; see the &ldquo;How this works&rdquo; section on the <a href="/rent/">rent</a>, <a href="/coop/">co-op</a>, and <a href="/condo/">condo</a> calculators, or the consolidated source list on the <a href="/about/">About page</a>. This page intentionally doesn't re-derive those sources to avoid duplicating content that already lives on each calculator.</p>
+    </div>
+  </section>
+</main>
+
+<AdSlot maxWidth="1300px" sidePadding="20px" />
+
+<AppFooter disclaimer="This dashboard is for informational purposes only and does not constitute financial, legal, or mortgage advice. It combines your saved profile with your saved assumptions (editable in the panel above). Open an individual calculator for detailed inputs and source notes.">
+  <div class="footer-col">
+    <div class="footer-heading">Calculators</div>
+    <ul>
+      <li><a href="/rent/">NYC Rent Affordability</a></li>
+      <li><a href="/coop/">NYC Co-op Affordability</a></li>
+      <li><a href="/condo/">NYC Condo Affordability</a></li>
+      <li><a href="/compare/">Compare All Options</a></li>
+      <li><a href="/">NYC Affordability Hub</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <div class="footer-heading">About</div>
+    <ul>
+      <li><a href="/about/">About This Project</a></li>
+      <li><a href="/privacy/">Privacy Policy</a></li>
+      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
+    </ul>
+  </div>
+</AppFooter>
+</BaseLayout>
+
+<script>
+  import '../../scripts/compare';
+</script>
+
+<style>
+/* ===== HEADER (hand-rolled — see comment above the <header> markup) ===== */
+.app-header {
+  background: var(--navy); padding: 13px 24px; display: flex; align-items: center; gap: 14px;
+  border-bottom: 2px solid #1e3a5f; position: sticky; top: 0; z-index: 100;
+}
+.app-header h1 { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; color: #e2e8f0; white-space: nowrap; }
+.app-header h1 em { font-style: normal; color: var(--gold); }
+.app-header .tagline { font-size: 12px; color: #fff; line-height: 1.3; }
+.save-toggle { display: flex; align-items: center; gap: 7px; margin-left: auto; cursor: pointer; user-select: none; flex-shrink: 0; }
+.save-toggle input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+.toggle-track { width: 30px; height: 16px; background: #2a4a6e; border-radius: 8px; position: relative; transition: background .2s; flex-shrink: 0; }
+.toggle-thumb { position: absolute; left: 2px; top: 2px; width: 12px; height: 12px; background: #4a6fa5; border-radius: 50%; transition: left .2s, background .2s; }
+.save-toggle input:checked + .toggle-track { background: var(--blue); }
+.save-toggle input:checked + .toggle-track .toggle-thumb { left: 16px; background: #fff; }
+.toggle-label { font-size: 11px; color: #8aabcf; font-weight: 600; white-space: nowrap; }
+.save-toggle input:checked ~ .toggle-label { color: #c0d8f0; }
+.save-toggle input:focus-visible + .toggle-track { outline: 2px solid var(--blue); outline-offset: 2px; }
+.nav-link { color: #8aabcf; text-decoration: none; font-size: 12px; font-weight: 600; }
+.nav-link:hover { color: #e2e8f0; text-decoration: underline; }
+
+/* ===== PAGE LAYOUT / HERO / PROFILE PANEL ===== */
+.page { max-width: 1300px; margin: 20px auto; padding: 0 20px 60px; }
+.hero {
+  background: linear-gradient(135deg, #0a1628 0%, #0f2a54 100%);
+  border: 1px solid #1e3a5f; border-radius: var(--r); overflow: hidden; color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 16px;
+}
+.hero-main { padding: 26px 24px 22px; display: grid; grid-template-columns: 1.2fr .8fr; gap: 24px; align-items: end; }
+.eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 8px; }
+.hero h2 { font-size: clamp(26px, 4vw, 42px); line-height: 1.08; letter-spacing: -0.8px; color: #f0f9ff; margin-bottom: 10px; }
+.hero p { color: #93b4d0; max-width: 620px; font-size: 14px; line-height: 1.65; }
+.profile-panel {
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: var(--r);
+  padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.profile-k { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #8aabcf; font-weight: 700; margin-bottom: 2px; }
+.profile-v { font-size: 18px; font-weight: 800; color: #f0f9ff; font-variant-numeric: tabular-nums; }
+.notice {
+  display: none; background: #fff7ed; border-top: 1px solid rgba(245,158,11,.35); color: #92400e;
+  padding: 12px 24px; font-size: 13px;
+}
+.notice.show { display: block; }
+
+/* ===== SUMMARY CARDS ===== */
+.summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+.option-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.option-top { padding: 16px 18px 14px; color: #f0f9ff; }
+.option-top.coop { background: var(--navy); }
+.option-top.condo { background: linear-gradient(135deg,#1a3a6b,#0f2a54); }
+.option-top.rent { background: linear-gradient(135deg,#134e38,#0e3d2c); }
+.option-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: rgba(255,255,255,.75); }
+.option-value { font-size: 32px; line-height: 1; font-weight: 850; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.option-sub { font-size: 12px; color: rgba(255,255,255,.62); margin-top: 7px; }
+.option-body { padding: 15px 18px 17px; }
+.mini-row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--g100); }
+.mini-row:last-of-type { border-bottom: none; }
+.mini-k { color: var(--g500); font-size: 12px; }
+.mini-v { color: var(--g800); font-size: 12.5px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.binding { color: #92400e; }
+.calc-link {
+  display: inline-flex; align-items: center; justify-content: center; width: 100%; margin-top: 13px;
+  padding: 10px 14px; border-radius: 6px; border: 0; text-decoration: none; font-size: 13px; font-weight: 700;
+  background: var(--navy); color: #e2e8f0;
+}
+.calc-link:hover { opacity: .88; }
+
+/* ===== SECTION CARD SHELL ===== */
+.section-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 16px;
+}
+.section-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--g500);
+  padding: 12px 18px 11px; border-bottom: 1px solid var(--g100); display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.section-title span { color: var(--g400); font-weight: 600; letter-spacing: 0; text-transform: none; font-size: 11px; }
+.table-wrap { overflow-x: auto; }
+
+/* ===== TABLES — the comparison table above is fully static, but the Profile
+   section's <tbody id="profile-acct-tbody"> rows are rebuilt via
+   innerHTML/createElement in renderAccountEditor() at runtime and never get
+   Astro's data-astro-cid scoping attribute. These bare tag selectors are
+   shared by both tables, so they stay :global() to keep the dynamic account
+   rows styled — harmless overlap onto the already-static comparison table. */
+:global(table) { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 760px; }
+:global(th) {
+  text-align: right; font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase;
+  letter-spacing: .8px; padding: 12px 16px; border-bottom: 1px solid var(--g100); background: var(--g50);
+}
+:global(th:first-child), :global(td:first-child) { text-align: left; color: var(--g600); font-weight: 600; }
+:global(td) {
+  text-align: right; padding: 12px 16px; border-bottom: 1px solid var(--g100);
+  color: var(--g800); font-weight: 650; font-variant-numeric: tabular-nums; vertical-align: top;
+}
+:global(tbody tr:last-child td) { border-bottom: none; }
+
+/* ===== ACCOUNT EDITOR (Profile section) ===== */
+.editor-body { padding: 16px 18px 18px; }
+.editor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 16px; }
+.field label { display: block; font-size: 12px; color: var(--g700); font-weight: 650; margin-bottom: 5px; }
+.input-wrap {
+  display: flex; align-items: stretch; border: 1px solid var(--g300); border-radius: 5px; background: #fff;
+  overflow: hidden; transition: border-color .15s, box-shadow .15s;
+}
+.input-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.input-wrap span {
+  background: var(--g50); border-right: 1px solid var(--g200); padding: 0 8px; color: var(--g500);
+  font-size: 13px; font-weight: 600; display: flex; align-items: center;
+}
+.input-wrap input {
+  border: 0; outline: 0; padding: 8px 9px; min-width: 0; width: 100%; font: inherit; color: var(--g900);
+  -moz-appearance: textfield;
+}
+.input-wrap input::-webkit-inner-spin-button, .input-wrap input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+/* The account-table's <th> live in a static <thead>, so those stay scoped.
+   Its <td>/inputs/delete-buttons live in the dynamically rebuilt <tbody>
+   above, so they stay :global() for the same reason as the bare table
+   selectors — see the block comment above. */
+.account-table { min-width: 700px; }
+.account-table th { padding: 8px 10px; text-align: left; }
+.account-table th.num { text-align: right; }
+:global(.account-table td) { padding: 8px 10px; }
+:global(.account-table td.num) { text-align: right; }
+:global(.account-table input[type="text"]), :global(.account-table input[type="number"]) {
+  width: 100%; border: 1px solid var(--g200); border-radius: 4px; padding: 6px 7px; font: inherit;
+  font-size: 12px; color: var(--g800); outline: 0;
+}
+:global(.account-table input[type="number"]) { text-align: right; }
+:global(.account-table input:focus) { border-color: var(--blue); }
+:global(.account-table input[type="checkbox"]) { width: 16px; height: 16px; accent-color: var(--blue); }
+.btn-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.btn-add {
+  border: 1px solid var(--blue-lt); background: #fff; color: var(--blue); border-radius: 5px; padding: 7px 12px;
+  font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.btn-add:hover { background: var(--blue-xlt); }
+/* .btn-del is only ever created inside renderAccountEditor()'s innerHTML — stays :global(). */
+:global(.btn-del) {
+  background: none; border: 0; color: var(--g400); font-size: 18px; line-height: 1; cursor: pointer;
+  padding: 2px 5px; border-radius: 4px;
+}
+:global(.btn-del:hover) { color: var(--red); background: #fef2f2; }
+.save-state { font-size: 12px; color: var(--g500); }
+
+/* ===== ASSUMPTIONS PANEL (fully static — only .value is set via JS) ===== */
+.asmp-details { border-top: 1px solid var(--g100); }
+.asmp-details summary {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px 11px; cursor: pointer; list-style: none; user-select: none;
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--g500);
+}
+.asmp-details summary::-webkit-details-marker { display: none; }
+.asmp-details summary::after { content: '▸'; font-size: 11px; color: var(--g400); transition: transform .2s; }
+.asmp-details[open] summary::after { transform: rotate(90deg); }
+.asmp-details summary:hover { background: var(--g50); }
+.assumptions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--g100); }
+.assumption-col { background: #fff; padding: 16px 18px; }
+.assumption-col h3 { font-size: 11px; font-weight: 700; color: var(--g700); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .6px; }
+.asmp-fields { display: grid; gap: 10px; }
+.asmp-field label { display: block; font-size: 11px; color: var(--g500); margin-bottom: 3px; }
+.asmp-field .input-wrap { font-size: 12px; }
+.asmp-field .input-wrap input, .asmp-field .input-wrap select { font-size: 12px; padding: 6px 8px; border: 0; outline: 0; width: 100%; font: inherit; color: var(--g900); background: #fff; }
+.asmp-field .input-wrap span { font-size: 11px; padding: 0 6px; }
+
+/* ===== PROSE SECTIONS ===== */
+.prose-body { padding: 16px 18px 18px; }
+.prose-body h4 { font-size: 13px; font-weight: 700; color: var(--g800); margin: 14px 0 5px; }
+.prose-body h4:first-child { margin-top: 0; }
+.prose-body p { font-size: 13px; color: var(--g600); line-height: 1.7; margin-bottom: 8px; }
+.prose-body p:last-child { margin-bottom: 0; }
+.prose-body ul { padding-left: 18px; color: var(--g600); font-size: 13px; line-height: 1.75; margin-bottom: 8px; }
+.prose-body li { margin-bottom: 4px; }
+.prose-body a { color: var(--blue); text-decoration: none; }
+.prose-body a:hover { text-decoration: underline; }
+.updated-note { font-size: 11px; color: var(--g400); font-weight: 600; }
+
+@media (max-width: 960px) {
+  .hero-main, .summary-grid, .assumptions, .editor-grid { grid-template-columns: 1fr; }
+  .profile-panel { max-width: 520px; }
+  .app-header .tagline { display: none; }
+}
+@media (max-width: 560px) {
+  .app-header { padding: 13px 16px; }
+  .nav-link, .toggle-label { display: none; }
+  .page { padding: 0 14px 44px; margin-top: 14px; }
+  .hero-main { padding: 22px 18px 18px; }
+  .profile-panel { grid-template-columns: 1fr; }
+  .option-value { font-size: 28px; }
+}
+</style>
