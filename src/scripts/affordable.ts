@@ -410,11 +410,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const raw = incomeEl.value.trim();
       const v = parseFloat(raw);
       if (raw === '' || isNaN(v)) {
-        const existing = loadSharedProfile();
-        if (existing) {
-          delete existing.annualIncome;
-          saveSharedProfile(existing);
-        }
+        saveSharedProfile({ annualIncome: undefined });
       } else {
         saveSharedProfile({ annualIncome: v });
       }
