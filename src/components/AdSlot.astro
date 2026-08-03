@@ -1,6 +1,11 @@
 ---
+interface Props {
+  maxWidth?: string;
+  sidePadding?: string;
+}
+const { maxWidth = '1120px', sidePadding = '24px' } = Astro.props;
 ---
-<div style="max-width:1120px;margin:0 auto;padding:8px 24px 0;text-align:center;">
+<div style={`max-width:${maxWidth};margin:0 auto;padding:8px ${sidePadding} 0;text-align:center;`}>
   <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">Advertisement</div>
   <ins class="adsbygoogle"
        style="display:block"
