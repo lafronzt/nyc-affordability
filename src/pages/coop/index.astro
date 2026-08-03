@@ -1,0 +1,1117 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AppHeader from '../../components/AppHeader.astro';
+import AppFooter from '../../components/AppFooter.astro';
+import AdSlot from '../../components/AdSlot.astro';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'NYC Co-op Apartment Affordability Calculator',
+  url: 'https://www.nyc-affordability.com/coop/',
+  description: 'A free NYC co-op housing, apartment, and home affordability calculator that reverse-engineers your maximum purchase price from your financial profile, covering down payment, closing costs, debt-to-income limits, and post-close reserve requirements.',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  areaServed: { '@type': 'City', name: 'New York City', sameAs: 'https://www.wikidata.org/wiki/Q60' },
+};
+---
+<BaseLayout
+  variant="app"
+  ads
+  pageTitle="NYC Co-op Affordability Calculator | Calculate Your Max Purchase Price"
+  metaDescription="Free NYC housing affordability calculator for co-op apartments. Estimate how much home you can afford from income, assets, mansion tax, DTI, costs, and reserves."
+  canonicalPath="/coop/"
+  ogTitle="NYC Co-op Affordability Finder | Calculate Your Max Purchase Price"
+  ogDescription="Free NYC housing affordability calculator for co-op apartments. Find your max purchase price from your financial profile — covering down payment, closing costs, DTI, and reserves."
+  ogImage="/images/coop-og.png"
+  ogImageAlt="Can you afford a NYC co-op? NYC Co-op Affordability Calculator from NYC Affordability."
+  twitterTitle="NYC Co-op Affordability Finder"
+  twitterDescription="Free NYC housing affordability calculator for co-op apartments. Reverse-engineer your max purchase price from income, assets, and mortgage assumptions."
+  jsonLd={jsonLd}
+>
+<AppHeader titleHtml="NYC <em>Co-op</em> Affordability Finder" tagline="Reverse-engineer your max purchase price from your financial profile" />
+
+<main class="app-layout">
+
+  <!-- ═══════════════════════════════════════ LEFT — INPUTS ═══════════════════════════════════════ -->
+  <div class="inputs-panel">
+
+    <!-- 1 · Account Balances -->
+    <div class="card">
+      <div class="card-title" id="card-title-1" aria-expanded="true" aria-controls="card-body-1"><span class="snum">1</span> Account Balances<span class="card-chev" aria-hidden="true">▲</span></div>
+      <div class="card-body" id="card-body-1">
+        <div class="acct-wrap">
+          <table class="acct-tbl">
+            <thead>
+              <tr>
+                <th>Account</th>
+                <th class="r">Balance ($)</th>
+                <th class="c">Closing?</th>
+                <th class="r">Reserve %</th>
+                <th class="r">Closing Cash</th>
+                <th class="r">Reserve Value</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="acct-tbody"></tbody>
+          </table>
+        </div>
+        <button class="btn-add-row" id="btn-add-acct">+ Add Account</button>
+
+        <!-- Two-pool explanation -->
+        <div class="pool-callout">
+          <div class="pool-row">
+            <span class="pool-dot green"></span>
+            <span><strong>Closing Cash</strong> (Closing? = ✓) — wired at closing to cover the down payment + closing costs. Check any account you can fully liquidate on closing day.</span>
+          </div>
+          <div class="pool-row">
+            <span class="pool-dot blue"></span>
+            <span><strong>Reserve Value</strong> (balance × Reserve %) — counts toward the board's post-close cushion. Boards typically apply a 70–80% haircut on brokerage and exclude retirement accounts — set Reserve % to 0% for accounts your board ignores.</span>
+          </div>
+        </div>
+
+        <p style="margin:4px 0 0;font-size:11px;color:var(--g400);line-height:1.5">
+          Defaults reflect a typical NYC co-op buyer (~$150K income, age 35–42) based on
+          2024–25 Federal Reserve SCF, Fidelity, and Vanguard data.
+        </p>
+        <div class="acct-totals">
+          <div>
+            <div class="tot-lbl">Total Closing Cash</div>
+            <div class="tot-val" id="tot-liquid">—</div>
+          </div>
+          <div>
+            <div class="tot-lbl">Total Reserve Value</div>
+            <div class="tot-val primary" id="tot-avail">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 · Income & Debts -->
+    <div class="card">
+      <div class="card-title" id="card-title-2" aria-expanded="true" aria-controls="card-body-2"><span class="snum">2</span> Income &amp; Existing Debts<span class="card-chev" aria-hidden="true">▲</span></div>
+      <div class="card-body" id="card-body-2">
+        <div class="form-row">
+          <label class="lbl" for="annual-income">Annual Gross Income
+            <small>$150K is the minimum needed at 28% DTI to qualify for the city-wide median co-op (~$506K, Q1 2025 — StreetEasy/Baruch CUNY). Typical buyers targeting Manhattan pay considerably more.</small>
+          </label>
+          <div class="iw w140"><span class="px">$</span><input type="number" id="annual-income" value="150000" min="0" step="1000"></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl">Monthly Gross Income <small>Auto-calculated</small></label>
+          <div class="iw w140"><span class="px">$</span><input type="number" id="monthly-income" class="ro" readonly tabindex="-1"></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="other-debts">Other Monthly Debts
+            <small>Car loans, student loans, credit cards, etc.</small>
+          </label>
+          <div class="iw w140"><span class="px">$</span><input type="number" id="other-debts" value="0" min="0" step="100"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 · Mortgage Assumptions -->
+    <div class="card">
+      <div class="card-title" id="card-title-3" aria-expanded="true" aria-controls="card-body-3"><span class="snum">3</span> Mortgage Assumptions<span class="card-chev" aria-hidden="true">▲</span></div>
+      <div class="card-body" id="card-body-3">
+        <div class="form-row">
+          <label class="lbl" for="mtg-rate">Annual Mortgage Rate
+            <small>30-yr fixed consensus as of Apr 2026 — Freddie Mac (6.23%), Bankrate (6.40%). Co-ops require conventional financing; FHA loans are not permitted.</small>
+          </label>
+          <div class="iw w120"><input type="number" id="mtg-rate" value="6.25" min="0" max="30" step="0.05" style="text-align:right"><span class="sx">%</span></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="loan-term">Loan Term</label>
+          <div class="iw w120"><input type="number" id="loan-term" value="30" min="1" max="40" step="1" style="text-align:right"><span class="sx">yrs</span></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="dp-pct">Down Payment
+            <small>20% is the minimum for most buildings; mid-range Manhattan boards often require 25%; luxury/conservative buildings may require 30–50% — Skybriz, Prevu (2025).</small>
+          </label>
+          <div class="iw w120"><input type="number" id="dp-pct" value="20" min="0" max="100" step="1" style="text-align:right"><span class="sx">%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 · Co-op Requirements -->
+    <div class="card">
+      <div class="card-title" id="card-title-4" aria-expanded="true" aria-controls="card-body-4"><span class="snum">4</span> Co-op Requirements<span class="card-chev" aria-hidden="true">▲</span></div>
+      <div class="card-body" id="card-body-4">
+        <div class="form-row">
+          <label class="lbl" for="reserve-mo">Post-Close Reserve
+            <small>12 months is the most common standard for typical buildings; conservative/luxury boards require 24+. Only liquid assets count (cash, HYSA, brokerage) — retirement accounts are generally excluded — Prevu, Aaron &amp; Geoff Compass (2026).</small>
+          </label>
+          <div class="iw w120"><input type="number" id="reserve-mo" value="12" min="0" max="120" step="1" style="text-align:right"><span class="sx">mo</span></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="max-dti">Max DTI Allowed by Board
+            <small>28% is the long-standing NYC standard. Outer-borough buildings may allow up to 30–35%; Park/Fifth Ave luxury buildings may cap at 20–25% — Prevu, YRE (2025).</small>
+          </label>
+          <div class="iw w120"><input type="number" id="max-dti" value="28" min="0" max="100" step="0.5" style="text-align:right"><span class="sx">%</span></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="monthly-maint">Projected Monthly Maintenance
+            <small>Includes building's underlying mortgage + property tax share (typically 30–50% is tax-deductible). City-wide medians: Queens ~$750, Brooklyn ~$900, Manhattan ~$1,500–$1,800. $1,200 is a mid-range city-wide estimate — Elliman/Miller Samuel Q4 2024.</small>
+          </label>
+          <div class="iw w140"><span class="px">$</span><input type="number" id="monthly-maint" value="1200" min="0" step="50"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 · Closing Costs -->
+    <div class="card">
+      <div class="card-title" id="card-title-5" aria-expanded="true" aria-controls="card-body-5"><span class="snum">5</span> Closing Costs<span class="card-chev" aria-hidden="true">▲</span></div>
+      <div class="card-body" id="card-body-5">
+        <div class="sub-title">Fixed Costs</div>
+        <div class="fc-list">
+          <div class="fc-row">
+            <label for="fc-atty">Attorney Fees <em style="font-style:normal;color:var(--g400);font-size:12px;">(NYC range: $2,500–$5,000 in 2025 — Prevu, Brick Underground)</em></label>
+            <div class="iw w140"><span class="px">$</span><input type="number" id="fc-atty" value="4000" min="0" step="100"></div>
+          </div>
+          <div class="fc-row">
+            <label for="fc-bank-atty">Bank Attorney Fees</label>
+            <div class="iw w140"><span class="px">$</span><input type="number" id="fc-bank-atty" value="1500" min="0" step="100"></div>
+          </div>
+          <div class="fc-row">
+            <label for="fc-coop">Co-op Application / Board Fee</label>
+            <div class="iw w140"><span class="px">$</span><input type="number" id="fc-coop" value="750" min="0" step="50"></div>
+          </div>
+          <div class="fc-row">
+            <label for="fc-movein">Move-In Deposit <em style="font-style:normal;color:var(--g400);font-size:12px;">(refundable)</em></label>
+            <div class="iw w140"><span class="px">$</span><input type="number" id="fc-movein" value="1000" min="0" step="100"></div>
+          </div>
+          <div class="fc-row">
+            <label for="fc-other">Other Fixed Costs <em style="font-style:normal;color:var(--g400);font-size:12px;">(UCC, filing, etc.)</em></label>
+            <div class="iw w140"><span class="px">$</span><input type="number" id="fc-other" value="800" min="0" step="100"></div>
+          </div>
+          <div class="fc-row fc-total">
+            <label>Total Fixed</label>
+            <div class="fc-total-val" id="fc-total-display">—</div>
+          </div>
+        </div>
+
+        <div class="var-section">
+          <div class="sub-title">Variable Costs</div>
+          <div class="form-row" style="margin-bottom:0">
+            <label class="lbl" for="var-pct">Combined Variable Rate
+              <small>0.5% default covers loan origination fees. Mansion tax is calculated automatically below. Add 1–3% if your building charges a buyer-side flip tax — check the proprietary lease.</small>
+            </label>
+            <div class="iw w120"><input type="number" id="var-pct" value="0.5" min="0" max="20" step="0.1" style="text-align:right"><span class="sx">%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /inputs-panel -->
+
+
+  <!-- ═══════════════════════════════════════ RIGHT — RESULTS ═══════════════════════════════════════ -->
+  <div class="results-panel">
+
+    <div class="results-tabs" role="tablist">
+      <button class="tab-btn active" id="tab-standard" role="tab" aria-selected="true" aria-controls="view-standard" data-tab="standard">Standard</button>
+      <button class="tab-btn" id="tab-optimizer" role="tab" aria-selected="false" aria-controls="view-optimizer" data-tab="optimizer">⚡ Optimizer</button>
+      <button class="tab-btn" id="tab-afford" role="tab" aria-selected="false" aria-controls="view-afford" data-tab="afford">🎯 Afford Target</button>
+    </div>
+
+    <div class="results-card" id="view-standard" role="tabpanel" aria-labelledby="tab-standard">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-eyebrow">Your Max Affordable Price</div>
+        <div class="hero-price" id="hero-price">$—</div>
+        <div class="hero-binding">
+          Binding constraint: <span class="binding-val" id="hero-binding">—</span>
+        </div>
+        <div class="hero-warn" id="hero-warn"></div>
+      </div>
+
+      <div class="results-body">
+
+        <!-- Target price override -->
+        <div class="target-row">
+          <span class="tgt-lbl">Model a specific price:</span>
+          <div class="tgt-wrap">
+            <span class="px">$</span>
+            <input type="number" id="target-price" min="0" step="1000" placeholder="—">
+          </div>
+          <button class="btn-reset" id="btn-reset-tgt">Reset to max</button>
+        </div>
+
+        <!-- Cash Waterfall -->
+        <div class="snap-block">
+          <div class="snap-title">Cash Waterfall</div>
+          <div class="snap-row indent">
+            <span class="sr-lbl">Down Payment</span>
+            <span class="sr-val" id="s-dp">—</span>
+          </div>
+          <div class="snap-row indent">
+            <span class="sr-lbl">Fixed Closing Costs</span>
+            <span class="sr-val" id="s-fcc">—</span>
+          </div>
+          <div class="snap-row indent">
+            <span class="sr-lbl">Variable Closing Costs</span>
+            <span class="sr-val" id="s-vcc">—</span>
+          </div>
+          <div class="snap-row indent mansion-row" id="mansion-snap-row" style="display:none">
+            <span class="sr-lbl">Mansion Tax <span class="sr-note">(buyer-paid ≥ $1M)</span></span>
+            <span class="sr-val" id="s-mansion">—</span>
+          </div>
+          <div class="snap-row subtotal">
+            <span class="sr-lbl">Total at Close</span>
+            <span class="sr-val" id="s-atclose">—</span>
+          </div>
+          <div class="snap-row avail-row">
+            <span class="sr-lbl">Avail for DP + CC <span class="sr-note">(Closing ✓)</span></span>
+            <span class="sr-val" id="s-dp-avail">—</span>
+          </div>
+          <div class="snap-row surplus-row">
+            <span class="sr-lbl">DP + CC Surplus / (Deficit)</span>
+            <span class="sr-val" id="s-dp-surplus">—</span>
+          </div>
+          <hr class="snap-div">
+          <div class="snap-row indent">
+            <span class="sr-lbl">Maintenance Reserve (<span id="s-res-mo1">24</span> mo)</span>
+            <span class="sr-val" id="s-maint-res">—</span>
+          </div>
+          <div class="snap-row indent">
+            <span class="sr-lbl">Mortgage Reserve (<span id="s-res-mo2">24</span> mo)</span>
+            <span class="sr-val" id="s-mtg-res">—</span>
+          </div>
+          <div class="snap-row subtotal">
+            <span class="sr-lbl">Total Cash Needed</span>
+            <span class="sr-val" id="s-total-cash">—</span>
+          </div>
+          <hr class="snap-div">
+          <div class="snap-row avail-row">
+            <span class="sr-lbl">Total for Reserves <span class="sr-note">(all weighted)</span></span>
+            <span class="sr-val" id="s-avail">—</span>
+          </div>
+          <div class="snap-row surplus-row">
+            <span class="sr-lbl">Reserves Surplus / (Deficit)</span>
+            <span class="sr-val" id="s-surplus">—</span>
+          </div>
+          <div class="snap-row">
+            <span class="sr-lbl">Post-close for reserves</span>
+            <span class="sr-val" id="s-pc-liquid">—</span>
+          </div>
+          <div class="snap-row">
+            <span class="sr-lbl">Post-close reserve months</span>
+            <span class="sr-val" id="s-pc-months">—</span>
+          </div>
+        </div>
+
+        <!-- Monthly Costs -->
+        <div class="snap-block">
+          <div class="snap-title">Monthly Costs</div>
+          <div class="snap-row">
+            <span class="sr-lbl">Mortgage (P+I)</span>
+            <span class="sr-val" id="s-mtg">—</span>
+          </div>
+          <div class="snap-row indent pmi-row" id="pmi-snap-row" style="display:none">
+            <span class="sr-lbl">PMI <span class="sr-note">(auto — dp &lt; 20%)</span></span>
+            <span class="sr-val" id="s-pmi">—</span>
+          </div>
+          <div class="snap-row">
+            <span class="sr-lbl">Maintenance</span>
+            <span class="sr-val" id="s-maint">—</span>
+          </div>
+          <div class="snap-row subtotal">
+            <span class="sr-lbl">Total Monthly Housing</span>
+            <span class="sr-val" id="s-monthly-total">—</span>
+          </div>
+          <div class="snap-row">
+            <span class="sr-lbl">Effective DTI</span>
+            <span class="sr-val" id="s-dti">—</span>
+          </div>
+        </div>
+
+        <!-- Feasibility -->
+        <div>
+          <div class="feas-title">Feasibility Check</div>
+          <div class="pill ok" id="pill-cash">
+            <span class="p-icon">✓</span>
+            <span class="p-name">Cash</span>
+            <span class="p-detail" id="pd-cash">—</span>
+          </div>
+          <div class="pill ok" id="pill-dti">
+            <span class="p-icon">✓</span>
+            <span class="p-name">DTI</span>
+            <span class="p-detail" id="pd-dti">—</span>
+          </div>
+          <div class="pill ok" id="pill-res">
+            <span class="p-icon">✓</span>
+            <span class="p-name">Reserves</span>
+            <span class="p-detail" id="pd-res">—</span>
+          </div>
+        </div>
+
+      </div><!-- /results-body -->
+    </div><!-- /results-card -->
+
+    <!-- OPTIMIZER VIEW -->
+    <div class="opt-card" id="view-optimizer" role="tabpanel" aria-labelledby="tab-optimizer" hidden>
+
+      <!-- Notice for infeasible scenarios; replaces all content below when shown -->
+      <div class="opt-notice" id="opt-notice" hidden>
+        <strong id="opt-notice-title">—</strong>
+        <span id="opt-notice-detail">—</span>
+      </div>
+
+      <div id="opt-content">
+        <!-- Hero -->
+        <div class="opt-hero">
+          <div class="opt-hero-eyebrow">⚡ True Maximum Price</div>
+          <div class="opt-hero-price" id="opt-hero-price">$—</div>
+          <div class="opt-hero-sub">at <strong id="opt-hero-dp">—</strong> down (<strong id="opt-hero-dpamt">—</strong>)</div>
+          <div class="opt-hero-gain" id="opt-hero-gain">
+            Basic: <span id="opt-hero-basic">—</span> · Unlock <span id="opt-hero-delta">—</span>
+          </div>
+        </div>
+
+        <div class="opt-body">
+
+          <!-- Chart -->
+          <div class="opt-section">
+            <div class="opt-section-title" id="opt-chart-title">Constraint Curves</div>
+            <div class="opt-chart-wrap">
+              <canvas id="opt-chart" role="img" aria-labelledby="opt-chart-title" aria-describedby="opt-chart-desc"></canvas>
+              <div id="opt-chart-desc" class="sr-only">Line chart of affordable purchase price as a function of down payment percentage. Shows the DTI ceiling (rises with down payment), the cash ceiling (falls with down payment), and the achievable price (the lower of the two). The optimum where they meet, the basic-calculator result at the board minimum, and the binding-constraint zones are also shown. Key values are summarized in the hero, comparison table, and slider panel below.</div>
+              <div class="opt-chart-tip" id="opt-chart-tip"></div>
+            </div>
+            <div class="opt-legend">
+              <span><i style="background:#2563eb"></i> DTI ceiling</span>
+              <span><i style="background:#f59e0b"></i> Cash ceiling</span>
+              <span><i style="background:#16a34a;height:3px"></i> Achievable</span>
+              <span><i class="dot" style="background:#f59e0b;border:1.5px solid #92400e"></i> True max</span>
+              <span><i class="dot" style="background:#9ca3af"></i> Basic calc</span>
+            </div>
+
+            <!-- Slider -->
+            <div class="opt-slider-row">
+              <span class="slbl">Try a down %:</span>
+              <input type="range" id="opt-slider" min="0" max="100" step="0.1" value="20" aria-label="Down payment percentage">
+              <span class="opt-slider-val" id="opt-slider-val">—%</span>
+            </div>
+            <div class="opt-mini" id="opt-mini">
+              <div><span class="mlbl">Price</span><span class="mval" id="opt-m-price">—</span></div>
+              <div><span class="mlbl">Binding</span><span class="mval" id="opt-m-bind">—</span></div>
+              <div><span class="mlbl">Monthly</span><span class="mval" id="opt-m-monthly">—</span></div>
+              <div><span class="mlbl">DTI</span><span class="mval" id="opt-m-dti">—</span></div>
+              <div><span class="mlbl">Down $</span><span class="mval" id="opt-m-dpamt">—</span></div>
+              <div><span class="mlbl">Cash surplus</span><span class="mval" id="opt-m-surplus">—</span></div>
+            </div>
+          </div>
+
+          <!-- Plain-English explainer -->
+          <div class="opt-section">
+            <div class="opt-section-title">What this means</div>
+            <div class="opt-explainer" id="opt-explainer">—</div>
+          </div>
+
+          <!-- Comparison table -->
+          <div class="opt-section">
+            <div class="opt-section-title">Basic vs. Optimized</div>
+            <table class="opt-comp">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Basic <span id="opt-comp-basic-dp" style="font-weight:500">(—)</span></th>
+                  <th class="col-opt">Optimized <span id="opt-comp-opt-dp" style="font-weight:500">(—)</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Purchase Price</td><td id="cmp-b-price">—</td><td class="col-opt" id="cmp-o-price">—</td></tr>
+                <tr><td>Down Payment $</td><td id="cmp-b-dp">—</td><td class="col-opt" id="cmp-o-dp">—</td></tr>
+                <tr><td>Loan Amount</td><td id="cmp-b-loan">—</td><td class="col-opt" id="cmp-o-loan">—</td></tr>
+                <tr><td>Monthly Mortgage</td><td id="cmp-b-mtg">—</td><td class="col-opt" id="cmp-o-mtg">—</td></tr>
+                <tr><td>Total Monthly</td><td id="cmp-b-mtot">—</td><td class="col-opt" id="cmp-o-mtot">—</td></tr>
+                <tr><td>DTI</td><td id="cmp-b-dti">—</td><td class="col-opt" id="cmp-o-dti">—</td></tr>
+                <tr><td>Total Cash Needed</td><td id="cmp-b-cash">—</td><td class="col-opt" id="cmp-o-cash">—</td></tr>
+                <tr><td>Cash Surplus</td><td id="cmp-b-surp">—</td><td class="col-opt" id="cmp-o-surp">—</td></tr>
+                <tr><td>Reserve Months</td><td id="cmp-b-res">—</td><td class="col-opt" id="cmp-o-res">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Sensitivity strip -->
+          <div class="opt-section">
+            <div class="opt-section-title">Sensitivity (change one input, re-optimize)</div>
+            <table class="opt-sens">
+              <thead>
+                <tr><th>What changes</th><th class="r">New Max</th><th class="r">Δ Price</th></tr>
+              </thead>
+              <tbody id="opt-sens-tbody"></tbody>
+            </table>
+          </div>
+
+        </div><!-- /opt-body -->
+      </div><!-- /opt-content -->
+    </div><!-- /opt-card -->
+
+    <!-- AFFORD TARGET VIEW -->
+    <div class="aft-card" id="view-afford" role="tabpanel" aria-labelledby="tab-afford" hidden>
+
+      <!-- Target input header — always visible inside this view -->
+      <div class="aft-target-row">
+        <span class="lbl">🎯 Target</span>
+        <div class="iw tgt-wrap">
+          <span class="px">$</span>
+          <input type="number" id="aft-target-price" min="0" step="1000" placeholder="Enter your target price">
+        </div>
+      </div>
+
+      <!-- State A: no target set -->
+      <div class="aft-prompt" id="aft-prompt" hidden>
+        <strong>What does it take to afford a specific price?</strong>
+        Enter a target price above to see how cash, income, down payment, maintenance, and rate would each need to move to get you there.
+      </div>
+
+      <!-- State B: success / already feasible -->
+      <div class="aft-success" id="aft-success" hidden>
+        <div class="ok-icon">✓</div>
+        <div class="aft-success-title" id="aft-success-title">You already qualify</div>
+        <div class="aft-success-sub" id="aft-success-sub">—</div>
+      </div>
+
+      <!-- State C: full gap analysis -->
+      <div id="aft-analysis" hidden>
+
+        <!-- Summary row -->
+        <div class="aft-summary">
+          <div>
+            <div class="aft-sum-lbl">Target</div>
+            <div class="aft-sum-val" id="aft-sum-target">—</div>
+          </div>
+          <div>
+            <div class="aft-sum-lbl">Current Max</div>
+            <div class="aft-sum-val" id="aft-sum-max">—</div>
+          </div>
+          <div>
+            <div class="aft-sum-lbl">Gap</div>
+            <div class="aft-sum-val neg" id="aft-sum-gap">—</div>
+          </div>
+        </div>
+
+        <div class="aft-body">
+
+          <!-- 4 lever cards in 2×2 -->
+          <div class="aft-grid">
+
+            <!-- Lever 1 — Cash -->
+            <div class="aft-lever" id="lev-cash">
+              <div class="aft-lever-title">
+                Lever 1 · Additional Cash
+                <span class="badge" id="lev-cash-badge">—</span>
+              </div>
+              <div class="aft-lever-big" id="lev-cash-big">—</div>
+              <div class="aft-lever-sub" id="lev-cash-sub">—</div>
+              <div class="aft-lever-extra" id="lev-cash-extra">
+                <span>At</span>
+                <div class="iw"><span class="px">$</span><input type="number" id="aft-savings-rate" value="2500" min="0" step="100"></div>
+                <span>/mo, you'd have it in <strong id="lev-cash-months">—</strong>.</span>
+              </div>
+            </div>
+
+            <!-- Lever 2 — Income -->
+            <div class="aft-lever" id="lev-inc">
+              <div class="aft-lever-title">
+                Lever 2 · Additional Income
+                <span class="badge" id="lev-inc-badge">—</span>
+              </div>
+              <div class="aft-lever-big" id="lev-inc-big">—</div>
+              <div class="aft-lever-sub" id="lev-inc-sub">—</div>
+            </div>
+
+            <!-- Lever 3 — DP range -->
+            <div class="aft-lever" id="lev-dp" style="grid-column: 1 / -1;">
+              <div class="aft-lever-title">
+                Lever 3 · Down Payment Feasibility
+                <span class="badge" id="lev-dp-badge">—</span>
+              </div>
+              <div class="aft-lever-sub" id="lev-dp-sub">—</div>
+              <div class="aft-range" id="lev-dp-range">
+                <div class="aft-range-zone" id="lev-dp-zone" hidden></div>
+                <div class="aft-range-marker boardmin" id="lev-dp-mk-min"></div>
+                <div class="aft-range-marker dti" id="lev-dp-mk-dti" hidden></div>
+                <div class="aft-range-marker cash" id="lev-dp-mk-cash" hidden></div>
+              </div>
+              <div class="aft-range-axis"><span>0%</span><span>40%</span><span>80%</span></div>
+              <div class="aft-range-legend">
+                <span><i style="background:var(--red)"></i> Board min</span>
+                <span><i style="background:var(--blue)"></i> DTI floor</span>
+                <span><i style="background:var(--gold)"></i> Cash ceiling</span>
+                <span><i style="background:var(--green);height:8px;width:14px;border-radius:2px"></i> Feasible zone</span>
+              </div>
+            </div>
+
+            <!-- Lever 4 — Maintenance -->
+            <div class="aft-lever" id="lev-maint" style="grid-column: 1 / -1;">
+              <div class="aft-lever-title">
+                Lever 4 · Maintenance Ceiling
+                <span class="badge" id="lev-maint-badge">—</span>
+              </div>
+              <div class="aft-lever-big" id="lev-maint-big">—</div>
+              <div class="aft-lever-sub" id="lev-maint-sub">—</div>
+            </div>
+
+          </div>
+
+          <!-- Combined gap grid -->
+          <div>
+            <div class="aft-section-title">Combined: Extra Cash × Extra Income</div>
+            <div class="aft-grid-wrap">
+              <table class="aft-gap-table" id="aft-gap-grid"></table>
+            </div>
+          </div>
+
+          <!-- Lever 5 — Rate needed -->
+          <div class="aft-rate-row" id="lev-rate">
+            <span id="lev-rate-text">—</span>
+          </div>
+
+        </div><!-- /aft-body -->
+      </div><!-- /aft-analysis -->
+    </div><!-- /aft-card -->
+  </div><!-- /results-panel -->
+
+</main>
+
+<!-- How This Works -->
+<div class="how-works-wrap">
+  <div class="collapsible">
+    <button class="coll-btn" id="how-btn">
+      <i class="caret">▾</i> How this works
+    </button>
+    <div class="coll-body" id="how-body">
+      <h3>Two constraints, one limit</h3>
+      <p>This calculator finds the lower of two maximum prices:</p>
+      <ul>
+        <li><strong>Cash / Reserves:</strong> Your assets are split into two pools. Only accounts with <em>Closing?</em> checked can cover the down payment and closing costs — these are wired at closing. All accounts (weighted by Reserve %) count toward the post-close reserve cushion — most boards require 12 months of carrying costs (maintenance + mortgage), though conservative buildings ask for 24+. Both pools must be sufficient for a deal to work.</li>
+        <li><strong>DTI / Income:</strong> Your total monthly housing payment (mortgage P+I + maintenance + other debts) must stay within the board's debt-to-income ratio limit on your gross monthly income. Most NYC boards use 25–30% DTI.</li>
+      </ul>
+      <p>Whichever constraint produces the <em>lower</em> max price is your binding limit — you can't spend more than both allow simultaneously.</p>
+      <h3>Closing? checkbox vs. Reserve %</h3>
+      <p>Each account has two independent settings. <strong>Closing?</strong> — check this for any account you can fully liquidate and wire on closing day (cash, HYSA, brokerage you plan to sell). The full balance then counts toward the down payment and closing costs. <strong>Reserve %</strong> — the fraction of the balance your board credits toward post-closing reserves. Boards typically credit 100% for cash and HYSA, 70–80% for brokerage (market-volatility haircut), and 0% for retirement accounts (401k, IRA, Roth IRA), which appear on Schedule D of the REBNY financial statement rather than as liquid reserves. You can check Closing? on a brokerage account while setting its Reserve % to 80% — meaning you'd wire the full amount at closing but only 80% counts toward your post-close cushion in the board's eyes.</p>
+      <h3>PMI — automatic when down payment is under 20%</h3>
+      <p>Private mortgage insurance (PMI) is required on conventional co-op share loans with less than 20% down. It protects the lender — not you — and is added to your monthly payment. The calculator applies PMI automatically based on your down payment percentage using typical rates for a borrower with good credit (~720–740 FICO): roughly 0.52%/yr at 15–20% down, 0.70% at 10–15%, 0.95% at 5–10%, and 1.20% below 5%. PMI is factored into your DTI and reserve calculations. <strong>Note:</strong> many NYC co-op boards require 20–25% or more down — if your building's minimum already clears 20%, PMI won't apply. Under the Homeowners Protection Act, lenders must cancel PMI automatically once your loan reaches 78% of the original purchase price; you can request cancellation at 80% LTV.</p>
+      <h3>Mansion tax is tiered</h3>
+      <p>New York's <a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">mansion tax</a> applies to co-op purchases just as it does to condos — you're buying shares in a corporation, but the tax follows the consideration paid. It starts at 1% on purchases of $1M–$2M and steps up to 3.9% above $25M. The tax is <strong>not marginal</strong>: crossing a tier raises the entire bill, so $999,999 owes $0 while $1,000,001 owes ~$10,000. The calculator applies this automatically and shows it as a separate line in the closing cost waterfall. The variable rate field covers loan origination fees and any buyer-side flip tax only — do not add mansion tax there. Flip tax (typically 1–3% of sale price) is usually paid by the seller, but some buildings charge the buyer — check the proprietary lease.</p>
+      <h3>This is an estimate — verify everything</h3>
+      <p>Co-op board requirements vary significantly. Your building may have stricter DTI limits, different reserve requirements, or an unusual flip tax structure. Always confirm numbers with a <a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">licensed mortgage broker</a> (for rate locks and DTI qualification) and a <a href="https://www.nycbar.org/lawyer-referral-service" target="_blank" rel="noopener noreferrer">real estate attorney</a> (for closing costs and the proprietary lease). See our <a href="/about/">full sourcing methodology</a> for where every default in this calculator comes from.</p>
+    </div>
+  </div>
+</div>
+
+<AdSlot maxWidth="1300px" sidePadding="20px" />
+
+<AppFooter disclaimer="This calculator is for informational purposes only and does not constitute financial, legal, or mortgage advice. Co-op board requirements, tax rates, and closing costs vary by building and transaction. Always verify all figures with a licensed mortgage professional and real estate attorney before making any purchase decisions. PMI rates are estimates based on typical conventional loan pricing; your actual rate depends on credit score, lender, and loan type.">
+  <div class="footer-col">
+    <div class="footer-heading">NYC Housing Resources</div>
+    <ul>
+      <li><a href="https://www.nyc.gov/site/hpd/index.page" target="_blank" rel="noopener noreferrer">NYC HPD (Housing Preservation &amp; Development)</a></li>
+      <li><a href="https://www.nychdc.com/" target="_blank" rel="noopener noreferrer">NYC Housing Development Corp.</a></li>
+      <li><a href="https://portal.hud.gov/hudportal/HUD?src=/states/new_york" target="_blank" rel="noopener noreferrer">HUD New York Resources</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <div class="footer-heading">Mortgage &amp; Financing</div>
+    <ul>
+      <li><a href="https://www.consumerfinance.gov/owning-a-home/" target="_blank" rel="noopener noreferrer">CFPB: Owning a Home Guide</a></li>
+      <li><a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">Verify Your Mortgage Broker (NMLS)</a></li>
+      <li><a href="https://www.federalreserve.gov/releases/h15/" target="_blank" rel="noopener noreferrer">Current Interest Rate Data (Fed)</a></li>
+      <li><a href="https://www.consumerfinance.gov/ask-cfpb/when-can-i-stop-paying-private-mortgage-insurance-pmi-en-202/" target="_blank" rel="noopener noreferrer">CFPB: When Can I Cancel PMI?</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <div class="footer-heading">Taxes &amp; Closing Costs</div>
+    <ul>
+      <li><a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">NY Mansion Tax Guide (NYS Tax Dept.)</a></li>
+      <li><a href="https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page" target="_blank" rel="noopener noreferrer">NYC Real Property Transfer Tax</a></li>
+      <li><a href="https://www.nycbar.org/lawyer-referral-service" target="_blank" rel="noopener noreferrer">Find a Real Estate Attorney (NYC Bar)</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <div class="footer-heading">More NYC Calculators</div>
+    <ul>
+      <li><a href="https://www.nyc-affordability.com/condo/">NYC Condo Affordability</a></li>
+      <li><a href="https://www.nyc-affordability.com/rent/">NYC Rent Affordability</a></li>
+      <li><a href="https://www.nyc-affordability.com/affordable/">NYC Affordable Housing Calculator</a></li>
+      <li><a href="https://www.nyc-affordability.com/compare/">Compare All Options</a></li>
+      <li><a href="https://www.nyc-affordability.com/">NYC Affordability Hub</a></li>
+      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <div class="footer-heading">About</div>
+    <ul>
+      <li><a href="/about/">About This Project</a></li>
+      <li><a href="/privacy/">Privacy Policy</a></li>
+    </ul>
+  </div>
+</AppFooter>
+</BaseLayout>
+
+<script>
+  import '../../scripts/coop';
+</script>
+
+<style>
+/* ===== LAYOUT ===== */
+main.app-layout {
+  display: grid;
+  grid-template-columns: 1fr 430px;
+  gap: 20px;
+  max-width: 1300px;
+  margin: 20px auto;
+  padding: 0 20px 60px;
+  align-items: start;
+}
+.inputs-panel { min-width: 0; }
+.results-panel {
+  position: sticky;
+  top: calc(var(--header-h) + 20px);
+  max-height: calc(100vh - var(--header-h) - 40px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--g300) transparent;
+}
+/* ===== CARDS ===== */
+.card { background: #fff; border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 13px; overflow: hidden; }
+.card-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--g500); padding: 12px 19px 11px;
+  border-bottom: 1px solid var(--g100); display: flex; align-items: center; gap: 8px;
+  cursor: pointer; user-select: none; transition: background .12s;
+}
+.card-title:hover { background: var(--g50); }
+.card-title.no-toggle { cursor: default; }
+.card-title.no-toggle:hover { background: transparent; }
+.card-chev { font-size: 10px; color: var(--g400); margin-left: auto; transition: transform .2s; }
+.card-chev.open { transform: rotate(180deg); }
+.card-body { padding: 17px 19px; }
+.card-body.collapsed { display: none; }
+.snum {
+  background: var(--navy); color: #fff; border-radius: 50%;
+  width: 17px; height: 17px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; flex-shrink: 0;
+}
+/* ===== FORM ROWS ===== */
+.form-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 11px; }
+.form-row:last-child { margin-bottom: 0; }
+.lbl { flex: 1; font-size: 13px; color: var(--g700); font-weight: 500; padding-top: 7px; }
+.lbl small { display: block; font-size: 11px; color: var(--g400); font-weight: 400; margin-top: 2px; line-height: 1.4; }
+/* Input wrappers */
+.iw {
+  display: flex; align-items: stretch; border: 1px solid var(--g300); border-radius: 5px;
+  background: #fff; overflow: hidden; transition: border-color .15s, box-shadow .15s; flex-shrink: 0;
+}
+.iw:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.iw .px {
+  background: var(--g50); border-right: 1px solid var(--g200); padding: 0 8px;
+  font-size: 13px; color: var(--g500); font-weight: 500; display: flex; align-items: center;
+  user-select: none; white-space: nowrap;
+}
+.iw .sx {
+  background: var(--g50); border-left: 1px solid var(--g200); padding: 0 8px;
+  font-size: 13px; color: var(--g500); font-weight: 500; display: flex; align-items: center;
+  user-select: none; white-space: nowrap;
+}
+.iw input {
+  border: none; outline: none; background: transparent; padding: 7px 9px;
+  font-size: 13px; font-family: inherit; color: var(--g900); -moz-appearance: textfield;
+  min-width: 0; width: 100%;
+}
+.iw input::-webkit-inner-spin-button, .iw input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.iw input.ro { background: var(--g50); color: var(--g500); cursor: default; }
+.iw input[style*="text-align:right"] { text-align: right; }
+.w80  { width: 80px; }
+.w100 { width: 100px; }
+.w120 { width: 120px; }
+.w140 { width: 140px; }
+/* ===== ACCOUNTS TABLE ===== */
+.acct-wrap { overflow-x: auto; margin: 0 -2px; }
+table.acct-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.acct-tbl th {
+  text-align: left; font-size: 10px; font-weight: 600; color: var(--g400);
+  text-transform: uppercase; letter-spacing: 0.6px; padding: 3px 6px 7px;
+  border-bottom: 1px solid var(--g200); white-space: nowrap;
+}
+/* Right-aligned headers: match the 10px right offset of cell content (3px td padding + 7px input padding) */
+.acct-tbl th.r { text-align: right; padding-right: 10px; }
+.acct-tbl th.c { text-align: center; }
+/* tbody rows are built via createElement/appendChild at runtime — stays :global(). */
+:global(.acct-tbl td) { padding: 3px 3px; vertical-align: middle; }
+/* Right-align number-input cells (Balance, Reserve %) so inputs sit flush with their column headers */
+:global(.acct-tbl td:nth-child(2)),
+:global(.acct-tbl td:nth-child(4)) { text-align: right; }
+/* Center the Closing? checkbox column */
+:global(.acct-tbl td:nth-child(3)) { text-align: center; }
+:global(.acct-tbl input[type="checkbox"]) {
+  width: 16px; height: 16px; cursor: pointer; accent-color: var(--green); vertical-align: middle;
+}
+:global(.acct-tbl td input[type="text"]) {
+  border: 1px solid var(--g200); border-radius: 4px; padding: 5px 7px;
+  font-size: 12px; color: var(--g800); background: #fff; outline: none;
+  width: 130px; font-family: inherit; transition: border-color .15s;
+}
+:global(.acct-tbl td input[type="text"]:focus) { border-color: var(--blue); }
+:global(.acct-tbl td input[type="number"]) {
+  border: 1px solid var(--g200); border-radius: 4px; padding: 5px 7px;
+  font-size: 12px; color: var(--g800); background: #fff; outline: none;
+  text-align: right; width: 88px; -moz-appearance: textfield;
+  font-family: inherit; transition: border-color .15s;
+}
+:global(.acct-tbl td input[type="number"]::-webkit-inner-spin-button),
+:global(.acct-tbl td input[type="number"]::-webkit-outer-spin-button) { -webkit-appearance: none; }
+:global(.acct-tbl td input[type="number"]:focus) { border-color: var(--blue); }
+.th-note { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--g300); font-size: 9px; }
+/* .avail-cell / .dp-badge / .del-cell / .btn-del are injected at runtime — stay :global(). */
+:global(.avail-cell) {
+  background: var(--g50); border-radius: 4px; text-align: right;
+  font-variant-numeric: tabular-nums; color: var(--g700); font-weight: 600;
+  padding: 5px 7px; min-width: 88px; font-size: 12px; white-space: nowrap;
+  border: 1px solid var(--g100);
+}
+:global(.avail-cell.dim) { color: var(--g400); font-weight: 400; }
+/* Closing Cash column: green tint when account qualifies for down payment */
+:global(.avail-cell.dp-ok) {
+  background: var(--green-bg); border-color: var(--green-bd); color: var(--green);
+}
+:global(.dp-badge) {
+  display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.2px;
+  margin-right: 4px; vertical-align: middle; opacity: 0.8;
+}
+:global(.del-cell) { text-align: center; width: 26px; }
+:global(.btn-del) {
+  background: none; border: none; color: var(--g300); font-size: 17px;
+  cursor: pointer; padding: 0 3px; line-height: 1; font-family: inherit;
+  border-radius: 3px; transition: color .15s, background .15s;
+}
+:global(.btn-del:hover) { color: var(--red); background: var(--red-bg); }
+.btn-add-row {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--blue);
+  background: none; border: 1px solid var(--blue-lt); border-radius: 4px;
+  padding: 5px 11px; cursor: pointer; margin-top: 10px; font-family: inherit; font-weight: 500;
+  transition: background .15s;
+}
+.btn-add-row:hover { background: var(--blue-xlt); }
+/* Two-pool callout — static markup, no :global() needed. */
+.pool-callout {
+  display: flex; flex-direction: column; gap: 6px;
+  background: var(--g50); border: 1px solid var(--g200); border-radius: 6px;
+  padding: 9px 12px; margin: 10px 0 6px; font-size: 12px; line-height: 1.4; color: var(--g700);
+}
+.pool-row { display: flex; gap: 8px; align-items: flex-start; }
+.pool-dot { flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; }
+.pool-dot.green { background: var(--green); }
+.pool-dot.blue  { background: var(--blue); }
+.acct-totals { display: flex; gap: 28px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--g200); }
+.tot-lbl { font-size: 10px; color: var(--g500); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; margin-bottom: 2px; }
+.tot-val { font-size: 16px; font-weight: 700; color: var(--g900); font-variant-numeric: tabular-nums; }
+.tot-val.primary { color: var(--blue); }
+/* ===== FIXED COSTS ===== */
+.fc-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 6px 0; border-bottom: 1px solid var(--g100);
+}
+.fc-row:last-of-type { border-bottom: none; }
+.fc-row label { font-size: 13px; color: var(--g700); flex: 1; }
+.fc-row.fc-total {
+  border-top: 1px solid var(--g200); border-bottom: none;
+  margin-top: 2px; padding-top: 8px; font-weight: 700;
+}
+.fc-total-val { font-size: 13px; font-weight: 700; color: var(--g900); font-variant-numeric: tabular-nums; min-width: 100px; text-align: right; }
+.var-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--g100); }
+.sub-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--g500); margin-bottom: 10px; }
+/* ===== RESULTS CARD ===== */
+.results-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+/* Hero */
+.hero { background: var(--navy); padding: 22px 20px 17px; text-align: center; }
+.hero-eyebrow {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  color: #ffffff; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.hero-eyebrow::before, .hero-eyebrow::after { content: ''; height: 1px; width: 24px; background: #1e3a5f; }
+.hero-price {
+  font-size: 46px; font-weight: 800; font-variant-numeric: tabular-nums;
+  letter-spacing: -2px; color: #f0f9ff; line-height: 1.05; margin-bottom: 11px;
+}
+.hero-price.zero { color: #4a6fa5; }
+.hero-binding {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.09);
+  border-radius: 20px; padding: 5px 14px; font-size: 12px; color: #ffffff;
+}
+.binding-val { color: var(--gold); font-weight: 700; }
+.hero-warn {
+  margin-top: 10px; padding: 7px 12px;
+  background: rgba(220,38,38,.15); border: 1px solid rgba(220,38,38,.3);
+  border-radius: 6px; font-size: 12px; color: #fca5a5; display: none;
+}
+.results-body { padding: 15px 17px; }
+/* Target price */
+.target-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--g50); border: 1px solid var(--g200);
+  border-radius: 6px; padding: 10px 12px; margin-bottom: 15px; flex-wrap: wrap;
+}
+.target-row .tgt-lbl { font-size: 12px; font-weight: 600; color: var(--g600); white-space: nowrap; }
+.tgt-wrap {
+  display: flex; align-items: stretch; border: 1px solid var(--g300); border-radius: 5px;
+  background: #fff; overflow: hidden; flex: 1; min-width: 110px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.tgt-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.tgt-wrap .px {
+  background: var(--g50); border-right: 1px solid var(--g200); padding: 0 8px;
+  font-size: 14px; color: var(--g500); font-weight: 600; display: flex; align-items: center;
+}
+.tgt-wrap input {
+  border: none; outline: none; background: transparent; padding: 8px 10px;
+  font-size: 15px; font-weight: 700; color: var(--g900); width: 100%;
+  -moz-appearance: textfield; font-family: inherit; font-variant-numeric: tabular-nums;
+}
+.tgt-wrap input::-webkit-inner-spin-button, .tgt-wrap input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.btn-reset { font-size: 11px; color: var(--blue); background: none; border: none; cursor: pointer; font-family: inherit; padding: 0; font-weight: 500; white-space: nowrap; }
+.btn-reset:hover { text-decoration: underline; }
+/* Snapshot blocks */
+.snap-block { margin-bottom: 14px; }
+.snap-title { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--g400); margin-bottom: 6px; }
+.snap-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 3.5px 0; font-size: 12.5px; border-bottom: 1px solid var(--g100);
+}
+.snap-row:last-child { border-bottom: none; }
+.sr-lbl { color: var(--g500); }
+.sr-note { font-size: 10px; color: var(--g400); font-weight: 400; }
+.sr-val { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--g800); }
+.snap-row.indent .sr-lbl { padding-left: 12px; color: var(--g400); font-size: 12px; }
+.snap-row.indent .sr-val { color: var(--g500); font-size: 12px; font-weight: 500; }
+.snap-row.subtotal { border-top: 1px solid var(--g200); margin-top: 1px; padding-top: 5px; border-bottom: none; }
+.snap-row.subtotal .sr-lbl, .snap-row.subtotal .sr-val { font-weight: 700; color: var(--g900); font-size: 13px; }
+.snap-row.avail-row .sr-lbl { font-weight: 600; color: var(--g700); }
+.snap-row.avail-row .sr-val { color: var(--blue); font-weight: 700; }
+.snap-row.surplus-row .sr-lbl { font-weight: 600; color: var(--g700); }
+.sr-val.neg { color: var(--red) !important; }
+.sr-val.pos { color: var(--green) !important; }
+.snap-row.mansion-row { background: rgba(245,158,11,.06); border-radius: 4px; padding-left: 4px; padding-right: 4px; }
+.snap-row.mansion-row .sr-lbl { color: #92400e; }
+.snap-row.mansion-row .sr-val { color: #92400e; font-weight: 700; }
+/* PMI row highlight */
+.snap-row.pmi-row { background: rgba(239,68,68,.05); border-radius: 4px; padding-left: 4px; padding-right: 4px; }
+.snap-row.pmi-row .sr-lbl { color: #991b1b; }
+.snap-row.pmi-row .sr-val { color: #991b1b; font-weight: 700; }
+hr.snap-div { border: none; border-top: 1px dashed var(--g200); margin: 5px 0; }
+/* Feasibility pills */
+.feas-title { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--g400); margin-bottom: 7px; }
+.pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 6px; margin-bottom: 6px; font-size: 12.5px;
+}
+.pill:last-child { margin-bottom: 0; }
+.pill.ok  { background: var(--green-bg); border: 1px solid var(--green-bd); }
+.pill.fail{ background: var(--red-bg);   border: 1px solid var(--red-bd);   }
+.p-icon { font-size: 13px; flex-shrink: 0; }
+.pill.ok   .p-icon  { color: var(--green); }
+.pill.fail .p-icon  { color: var(--red); }
+.p-name { font-weight: 700; min-width: 62px; flex-shrink: 0; font-size: 12px; }
+.pill.ok   .p-name  { color: var(--green); }
+.pill.fail .p-name  { color: var(--red); }
+.p-detail { color: var(--g600); font-size: 12px; }
+/* ===== COLLAPSIBLE ===== */
+.collapsible { margin-bottom: 20px; }
+.coll-btn {
+  display: flex; align-items: center; gap: 6px; width: 100%; text-align: left;
+  background: none; border: none; cursor: pointer; font-size: 13px; color: var(--blue);
+  font-family: inherit; font-weight: 500; padding: 8px 0;
+}
+.coll-btn:hover { color: #1d4ed8; }
+.caret { transition: transform .2s; display: inline-block; font-style: normal; }
+.coll-btn.open .caret { transform: rotate(180deg); }
+.coll-body { display: none; background: #fff; border: 1px solid var(--border); border-radius: var(--r); padding: 16px 20px; }
+.coll-body.open { display: block; }
+.coll-body h3 { font-size: 13px; font-weight: 700; color: var(--g800); margin: 14px 0 5px; }
+.coll-body h3:first-child { margin-top: 0; }
+.coll-body p { font-size: 13px; color: var(--g600); line-height: 1.65; margin-bottom: 6px; }
+.coll-body ul { padding-left: 18px; color: var(--g600); font-size: 13px; line-height: 1.7; }
+.coll-body li { margin-bottom: 3px; }
+/* ===== TABS ===== */
+.results-tabs { display: flex; gap: 0; margin-bottom: 13px; border-bottom: 1px solid var(--border); }
+.tab-btn {
+  flex: 1; background: none; border: none; border-bottom: 2px solid transparent;
+  padding: 10px 12px; font-size: 12px; font-weight: 600; color: var(--g500);
+  cursor: pointer; font-family: inherit; transition: color .15s, border-color .15s, background .15s;
+  margin-bottom: -1px;
+}
+.tab-btn:hover { color: var(--g800); background: var(--g50); }
+.tab-btn.active { color: var(--navy); border-bottom-color: var(--gold); }
+/* ===== OPTIMIZER VIEW ===== */
+.opt-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.opt-card[hidden] { display: none; }
+.opt-hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); padding: 18px 20px 16px; text-align: center; color: #f0f9ff; }
+.opt-hero-eyebrow { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 8px; }
+.opt-hero-price { font-size: 36px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 4px; }
+.opt-hero-sub { font-size: 12px; color: #c0d8f0; margin-bottom: 8px; }
+.opt-hero-sub strong { color: #fff; }
+.opt-hero-gain { display: inline-flex; align-items: center; gap: 6px; background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.35); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--gold); font-weight: 600; }
+.opt-hero-gain.zero { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.12); color: #c0d8f0; }
+.opt-body { padding: 14px 17px 18px; }
+.opt-section { margin-bottom: 18px; }
+.opt-section:last-child { margin-bottom: 0; }
+.opt-section-title { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--g400); margin-bottom: 8px; }
+/* Chart */
+.opt-chart-wrap { position: relative; width: 100%; margin-bottom: 4px; }
+.opt-chart-wrap canvas { width: 100%; height: 280px; display: block; cursor: crosshair; touch-action: none; }
+.opt-chart-tip {
+  position: absolute; background: rgba(10,22,40,.95); color: #fff; border-radius: 5px;
+  padding: 6px 9px; font-size: 11px; line-height: 1.5; pointer-events: none;
+  white-space: nowrap; font-variant-numeric: tabular-nums; box-shadow: 0 4px 12px rgba(0,0,0,.18);
+  display: none; z-index: 5;
+}
+/* .opt-chart-tip's innerHTML is set at runtime — the <b> inside it stays :global(). */
+:global(.opt-chart-tip b) { color: var(--gold); font-weight: 700; }
+.opt-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; font-size: 11px; color: var(--g600); }
+.opt-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.opt-legend i { display: inline-block; width: 14px; height: 2px; border-radius: 1px; vertical-align: middle; font-style: normal; }
+.opt-legend i.dot { width: 8px; height: 8px; border-radius: 50%; }
+/* Slider */
+.opt-slider-row { display: flex; align-items: center; gap: 12px; background: var(--g50); border: 1px solid var(--g200); border-radius: 6px; padding: 10px 12px; margin-top: 12px; }
+.opt-slider-row .slbl { font-size: 11px; font-weight: 600; color: var(--g600); white-space: nowrap; min-width: 90px; }
+.opt-slider-row input[type="range"] { flex: 1; accent-color: var(--blue); min-width: 0; }
+.opt-slider-val { font-size: 12px; font-weight: 700; color: var(--navy); font-variant-numeric: tabular-nums; min-width: 48px; text-align: right; }
+.opt-mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--g200); font-size: 11.5px; }
+.opt-mini > div { display: flex; justify-content: space-between; gap: 8px; }
+.opt-mini .mlbl { color: var(--g500); }
+.opt-mini .mval { font-weight: 600; color: var(--g800); font-variant-numeric: tabular-nums; }
+.opt-mini .mval.bind-dti { color: var(--blue); }
+.opt-mini .mval.bind-cash { color: var(--gold); }
+/* Explainer */
+.opt-explainer { background: var(--blue-xlt); border: 1px solid var(--blue-lt); border-radius: 6px; padding: 10px 12px; font-size: 12.5px; line-height: 1.55; color: var(--g700); }
+.opt-explainer.warn { background: var(--red-bg); border-color: var(--red-bd); color: #7f1d1d; }
+.opt-explainer.ok { background: var(--green-bg); border-color: var(--green-bd); color: #14532d; }
+/* .opt-explainer's contents are set via innerHTML at runtime — the <strong> inside stays :global(). */
+:global(.opt-explainer strong) { color: inherit; }
+/* Comparison table — fully static markup (only textContent is updated), no :global() needed. */
+.opt-comp { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.opt-comp th, .opt-comp td { padding: 6px 8px; text-align: right; font-variant-numeric: tabular-nums; border-bottom: 1px solid var(--g100); }
+.opt-comp th:first-child, .opt-comp td:first-child { text-align: left; color: var(--g600); font-weight: 500; }
+.opt-comp thead th { font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: 0.6px; border-bottom: 1px solid var(--g300); padding-bottom: 7px; }
+.opt-comp .col-opt { background: rgba(245,158,11,.07); font-weight: 600; color: var(--g900); }
+.opt-comp thead .col-opt { color: var(--gold); }
+/* Sensitivity — thead is static; tbody rows are built via createElement at runtime. */
+.opt-sens { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.opt-sens th { font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: 0.6px; text-align: left; border-bottom: 1px solid var(--g300); padding: 5px 8px; }
+.opt-sens th.r { text-align: right; font-variant-numeric: tabular-nums; }
+:global(.opt-sens td) { padding: 5px 8px; border-bottom: 1px solid var(--g100); }
+:global(.opt-sens td.r) { text-align: right; font-variant-numeric: tabular-nums; }
+:global(.opt-sens td.delta-pos) { color: var(--green); font-weight: 600; }
+:global(.opt-sens td.delta-neg) { color: var(--red); font-weight: 600; }
+:global(.opt-sens td.delta-zero) { color: var(--g400); }
+.opt-notice { padding: 22px 20px; text-align: center; font-size: 13px; color: var(--g600); line-height: 1.55; }
+.opt-notice strong { display: block; color: var(--red); font-size: 14px; margin-bottom: 5px; }
+/* ===== AFFORD-TARGET VIEW ===== */
+.aft-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.aft-card[hidden] { display: none; }
+.aft-target-row { background: var(--navy); padding: 14px 17px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.aft-target-row .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; color: var(--gold); white-space: nowrap; }
+.aft-target-row .tgt-wrap { flex: 1; min-width: 130px; border: 1px solid #2a4a6e; background: #142240; }
+.aft-target-row .tgt-wrap .px { background: #1e3554; border-right-color: #2a4a6e; color: #c0d8f0; }
+.aft-target-row .tgt-wrap input { color: #fff; font-weight: 700; }
+.aft-target-row .tgt-wrap:focus-within { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,158,11,.3); }
+.aft-prompt { padding: 28px 22px; text-align: center; font-size: 13px; color: var(--g600); line-height: 1.6; }
+.aft-prompt strong { display: block; color: var(--g800); font-size: 15px; margin-bottom: 6px; }
+.aft-success { padding: 22px 20px; text-align: center; background: var(--green-bg); border-bottom: 1px solid var(--green-bd); }
+.aft-success .ok-icon { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: var(--green); color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+.aft-success-title { font-size: 16px; font-weight: 700; color: #14532d; margin-bottom: 4px; }
+.aft-success-sub { font-size: 12.5px; color: #166534; }
+.aft-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding: 13px 17px; background: var(--g50); border-bottom: 1px solid var(--border); }
+.aft-summary > div { padding: 0 8px; border-right: 1px solid var(--g200); }
+.aft-summary > div:last-child { border-right: none; }
+.aft-sum-lbl { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--g500); margin-bottom: 3px; }
+.aft-sum-val { font-size: 16px; font-weight: 700; color: var(--g900); font-variant-numeric: tabular-nums; }
+.aft-sum-val.neg { color: var(--red); }
+.aft-body { padding: 14px 17px 18px; }
+.aft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-bottom: 18px; }
+.aft-lever { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; }
+.aft-lever-title { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--g500); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.aft-lever-title .badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 10px; background: var(--g200); color: var(--g600); letter-spacing: 0.4px; }
+.aft-lever-title .badge.ok   { background: var(--green-bg); color: #14532d; }
+.aft-lever-title .badge.warn { background: var(--red-bg);   color: #7f1d1d; }
+.aft-lever-title .badge.info { background: var(--blue-xlt); color: #1d4ed8; }
+.aft-lever-big { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--g900); letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 4px; }
+.aft-lever-big.ok  { color: var(--green); }
+.aft-lever-big.neg { color: var(--red); }
+.aft-lever-sub { font-size: 11.5px; color: var(--g600); line-height: 1.45; }
+/* .aft-lever-sub's contents are set via innerHTML at runtime — the <strong> inside stays :global(). */
+:global(.aft-lever-sub strong) { color: var(--g800); }
+.aft-lever-extra { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--g200); font-size: 11.5px; color: var(--g600); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.aft-lever-extra .iw { flex: 0 0 auto; border-color: var(--g200); }
+.aft-lever-extra .iw input { padding: 4px 7px; font-size: 12px; width: 70px; }
+/* DP feasibility range bar */
+.aft-range { margin-top: 6px; position: relative; height: 22px; background: var(--g100); border-radius: 4px; overflow: hidden; }
+.aft-range-zone { position: absolute; top: 0; bottom: 0; background: linear-gradient(180deg, rgba(22,163,74,.22), rgba(22,163,74,.32)); border-left: 2px solid var(--green); border-right: 2px solid var(--green); }
+.aft-range-zone.fail { background: linear-gradient(180deg, rgba(220,38,38,.18), rgba(220,38,38,.28)); border-color: var(--red); }
+.aft-range-marker { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--g600); }
+.aft-range-marker.boardmin { background: var(--red); }
+.aft-range-marker.dti   { background: var(--blue); }
+.aft-range-marker.cash  { background: var(--gold); }
+.aft-range-axis { display: flex; justify-content: space-between; margin-top: 3px; font-size: 10px; color: var(--g400); font-variant-numeric: tabular-nums; }
+.aft-range-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px; font-size: 11px; color: var(--g600); }
+.aft-range-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.aft-range-legend i { display: inline-block; width: 10px; height: 2px; vertical-align: middle; font-style: normal; }
+/* Combined gap grid */
+.aft-section-title { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--g400); margin-bottom: 8px; }
+.aft-grid-wrap { overflow-x: auto; margin: 0 -2px; }
+/* <table id="aft-gap-grid"> itself is a static element, but its thead/tbody rows are all
+   built via createElement at runtime each render — every descendant selector stays :global(). */
+.aft-gap-table { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: 12px; font-variant-numeric: tabular-nums; }
+:global(.aft-gap-table th) { font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: 0.4px; padding: 4px 6px; text-align: center; white-space: nowrap; }
+:global(.aft-gap-table th.row-h) { text-align: right; color: var(--g600); }
+:global(.aft-gap-table td) { padding: 7px 6px; text-align: center; border-radius: 4px; font-weight: 600; white-space: nowrap; }
+:global(.aft-gap-table td.cell-green) { background: var(--green-bg); border: 1px solid var(--green-bd); color: #14532d; }
+:global(.aft-gap-table td.cell-yellow) { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+:global(.aft-gap-table td.cell-red) { background: var(--red-bg); border: 1px solid var(--red-bd); color: #7f1d1d; }
+:global(.aft-gap-table .corner) { font-size: 9.5px; color: var(--g400); font-weight: 600; }
+/* Rate needed */
+.aft-rate-row { margin-top: 14px; padding: 10px 12px; background: var(--blue-xlt); border: 1px solid var(--blue-lt); border-radius: 6px; font-size: 12.5px; color: var(--g700); line-height: 1.5; }
+/* #lev-rate-text is static, but its contents are set via innerHTML at runtime — the <strong> inside stays :global(). */
+:global(.aft-rate-row strong) { color: var(--blue); }
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  main.app-layout { grid-template-columns: 1fr; padding: 0 12px 40px; gap: 14px; }
+  .results-panel { position: static; max-height: none; }
+  .hero-price { font-size: 36px; }
+  :global(.app-header .tagline) { display: none; }
+  :global(.acct-tbl td input[type="text"]) { width: 110px; }
+  .how-works-wrap { padding: 0 12px; }
+  .opt-chart-wrap canvas { height: 240px; }
+  .opt-comp th, .opt-comp td { padding: 5px 6px; font-size: 12px; }
+  .opt-sens th { padding: 4px 6px; font-size: 12px; }
+  :global(.opt-sens td) { padding: 4px 6px; font-size: 12px; }
+  .tab-btn { font-size: 11.5px; padding: 9px 8px; }
+  .aft-grid { grid-template-columns: 1fr; }
+  .aft-summary { grid-template-columns: 1fr; gap: 8px 0; }
+  .aft-summary > div { border-right: none; border-bottom: 1px solid var(--g200); padding-bottom: 8px; }
+  .aft-summary > div:last-child { border-bottom: none; padding-bottom: 0; }
+  :global(.aft-gap-table th), :global(.aft-gap-table td) { padding: 5px 4px; font-size: 11px; }
+}
+/* ===== HOW THIS WORKS ===== */
+.how-works-wrap { max-width: 1300px; margin: 0 auto 20px; padding: 0 20px; }
+/* ===== SR-ONLY ===== */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+/* ===== PRINT ===== */
+@media print {
+  .inputs-panel, .how-works-wrap { display: none !important; }
+  :global(.app-header), :global(.app-footer) { display: none !important; }
+  :global(body) { background: #fff; }
+  main.app-layout { display: block; padding: 0; margin: 0; }
+  .results-panel { position: static; max-height: none; overflow: visible; }
+  .results-card { border: none; box-shadow: none; }
+  .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
