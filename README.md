@@ -4,14 +4,14 @@ A suite of free NYC apartment, home, and housing affordability calculators, buil
 
 | Calculator | URL | Path |
 |---|---|---|
-| Landing page | [nyc-affordability.com](https://www.nyc-affordability.com/) | `/` |
-| Co-op Affordability | [nyc-affordability.com/coop](https://www.nyc-affordability.com/coop/) | `/coop/` |
-| Condo Affordability | [nyc-affordability.com/condo](https://www.nyc-affordability.com/condo/) | `/condo/` |
-| Rent Affordability | [nyc-affordability.com/rent](https://www.nyc-affordability.com/rent/) | `/rent/` |
-| Affordable Housing Finder | [nyc-affordability.com/affordable](https://www.nyc-affordability.com/affordable/) | `/affordable/` |
-| Compare All Options | [nyc-affordability.com/compare](https://www.nyc-affordability.com/compare/) | `/compare/` |
-| About | [nyc-affordability.com/about](https://www.nyc-affordability.com/about/) | `/about/` |
-| Privacy Policy | [nyc-affordability.com/privacy](https://www.nyc-affordability.com/privacy/) | `/privacy/` |
+| Landing page | [www.nyc-affordability.com](https://www.nyc-affordability.com/) | `/` |
+| Co-op Affordability | [www.nyc-affordability.com/coop](https://www.nyc-affordability.com/coop/) | `/coop/` |
+| Condo Affordability | [www.nyc-affordability.com/condo](https://www.nyc-affordability.com/condo/) | `/condo/` |
+| Rent Affordability | [www.nyc-affordability.com/rent](https://www.nyc-affordability.com/rent/) | `/rent/` |
+| Affordable Housing Finder | [www.nyc-affordability.com/affordable](https://www.nyc-affordability.com/affordable/) | `/affordable/` |
+| Compare All Options | [www.nyc-affordability.com/compare](https://www.nyc-affordability.com/compare/) | `/compare/` |
+| About | [www.nyc-affordability.com/about](https://www.nyc-affordability.com/about/) | `/about/` |
+| Privacy Policy | [www.nyc-affordability.com/privacy](https://www.nyc-affordability.com/privacy/) | `/privacy/` |
 | Co-op legacy domain | [nyc-co-op-affordability.com](https://www.nyc-co-op-affordability.com/) | redirects to `/coop/` |
 
 ---
@@ -21,11 +21,12 @@ A suite of free NYC apartment, home, and housing affordability calculators, buil
 A single Cloudflare Worker entrypoint at [`/functions/[[path]].js`](functions/%5B%5Bpath%5D%5D.js) intercepts every request and routes based on the incoming `hostname`:
 
 ```
-nyc-affordability.com              →  / (hub landing page, pass through)
-nyc-affordability.com/coop/        →  /coop/ (co-op calculator)
-nyc-affordability.com/condo/       →  /condo/ (condo calculator)
-nyc-affordability.com/rent/        →  /rent/ (rent calculator)
-nyc-affordability.com/compare/     →  /compare/ (cross-calculator dashboard)
+www.nyc-affordability.com          →  / (hub landing page, pass through)
+www.nyc-affordability.com/coop/    →  /coop/ (co-op calculator)
+www.nyc-affordability.com/condo/   →  /condo/ (condo calculator)
+www.nyc-affordability.com/rent/    →  /rent/ (rent calculator)
+www.nyc-affordability.com/compare/ →  /compare/ (cross-calculator dashboard)
+nyc-affordability.com (apex)       →  301 redirect to https://www.nyc-affordability.com (same path)
 nyc-co-op-affordability.com        →  localStorage migration page, then https://www.nyc-affordability.com/coop/
 default Worker URL / unknown       →  pass through (serves /index.html at root)
 ```
@@ -86,7 +87,7 @@ The default Worker domain also serves all paths directly by file-system structur
 │       ├── condo/index.astro
 │       ├── coop/index.astro
 │       └── rent/index.astro
-├── public/                        ← pass-through static assets (images, robots.txt, ads.txt, sitemap.xml)
+├── public/                        ← pass-through static assets (images, robots.txt, ads.txt)
 ├── dist/                          ← Astro build output (git-ignored) — this is what wrangler deploys
 ├── functions/
 │   └── [[path]].js                ← Cloudflare Worker routing entrypoint (unaffected by the build)
@@ -97,6 +98,8 @@ The default Worker domain also serves all paths directly by file-system structur
 ```
 
 The site is built with [Astro](https://astro.build) in static output mode: `npm run build` compiles `src/pages/*.astro` into plain HTML/CSS/JS in `dist/`, which Cloudflare Workers Static Assets serves exactly as it served hand-written `public/` files before this migration — no server rendering, no data ever leaves the browser. Adding a new page is one new file under `src/pages/<slug>/index.astro` that reuses the shared layout/header/footer components.
+
+`sitemap.xml` is generated at build time by [`@astrojs/sitemap`](https://docs.astro.build/en/guides/integrations-guide/sitemap/) (configured in `astro.config.mjs`) from every page under `src/pages/`, so a new page is picked up automatically without hand-editing a sitemap file. Each page's `priority`/`changefreq`/`lastmod` come from the `SITEMAP_PAGE_META` map in `astro.config.mjs`; add an entry there for new pages (falls back to a sane default otherwise). The plugin itself only outputs `sitemap-index.xml` + `sitemap-0.xml` (it has no bare-`sitemap.xml` option); `npm run build` runs `scripts/rename-sitemap.mjs` as a second step to collapse that single chunk into a plain `dist/sitemap.xml`, matching the URL `robots.txt` (a hand-written static file under `public/`) has always pointed at. If the site ever grows past ~45,000 pages and the sitemap splits into multiple chunks, that script will throw and need updating.
 
 The `/compare/` dashboard reads the shared browser profile saved at `nyc_shared_profile` and can update it when the page's Save toggle is enabled, then combines that profile with each calculator's saved assumptions to compare max affordable rent, max co-op price, max condo price, cash required, monthly housing cost, DTI, reserve requirement, and binding constraint.
 

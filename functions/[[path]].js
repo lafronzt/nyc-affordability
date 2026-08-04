@@ -2,16 +2,17 @@
  * Cloudflare Worker / Pages Function — multi-domain host-based routing
  *
  * Hub domain (landing page):
- *   nyc-affordability.com          → / (pass through as-is)
+ *   www.nyc-affordability.com      → / (pass through as-is)
+ *   nyc-affordability.com          → 301 redirect to www.nyc-affordability.com (same path)
  *
  * Legacy calculator domains (canonical redirects):
  *   nyc-co-op-affordability.com    → https://www.nyc-affordability.com/coop/
  *
  * Default Pages domain / unknown hosts: pass through as-is.
  * Calculator paths are served under the primary domain:
- *   nyc-affordability.com/coop/
- *   nyc-affordability.com/condo/
- *   nyc-affordability.com/rent/
+ *   www.nyc-affordability.com/coop/
+ *   www.nyc-affordability.com/condo/
+ *   www.nyc-affordability.com/rent/
  *
  * To add a new domain:
  *   1. Add an entry to DOMAIN_ROUTES below (both apex and www), or to
@@ -23,6 +24,12 @@
 
 const CANONICAL_HOST = 'www.nyc-affordability.com';
 
+// Apex hosts that should 301 to the canonical www host (same path/query), rather
+// than being served directly — keeps a single canonical origin for SEO.
+const APEX_TO_WWW_REDIRECTS = new Set([
+  'nyc-affordability.com',
+]);
+
 const DOMAIN_REDIRECTS = {
   'nyc-co-op-affordability.com':     '/coop',
   'www.nyc-co-op-affordability.com': '/coop',
@@ -30,7 +37,6 @@ const DOMAIN_REDIRECTS = {
 
 // '' prefix = hub domain, serve root as-is.
 const DOMAIN_ROUTES = {
-  'nyc-affordability.com':           '',
   'www.nyc-affordability.com':       '',
 };
 
@@ -48,6 +54,13 @@ async function handleRequest(request, env) {
   const url     = new URL(request.url);
   const host    = url.hostname.toLowerCase();
   const reqPath = url.pathname;
+
+  if (APEX_TO_WWW_REDIRECTS.has(host)) {
+    const target = new URL(url);
+    target.protocol = 'https:';
+    target.hostname = CANONICAL_HOST;
+    return Response.redirect(target.toString(), 301);
+  }
 
   const prefix = DOMAIN_ROUTES[host];
   const redirectPrefix = DOMAIN_REDIRECTS[host];
