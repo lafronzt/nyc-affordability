@@ -87,7 +87,7 @@ The default Worker domain also serves all paths directly by file-system structur
 │       ├── condo/index.astro
 │       ├── coop/index.astro
 │       └── rent/index.astro
-├── public/                        ← pass-through static assets (images, robots.txt, ads.txt, sitemap.xml)
+├── public/                        ← pass-through static assets (images, robots.txt, ads.txt)
 ├── dist/                          ← Astro build output (git-ignored) — this is what wrangler deploys
 ├── functions/
 │   └── [[path]].js                ← Cloudflare Worker routing entrypoint (unaffected by the build)
@@ -98,6 +98,8 @@ The default Worker domain also serves all paths directly by file-system structur
 ```
 
 The site is built with [Astro](https://astro.build) in static output mode: `npm run build` compiles `src/pages/*.astro` into plain HTML/CSS/JS in `dist/`, which Cloudflare Workers Static Assets serves exactly as it served hand-written `public/` files before this migration — no server rendering, no data ever leaves the browser. Adding a new page is one new file under `src/pages/<slug>/index.astro` that reuses the shared layout/header/footer components.
+
+`sitemap-index.xml` / `sitemap-0.xml` are generated at build time by [`@astrojs/sitemap`](https://docs.astro.build/en/guides/integrations-guide/sitemap/) (configured in `astro.config.mjs`) from every page under `src/pages/`, so a new page is picked up automatically without hand-editing a sitemap file. Each page's `priority`/`changefreq`/`lastmod` come from the `SITEMAP_PAGE_META` map in `astro.config.mjs`; add an entry there for new pages (falls back to a sane default otherwise). `robots.txt` stays a hand-written static file under `public/` and points at `/sitemap-index.xml`.
 
 The `/compare/` dashboard reads the shared browser profile saved at `nyc_shared_profile` and can update it when the page's Save toggle is enabled, then combines that profile with each calculator's saved assumptions to compare max affordable rent, max co-op price, max condo price, cash required, monthly housing cost, DTI, reserve requirement, and binding constraint.
 
