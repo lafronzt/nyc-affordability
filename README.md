@@ -78,6 +78,9 @@ The default Worker domain also serves all paths directly by file-system structur
 │   │   ├── calc.ts                ← calcMansionTax / calcPmiRate / calcPmiMonthly / calcMortgageRecordingTax / bsearchMaxPrice
 │   │   └── sharedProfile.ts       ← nyc_shared_profile localStorage contract
 │   ├── scripts/                   ← per-page calculator logic (coop.ts, condo.ts, rent.ts, affordable.ts, compare.ts)
+│   ├── content.config.ts          ← `guides` content collection schema (frontmatter shape, defaults)
+│   ├── content/
+│   │   └── guides/                ← one .md file per guide, rendered by src/pages/guides/[slug].astro
 │   └── pages/
 │       ├── index.astro            ← Landing page (NYC Affordability hub)
 │       ├── about/index.astro
@@ -86,7 +89,9 @@ The default Worker domain also serves all paths directly by file-system structur
 │       ├── compare/index.astro    ← Rent vs co-op vs condo comparison dashboard
 │       ├── condo/index.astro
 │       ├── coop/index.astro
-│       └── rent/index.astro
+│       ├── rent/index.astro
+│       └── guides/
+│           └── [slug].astro       ← shared template for every /guides/<slug>/ page
 ├── public/                        ← pass-through static assets (images, robots.txt, ads.txt)
 ├── dist/                          ← Astro build output (git-ignored) — this is what wrangler deploys
 ├── functions/
@@ -99,7 +104,15 @@ The default Worker domain also serves all paths directly by file-system structur
 
 The site is built with [Astro](https://astro.build) in static output mode: `npm run build` compiles `src/pages/*.astro` into plain HTML/CSS/JS in `dist/`, which Cloudflare Workers Static Assets serves exactly as it served hand-written `public/` files before this migration — no server rendering, no data ever leaves the browser. Adding a new page is one new file under `src/pages/<slug>/index.astro` that reuses the shared layout/header/footer components.
 
-`sitemap.xml` is generated at build time by [`@astrojs/sitemap`](https://docs.astro.build/en/guides/integrations-guide/sitemap/) (configured in `astro.config.mjs`) from every page under `src/pages/`, so a new page is picked up automatically without hand-editing a sitemap file. Each page's `priority`/`changefreq`/`lastmod` come from the `SITEMAP_PAGE_META` map in `astro.config.mjs`; add an entry there for new pages (falls back to a sane default otherwise). The plugin itself only outputs `sitemap-index.xml` + `sitemap-0.xml` (it has no bare-`sitemap.xml` option); `npm run build` runs `scripts/rename-sitemap.mjs` as a second step to collapse that single chunk into a plain `dist/sitemap.xml`, matching the URL `robots.txt` (a hand-written static file under `public/`) has always pointed at. If the site ever grows past ~45,000 pages and the sitemap splits into multiple chunks, that script will throw and need updating.
+`sitemap.xml` is generated at build time by [`@astrojs/sitemap`](https://docs.astro.build/en/guides/integrations-guide/sitemap/) (configured in `astro.config.mjs`) from every page under `src/pages/`, so a new page is picked up automatically without hand-editing a sitemap file. Each page's `priority`/`changefreq`/`lastmod` come from the `SITEMAP_PAGE_META` map in `astro.config.mjs`; add an entry there for new pages (falls back to a sane default otherwise). The plugin itself only outputs `sitemap-index.xml` + `sitemap-0.xml` (it has no bare-`sitemap.xml` option); `npm run build` runs `scripts/rename-sitemap.mjs` as a second step to collapse that single chunk into a plain `dist/sitemap.xml`, matching the URL `robots.txt` (a hand-written static file under `public/`) has always pointed at. If the site ever grows past ~45,000 pages and the sitemap splits into multiple chunks, that script will throw and need updating. Draft guides (see below) are excluded from the sitemap via the integration's `filter` option, which reads `draft: true` directly off the guide's frontmatter.
+
+### Guides (`/guides/<slug>/`)
+
+Long-form editorial content — separate from the five calculators above — lives as Markdown in `src/content/guides/`, one file per guide, and is rendered through the single shared template at `src/pages/guides/[slug].astro`. This is the one place in the site that isn't a hand-written `.astro` file per page; adding a guide means adding a `.md` file, not a new route.
+
+`src/content.config.ts` defines the frontmatter schema. Required fields: `title`, `metaDescription`, `intro`, `updated` (`YYYY-MM-DD`), `sources` (an array of `{ label, url }` citations rendered in the page's **Sources** section), and `cta` (`{ heading, body, label, href }`, rendered as a box linking to the relevant calculator). Optional: `ogTitle`/`ogDescription`/`ogImage`/`ogImageAlt`/`twitterTitle`/`twitterDescription` (all fall back to `title`/`metaDescription`/a default OG image), `draft` (defaults to `false`), and `sitemap.changefreq`/`sitemap.priority` (default `monthly` / `0.7`). The Markdown body becomes the guide's body sections.
+
+Setting `draft: true` on a guide sets `<meta name="robots" content="noindex, nofollow">` on that page and excludes it from `sitemap.xml` — the guide is still built and reachable by direct URL (so it can be reviewed), just not indexed or listed. Flip `draft` to `false` when the guide is ready to publish; no other change is needed.
 
 The `/compare/` dashboard reads the shared browser profile saved at `nyc_shared_profile` and can update it when the page's Save toggle is enabled, then combines that profile with each calculator's saved assumptions to compare max affordable rent, max co-op price, max condo price, cash required, monthly housing cost, DTI, reserve requirement, and binding constraint.
 

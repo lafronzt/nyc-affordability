@@ -15,6 +15,7 @@ interface Props {
   jsonLd: Record<string, unknown>;
   variant: 'site' | 'app';
   ads?: boolean;
+  robots?: string;
 }
 
 const {
@@ -30,6 +31,7 @@ const {
   jsonLd,
   variant,
   ads = false,
+  robots,
 } = Astro.props;
 ---
 <!doctype html>
@@ -48,6 +50,7 @@ const {
     twitterTitle={twitterTitle}
     twitterDescription={twitterDescription}
     jsonLd={jsonLd}
+    robots={robots}
   />
   <slot name="head-extra" />
   {ads && (
