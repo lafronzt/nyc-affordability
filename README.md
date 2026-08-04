@@ -4,14 +4,14 @@ A suite of free NYC apartment, home, and housing affordability calculators, buil
 
 | Calculator | URL | Path |
 |---|---|---|
-| Landing page | [nyc-affordability.com](https://www.nyc-affordability.com/) | `/` |
-| Co-op Affordability | [nyc-affordability.com/coop](https://www.nyc-affordability.com/coop/) | `/coop/` |
-| Condo Affordability | [nyc-affordability.com/condo](https://www.nyc-affordability.com/condo/) | `/condo/` |
-| Rent Affordability | [nyc-affordability.com/rent](https://www.nyc-affordability.com/rent/) | `/rent/` |
-| Affordable Housing Finder | [nyc-affordability.com/affordable](https://www.nyc-affordability.com/affordable/) | `/affordable/` |
-| Compare All Options | [nyc-affordability.com/compare](https://www.nyc-affordability.com/compare/) | `/compare/` |
-| About | [nyc-affordability.com/about](https://www.nyc-affordability.com/about/) | `/about/` |
-| Privacy Policy | [nyc-affordability.com/privacy](https://www.nyc-affordability.com/privacy/) | `/privacy/` |
+| Landing page | [www.nyc-affordability.com](https://www.nyc-affordability.com/) | `/` |
+| Co-op Affordability | [www.nyc-affordability.com/coop](https://www.nyc-affordability.com/coop/) | `/coop/` |
+| Condo Affordability | [www.nyc-affordability.com/condo](https://www.nyc-affordability.com/condo/) | `/condo/` |
+| Rent Affordability | [www.nyc-affordability.com/rent](https://www.nyc-affordability.com/rent/) | `/rent/` |
+| Affordable Housing Finder | [www.nyc-affordability.com/affordable](https://www.nyc-affordability.com/affordable/) | `/affordable/` |
+| Compare All Options | [www.nyc-affordability.com/compare](https://www.nyc-affordability.com/compare/) | `/compare/` |
+| About | [www.nyc-affordability.com/about](https://www.nyc-affordability.com/about/) | `/about/` |
+| Privacy Policy | [www.nyc-affordability.com/privacy](https://www.nyc-affordability.com/privacy/) | `/privacy/` |
 | Co-op legacy domain | [nyc-co-op-affordability.com](https://www.nyc-co-op-affordability.com/) | redirects to `/coop/` |
 
 ---
@@ -21,11 +21,12 @@ A suite of free NYC apartment, home, and housing affordability calculators, buil
 A single Cloudflare Worker entrypoint at [`/functions/[[path]].js`](functions/%5B%5Bpath%5D%5D.js) intercepts every request and routes based on the incoming `hostname`:
 
 ```
-nyc-affordability.com              →  / (hub landing page, pass through)
-nyc-affordability.com/coop/        →  /coop/ (co-op calculator)
-nyc-affordability.com/condo/       →  /condo/ (condo calculator)
-nyc-affordability.com/rent/        →  /rent/ (rent calculator)
-nyc-affordability.com/compare/     →  /compare/ (cross-calculator dashboard)
+www.nyc-affordability.com          →  / (hub landing page, pass through)
+www.nyc-affordability.com/coop/    →  /coop/ (co-op calculator)
+www.nyc-affordability.com/condo/   →  /condo/ (condo calculator)
+www.nyc-affordability.com/rent/    →  /rent/ (rent calculator)
+www.nyc-affordability.com/compare/ →  /compare/ (cross-calculator dashboard)
+nyc-affordability.com (apex)       →  301 redirect to https://www.nyc-affordability.com (same path)
 nyc-co-op-affordability.com        →  localStorage migration page, then https://www.nyc-affordability.com/coop/
 default Worker URL / unknown       →  pass through (serves /index.html at root)
 ```
