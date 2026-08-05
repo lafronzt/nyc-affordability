@@ -31,13 +31,13 @@ On an $800,000 purchase with 20% down (a $640,000 loan), that's **$12,320** in m
 
 Co-ops make up for the cheaper closing in two ways condos mostly avoid:
 
-**Reserve requirements.** Co-op boards typically require 12 months of post-closing liquid reserves (24+ at conservative buildings) — cash that has to sit, uninvested in the deal, on top of the down payment. Condo lenders don't usually impose an equivalent post-closing liquidity requirement.
+**Reserve requirements.** Co-op boards typically require 12 months of post-closing liquid reserves (24+ at conservative buildings) — cash that has to sit, uninvested in the deal, on top of the down payment. Condo lenders don't usually impose an equivalent post-closing liquidity requirement. See our [co-op board reserve guide](/guides/coop-board-reserve-requirements/) for the full math on what counts as liquid and how much this actually adds up to.
 
 **Flip tax at resale.** Most NYC co-ops charge a flip tax when you sell — typically **1% to 3% of the sale price**, seller-paid, set independently by each building's proprietary lease. On an $800,000 sale, a 2% flip tax (roughly the citywide average) is **$16,000** coming off the seller's proceeds. Condos generally don't carry an equivalent fee, though some newer condo buildings do charge a comparable "reserve fund contribution" at resale — it's less common and usually smaller, but worth checking a specific building's rules before assuming condos are flip-tax-free across the board.
 
 ## Where condos are easier: qualifying
 
-This is the difference buyers feel earliest, not just at closing. Condo lenders typically underwrite to a back-end debt-to-income ceiling around **43%** (conventional conforming), sometimes with a more conservative 36% target. Co-op boards, by contrast, typically cap DTI at **28%** — meaningfully stricter, on top of the separate reserve requirement boards also impose. At an identical purchase price, a buyer often needs noticeably less income to qualify for a condo than for a co-op, purely because of which DTI ceiling applies.
+This is the difference buyers feel earliest, not just at closing. Condo lenders typically underwrite to a back-end debt-to-income ceiling around **43%** (conventional conforming), sometimes with a more conservative 36% target. Co-op boards, by contrast, typically cap DTI at **28%** — meaningfully stricter, on top of the separate reserve requirement boards also impose. At an identical purchase price, a buyer often needs noticeably less income to qualify for a condo than for a co-op, purely because of which DTI ceiling applies. See our [income-needed-to-buy guide](/guides/income-needed-to-buy-nyc-apartment/) for exactly what that gap looks like in dollars.
 
 Condos also generally allow more flexibility to sublet, rent out, or sell to buyers a board might reject outright — co-op boards can deny a sale without stating a reason, a level of discretion condo boards (which typically hold only a right of first refusal, not full financial vetting) don't have.
 

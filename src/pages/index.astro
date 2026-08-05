@@ -4,10 +4,11 @@ import SiteHeader from '../components/SiteHeader.astro';
 import Footer from '../components/Footer.astro';
 import AdSlot from '../components/AdSlot.astro';
 import type { FooterColumn } from '../lib/footerLinks';
-import { ALL_CALCULATORS, HPD_HOME_LINK, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, HPD_HOME_LINK, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../lib/footerLinks';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
   {
     heading: 'NYC Housing Resources',
     links: [

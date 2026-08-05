@@ -58,7 +58,7 @@ Individual lottery listings are tagged to a specific percentage (30%, 40%, 50%, 
 
 ## Eligibility works as a ceiling, not a target
 
-To qualify for a given band, your household income must be **at or below** that band's income limit for your household size — not close to it, not above it. A 2-person household earning $70,000 (64.9% AMI) doesn't qualify for a 60% AMI listing, because $70,000 exceeds that band's $64,740 limit. The same household does qualify for 70% AMI and every band above it, up to whatever ceiling the specific building sets. Many listings also require a *minimum* income — commonly 40× the monthly rent — to confirm you can actually carry the rent once approved.
+To qualify for a given band, your household income must be **at or below** that band's income limit for your household size — not close to it, not above it. A 2-person household earning $70,000 (64.9% AMI) doesn't qualify for a 60% AMI listing, because $70,000 exceeds that band's $64,740 limit. The same household does qualify for 70% AMI and every band above it, up to whatever ceiling the specific building sets. Many listings also require a *minimum* income — commonly 40× the monthly rent — to confirm you can actually carry the rent once approved; see our [40x rent rule guide](/guides/nyc-40x-rent-rule/) for how that specific screen works.
 
 ## How the rent itself is set
 

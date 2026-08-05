@@ -29,7 +29,7 @@ Before June 11, 2025, NYC was one of the only rental markets in the country wher
 - **Your own tenant's broker:** still legal, and you still pay for it if you hire one — the law doesn't cap or ban broker fees generally, it just ties payment to who did the hiring.
 - **Other move-in costs:** first month's rent, a security deposit (capped at one month's rent under a separate 2019 law, the HSTPA), and application fees (capped at $20) are unaffected by the FARE Act — those existed before and still apply.
 
-Landlords responded by folding what used to be a separate line-item broker fee into either the advertised rent or their own marketing cost — so don't assume the FARE Act automatically nets out to zero change in total housing cost. It removes one specific, previously-mandatory charge from the tenant's move-in bill.
+Landlords responded by folding what used to be a separate line-item broker fee into either the advertised rent or their own marketing cost — so don't assume the FARE Act automatically nets out to zero change in total housing cost. It removes one specific, previously-mandatory charge from the tenant's move-in bill. It also doesn't touch income screening — landlords still qualify tenants the same way they always have; see our [40x rent rule guide](/guides/nyc-40x-rent-rule/) for how that separate hurdle works.
 
 ## How to tell if a fee you're being asked to pay is legal
 

@@ -3,10 +3,19 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import AppHeader from '../../components/AppHeader.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
-import { CALC_CONDO, otherCalculators, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { CALC_CONDO, otherCalculators, ALL_GUIDES, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: CALC_CONDO.label, path: CALC_CONDO.href! },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 const footerColumns: FooterColumn[] = [
+  { heading: 'Guides', links: ALL_GUIDES },
   {
     heading: 'NYC Housing Resources',
     links: [
@@ -56,9 +65,10 @@ const jsonLd = {
   ogImageAlt="Can you afford a NYC condo? NYC Condo Affordability Calculator from NYC Affordability."
   twitterTitle="NYC Condo Affordability Calculator"
   twitterDescription="Free NYC housing affordability calculator for condos. Reverse-engineer your max purchase price from income, assets, and mortgage assumptions."
-  jsonLd={jsonLd}
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
 >
 <AppHeader titleHtml="NYC <em>Condo</em> Affordability Calculator" tagline="Reverse-engineer your max purchase price from your financial profile" />
+<Breadcrumbs items={breadcrumbItems} padded />
 
 <main class="app-layout">
 
@@ -616,7 +626,7 @@ const jsonLd = {
       <h3>PMI — automatic when down payment is under 20%</h3>
       <p>Private mortgage insurance (PMI) is required on conventional loans with less than 20% down. It protects the lender — not you — against default, and is added to your monthly payment. The calculator applies PMI automatically based on your down payment percentage using typical rates for a borrower with good credit (~720–740 FICO): roughly 0.52%/yr at 15–20% down, 0.70% at 10–15%, 0.95% at 5–10%, and 1.20% below 5%. Your actual rate varies by lender, credit score, and loan type. PMI is included in the DTI calculation and in reserve requirements. <strong>PMI drops off once your loan balance reaches 80% of the original purchase price</strong> — under the Homeowners Protection Act, lenders must cancel it automatically at 78% LTV. Reaching 20% equity sooner (via appreciation or extra payments) lets you request cancellation. Note: jumbo loans (typically above $1.2M in NYC's high-cost area) usually require 20%+ down and don't carry conventional PMI.</p>
       <h3>Mansion tax — watch the $1M cliff</h3>
-      <p>New York's <a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">mansion tax</a> applies to the full purchase price once you cross $1,000,000 — it is <strong>not a marginal bracket</strong>. A $999,999 purchase owes $0; a $1,000,001 purchase owes roughly $10,000 (1.00%). The tax steps up to 3.90% above $25M. This creates a real price cliff — worth negotiating around on deals near tier boundaries. Calculated automatically from the price you model.</p>
+      <p>New York's <a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">mansion tax</a> applies to the full purchase price once you cross $1,000,000 — it is <strong>not a marginal bracket</strong>. A $999,999 purchase owes $0; a $1,000,001 purchase owes roughly $10,000 (1.00%). The tax steps up to 3.90% above $25M. This creates a real price cliff — worth negotiating around on deals near tier boundaries. Calculated automatically from the price you model. See our <a href="/guides/nyc-mansion-tax-explained/">full mansion tax breakdown</a> for the complete tier table and a worked example.</p>
       <h3>Mortgage Recording Tax</h3>
       <p>Unlike co-ops (which are personal property), condos are real property and subject to NYC/NYS mortgage recording tax. The borrower-paid rate is approximately 1.80% on loans under $500,000 and 1.925% on loans of $500,000 or more. This is calculated on the loan amount, not the purchase price. Source: NYC DOF / ACRIS. Verify with your closing attorney — CEMA and lender-paid portions can change the amount.</p>
       <h3>Closing costs for a financed resale condo</h3>
@@ -624,7 +634,7 @@ const jsonLd = {
       <h3>What "Liquidity %" means</h3>
       <p>Accounts count toward the down payment and closing costs according to their Liquidity %. The same weighted values count toward post-close reserves when that option is enabled. Retirement accounts (401k, IRA) can be listed at 0% for net-worth reference.</p>
       <h3>This is an estimate — verify everything</h3>
-      <p>Tax rates, title fees, lender overlays, and building policies vary. Always confirm numbers with a <a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">licensed mortgage broker</a> and a <a href="https://www.nycbar.org/lawyer-referral-service" target="_blank" rel="noopener noreferrer">real estate attorney</a> before making purchase decisions. See our <a href="/about/">full sourcing methodology</a> for where every default in this calculator comes from.</p>
+      <p>Tax rates, title fees, lender overlays, and building policies vary. Always confirm numbers with a <a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">licensed mortgage broker</a> and a <a href="https://www.nycbar.org/lawyer-referral-service" target="_blank" rel="noopener noreferrer">real estate attorney</a> before making purchase decisions. Weighing a co-op instead? See <a href="/guides/coop-vs-condo-nyc-costs/">co-op vs condo: what actually costs more</a>. See our <a href="/about/">full sourcing methodology</a> for where every default in this calculator comes from.</p>
     </div>
   </div>
 </div>

@@ -2,11 +2,14 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
-import { ALL_CALCULATORS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, ABOUT_LINK } from '../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
   STANDARD_ABOUT_COLUMN,
 ];
 
@@ -18,6 +21,12 @@ const jsonLd = {
   description: 'Why these calculators exist, how the math and sourced assumptions work, and who maintains this free, open-source NYC housing project.',
   isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: 'https://www.nyc-affordability.com/' },
 };
+
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: ABOUT_LINK.label, path: ABOUT_LINK.href! },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 ---
 <BaseLayout
   variant="site"
@@ -30,7 +39,7 @@ const jsonLd = {
   ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
   twitterTitle="About NYC Affordability"
   twitterDescription="Why these calculators exist, how the math and sourced assumptions work, and who maintains this free, open-source NYC housing project."
-  jsonLd={jsonLd}
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
 >
 <SiteHeader backLink />
 
@@ -43,6 +52,8 @@ const jsonLd = {
 </div>
 
 <div class="page">
+
+  <Breadcrumbs items={breadcrumbItems} />
 
   <div class="card">
     <h3>Why this exists</h3>

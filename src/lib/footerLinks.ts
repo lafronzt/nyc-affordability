@@ -22,16 +22,34 @@ export function otherCalculators(currentHref: string): FooterLink[] {
   return [...ALL_CALCULATORS.filter((c) => c.href !== currentHref), HUB_LINK];
 }
 
+export const GUIDE_MANSION_TAX: FooterLink = { label: 'NYC Mansion Tax Explained', href: '/guides/nyc-mansion-tax-explained/' };
+export const GUIDE_COOP_RESERVE: FooterLink = { label: 'Co-op Board Reserve Requirements', href: '/guides/coop-board-reserve-requirements/' };
+export const GUIDE_FARE_ACT: FooterLink = { label: 'FARE Act Broker Fees Explained', href: '/guides/fare-act-broker-fees-explained/' };
+export const GUIDE_AMI: FooterLink = { label: 'NYC AMI & Housing Connect Explained', href: '/guides/nyc-ami-housing-connect-explained/' };
+export const GUIDE_40X_RULE: FooterLink = { label: "NYC's 40x Rent Rule", href: '/guides/nyc-40x-rent-rule/' };
+export const GUIDE_COOP_VS_CONDO: FooterLink = { label: 'Co-op vs Condo: What Costs More', href: '/guides/coop-vs-condo-nyc-costs/' };
+export const GUIDE_INCOME_NEEDED: FooterLink = { label: 'Income Needed to Buy in NYC', href: '/guides/income-needed-to-buy-nyc-apartment/' };
+export const ALL_GUIDES: FooterLink[] = [
+  GUIDE_MANSION_TAX,
+  GUIDE_COOP_RESERVE,
+  GUIDE_FARE_ACT,
+  GUIDE_AMI,
+  GUIDE_40X_RULE,
+  GUIDE_COOP_VS_CONDO,
+  GUIDE_INCOME_NEEDED,
+];
+
 export const ABOUT_LINK: FooterLink = { label: 'About This Project', href: '/about/' };
-export const GUIDES_LINK: FooterLink = { label: 'Guides', href: '/guides/' };
 export const PRIVACY_LINK: FooterLink = { label: 'Privacy Policy', href: '/privacy/' };
 export const GITHUB_LINK: FooterLink = { label: 'View on GitHub', href: 'https://github.com/lafronzt/nyc-affordability' };
 export const SUPPORT_LINK: FooterLink = { label: 'Support this project', href: 'https://buymeacoffee.com/lafronzt' };
 
-/** Every page's "About" column ends up identical once GitHub/Coffee placement is normalized. */
+/** Every page's "About" column ends up identical once GitHub/Coffee placement is normalized.
+    "Guides" now has its own dedicated footer column (ALL_GUIDES) alongside "Calculators",
+    so the old standalone GUIDES_LINK entry here was dropped to avoid a duplicate /guides/ link. */
 export const STANDARD_ABOUT_COLUMN: FooterColumn = {
   heading: 'About',
-  links: [ABOUT_LINK, GUIDES_LINK, PRIVACY_LINK, GITHUB_LINK, SUPPORT_LINK],
+  links: [ABOUT_LINK, PRIVACY_LINK, GITHUB_LINK, SUPPORT_LINK],
 };
 
 // Links repeated verbatim (same URL) across 2+ pages with today's labels already

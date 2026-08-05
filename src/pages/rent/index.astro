@@ -3,11 +3,20 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import AppHeader from '../../components/AppHeader.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
-import { CALC_RENT, otherCalculators, NYC_HPD_TENANT_RIGHTS_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { CALC_RENT, otherCalculators, ALL_GUIDES, NYC_HPD_TENANT_RIGHTS_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: CALC_RENT.label, path: CALC_RENT.href! },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 const footerColumns: FooterColumn[] = [
   { heading: 'More Calculators', links: otherCalculators(CALC_RENT.href!) },
+  { heading: 'Guides', links: ALL_GUIDES },
   {
     heading: 'NYC Renter Resources',
     links: [
@@ -50,9 +59,10 @@ const jsonLd = {
   ogImageAlt="Can you afford NYC rent? NYC Rent Affordability Calculator from NYC Affordability."
   twitterTitle="NYC Rent Affordability Finder"
   twitterDescription="Free NYC housing affordability calculator for apartment rentals. Reverse-engineer your max affordable monthly rent from income, assets, and move-in assumptions."
-  jsonLd={jsonLd}
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
 >
 <AppHeader titleHtml="NYC <em>Rent</em> Affordability Finder" tagline="Instantly calculate your maximum affordable monthly rent from income, assets, and NYC move-in costs." />
+<Breadcrumbs items={breadcrumbItems} padded />
 
 <main class="app-layout">
 
@@ -542,13 +552,13 @@ const jsonLd = {
     <h3>Two Constraints, One Result</h3>
     <p>Your maximum affordable rent is the lower of two limits:</p>
     <ul>
-      <li><strong>Income constraint:</strong> Most NYC landlords require annual income ≥ 40× monthly rent (the "40× rule"). Some also screen by DTI — your total rent-to-income ratio.</li>
+      <li><strong>Income constraint:</strong> Most NYC landlords require annual income ≥ 40× monthly rent (the "40× rule"). Some also screen by DTI — your total rent-to-income ratio. See our <a href="/guides/nyc-40x-rent-rule/">guide to the 40x rent rule</a> for how the multiplier math works and what guarantors need.</li>
       <li><strong>Cash constraint:</strong> You must cover first month + security deposit + broker fee + other move-in costs from liquidity-weighted assets, and still maintain a reserve buffer.</li>
     </ul>
     <h3>Security Deposit Law</h3>
     <p>The Housing Stability and Tenant Protection Act (HSTPA, 2019) caps security deposits at one month's rent for most NYC rentals. The calculator defaults to 1 month.</p>
     <h3>FARE Act &amp; Broker Fees</h3>
-    <p>The FARE Act (effective June 11, 2025) prohibits landlord/listing agents from passing their broker fee to tenants. If the landlord hired the listing broker, you owe nothing. You may still choose to hire and pay your own tenant's broker. Select "No broker fee" unless you engage a tenant's broker yourself.</p>
+    <p>The FARE Act (effective June 11, 2025) prohibits landlord/listing agents from passing their broker fee to tenants. If the landlord hired the listing broker, you owe nothing. You may still choose to hire and pay your own tenant's broker. Select "No broker fee" unless you engage a tenant's broker yourself. See our <a href="/guides/fare-act-broker-fees-explained/">FARE Act guide</a> for the full rule, a worked move-in cost example, and the law's current legal status.</p>
     <h3>Reserve Buffer</h3>
     <p>The calculator keeps N months of total housing costs (rent + insurance + debts) in savings after paying all move-in costs. This is a personal finance cushion — landlords don't require it, but it's good practice.</p>
     <h3>Guarantor</h3>

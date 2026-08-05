@@ -19,7 +19,7 @@ cta:
 
 ## What it actually is
 
-The "mansion tax" is a buyer-paid tax on residential real estate sales of $1,000,000 or more in New York City (and any other NY city over 1 million people, which in practice means NYC only). The name is misleading — it applies to a $1,000,000 studio the same way it applies to a $1,000,000 townhouse. It covers co-ops, condos, and 1-3 family homes.
+The "mansion tax" is a buyer-paid tax on residential real estate sales of $1,000,000 or more in New York City (and any other NY city over 1 million people, which in practice means NYC only). The name is misleading — it applies to a $1,000,000 studio the same way it applies to a $1,000,000 townhouse. It covers co-ops, condos, and 1-3 family homes — and applies identically to co-ops and condos, unlike most of the other costs that differ between them (see our [co-op vs condo cost guide](/guides/coop-vs-condo-nyc-costs/) for where those differences actually show up).
 
 Technically it's two stacked state taxes: a flat 1% "additional tax" under Tax Law Section 1402-a that applies statewide starting at $1,000,000, plus a NYC-only "supplemental tax" under Section 1402-b that layers on top starting at $2,000,000. In practice, buyers and brokers just talk about the combined rate — the table below — as "the mansion tax," and that's the number that shows up on your closing statement.
 
@@ -62,3 +62,5 @@ Mansion tax = $1,999,999 x 1.00% = $19,999.99 (roughly $20,000)
 One dollar of purchase price — $2,000,000 versus $1,999,999 — is the difference between owing $25,000 and owing $20,000: a $5,000 swing in tax over $1 of price. That $5,000 has nothing to do with the property. It's entirely the effect of which side of the line the contract price lands on.
 
 The same math scales up. A $9,999,999 purchase owes 2.25% — $224,999.98, call it $225,000. Add $1 to hit $10,000,000 and the rate jumps to 3.25%, so the tax becomes $325,000. That's an extra $100,000 in mansion tax for a single dollar of price, which is why contracts near the $10 million line get negotiated with real care.
+
+The mansion tax is a closing cost, not an income requirement, but it does eat into the cash side of a purchase — see our [income-needed-to-buy guide](/guides/income-needed-to-buy-nyc-apartment/) for how the cash and income constraints interact on a real purchase.

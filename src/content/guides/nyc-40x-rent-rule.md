@@ -21,7 +21,7 @@ cta:
 
 Most NYC landlords require a prospective tenant's gross annual income to be at least **40 times the monthly rent**. A $3,500/month apartment requires roughly $140,000 in annual income to qualify on income alone. It applies to gross household income, not take-home pay — every applicant on the lease gets combined, so two roommates each earning $70,000 clear a $3,500/month apartment together even though neither would alone.
 
-It's a landlord-set underwriting standard, not a law or regulation — there's no citywide rule requiring 40x specifically, and it varies by building and owner.
+It's a landlord-set underwriting standard, not a law or regulation — there's no citywide rule requiring 40x specifically, and it varies by building and owner. It's also unrelated to the FARE Act's broker-fee rules — see our [FARE Act guide](/guides/fare-act-broker-fees-explained/) if you're trying to separate what changed about move-in cash from what didn't change about qualifying for a lease.
 
 ## Why 40x, specifically
 
@@ -46,6 +46,8 @@ Adding a guarantor doesn't change your own qualifying income requirement — it 
 ## If you don't clear the multiplier
 
 Falling short of 40x doesn't automatically disqualify you — it just means the landlord needs a different form of assurance. Common paths: adding a qualified guarantor, paying several months of rent upfront, or using a paid guarantor/insurance service that effectively substitutes a fee for the income gap. Which of these a given landlord will accept (and on what terms) varies by building and isn't standardized the way the 40x figure itself is, so it's worth asking directly rather than assuming a workaround will be accepted.
+
+The same 40x-style minimum-income screen shows up outside market-rate rentals, too — NYC's Housing Connect affordable housing lottery commonly applies it on top of the AMI income ceiling. See our [AMI & Housing Connect guide](/guides/nyc-ami-housing-connect-explained/) for how that combination works.
 
 ## What counts as income
 

@@ -68,8 +68,10 @@ That's the part buyers underestimate: at a conservative building, the reserve re
 
 ## Reserves aren't the only screen
 
-Boards typically evaluate reserves alongside debt-to-income ratio, not instead of it. The long-standing NYC standard is a **28% DTI** — your total monthly housing cost (maintenance + mortgage P&I) divided by gross monthly income — though outer-borough buildings sometimes allow 30–35%, and the most conservative Fifth/Park Avenue buildings can cap it as low as 20–25%. A buyer can clear the reserve bar and still get rejected on DTI, or the reverse, so it's worth checking both before you fall in love with a listing.
+Boards typically evaluate reserves alongside debt-to-income ratio, not instead of it. The long-standing NYC standard is a **28% DTI** — your total monthly housing cost (maintenance + mortgage P&I) divided by gross monthly income — though outer-borough buildings sometimes allow 30–35%, and the most conservative Fifth/Park Avenue buildings can cap it as low as 20–25%. A buyer can clear the reserve bar and still get rejected on DTI, or the reverse, so it's worth checking both before you fall in love with a listing. See our [income-needed-to-buy guide](/guides/income-needed-to-buy-nyc-apartment/) for exactly how much that 28% ceiling costs you in required income compared to a condo lender's looser standard.
 
 ## If you're short on reserves
 
 A few levers actually move the number: put down more cash (which lowers the loan and monthly P&I, but doesn't touch the reserve pool itself unless it comes from a different account), target buildings with lower published requirements, or look at buildings still holding underlying corporate mortgages with lower per-share carrying costs. Gifted funds are sometimes acceptable toward reserves if properly documented, but every building's board package has different rules on what counts and how it must be sourced — confirm with your broker or attorney before assuming a workaround will fly.
+
+The reserve requirement is also the single biggest reason a co-op can cost more to close on than a condo at the identical price, even though co-ops skip the mortgage recording tax condos pay — see our [co-op vs condo cost guide](/guides/coop-vs-condo-nyc-costs/) for the full comparison.

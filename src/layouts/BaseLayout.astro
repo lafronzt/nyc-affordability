@@ -12,7 +12,7 @@ interface Props {
   ogImageAlt: string;
   twitterTitle: string;
   twitterDescription: string;
-  jsonLd: Record<string, unknown>;
+  jsonLd: Record<string, unknown> | Record<string, unknown>[];
   variant: 'site' | 'app';
   ads?: boolean;
   robots?: string;

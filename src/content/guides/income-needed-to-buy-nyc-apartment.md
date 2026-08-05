@@ -42,7 +42,7 @@ Take a $700,000 purchase, 20% down ($140,000), a $560,000 loan, and a $1,200/mon
 | Condo (6.30% rate, lender DTI) | $3,466 | $4,666 | 43% | **$130,221** |
 | Condo (6.30% rate, conservative DTI) | $3,466 | $4,666 | 36% | **$155,542** |
 
-The mortgage payment is nearly identical in all three rows — the mortgage rates are within 5 basis points of each other. The **$69,000 difference** between the co-op and standard-condo income requirement comes entirely from which DTI ceiling applies, not from anything about the property itself.
+The mortgage payment is nearly identical in all three rows — the mortgage rates are within 5 basis points of each other. The **$69,000 difference** between the co-op and standard-condo income requirement comes entirely from which DTI ceiling applies, not from anything about the property itself. That's just the income side, too — see our [co-op vs condo cost guide](/guides/coop-vs-condo-nyc-costs/) for how the two also differ on closing costs and resale fees.
 
 ## A real-world calibration point
 
