@@ -39,6 +39,11 @@ export const ALL_GUIDES: FooterLink[] = [
   GUIDE_INCOME_NEEDED,
 ];
 
+/** Standalone Guides entry for the primary navbar (a different surface than the
+    footer's dedicated Guides column, so this does not reintroduce the duplicate
+    /guides/ link the footer intentionally dropped — see note above). */
+export const GUIDES_INDEX_LINK: FooterLink = { label: 'Guides', href: '/guides/' };
+
 export const ABOUT_LINK: FooterLink = { label: 'About This Project', href: '/about/' };
 export const PRIVACY_LINK: FooterLink = { label: 'Privacy Policy', href: '/privacy/' };
 export const GITHUB_LINK: FooterLink = { label: 'View on GitHub', href: 'https://github.com/lafronzt/nyc-affordability' };

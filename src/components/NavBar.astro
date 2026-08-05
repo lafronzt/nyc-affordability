@@ -1,0 +1,222 @@
+---
+import {
+  HUB_LINK,
+  CALC_COOP,
+  CALC_CONDO,
+  CALC_RENT,
+  CALC_AFFORDABLE,
+  CALC_COMPARE,
+  GUIDES_INDEX_LINK,
+} from '../lib/footerLinks';
+
+const NAV_ITEMS = [
+  { label: 'Home', href: HUB_LINK.href! },
+  { label: 'Co-op', href: CALC_COOP.href! },
+  { label: 'Condo', href: CALC_CONDO.href! },
+  { label: 'Rent', href: CALC_RENT.href! },
+  { label: 'Affordable Housing', href: CALC_AFFORDABLE.href! },
+  { label: 'Compare', href: CALC_COMPARE.href! },
+  { label: GUIDES_INDEX_LINK.label, href: GUIDES_INDEX_LINK.href! },
+];
+
+const pathname = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/guides/' ? pathname.startsWith('/guides/') : pathname === href;
+
+const siteOrigin = Astro.site?.origin ?? 'https://www.nyc-affordability.com';
+const siteNavJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SiteNavigationElement',
+  name: NAV_ITEMS.map((item) => item.label),
+  url: NAV_ITEMS.map((item) => new URL(item.href, siteOrigin).toString()),
+};
+---
+<nav class="navbar" aria-label="Primary">
+  <a class="navbar-brand" href="/">NYC <em>Affordability</em></a>
+  <button
+    type="button"
+    class="navbar-toggle"
+    aria-expanded="false"
+    aria-controls="navbar-menu"
+  >
+    <span class="visually-hidden">Menu</span>
+    <span class="hamburger-icon" aria-hidden="true"></span>
+  </button>
+  <ul class="navbar-menu" id="navbar-menu">
+    {NAV_ITEMS.map((item) => {
+      const active = isActive(item.href);
+      return (
+        <li>
+          <a
+            href={item.href}
+            class={active ? 'nav-item nav-item--active' : 'nav-item'}
+            aria-current={active ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(siteNavJsonLd)} />
+
+<style>
+.navbar {
+  background: var(--navy-mid);
+  min-height: var(--nav-h);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  border-bottom: 1px solid #223458;
+}
+.navbar-brand {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.navbar-brand em { font-style: normal; color: var(--gold); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.navbar-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.hamburger-icon,
+.hamburger-icon::before,
+.hamburger-icon::after {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #e2e8f0;
+  border-radius: 1px;
+}
+.hamburger-icon {
+  position: relative;
+}
+.hamburger-icon::before,
+.hamburger-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+.hamburger-icon::before { top: -6px; }
+.hamburger-icon::after { top: 6px; }
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  margin-left: auto;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  height: var(--nav-h);
+  padding: 0 10px;
+  color: #8aabcf;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+.nav-item:hover { color: #e2e8f0; }
+.nav-item--active {
+  color: #e2e8f0;
+  font-weight: 700;
+  border-bottom-color: var(--gold);
+}
+
+@media (max-width: 820px) {
+  .navbar { padding: 0 16px; }
+  .navbar-toggle { display: flex; }
+  .navbar-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--navy-mid);
+    border-bottom: 1px solid #223458;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  .navbar-menu.is-open { display: flex; }
+  .nav-item {
+    height: auto;
+    min-height: 48px;
+    padding: 0 16px;
+    border-bottom: 1px solid #223458;
+    border-left: 3px solid transparent;
+  }
+  .nav-item--active {
+    border-bottom-color: #223458;
+    border-left-color: var(--gold);
+  }
+}
+</style>
+
+<script>
+const toggle = document.querySelector<HTMLButtonElement>('.navbar-toggle');
+const menu = document.querySelector<HTMLUListElement>('.navbar-menu');
+
+if (toggle && menu) {
+  const closeMenu = () => {
+    menu.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+  };
+
+  toggle.addEventListener('click', () => {
+    const isOpen = menu.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menu.classList.contains('is-open')) {
+      closeMenu();
+      toggle.focus();
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (
+      menu.classList.contains('is-open') &&
+      !menu.contains(event.target as Node) &&
+      !toggle.contains(event.target as Node)
+    ) {
+      closeMenu();
+    }
+  });
+}
+</script>

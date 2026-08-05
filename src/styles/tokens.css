@@ -24,7 +24,8 @@
   --g800:     #1f2937;
   --g900:     #111827;
   --border:   #e2e4e9;
-  --header-h: 56px;
+  --nav-h:    48px;
+  --header-h: 104px;
 }
 
 @media (prefers-reduced-motion: no-preference) {

@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import AppHeader from '../../components/AppHeader.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { CALC_COMPARE, otherCalculators, ALL_GUIDES, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
@@ -45,23 +46,11 @@ const jsonLd = {
   twitterDescription="Compare rent, co-op, and condo affordability from your saved local profile."
   jsonLd={[jsonLd, breadcrumbJsonLd]}
 >
-<!--
-  Header is hand-rolled here rather than reused via AppHeader: this page's
-  header has a "Hub" nav-link and a "Save" toggle label that don't fit
-  AppHeader's fixed markup/prop shape (no nav-link slot, hardcoded "Save
-  inputs" label) — see task notes on preferring not to reshape a component
-  four other already-migrated pages depend on. Ported verbatim from source.
--->
-<header class="app-header">
-  <h1>NYC <em>Affordability</em> Comparison</h1>
-  <span class="tagline">Compare rent, co-op, and condo ceilings from one saved profile</span>
-  <label class="save-toggle" title="Save profile edits to this browser">
-    <input type="checkbox" id="save-toggle-cb" aria-label="Save profile">
-    <span class="toggle-track"><span class="toggle-thumb"></span></span>
-    <span class="toggle-label">Save</span>
-  </label>
-  <a class="nav-link" href="/">Hub</a>
-</header>
+<AppHeader
+  titleHtml="NYC <em>Affordability</em> Comparison"
+  tagline="Compare rent, co-op, and condo ceilings from one saved profile"
+  showSaveToggle
+/>
 <Breadcrumbs items={breadcrumbItems} padded />
 
 <main class="page">
@@ -329,26 +318,6 @@ const jsonLd = {
 </script>
 
 <style>
-/* ===== HEADER (hand-rolled — see comment above the <header> markup) ===== */
-.app-header {
-  background: var(--navy); padding: 13px 24px; display: flex; align-items: center; gap: 14px;
-  border-bottom: 2px solid #1e3a5f; position: sticky; top: 0; z-index: 100;
-}
-.app-header h1 { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; color: #e2e8f0; white-space: nowrap; }
-.app-header h1 em { font-style: normal; color: var(--gold); }
-.app-header .tagline { font-size: 12px; color: #fff; line-height: 1.3; }
-.save-toggle { display: flex; align-items: center; gap: 7px; margin-left: auto; cursor: pointer; user-select: none; flex-shrink: 0; }
-.save-toggle input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
-.toggle-track { width: 30px; height: 16px; background: #2a4a6e; border-radius: 8px; position: relative; transition: background .2s; flex-shrink: 0; }
-.toggle-thumb { position: absolute; left: 2px; top: 2px; width: 12px; height: 12px; background: #4a6fa5; border-radius: 50%; transition: left .2s, background .2s; }
-.save-toggle input:checked + .toggle-track { background: var(--blue); }
-.save-toggle input:checked + .toggle-track .toggle-thumb { left: 16px; background: #fff; }
-.toggle-label { font-size: 11px; color: #8aabcf; font-weight: 600; white-space: nowrap; }
-.save-toggle input:checked ~ .toggle-label { color: #c0d8f0; }
-.save-toggle input:focus-visible + .toggle-track { outline: 2px solid var(--blue); outline-offset: 2px; }
-.nav-link { color: #8aabcf; text-decoration: none; font-size: 12px; font-weight: 600; }
-.nav-link:hover { color: #e2e8f0; text-decoration: underline; }
-
 /* ===== PAGE LAYOUT / HERO / PROFILE PANEL ===== */
 .page { max-width: 1300px; margin: 20px auto; padding: 0 20px 60px; }
 .hero {
@@ -512,11 +481,9 @@ const jsonLd = {
 @media (max-width: 960px) {
   .hero-main, .summary-grid, .assumptions, .editor-grid { grid-template-columns: 1fr; }
   .profile-panel { max-width: 520px; }
-  .app-header .tagline { display: none; }
+  :global(.app-header .tagline) { display: none; }
 }
 @media (max-width: 560px) {
-  .app-header { padding: 13px 16px; }
-  .nav-link, .toggle-label { display: none; }
   .page { padding: 0 14px 44px; margin-top: 14px; }
   .hero-main { padding: 22px 18px 18px; }
   .profile-panel { grid-template-columns: 1fr; }

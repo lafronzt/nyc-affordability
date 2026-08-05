@@ -1,5 +1,6 @@
 ---
 import SEOHead from '../components/SEOHead.astro';
+import NavBar from '../components/NavBar.astro';
 import { ADS_ENABLED } from '../lib/adsConfig';
 import '../styles/tokens.css';
 
@@ -61,6 +62,7 @@ const showAds = ads && ADS_ENABLED;
   )}
 </head>
 <body class={`variant-${variant}`}>
+  <NavBar />
   <slot />
 </body>
 </html>
