@@ -3,16 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import AppHeader from '../../components/AppHeader.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { CALC_CONDO, otherCalculators, ALL_GUIDES, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
-import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
-
-const breadcrumbItems = [
-  { name: 'Home', path: '/' },
-  { name: CALC_CONDO.label, path: CALC_CONDO.href! },
-];
-const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Guides', links: ALL_GUIDES },
@@ -65,10 +57,9 @@ const jsonLd = {
   ogImageAlt="Can you afford a NYC condo? NYC Condo Affordability Calculator from NYC Affordability."
   twitterTitle="NYC Condo Affordability Calculator"
   twitterDescription="Free NYC housing affordability calculator for condos. Reverse-engineer your max purchase price from income, assets, and mortgage assumptions."
-  jsonLd={[jsonLd, breadcrumbJsonLd]}
+  jsonLd={jsonLd}
 >
-<AppHeader titleHtml="NYC <em>Condo</em> Affordability Calculator" tagline="Reverse-engineer your max purchase price from your financial profile" />
-<Breadcrumbs items={breadcrumbItems} padded />
+<AppHeader titleHtml="NYC <em>Condo</em> Affordability Calculator" />
 
 <main class="app-layout">
 
@@ -1071,7 +1062,6 @@ hr.snap-div { border: none; border-top: 1px dashed var(--g200); margin: 5px 0; }
   main.app-layout { grid-template-columns: 1fr; padding: 0 12px 40px; gap: 14px; }
   .results-panel { position: static; max-height: none; }
   .hero-price { font-size: 36px; }
-  :global(.app-header .tagline) { display: none; }
   :global(.acct-tbl td input[type="text"]) { width: 110px; }
   .how-works-wrap { padding: 0 12px; }
   .opt-chart-wrap canvas { height: 240px; }

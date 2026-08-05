@@ -3,16 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import AppHeader from '../../components/AppHeader.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { CALC_COMPARE, otherCalculators, ALL_GUIDES, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
-import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
-
-const breadcrumbItems = [
-  { name: 'Home', path: '/' },
-  { name: CALC_COMPARE.label, path: CALC_COMPARE.href! },
-];
-const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: otherCalculators(CALC_COMPARE.href!) },
@@ -44,14 +36,12 @@ const jsonLd = {
   ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
   twitterTitle="NYC Affordability Comparison"
   twitterDescription="Compare rent, co-op, and condo affordability from your saved local profile."
-  jsonLd={[jsonLd, breadcrumbJsonLd]}
+  jsonLd={jsonLd}
 >
 <AppHeader
   titleHtml="NYC <em>Affordability</em> Comparison"
-  tagline="Compare rent, co-op, and condo ceilings from one saved profile"
   showSaveToggle
 />
-<Breadcrumbs items={breadcrumbItems} padded />
 
 <main class="page">
   <section class="hero">
@@ -481,7 +471,6 @@ const jsonLd = {
 @media (max-width: 960px) {
   .hero-main, .summary-grid, .assumptions, .editor-grid { grid-template-columns: 1fr; }
   .profile-panel { max-width: 520px; }
-  :global(.app-header .tagline) { display: none; }
 }
 @media (max-width: 560px) {
   .page { padding: 0 14px 44px; margin-top: 14px; }

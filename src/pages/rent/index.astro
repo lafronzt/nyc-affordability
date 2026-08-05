@@ -3,16 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import AppHeader from '../../components/AppHeader.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { CALC_RENT, otherCalculators, ALL_GUIDES, NYC_HPD_TENANT_RIGHTS_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
-import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
-
-const breadcrumbItems = [
-  { name: 'Home', path: '/' },
-  { name: CALC_RENT.label, path: CALC_RENT.href! },
-];
-const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 const footerColumns: FooterColumn[] = [
   { heading: 'More Calculators', links: otherCalculators(CALC_RENT.href!) },
@@ -59,10 +51,9 @@ const jsonLd = {
   ogImageAlt="Can you afford NYC rent? NYC Rent Affordability Calculator from NYC Affordability."
   twitterTitle="NYC Rent Affordability Finder"
   twitterDescription="Free NYC housing affordability calculator for apartment rentals. Reverse-engineer your max affordable monthly rent from income, assets, and move-in assumptions."
-  jsonLd={[jsonLd, breadcrumbJsonLd]}
+  jsonLd={jsonLd}
 >
-<AppHeader titleHtml="NYC <em>Rent</em> Affordability Finder" tagline="Instantly calculate your maximum affordable monthly rent from income, assets, and NYC move-in costs." />
-<Breadcrumbs items={breadcrumbItems} padded />
+<AppHeader titleHtml="NYC <em>Rent</em> Affordability Finder" />
 
 <main class="app-layout">
 
