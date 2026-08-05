@@ -1,12 +1,9 @@
 ---
-interface Props {
-  backLink?: boolean;
-}
-const { backLink = false } = Astro.props;
+import NavLinks from './NavLinks.astro';
 ---
-<header class={`site-header${backLink ? ' site-header--with-back' : ''}`}>
+<header class="site-header">
   <h1>NYC <em>Affordability</em></h1>
-  {backLink && <a class="back-link" href="/">&larr; Back to Hub</a>}
+  <NavLinks />
 </header>
 
 <style>
@@ -16,19 +13,19 @@ const { backLink = false } = Astro.props;
   border-bottom: 2px solid #1e3a5f;
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-height: 56px;
-}
-.site-header--with-back {
-  justify-content: space-between;
+  gap: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  min-height: var(--header-h);
 }
 .site-header h1 {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.3px;
   color: #e2e8f0;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .site-header h1 em { font-style: normal; color: var(--gold); }
-.site-header a.back-link { color: #8aabcf; text-decoration: none; font-size: 12px; font-weight: 600; }
-.site-header a.back-link:hover { color: #e2e8f0; text-decoration: underline; }
 </style>

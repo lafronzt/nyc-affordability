@@ -3,16 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import AppHeader from '../../components/AppHeader.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { CALC_AFFORDABLE, otherCalculators, ALL_GUIDES, NYC_HPD_TENANT_RIGHTS_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
-import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
-
-const breadcrumbItems = [
-  { name: 'Home', path: '/' },
-  { name: CALC_AFFORDABLE.label, path: CALC_AFFORDABLE.href! },
-];
-const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 const footerColumns: FooterColumn[] = [
   { heading: 'More Calculators', links: otherCalculators(CALC_AFFORDABLE.href!) },
@@ -59,10 +51,9 @@ const jsonLd = {
   ogImageAlt="NYC Affordable Housing Calculator — enter household size and income to find AMI percentage and Housing Connect band eligibility."
   twitterTitle="NYC Affordable Housing Calculator"
   twitterDescription="Find your AMI percentage and check Housing Connect eligibility for NYC affordable housing."
-  jsonLd={[jsonLd, breadcrumbJsonLd]}
+  jsonLd={jsonLd}
 >
 <AppHeader titleHtml="NYC <em>Affordable</em> Housing Finder" tagline="Calculate your AMI percentage and check Housing Connect eligibility across all income bands." />
-<Breadcrumbs items={breadcrumbItems} padded />
 
 <main class="app-layout">
 
@@ -362,9 +353,6 @@ const jsonLd = {
 </script>
 
 <style>
-:global(.app-header .tagline) { display: none; }
-@media (min-width: 700px) { :global(.app-header .tagline) { display: block; } }
-
 /* ===== MAIN LAYOUT ===== */
 main.app-layout {
   display: grid;
