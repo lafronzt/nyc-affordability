@@ -1,8 +1,30 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AppHeader from '../../components/AppHeader.astro';
-import AppFooter from '../../components/AppFooter.astro';
+import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_RENT, otherCalculators, NYC_HPD_TENANT_RIGHTS_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'More Calculators', links: otherCalculators(CALC_RENT.href!) },
+  {
+    heading: 'NYC Renter Resources',
+    links: [
+      { label: 'StreetEasy', href: 'https://streeteasy.com' },
+      NYC_HPD_TENANT_RIGHTS_LINK,
+      { label: 'FARE Act FAQ', href: 'https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page' },
+    ],
+  },
+  {
+    heading: 'Legal',
+    links: [
+      { label: 'HSTPA Security Deposit Law', href: 'https://www.nysenate.gov/legislation/laws/RPP/227-G' },
+      { label: 'For informational purposes only' },
+    ],
+  },
+  STANDARD_ABOUT_COLUMN,
+];
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -557,42 +579,11 @@ const jsonLd = {
 
 <AdSlot maxWidth="1300px" sidePadding="20px" />
 
-<AppFooter disclaimer="Median rent figures: StreetEasy Market Reports, March 2026. Calculator results are estimates — individual landlord requirements vary. Not financial or legal advice.">
-  <div class="footer-col">
-    <div class="footer-heading">More Calculators</div>
-    <ul>
-      <li><a href="https://www.nyc-affordability.com/coop/">Co-op Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/condo/">Condo Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/affordable/">Affordable Housing Calculator</a></li>
-      <li><a href="https://www.nyc-affordability.com/compare/">Compare All Options</a></li>
-      <li><a href="https://www.nyc-affordability.com/">NYC Affordability Hub</a></li>
-      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
-      <li><a href="https://buymeacoffee.com/lafronzt" target="_blank" rel="noopener noreferrer">☕ Support this project</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">NYC Renter Resources</div>
-    <ul>
-      <li><a href="https://streeteasy.com" target="_blank" rel="noopener noreferrer">StreetEasy ↗</a></li>
-      <li><a href="https://www.nyc.gov/site/hpd/renters/tenantrights.page" target="_blank" rel="noopener noreferrer">NYC HPD Tenant Rights ↗</a></li>
-      <li><a href="https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page" target="_blank" rel="noopener noreferrer">FARE Act FAQ ↗</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Legal</div>
-    <ul>
-      <li><a href="https://www.nysenate.gov/legislation/laws/RPP/227-G" target="_blank" rel="noopener noreferrer">HSTPA Security Deposit Law ↗</a></li>
-      <li>For informational purposes only</li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">About</div>
-    <ul>
-      <li><a href="/about/">About This Project</a></li>
-      <li><a href="/privacy/">Privacy Policy</a></li>
-    </ul>
-  </div>
-</AppFooter>
+<Footer
+  variant="app"
+  disclaimer="Median rent figures: StreetEasy Market Reports, March 2026. Calculator results are estimates — individual landlord requirements vary. Not financial or legal advice."
+  columns={footerColumns}
+/>
 </BaseLayout>
 
 <script>

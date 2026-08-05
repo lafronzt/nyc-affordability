@@ -1,8 +1,36 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AppHeader from '../../components/AppHeader.astro';
-import AppFooter from '../../components/AppFooter.astro';
+import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_CONDO, otherCalculators, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+
+const footerColumns: FooterColumn[] = [
+  {
+    heading: 'NYC Housing Resources',
+    links: [
+      { label: 'NYC DOF: Real Property Transfer Tax', href: 'https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page' },
+      MANSION_TAX_GUIDE_LINK,
+      { label: 'ACRIS (NYC Mortgage Recording)', href: 'https://www.nyc.gov/site/finance/property/acris.page' },
+    ],
+  },
+  {
+    heading: 'Mortgage & Financing',
+    links: [
+      CFPB_OWNING_HOME_LINK,
+      { label: 'Verify Your Mortgage Broker (NMLS)', href: 'https://www.nmlsconsumeraccess.org/' },
+      { label: 'Freddie Mac PMMS (Current Rates)', href: 'https://www.freddiemac.com/pmms' },
+      { label: 'CFPB: When Can I Cancel PMI?', href: 'https://www.consumerfinance.gov/ask-cfpb/when-can-i-stop-paying-private-mortgage-insurance-pmi-en-202/' },
+    ],
+  },
+  {
+    heading: 'Find an Attorney',
+    links: [{ label: 'NYC Bar Lawyer Referral', href: 'https://www.nycbar.org/lawyer-referral-service' }],
+  },
+  { heading: 'More NYC Calculators', links: otherCalculators(CALC_CONDO.href!) },
+  STANDARD_ABOUT_COLUMN,
+];
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -603,50 +631,11 @@ const jsonLd = {
 
 <AdSlot maxWidth="1300px" sidePadding="20px" />
 
-<AppFooter disclaimer="This calculator is for informational purposes only and does not constitute financial, legal, or mortgage advice. Tax rates, closing costs, lender requirements, and building policies vary by transaction and are subject to change. Mortgage recording tax and mansion tax estimates should be verified with a closing attorney and NYC DOF / ACRIS. PMI rates are estimates based on typical conventional loan pricing; your actual rate depends on credit score, lender, and loan type. Always consult a licensed mortgage professional and real estate attorney before making any purchase decisions.">
-  <div class="footer-col">
-    <div class="footer-heading">NYC Housing Resources</div>
-    <ul>
-      <li><a href="https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page" target="_blank" rel="noopener noreferrer">NYC DOF: Real Property Transfer Tax</a></li>
-      <li><a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">NY Mansion Tax Guide (NYS Tax Dept.)</a></li>
-      <li><a href="https://www.nyc.gov/site/finance/property/acris.page" target="_blank" rel="noopener noreferrer">ACRIS (NYC Mortgage Recording)</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Mortgage &amp; Financing</div>
-    <ul>
-      <li><a href="https://www.consumerfinance.gov/owning-a-home/" target="_blank" rel="noopener noreferrer">CFPB: Owning a Home Guide</a></li>
-      <li><a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">Verify Your Mortgage Broker (NMLS)</a></li>
-      <li><a href="https://www.freddiemac.com/pmms" target="_blank" rel="noopener noreferrer">Freddie Mac PMMS (Current Rates)</a></li>
-      <li><a href="https://www.consumerfinance.gov/ask-cfpb/when-can-i-stop-paying-private-mortgage-insurance-pmi-en-202/" target="_blank" rel="noopener noreferrer">CFPB: When Can I Cancel PMI?</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Find an Attorney</div>
-    <ul>
-      <li><a href="https://www.nycbar.org/lawyer-referral-service" target="_blank" rel="noopener noreferrer">NYC Bar Lawyer Referral</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">More NYC Calculators</div>
-    <ul>
-      <li><a href="https://www.nyc-affordability.com/coop/">NYC Co-op Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/rent/">NYC Rent Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/affordable/">NYC Affordable Housing Calculator</a></li>
-      <li><a href="https://www.nyc-affordability.com/compare/">Compare All Options</a></li>
-      <li><a href="https://www.nyc-affordability.com/">NYC Affordability Hub</a></li>
-      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
-      <li><a href="https://buymeacoffee.com/lafronzt" target="_blank" rel="noopener noreferrer">☕ Support this project</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">About</div>
-    <ul>
-      <li><a href="/about/">About This Project</a></li>
-      <li><a href="/privacy/">Privacy Policy</a></li>
-    </ul>
-  </div>
-</AppFooter>
+<Footer
+  variant="app"
+  disclaimer="This calculator is for informational purposes only and does not constitute financial, legal, or mortgage advice. Tax rates, closing costs, lender requirements, and building policies vary by transaction and are subject to change. Mortgage recording tax and mansion tax estimates should be verified with a closing attorney and NYC DOF / ACRIS. PMI rates are estimates based on typical conventional loan pricing; your actual rate depends on credit score, lender, and loan type. Always consult a licensed mortgage professional and real estate attorney before making any purchase decisions."
+  columns={footerColumns}
+/>
 </BaseLayout>
 
 <script>

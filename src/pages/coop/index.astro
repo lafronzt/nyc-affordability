@@ -1,8 +1,40 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AppHeader from '../../components/AppHeader.astro';
-import AppFooter from '../../components/AppFooter.astro';
+import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_COOP, otherCalculators, HPD_HOME_LINK, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+
+const footerColumns: FooterColumn[] = [
+  {
+    heading: 'NYC Housing Resources',
+    links: [
+      HPD_HOME_LINK,
+      { label: 'NYC Housing Development Corp.', href: 'https://www.nychdc.com/' },
+      { label: 'HUD New York Resources', href: 'https://portal.hud.gov/hudportal/HUD?src=/states/new_york' },
+    ],
+  },
+  {
+    heading: 'Mortgage & Financing',
+    links: [
+      CFPB_OWNING_HOME_LINK,
+      { label: 'Verify Your Mortgage Broker (NMLS)', href: 'https://www.nmlsconsumeraccess.org/' },
+      { label: 'Current Interest Rate Data (Fed)', href: 'https://www.federalreserve.gov/releases/h15/' },
+      { label: 'CFPB: When Can I Cancel PMI?', href: 'https://www.consumerfinance.gov/ask-cfpb/when-can-i-stop-paying-private-mortgage-insurance-pmi-en-202/' },
+    ],
+  },
+  {
+    heading: 'Taxes & Closing Costs',
+    links: [
+      MANSION_TAX_GUIDE_LINK,
+      { label: 'NYC Real Property Transfer Tax', href: 'https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page' },
+      { label: 'Find a Real Estate Attorney (NYC Bar)', href: 'https://www.nycbar.org/lawyer-referral-service' },
+    ],
+  },
+  { heading: 'More NYC Calculators', links: otherCalculators(CALC_COOP.href!) },
+  STANDARD_ABOUT_COLUMN,
+];
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -606,52 +638,11 @@ const jsonLd = {
 
 <AdSlot maxWidth="1300px" sidePadding="20px" />
 
-<AppFooter disclaimer="This calculator is for informational purposes only and does not constitute financial, legal, or mortgage advice. Co-op board requirements, tax rates, and closing costs vary by building and transaction. Always verify all figures with a licensed mortgage professional and real estate attorney before making any purchase decisions. PMI rates are estimates based on typical conventional loan pricing; your actual rate depends on credit score, lender, and loan type.">
-  <div class="footer-col">
-    <div class="footer-heading">NYC Housing Resources</div>
-    <ul>
-      <li><a href="https://www.nyc.gov/site/hpd/index.page" target="_blank" rel="noopener noreferrer">NYC HPD (Housing Preservation &amp; Development)</a></li>
-      <li><a href="https://www.nychdc.com/" target="_blank" rel="noopener noreferrer">NYC Housing Development Corp.</a></li>
-      <li><a href="https://portal.hud.gov/hudportal/HUD?src=/states/new_york" target="_blank" rel="noopener noreferrer">HUD New York Resources</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Mortgage &amp; Financing</div>
-    <ul>
-      <li><a href="https://www.consumerfinance.gov/owning-a-home/" target="_blank" rel="noopener noreferrer">CFPB: Owning a Home Guide</a></li>
-      <li><a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">Verify Your Mortgage Broker (NMLS)</a></li>
-      <li><a href="https://www.federalreserve.gov/releases/h15/" target="_blank" rel="noopener noreferrer">Current Interest Rate Data (Fed)</a></li>
-      <li><a href="https://www.consumerfinance.gov/ask-cfpb/when-can-i-stop-paying-private-mortgage-insurance-pmi-en-202/" target="_blank" rel="noopener noreferrer">CFPB: When Can I Cancel PMI?</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Taxes &amp; Closing Costs</div>
-    <ul>
-      <li><a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">NY Mansion Tax Guide (NYS Tax Dept.)</a></li>
-      <li><a href="https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page" target="_blank" rel="noopener noreferrer">NYC Real Property Transfer Tax</a></li>
-      <li><a href="https://www.nycbar.org/lawyer-referral-service" target="_blank" rel="noopener noreferrer">Find a Real Estate Attorney (NYC Bar)</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">More NYC Calculators</div>
-    <ul>
-      <li><a href="https://www.nyc-affordability.com/condo/">NYC Condo Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/rent/">NYC Rent Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/affordable/">NYC Affordable Housing Calculator</a></li>
-      <li><a href="https://www.nyc-affordability.com/compare/">Compare All Options</a></li>
-      <li><a href="https://www.nyc-affordability.com/">NYC Affordability Hub</a></li>
-      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
-      <li><a href="https://buymeacoffee.com/lafronzt" target="_blank" rel="noopener noreferrer">☕ Support this project</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">About</div>
-    <ul>
-      <li><a href="/about/">About This Project</a></li>
-      <li><a href="/privacy/">Privacy Policy</a></li>
-    </ul>
-  </div>
-</AppFooter>
+<Footer
+  variant="app"
+  disclaimer="This calculator is for informational purposes only and does not constitute financial, legal, or mortgage advice. Co-op board requirements, tax rates, and closing costs vary by building and transaction. Always verify all figures with a licensed mortgage professional and real estate attorney before making any purchase decisions. PMI rates are estimates based on typical conventional loan pricing; your actual rate depends on credit score, lender, and loan type."
+  columns={footerColumns}
+/>
 </BaseLayout>
 
 <script>

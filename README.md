@@ -50,7 +50,7 @@ The default Worker domain also serves all paths directly by file-system structur
    'www.example.com': '/example',
    ```
    To retire a standalone calculator domain in favor of the hub, add it to `DOMAIN_REDIRECTS` instead.
-2. Create `src/pages/example/index.astro` using `BaseLayout` + `AppHeader`/`AppFooter` (calculators) or `SiteHeader`/`SiteFooter` (informational pages) — see [Repository structure](#repository-structure) below.
+2. Create `src/pages/example/index.astro` using `BaseLayout` + `AppHeader` (calculators) or `SiteHeader` (informational pages), plus the shared `Footer` component — see [Repository structure](#repository-structure) below.
 3. In Cloudflare Workers → your Worker → **Settings** → **Domains & Routes**, add the domain or route.
 4. Update DNS as needed for the Worker custom domain or route.
 5. Add cross-links in the footer of each existing page and on `src/pages/index.astro`.
@@ -67,16 +67,16 @@ The default Worker domain also serves all paths directly by file-system structur
 │   ├── components/
 │   │   ├── SEOHead.astro          ← meta/OG/Twitter/canonical/JSON-LD, prop-driven
 │   │   ├── SiteHeader.astro       ← header for hub/about/privacy
-│   │   ├── SiteFooter.astro       ← footer for hub/about/privacy (slot-based columns)
 │   │   ├── AppHeader.astro        ← header for calculators (save-toggle, tagline)
-│   │   ├── AppFooter.astro        ← footer for calculators (slot-based columns)
+│   │   ├── Footer.astro           ← shared footer for every page (variant: 'site' | 'app', disclaimer, columns props)
 │   │   └── AdSlot.astro           ← the AdSense <ins> block
 │   ├── styles/
 │   │   └── tokens.css             ← shared design tokens, reset, base body rules
 │   ├── lib/
 │   │   ├── format.ts              ← fmtMoney / fmtPercent
 │   │   ├── calc.ts                ← calcMansionTax / calcPmiRate / calcPmiMonthly / calcMortgageRecordingTax / bsearchMaxPrice
-│   │   └── sharedProfile.ts       ← nyc_shared_profile localStorage contract
+│   │   ├── sharedProfile.ts       ← nyc_shared_profile localStorage contract
+│   │   └── footerLinks.ts         ← shared FooterLink/FooterColumn data reused across every page's footer
 │   ├── scripts/                   ← per-page calculator logic (coop.ts, condo.ts, rent.ts, affordable.ts, compare.ts)
 │   ├── content.config.ts          ← `guides` content collection schema (frontmatter shape, defaults)
 │   ├── content/

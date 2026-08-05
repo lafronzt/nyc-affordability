@@ -1410,9 +1410,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Collapsible
   $('how-btn')!.addEventListener('click', () => { $('how-btn')!.classList.toggle('open'); $('how-body')!.classList.toggle('open'); });
 
-  // Screen-reader new-tab links
-  document.querySelectorAll('a[target="_blank"]').forEach(a => { a.insertAdjacentHTML('beforeend', '<span class="sr-only"> (opens in new tab)</span>'); });
-
   // Initial render
   onChange();
 });

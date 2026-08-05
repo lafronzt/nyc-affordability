@@ -1,7 +1,14 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import AppFooter from '../../components/AppFooter.astro';
+import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_COMPARE, otherCalculators, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: otherCalculators(CALC_COMPARE.href!) },
+  STANDARD_ABOUT_COLUMN,
+];
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -300,27 +307,11 @@ const jsonLd = {
 
 <AdSlot maxWidth="1300px" sidePadding="20px" />
 
-<AppFooter disclaimer="This dashboard is for informational purposes only and does not constitute financial, legal, or mortgage advice. It combines your saved profile with your saved assumptions (editable in the panel above). Open an individual calculator for detailed inputs and source notes.">
-  <div class="footer-col">
-    <div class="footer-heading">Calculators</div>
-    <ul>
-      <li><a href="/rent/">NYC Rent Affordability</a></li>
-      <li><a href="/coop/">NYC Co-op Affordability</a></li>
-      <li><a href="/condo/">NYC Condo Affordability</a></li>
-      <li><a href="/compare/">Compare All Options</a></li>
-      <li><a href="/">NYC Affordability Hub</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">About</div>
-    <ul>
-      <li><a href="/about/">About This Project</a></li>
-      <li><a href="/privacy/">Privacy Policy</a></li>
-      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
-      <li><a href="https://buymeacoffee.com/lafronzt" target="_blank" rel="noopener noreferrer">☕ Support this project</a></li>
-    </ul>
-  </div>
-</AppFooter>
+<Footer
+  variant="app"
+  disclaimer="This dashboard is for informational purposes only and does not constitute financial, legal, or mortgage advice. It combines your saved profile with your saved assumptions (editable in the panel above). Open an individual calculator for detailed inputs and source notes."
+  columns={footerColumns}
+/>
 </BaseLayout>
 
 <script>

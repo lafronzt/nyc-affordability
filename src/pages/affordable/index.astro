@@ -1,8 +1,30 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AppHeader from '../../components/AppHeader.astro';
-import AppFooter from '../../components/AppFooter.astro';
+import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_AFFORDABLE, otherCalculators, NYC_HPD_TENANT_RIGHTS_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'More Calculators', links: otherCalculators(CALC_AFFORDABLE.href!) },
+  {
+    heading: 'Affordable Housing',
+    links: [
+      { label: 'Housing Connect', href: 'https://housingconnect.nyc.gov' },
+      { label: 'NYC HPD Affordable Housing', href: 'https://www.nyc.gov/site/hpd/renters/affordable-housing.page' },
+      { label: 'HUD Income Limits', href: 'https://www.huduser.gov/portal/datasets/il.html' },
+    ],
+  },
+  {
+    heading: 'Renter Resources',
+    links: [
+      NYC_HPD_TENANT_RIGHTS_LINK,
+      { label: 'NYS AG Tenant Guide', href: 'https://ag.ny.gov/publications/residential-tenants-rights-guide' },
+    ],
+  },
+  STANDARD_ABOUT_COLUMN,
+];
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -318,42 +340,11 @@ const jsonLd = {
 
 <AdSlot maxWidth="1300px" sidePadding="20px" />
 
-<AppFooter disclaimer="Income limits are based on HUD FY2024 data and change annually. This calculator is for informational purposes only and does not constitute financial, legal, or housing advice. Always verify current AMI limits with NYC HPD or HUD before applying to affordable housing programs.">
-  <div class="footer-col">
-    <div class="footer-heading">More Calculators</div>
-    <ul>
-      <li><a href="https://www.nyc-affordability.com/rent/">NYC Rent Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/coop/">Co-op Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/condo/">Condo Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/compare/">Compare All Options</a></li>
-      <li><a href="https://www.nyc-affordability.com/">NYC Affordability Hub</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Affordable Housing</div>
-    <ul>
-      <li><a href="https://housingconnect.nyc.gov" target="_blank" rel="noopener noreferrer">Housing Connect ↗</a></li>
-      <li><a href="https://www.nyc.gov/site/hpd/renters/affordable-housing.page" target="_blank" rel="noopener noreferrer">NYC HPD Affordable Housing ↗</a></li>
-      <li><a href="https://www.huduser.gov/portal/datasets/il.html" target="_blank" rel="noopener noreferrer">HUD Income Limits ↗</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Renter Resources</div>
-    <ul>
-      <li><a href="https://www.nyc.gov/site/hpd/renters/tenantrights.page" target="_blank" rel="noopener noreferrer">NYC HPD Tenant Rights ↗</a></li>
-      <li><a href="https://ag.ny.gov/publications/residential-tenants-rights-guide" target="_blank" rel="noopener noreferrer">NYS AG Tenant Guide ↗</a></li>
-      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
-      <li><a href="https://buymeacoffee.com/lafronzt" target="_blank" rel="noopener noreferrer">☕ Support this project</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">About</div>
-    <ul>
-      <li><a href="/about/">About This Project</a></li>
-      <li><a href="/privacy/">Privacy Policy</a></li>
-    </ul>
-  </div>
-</AppFooter>
+<Footer
+  variant="app"
+  disclaimer="Income limits are based on HUD FY2024 data and change annually. This calculator is for informational purposes only and does not constitute financial, legal, or housing advice. Always verify current AMI limits with NYC HPD or HUD before applying to affordable housing programs."
+  columns={footerColumns}
+/>
 </BaseLayout>
 
 <script>

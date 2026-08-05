@@ -1,8 +1,31 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
-import SiteFooter from '../components/SiteFooter.astro';
+import Footer from '../components/Footer.astro';
 import AdSlot from '../components/AdSlot.astro';
+import type { FooterColumn } from '../lib/footerLinks';
+import { ALL_CALCULATORS, HPD_HOME_LINK, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../lib/footerLinks';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  {
+    heading: 'NYC Housing Resources',
+    links: [
+      HPD_HOME_LINK,
+      CFPB_OWNING_HOME_LINK,
+      { label: "NYS AG Tenants' Rights", href: 'https://ag.ny.gov/publications/residential-tenants-rights-guide' },
+    ],
+  },
+  {
+    heading: 'Taxes & Rules',
+    links: [
+      MANSION_TAX_GUIDE_LINK,
+      { label: 'NYC Real Property Transfer Tax', href: 'https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page' },
+      { label: 'NYC FARE Act FAQ', href: 'https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page' },
+    ],
+  },
+  STANDARD_ABOUT_COLUMN,
+];
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -159,48 +182,11 @@ const jsonLd = {
 <AdSlot />
 </main>
 
-<SiteFooter disclaimer="These calculators are for informational purposes only and do not constitute financial, legal, or mortgage advice. Tax rates, board requirements, and closing costs vary by building, lender, and transaction. Always verify all figures with a licensed mortgage professional and real estate attorney before making housing decisions.">
-  <div class="footer-col">
-    <div class="footer-heading">Calculators</div>
-    <ul>
-      <li><a href="/coop/">NYC Co-op Affordability</a></li>
-      <li><a href="/condo/">NYC Condo Affordability</a></li>
-      <li><a href="/rent/">NYC Rent Affordability</a></li>
-      <li><a href="/affordable/">NYC Affordable Housing Calculator</a></li>
-      <li><a href="/compare/">Compare All Options</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">NYC Housing Resources</div>
-    <ul>
-      <li><a href="https://www.nyc.gov/site/hpd/index.page" target="_blank" rel="noopener noreferrer">NYC HPD</a></li>
-      <li><a href="https://www.consumerfinance.gov/owning-a-home/" target="_blank" rel="noopener noreferrer">CFPB: Owning a Home</a></li>
-      <li><a href="https://ag.ny.gov/publications/residential-tenants-rights-guide" target="_blank" rel="noopener noreferrer">NYS AG Tenants' Rights</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Taxes &amp; Rules</div>
-    <ul>
-      <li><a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">NY Mansion Tax Guide</a></li>
-      <li><a href="https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page" target="_blank" rel="noopener noreferrer">NYC Real Property Transfer Tax</a></li>
-      <li><a href="https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page" target="_blank" rel="noopener noreferrer">NYC FARE Act FAQ</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Open Source</div>
-    <ul>
-      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub</a></li>
-      <li><a href="https://buymeacoffee.com/lafronzt" target="_blank" rel="noopener noreferrer">☕ Support this project</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">About</div>
-    <ul>
-      <li><a href="/about/">About This Project</a></li>
-      <li><a href="/privacy/">Privacy Policy</a></li>
-    </ul>
-  </div>
-</SiteFooter>
+<Footer
+  variant="site"
+  disclaimer="These calculators are for informational purposes only and do not constitute financial, legal, or mortgage advice. Tax rates, board requirements, and closing costs vary by building, lender, and transaction. Always verify all figures with a licensed mortgage professional and real estate attorney before making housing decisions."
+  columns={footerColumns}
+/>
 </BaseLayout>
 
 <style>
