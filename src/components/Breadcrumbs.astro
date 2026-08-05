@@ -1,0 +1,39 @@
+---
+import type { BreadcrumbItem } from '../lib/breadcrumbs';
+
+interface Props {
+  items: BreadcrumbItem[];
+  /** Full-width bar on its own background, for pages with no padded content wrapper (app-variant pages). */
+  padded?: boolean;
+}
+const { items, padded = false } = Astro.props;
+---
+<nav class={`breadcrumb-bar${padded ? ' breadcrumb-bar--padded' : ''}`} aria-label="Breadcrumb">
+  {items.map((item, i) => (
+    <>
+      {i > 0 && <span class="crumb-sep">/</span>}
+      {i === items.length - 1
+        ? <span class="crumb-current">{item.name}</span>
+        : <a href={item.path}>{item.name}</a>}
+    </>
+  ))}
+</nav>
+
+<style>
+.breadcrumb-bar {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-size: 12px; color: var(--g500); margin-bottom: 16px;
+}
+.breadcrumb-bar a { color: var(--g500); text-decoration: none; }
+.breadcrumb-bar a:hover { color: var(--blue); text-decoration: underline; }
+.breadcrumb-bar .crumb-sep { color: var(--g300); }
+.breadcrumb-bar .crumb-current { color: var(--g700); font-weight: 650; }
+
+.breadcrumb-bar--padded {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 9px 24px;
+  margin-bottom: 0;
+  font-size: 11px;
+}
+</style>

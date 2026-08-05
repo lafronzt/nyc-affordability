@@ -1,10 +1,51 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AppHeader from '../../components/AppHeader.astro';
-import AppFooter from '../../components/AppFooter.astro';
+import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_COOP, otherCalculators, ALL_GUIDES, HPD_HOME_LINK, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 
-const jsonLd = {
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: CALC_COOP.label, path: CALC_COOP.href! },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Guides', links: ALL_GUIDES },
+  {
+    heading: 'NYC Housing Resources',
+    links: [
+      HPD_HOME_LINK,
+      { label: 'NYC Housing Development Corp.', href: 'https://www.nychdc.com/' },
+      { label: 'HUD New York Resources', href: 'https://portal.hud.gov/hudportal/HUD?src=/states/new_york' },
+    ],
+  },
+  {
+    heading: 'Mortgage & Financing',
+    links: [
+      CFPB_OWNING_HOME_LINK,
+      { label: 'Verify Your Mortgage Broker (NMLS)', href: 'https://www.nmlsconsumeraccess.org/' },
+      { label: 'Current Interest Rate Data (Fed)', href: 'https://www.federalreserve.gov/releases/h15/' },
+      { label: 'CFPB: When Can I Cancel PMI?', href: 'https://www.consumerfinance.gov/ask-cfpb/when-can-i-stop-paying-private-mortgage-insurance-pmi-en-202/' },
+    ],
+  },
+  {
+    heading: 'Taxes & Closing Costs',
+    links: [
+      MANSION_TAX_GUIDE_LINK,
+      { label: 'NYC Real Property Transfer Tax', href: 'https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page' },
+      { label: 'Find a Real Estate Attorney (NYC Bar)', href: 'https://www.nycbar.org/lawyer-referral-service' },
+    ],
+  },
+  { heading: 'More NYC Calculators', links: otherCalculators(CALC_COOP.href!) },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const webAppSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'NYC Co-op Apartment Affordability Calculator',
@@ -15,6 +56,111 @@ const jsonLd = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
   areaServed: { '@type': 'City', name: 'New York City', sameAs: 'https://www.wikidata.org/wiki/Q60' },
 };
+
+// Questions and answers below are condensed, non-invented restatements of the
+// "How this works" copy already visible in the collapsible panel on this page
+// (see the <h3>/<p> pairs starting at "Two constraints, one limit").
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'How does this calculator determine my maximum co-op purchase price?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "This calculator finds the lower of two maximum prices. Cash / Reserves: your assets are split into two pools — accounts marked 'Closing?' cover the down payment and closing costs, while all accounts (weighted by Reserve %) count toward the post-close reserve cushion. DTI / Income: your total monthly housing payment (mortgage P&I + maintenance + other debts) must stay within the board's debt-to-income ratio limit on your gross monthly income. Whichever constraint produces the lower max price is your binding limit.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: "What's the difference between the Closing? checkbox and Reserve % for each account?",
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "Closing? is checked for any account you can fully liquidate and wire on closing day (cash, HYSA, brokerage you plan to sell) — the full balance then counts toward the down payment and closing costs. Reserve % is the fraction of the balance your board credits toward post-closing reserves. Boards typically credit 100% for cash and HYSA, 70-80% for brokerage (a market-volatility haircut), and 0% for retirement accounts (401k, IRA, Roth IRA).",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'When is PMI required on a co-op share loan, and how much does it cost?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Private mortgage insurance (PMI) is required on conventional co-op share loans with less than 20% down. The calculator applies PMI automatically based on your down payment percentage, using typical rates for a borrower with good credit (about 720-740 FICO): roughly 0.52%/yr at 15-20% down, 0.70% at 10-15%, 0.95% at 5-10%, and 1.20% below 5%. PMI is factored into the DTI and reserve calculations.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How is the mansion tax calculated on a co-op purchase?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "New York's mansion tax applies to co-op purchases just as it does to condos, following the consideration paid. It starts at 1% on purchases of $1,000,000-$2,000,000 and steps up to 3.9% above $25,000,000. The tax is not marginal: crossing a tier raises the entire bill, so a $999,999 purchase owes $0 while a $1,000,001 purchase owes roughly $10,000.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How many months of reserves and what DTI ratio do NYC co-op boards typically require?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Most co-op boards require 12 months of post-close carrying costs (maintenance + mortgage) in liquid reserves, though conservative buildings ask for 24 or more. Most NYC boards use a 25-30% debt-to-income ratio on your total monthly housing payment.',
+      },
+    },
+  ],
+};
+
+// Steps mirror the calculator's own visibly numbered input cards (1-5, each
+// rendered with a <span class="snum"> on this page) plus the results panel.
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'How to use the NYC Co-op Affordability Calculator',
+  description: 'Reverse-engineer your maximum NYC co-op purchase price from your income, assets, and a building’s board requirements.',
+  step: [
+    {
+      '@type': 'HowToStep',
+      position: 1,
+      name: 'Account Balances',
+      text: 'List your checking, savings, and investment accounts, each with a balance, a Reserve % weighting, and whether it is available at closing.',
+      url: 'https://www.nyc-affordability.com/coop/#card-body-1',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 2,
+      name: 'Income & Existing Debts',
+      text: 'Enter your annual gross income and any existing monthly debts.',
+      url: 'https://www.nyc-affordability.com/coop/#card-body-2',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 3,
+      name: 'Mortgage Assumptions',
+      text: 'Set your expected mortgage rate, loan term, and down payment percentage.',
+      url: 'https://www.nyc-affordability.com/coop/#card-body-3',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 4,
+      name: 'Co-op Requirements',
+      text: "Set the building's required post-close reserve months and its maximum board debt-to-income ratio.",
+      url: 'https://www.nyc-affordability.com/coop/#card-body-4',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 5,
+      name: 'Closing Costs',
+      text: 'Enter estimated attorney, bank attorney, co-op application, and move-in fees.',
+      url: 'https://www.nyc-affordability.com/coop/#card-body-5',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 6,
+      name: 'Your Max Affordable Price',
+      text: 'View your maximum affordable purchase price, which constraint (cash or DTI) is binding, and the full cost breakdown.',
+      url: 'https://www.nyc-affordability.com/coop/',
+    },
+  ],
+};
+
+const jsonLd = [webAppSchema, faqSchema, howToSchema, breadcrumbJsonLd];
 ---
 <BaseLayout
   variant="app"
@@ -31,6 +177,7 @@ const jsonLd = {
   jsonLd={jsonLd}
 >
 <AppHeader titleHtml="NYC <em>Co-op</em> Affordability Finder" tagline="Reverse-engineer your max purchase price from your financial profile" />
+<Breadcrumbs items={breadcrumbItems} padded />
 
 <main class="app-layout">
 
@@ -588,7 +735,7 @@ const jsonLd = {
       <h3>Two constraints, one limit</h3>
       <p>This calculator finds the lower of two maximum prices:</p>
       <ul>
-        <li><strong>Cash / Reserves:</strong> Your assets are split into two pools. Only accounts with <em>Closing?</em> checked can cover the down payment and closing costs — these are wired at closing. All accounts (weighted by Reserve %) count toward the post-close reserve cushion — most boards require 12 months of carrying costs (maintenance + mortgage), though conservative buildings ask for 24+. Both pools must be sufficient for a deal to work.</li>
+        <li><strong>Cash / Reserves:</strong> Your assets are split into two pools. Only accounts with <em>Closing?</em> checked can cover the down payment and closing costs — these are wired at closing. All accounts (weighted by Reserve %) count toward the post-close reserve cushion — most boards require 12 months of carrying costs (maintenance + mortgage), though conservative buildings ask for 24+. Both pools must be sufficient for a deal to work. See our <a href="/guides/coop-board-reserve-requirements/">guide to co-op board reserve requirements</a> for the full math.</li>
         <li><strong>DTI / Income:</strong> Your total monthly housing payment (mortgage P+I + maintenance + other debts) must stay within the board's debt-to-income ratio limit on your gross monthly income. Most NYC boards use 25–30% DTI.</li>
       </ul>
       <p>Whichever constraint produces the <em>lower</em> max price is your binding limit — you can't spend more than both allow simultaneously.</p>
@@ -597,61 +744,20 @@ const jsonLd = {
       <h3>PMI — automatic when down payment is under 20%</h3>
       <p>Private mortgage insurance (PMI) is required on conventional co-op share loans with less than 20% down. It protects the lender — not you — and is added to your monthly payment. The calculator applies PMI automatically based on your down payment percentage using typical rates for a borrower with good credit (~720–740 FICO): roughly 0.52%/yr at 15–20% down, 0.70% at 10–15%, 0.95% at 5–10%, and 1.20% below 5%. PMI is factored into your DTI and reserve calculations. <strong>Note:</strong> many NYC co-op boards require 20–25% or more down — if your building's minimum already clears 20%, PMI won't apply. Under the Homeowners Protection Act, lenders must cancel PMI automatically once your loan reaches 78% of the original purchase price; you can request cancellation at 80% LTV.</p>
       <h3>Mansion tax is tiered</h3>
-      <p>New York's <a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">mansion tax</a> applies to co-op purchases just as it does to condos — you're buying shares in a corporation, but the tax follows the consideration paid. It starts at 1% on purchases of $1M–$2M and steps up to 3.9% above $25M. The tax is <strong>not marginal</strong>: crossing a tier raises the entire bill, so $999,999 owes $0 while $1,000,001 owes ~$10,000. The calculator applies this automatically and shows it as a separate line in the closing cost waterfall. The variable rate field covers loan origination fees and any buyer-side flip tax only — do not add mansion tax there. Flip tax (typically 1–3% of sale price) is usually paid by the seller, but some buildings charge the buyer — check the proprietary lease.</p>
+      <p>New York's <a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">mansion tax</a> applies to co-op purchases just as it does to condos — you're buying shares in a corporation, but the tax follows the consideration paid. It starts at 1% on purchases of $1M–$2M and steps up to 3.9% above $25M. The tax is <strong>not marginal</strong>: crossing a tier raises the entire bill, so $999,999 owes $0 while $1,000,001 owes ~$10,000. The calculator applies this automatically and shows it as a separate line in the closing cost waterfall. The variable rate field covers loan origination fees and any buyer-side flip tax only — do not add mansion tax there. Flip tax (typically 1–3% of sale price) is usually paid by the seller, but some buildings charge the buyer — check the proprietary lease. See our <a href="/guides/nyc-mansion-tax-explained/">full mansion tax breakdown</a> for the complete tier table and the cliff math.</p>
       <h3>This is an estimate — verify everything</h3>
-      <p>Co-op board requirements vary significantly. Your building may have stricter DTI limits, different reserve requirements, or an unusual flip tax structure. Always confirm numbers with a <a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">licensed mortgage broker</a> (for rate locks and DTI qualification) and a <a href="https://www.nycbar.org/lawyer-referral-service" target="_blank" rel="noopener noreferrer">real estate attorney</a> (for closing costs and the proprietary lease). See our <a href="/about/">full sourcing methodology</a> for where every default in this calculator comes from.</p>
+      <p>Co-op board requirements vary significantly. Your building may have stricter DTI limits, different reserve requirements, or an unusual flip tax structure. Always confirm numbers with a <a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">licensed mortgage broker</a> (for rate locks and DTI qualification) and a <a href="https://www.nycbar.org/lawyer-referral-service" target="_blank" rel="noopener noreferrer">real estate attorney</a> (for closing costs and the proprietary lease). Weighing a condo instead? See <a href="/guides/coop-vs-condo-nyc-costs/">co-op vs condo: what actually costs more</a>. See our <a href="/about/">full sourcing methodology</a> for where every default in this calculator comes from.</p>
     </div>
   </div>
 </div>
 
 <AdSlot maxWidth="1300px" sidePadding="20px" />
 
-<AppFooter disclaimer="This calculator is for informational purposes only and does not constitute financial, legal, or mortgage advice. Co-op board requirements, tax rates, and closing costs vary by building and transaction. Always verify all figures with a licensed mortgage professional and real estate attorney before making any purchase decisions. PMI rates are estimates based on typical conventional loan pricing; your actual rate depends on credit score, lender, and loan type.">
-  <div class="footer-col">
-    <div class="footer-heading">NYC Housing Resources</div>
-    <ul>
-      <li><a href="https://www.nyc.gov/site/hpd/index.page" target="_blank" rel="noopener noreferrer">NYC HPD (Housing Preservation &amp; Development)</a></li>
-      <li><a href="https://www.nychdc.com/" target="_blank" rel="noopener noreferrer">NYC Housing Development Corp.</a></li>
-      <li><a href="https://portal.hud.gov/hudportal/HUD?src=/states/new_york" target="_blank" rel="noopener noreferrer">HUD New York Resources</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Mortgage &amp; Financing</div>
-    <ul>
-      <li><a href="https://www.consumerfinance.gov/owning-a-home/" target="_blank" rel="noopener noreferrer">CFPB: Owning a Home Guide</a></li>
-      <li><a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">Verify Your Mortgage Broker (NMLS)</a></li>
-      <li><a href="https://www.federalreserve.gov/releases/h15/" target="_blank" rel="noopener noreferrer">Current Interest Rate Data (Fed)</a></li>
-      <li><a href="https://www.consumerfinance.gov/ask-cfpb/when-can-i-stop-paying-private-mortgage-insurance-pmi-en-202/" target="_blank" rel="noopener noreferrer">CFPB: When Can I Cancel PMI?</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Taxes &amp; Closing Costs</div>
-    <ul>
-      <li><a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">NY Mansion Tax Guide (NYS Tax Dept.)</a></li>
-      <li><a href="https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page" target="_blank" rel="noopener noreferrer">NYC Real Property Transfer Tax</a></li>
-      <li><a href="https://www.nycbar.org/lawyer-referral-service" target="_blank" rel="noopener noreferrer">Find a Real Estate Attorney (NYC Bar)</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">More NYC Calculators</div>
-    <ul>
-      <li><a href="https://www.nyc-affordability.com/condo/">NYC Condo Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/rent/">NYC Rent Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/affordable/">NYC Affordable Housing Calculator</a></li>
-      <li><a href="https://www.nyc-affordability.com/compare/">Compare All Options</a></li>
-      <li><a href="https://www.nyc-affordability.com/">NYC Affordability Hub</a></li>
-      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
-      <li><a href="https://buymeacoffee.com/lafronzt" target="_blank" rel="noopener noreferrer">☕ Support this project</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">About</div>
-    <ul>
-      <li><a href="/about/">About This Project</a></li>
-      <li><a href="/privacy/">Privacy Policy</a></li>
-    </ul>
-  </div>
-</AppFooter>
+<Footer
+  variant="app"
+  disclaimer="This calculator is for informational purposes only and does not constitute financial, legal, or mortgage advice. Co-op board requirements, tax rates, and closing costs vary by building and transaction. Always verify all figures with a licensed mortgage professional and real estate attorney before making any purchase decisions. PMI rates are estimates based on typical conventional loan pricing; your actual rate depends on credit score, lender, and loan type."
+  columns={footerColumns}
+/>
 </BaseLayout>
 
 <script>

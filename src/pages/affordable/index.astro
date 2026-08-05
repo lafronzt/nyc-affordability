@@ -1,8 +1,39 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AppHeader from '../../components/AppHeader.astro';
-import AppFooter from '../../components/AppFooter.astro';
+import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_AFFORDABLE, otherCalculators, ALL_GUIDES, NYC_HPD_TENANT_RIGHTS_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: CALC_AFFORDABLE.label, path: CALC_AFFORDABLE.href! },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'More Calculators', links: otherCalculators(CALC_AFFORDABLE.href!) },
+  { heading: 'Guides', links: ALL_GUIDES },
+  {
+    heading: 'Affordable Housing',
+    links: [
+      { label: 'Housing Connect', href: 'https://housingconnect.nyc.gov' },
+      { label: 'NYC HPD Affordable Housing', href: 'https://www.nyc.gov/site/hpd/renters/affordable-housing.page' },
+      { label: 'HUD Income Limits', href: 'https://www.huduser.gov/portal/datasets/il.html' },
+    ],
+  },
+  {
+    heading: 'Renter Resources',
+    links: [
+      NYC_HPD_TENANT_RIGHTS_LINK,
+      { label: 'NYS AG Tenant Guide', href: 'https://ag.ny.gov/publications/residential-tenants-rights-guide' },
+    ],
+  },
+  STANDARD_ABOUT_COLUMN,
+];
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -28,9 +59,10 @@ const jsonLd = {
   ogImageAlt="NYC Affordable Housing Calculator — enter household size and income to find AMI percentage and Housing Connect band eligibility."
   twitterTitle="NYC Affordable Housing Calculator"
   twitterDescription="Find your AMI percentage and check Housing Connect eligibility for NYC affordable housing."
-  jsonLd={jsonLd}
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
 >
 <AppHeader titleHtml="NYC <em>Affordable</em> Housing Finder" tagline="Calculate your AMI percentage and check Housing Connect eligibility across all income bands." />
+<Breadcrumbs items={breadcrumbItems} padded />
 
 <main class="app-layout">
 
@@ -272,7 +304,7 @@ const jsonLd = {
   </button>
   <div class="info-body" id="how-body" role="region" aria-labelledby="how-btn">
     <h3>What Is AMI?</h3>
-    <p>AMI stands for <strong>Area Median Income</strong> — the midpoint income for a family of four in a given metro area, as calculated annually by HUD. NYC's affordable housing programs use the AMI for the New York HMFA (HUD Metro Fair Market Rent Area). In FY2024, the 4-person 100% AMI is $134,800.</p>
+    <p>AMI stands for <strong>Area Median Income</strong> — the midpoint income for a family of four in a given metro area, as calculated annually by HUD. NYC's affordable housing programs use the AMI for the New York HMFA (HUD Metro Fair Market Rent Area). In FY2024, the 4-person 100% AMI is $134,800. See our <a href="/guides/nyc-ami-housing-connect-explained/">full AMI &amp; Housing Connect guide</a> for the complete income table by household size and how band eligibility works.</p>
     <h3>How Your AMI% Is Calculated</h3>
     <p>Your AMI percentage = (your annual household income ÷ 100% AMI limit for your household size) × 100. The AMI limit scales with household size using HUD's standard adjustment factors: 70% for 1 person, 80% for 2, 90% for 3, 100% for 4, 108% for 5, and so on.</p>
     <h3>Income Band Classifications</h3>
@@ -284,7 +316,7 @@ const jsonLd = {
       <li><strong>Middle Income:</strong> 121–165% AMI</li>
     </ul>
     <h3>Housing Connect Eligibility</h3>
-    <p>NYC HPD's Housing Connect lists affordable units with income requirements. Each lottery specifies an AMI band (e.g., 60% AMI). To qualify, your income must be <em>at or below</em> the income limit for that band and your household size. Many listings also set a minimum income — typically 40× the monthly rent — to confirm you can afford the unit.</p>
+    <p>NYC HPD's Housing Connect lists affordable units with income requirements. Each lottery specifies an AMI band (e.g., 60% AMI). To qualify, your income must be <em>at or below</em> the income limit for that band and your household size. Many listings also set a minimum income — typically 40× the monthly rent — to confirm you can afford the unit. See our <a href="/guides/nyc-40x-rent-rule/">40x rent rule guide</a> for how that minimum-income screen works.</p>
     <h3>Rent Table</h3>
     <p>Affordable rents are computed as 30% of gross income at each AMI level, using the standard occupancy for each unit type. This is the methodology HPD uses to set rents on Housing Connect; actual rents may vary slightly by building.</p>
     <h3>Borough Preference</h3>
@@ -318,42 +350,11 @@ const jsonLd = {
 
 <AdSlot maxWidth="1300px" sidePadding="20px" />
 
-<AppFooter disclaimer="Income limits are based on HUD FY2024 data and change annually. This calculator is for informational purposes only and does not constitute financial, legal, or housing advice. Always verify current AMI limits with NYC HPD or HUD before applying to affordable housing programs.">
-  <div class="footer-col">
-    <div class="footer-heading">More Calculators</div>
-    <ul>
-      <li><a href="https://www.nyc-affordability.com/rent/">NYC Rent Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/coop/">Co-op Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/condo/">Condo Affordability</a></li>
-      <li><a href="https://www.nyc-affordability.com/compare/">Compare All Options</a></li>
-      <li><a href="https://www.nyc-affordability.com/">NYC Affordability Hub</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Affordable Housing</div>
-    <ul>
-      <li><a href="https://housingconnect.nyc.gov" target="_blank" rel="noopener noreferrer">Housing Connect ↗</a></li>
-      <li><a href="https://www.nyc.gov/site/hpd/renters/affordable-housing.page" target="_blank" rel="noopener noreferrer">NYC HPD Affordable Housing ↗</a></li>
-      <li><a href="https://www.huduser.gov/portal/datasets/il.html" target="_blank" rel="noopener noreferrer">HUD Income Limits ↗</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">Renter Resources</div>
-    <ul>
-      <li><a href="https://www.nyc.gov/site/hpd/renters/tenantrights.page" target="_blank" rel="noopener noreferrer">NYC HPD Tenant Rights ↗</a></li>
-      <li><a href="https://ag.ny.gov/publications/residential-tenants-rights-guide" target="_blank" rel="noopener noreferrer">NYS AG Tenant Guide ↗</a></li>
-      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
-      <li><a href="https://buymeacoffee.com/lafronzt" target="_blank" rel="noopener noreferrer">☕ Support this project</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">About</div>
-    <ul>
-      <li><a href="/about/">About This Project</a></li>
-      <li><a href="/privacy/">Privacy Policy</a></li>
-    </ul>
-  </div>
-</AppFooter>
+<Footer
+  variant="app"
+  disclaimer="Income limits are based on HUD FY2024 data and change annually. This calculator is for informational purposes only and does not constitute financial, legal, or housing advice. Always verify current AMI limits with NYC HPD or HUD before applying to affordable housing programs."
+  columns={footerColumns}
+/>
 </BaseLayout>
 
 <script>

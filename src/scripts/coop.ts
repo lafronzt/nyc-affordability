@@ -2096,11 +2096,6 @@ document.addEventListener('DOMContentLoaded', () => {
     howBody.classList.toggle('open');
   });
 
-  // Announce new-tab links to screen readers
-  document.querySelectorAll('a[target="_blank"]').forEach(a => {
-    a.insertAdjacentHTML('beforeend', '<span class="sr-only"> (opens in new tab)</span>');
-  });
-
   // Initial render
   onChange();
 });

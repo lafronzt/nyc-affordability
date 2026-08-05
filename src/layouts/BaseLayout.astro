@@ -1,5 +1,6 @@
 ---
 import SEOHead from '../components/SEOHead.astro';
+import { ADS_ENABLED } from '../lib/adsConfig';
 import '../styles/tokens.css';
 
 interface Props {
@@ -12,9 +13,10 @@ interface Props {
   ogImageAlt: string;
   twitterTitle: string;
   twitterDescription: string;
-  jsonLd: Record<string, unknown>;
+  jsonLd: Record<string, unknown> | Record<string, unknown>[];
   variant: 'site' | 'app';
   ads?: boolean;
+  robots?: string;
 }
 
 const {
@@ -30,7 +32,10 @@ const {
   jsonLd,
   variant,
   ads = false,
+  robots,
 } = Astro.props;
+
+const showAds = ads && ADS_ENABLED;
 ---
 <!doctype html>
 <html lang="en">
@@ -48,9 +53,10 @@ const {
     twitterTitle={twitterTitle}
     twitterDescription={twitterDescription}
     jsonLd={jsonLd}
+    robots={robots}
   />
   <slot name="head-extra" />
-  {ads && (
+  {showAds && (
     <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4149057501235815" crossorigin="anonymous"></script>
   )}
 </head>

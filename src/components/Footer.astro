@@ -1,0 +1,56 @@
+---
+import type { FooterColumn, FooterLink } from '../lib/footerLinks';
+
+interface Props {
+  variant: 'site' | 'app';
+  disclaimer: string;
+  columns: FooterColumn[];
+}
+const { variant, disclaimer, columns } = Astro.props;
+
+const isExternal = (link: FooterLink) => !!link.href && /^https?:\/\//.test(link.href);
+---
+<footer class={`footer footer--${variant}`}>
+  <div class="footer-inner">
+    {columns.map((column) => (
+      <div class="footer-col">
+        <div class="footer-heading">{column.heading}</div>
+        <ul>
+          {column.links.map((link) => (
+            <li>
+              {!link.href ? link.label :
+                isExternal(link) ? <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label} ↗</a> :
+                <a href={link.href}>{link.label}</a>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+    <p class="footer-disclaimer">{disclaimer}</p>
+  </div>
+</footer>
+
+<style>
+.footer {
+  background: var(--navy);
+  color: #4a6fa5;
+  font-size: 12px;
+  line-height: 1.7;
+  border-top: 2px solid #1e3a5f;
+}
+.footer-inner { margin: 0 auto; display: flex; flex-wrap: wrap; }
+.footer :global(.footer-col) { flex: 1; min-width: 160px; }
+.footer :global(.footer-heading) { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #6b8ab8; margin-bottom: 8px; }
+.footer :global(a) { color: #4a6fa5; text-decoration: none; }
+.footer :global(a:hover) { color: #e2e8f0; text-decoration: underline; }
+.footer :global(ul) { list-style: none; padding: 0; margin: 0; }
+.footer-disclaimer { width: 100%; border-top: 1px solid #1e3a5f; margin-top: 16px; padding-top: 14px; font-size: 11px; }
+
+.footer--site { padding: 28px 24px; }
+.footer--site .footer-inner { max-width: 1120px; gap: 20px 48px; align-items: flex-start; }
+.footer--site .footer-disclaimer { color: rgba(255, 255, 255, .6); }
+
+.footer--app { padding: 22px 24px; }
+.footer--app .footer-inner { max-width: 1300px; gap: 24px 48px; }
+.footer--app .footer-disclaimer { color: #ffffff; }
+</style>

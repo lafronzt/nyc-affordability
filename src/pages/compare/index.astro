@@ -1,7 +1,23 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import AppFooter from '../../components/AppFooter.astro';
+import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_COMPARE, otherCalculators, ALL_GUIDES, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: CALC_COMPARE.label, path: CALC_COMPARE.href! },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: otherCalculators(CALC_COMPARE.href!) },
+  { heading: 'Guides', links: ALL_GUIDES },
+  STANDARD_ABOUT_COLUMN,
+];
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -27,7 +43,7 @@ const jsonLd = {
   ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
   twitterTitle="NYC Affordability Comparison"
   twitterDescription="Compare rent, co-op, and condo affordability from your saved local profile."
-  jsonLd={jsonLd}
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
 >
 <!--
   Header is hand-rolled here rather than reused via AppHeader: this page's
@@ -46,6 +62,7 @@ const jsonLd = {
   </label>
   <a class="nav-link" href="/">Hub</a>
 </header>
+<Breadcrumbs items={breadcrumbItems} padded />
 
 <main class="page">
   <section class="hero">
@@ -271,7 +288,7 @@ const jsonLd = {
         <li><strong>Cash / Move-In or Cash / Reserves or DP / Closing Costs</strong> — your liquid assets are the limiting factor, not your income. Common for buyers with strong income but modest savings, or renters without much cushion beyond first month + deposit.</li>
         <li><strong>DTI / Income (or the 40&times; rule for rent)</strong> — a lender's or landlord's debt-to-income ceiling caps you before your cash runs out. Common for buyers with substantial savings but a income-to-debt ratio near the limit.</li>
       </ul>
-      <p>Knowing which constraint binds matters because it tells you what actually moves the number: if cash is binding, a larger down payment or more savings raises your ceiling; if DTI is binding, paying down other debt or increasing income does. The same profile can be cash-bound for a co-op (12&ndash;24 months of reserves is a lot to hold back) and DTI-bound for a condo (no reserve requirement by default, so income becomes the limit) &mdash; which is exactly the kind of difference this dashboard is built to surface.</p>
+      <p>Knowing which constraint binds matters because it tells you what actually moves the number: if cash is binding, a larger down payment or more savings raises your ceiling; if DTI is binding, paying down other debt or increasing income does. The same profile can be cash-bound for a co-op (12&ndash;24 months of reserves is a lot to hold back) and DTI-bound for a condo (no reserve requirement by default, so income becomes the limit) &mdash; which is exactly the kind of difference this dashboard is built to surface. See our <a href="/guides/income-needed-to-buy-nyc-apartment/">income-needed guide</a> for exactly how much that DTI gap is worth in dollars.</p>
     </div>
   </section>
 
@@ -282,7 +299,7 @@ const jsonLd = {
       <h4>Co-ops: approval risk in exchange for price</h4>
       <p>Co-ops are typically cheaper per square foot than condos in the same building or neighborhood, but a board can reject a financially qualified buyer for almost any non-discriminatory reason, and your reserves are locked up as a condition of ownership rather than available as a rainy-day fund. That illiquidity is real: the cash this calculator marks as &ldquo;reserve&rdquo; is money you commit to holding, not spending, for as long as you own the unit.</p>
       <h4>Condos: fewer hoops, more carrying cost exposure</h4>
-      <p>Condos don't require board approval for most sales and don't impose reserve requirements the way co-op boards do &mdash; the tradeoff is a higher purchase price and full exposure to property tax and common-charge increases with no board negotiating on your behalf. There's also no ceiling on how much of your net worth ends up in the property versus liquid savings, since nothing forces you to keep post-close reserves.</p>
+      <p>Condos don't require board approval for most sales and don't impose reserve requirements the way co-op boards do &mdash; the tradeoff is a higher purchase price and full exposure to property tax and common-charge increases with no board negotiating on your behalf. There's also no ceiling on how much of your net worth ends up in the property versus liquid savings, since nothing forces you to keep post-close reserves. See our <a href="/guides/coop-vs-condo-nyc-costs/">co-op vs condo cost guide</a> for the full breakdown of where each option actually costs more.</p>
       <h4>Renting: the FARE Act changed the cash math</h4>
       <p>Since the FARE Act took effect in June 2025, landlords &mdash; not tenants &mdash; generally pay the listing broker's fee, which removed what used to be one of the largest move-in cash requirements in NYC rentals. That's part of why the cash-required gap between renting and buying in this comparison is often larger than it would be in most other cities: buying still carries closing costs and (for co-ops) reserves that renting no longer does.</p>
       <p>None of this is a recommendation &mdash; it's context for reading the numbers above. See each calculator's own &ldquo;How this works&rdquo; section for the full mechanics, or the <a href="/about/">About page</a> for the sourcing behind every default.</p>
@@ -300,27 +317,11 @@ const jsonLd = {
 
 <AdSlot maxWidth="1300px" sidePadding="20px" />
 
-<AppFooter disclaimer="This dashboard is for informational purposes only and does not constitute financial, legal, or mortgage advice. It combines your saved profile with your saved assumptions (editable in the panel above). Open an individual calculator for detailed inputs and source notes.">
-  <div class="footer-col">
-    <div class="footer-heading">Calculators</div>
-    <ul>
-      <li><a href="/rent/">NYC Rent Affordability</a></li>
-      <li><a href="/coop/">NYC Co-op Affordability</a></li>
-      <li><a href="/condo/">NYC Condo Affordability</a></li>
-      <li><a href="/compare/">Compare All Options</a></li>
-      <li><a href="/">NYC Affordability Hub</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <div class="footer-heading">About</div>
-    <ul>
-      <li><a href="/about/">About This Project</a></li>
-      <li><a href="/privacy/">Privacy Policy</a></li>
-      <li><a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></li>
-      <li><a href="https://buymeacoffee.com/lafronzt" target="_blank" rel="noopener noreferrer">☕ Support this project</a></li>
-    </ul>
-  </div>
-</AppFooter>
+<Footer
+  variant="app"
+  disclaimer="This dashboard is for informational purposes only and does not constitute financial, legal, or mortgage advice. It combines your saved profile with your saved assumptions (editable in the panel above). Open an individual calculator for detailed inputs and source notes."
+  columns={footerColumns}
+/>
 </BaseLayout>
 
 <script>
