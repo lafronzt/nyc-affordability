@@ -1,5 +1,6 @@
 ---
 import SEOHead from '../components/SEOHead.astro';
+import { ADS_ENABLED } from '../lib/adsConfig';
 import '../styles/tokens.css';
 
 interface Props {
@@ -33,6 +34,8 @@ const {
   ads = false,
   robots,
 } = Astro.props;
+
+const showAds = ads && ADS_ENABLED;
 ---
 <!doctype html>
 <html lang="en">
@@ -53,7 +56,7 @@ const {
     robots={robots}
   />
   <slot name="head-extra" />
-  {ads && (
+  {showAds && (
     <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4149057501235815" crossorigin="anonymous"></script>
   )}
 </head>

@@ -1,5 +1,6 @@
 ---
 import { AD_CLIENT, AD_DISPLAY_HORIZONTAL } from '../lib/adSlots';
+import { ADS_ENABLED } from '../lib/adsConfig';
 
 interface Props {
   slot?: string;
@@ -21,12 +22,14 @@ const formatAttrs =
       ? { 'data-ad-format': 'autorelaxed' }
       : { 'data-ad-format': 'auto', 'data-full-width-responsive': 'true' };
 ---
-<div style={`max-width:${maxWidth};margin:0 auto;padding:8px ${sidePadding} 0;text-align:center;`}>
-  <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">Advertisement</div>
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client={AD_CLIENT}
-       data-ad-slot={slot}
-       {...formatAttrs}></ins>
-  <script is:inline>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-</div>
+{ADS_ENABLED && (
+  <div style={`max-width:${maxWidth};margin:0 auto;padding:8px ${sidePadding} 0;text-align:center;`}>
+    <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">Advertisement</div>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client={AD_CLIENT}
+         data-ad-slot={slot}
+         {...formatAttrs}></ins>
+    <script is:inline>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+)}
