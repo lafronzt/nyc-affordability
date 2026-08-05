@@ -23,14 +23,15 @@ export function otherCalculators(currentHref: string): FooterLink[] {
 }
 
 export const ABOUT_LINK: FooterLink = { label: 'About This Project', href: '/about/' };
+export const GUIDES_LINK: FooterLink = { label: 'Guides', href: '/guides/' };
 export const PRIVACY_LINK: FooterLink = { label: 'Privacy Policy', href: '/privacy/' };
 export const GITHUB_LINK: FooterLink = { label: 'View on GitHub', href: 'https://github.com/lafronzt/nyc-affordability' };
-export const COFFEE_LINK: FooterLink = { label: '☕ Support this project', href: 'https://buymeacoffee.com/lafronzt' };
+export const SUPPORT_LINK: FooterLink = { label: 'Support this project', href: 'https://buymeacoffee.com/lafronzt' };
 
 /** Every page's "About" column ends up identical once GitHub/Coffee placement is normalized. */
 export const STANDARD_ABOUT_COLUMN: FooterColumn = {
   heading: 'About',
-  links: [ABOUT_LINK, PRIVACY_LINK, GITHUB_LINK, COFFEE_LINK],
+  links: [ABOUT_LINK, GUIDES_LINK, PRIVACY_LINK, GITHUB_LINK, SUPPORT_LINK],
 };
 
 // Links repeated verbatim (same URL) across 2+ pages with today's labels already
