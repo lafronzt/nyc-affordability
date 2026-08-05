@@ -3,14 +3,16 @@ import NavLinks from './NavLinks.astro';
 
 interface Props {
   titleHtml: string;
+  tagline?: string;
   showSaveToggle?: boolean;
 }
-const { titleHtml, showSaveToggle = true } = Astro.props;
+const { titleHtml, tagline, showSaveToggle = true } = Astro.props;
 ---
 <header class="app-header">
   <h1 set:html={titleHtml} />
   <NavLinks showSaveToggle={showSaveToggle} />
 </header>
+{tagline && <p class="page-tagline">{tagline}</p>}
 
 <style>
 .app-header {
@@ -37,4 +39,13 @@ const { titleHtml, showSaveToggle = true } = Astro.props;
   flex-shrink: 1;
 }
 .app-header h1 :global(em) { font-style: normal; color: var(--gold); }
+
+.page-tagline {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 24px;
+  font-size: 13px;
+  color: var(--g600);
+  line-height: 1.4;
+}
 </style>
