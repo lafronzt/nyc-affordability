@@ -13,6 +13,7 @@ sources:
 relatedGuides:
   - nyc-mansion-tax-explained
   - coop-vs-condo-nyc-costs
+  - nyc-seller-closing-costs-explained
 cta:
   heading: "See your total closing costs, not just the purchase price"
   body: "The condo calculator builds mortgage recording tax and the mansion tax cliff into your closing costs automatically, so your max purchase price already accounts for what you'll actually owe at the table."

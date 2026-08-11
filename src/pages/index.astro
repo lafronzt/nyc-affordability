@@ -60,7 +60,7 @@ const jsonLd = {
 <main><div class="hero">
   <div class="hero-eyebrow">Free NYC Housing Calculators</div>
   <h2>Know your numbers<br>before you sign anything.</h2>
-  <p>Five tools built for how NYC housing actually works — co-ops with board reserves, condos with closing-cost math, rentals with FARE Act rules, affordable housing with HPD's AMI framework, and a side-by-side comparison dashboard.</p>
+  <p>Six tools built for how NYC housing actually works — co-ops with board reserves, condos with closing-cost math, rentals with FARE Act rules, affordable housing with HPD's AMI framework, seller net proceeds, and a side-by-side comparison dashboard.</p>
 </div>
 
 <section class="calc-section">
@@ -122,7 +122,7 @@ const jsonLd = {
     </a>
 
     <!-- Affordable Housing -->
-    <a class="calc-card calc-card--row2-left" href="/affordable/">
+    <a class="calc-card" href="/affordable/">
       <div class="card-banner affordable">
         <div class="card-icon">🏠</div>
         <div class="card-banner-title">NYC Affordable<br>Housing Finder</div>
@@ -140,7 +140,7 @@ const jsonLd = {
     </a>
 
     <!-- Compare -->
-    <a class="calc-card calc-card--row2-right" href="/compare/">
+    <a class="calc-card" href="/compare/">
       <div class="card-banner compare">
         <div class="card-icon">📊</div>
         <div class="card-banner-title">Compare<br>All Options</div>
@@ -154,6 +154,24 @@ const jsonLd = {
           <li>Links back into each calculator</li>
         </ul>
         <span class="card-cta cta-compare">Open Comparison →</span>
+      </div>
+    </a>
+
+    <!-- Sale Net Proceeds -->
+    <a class="calc-card" href="/sell/">
+      <div class="card-banner sell">
+        <div class="card-icon">💰</div>
+        <div class="card-banner-title">NYC Sale<br>Net Proceeds</div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">See what you'll actually walk away with when you sell — broker commission, NYC &amp; NYS transfer taxes, co-op flip tax, and an optional capital gains estimate.</p>
+        <ul class="card-features">
+          <li>NYC RPTT &amp; NYS transfer tax, auto-calculated</li>
+          <li>Co-op flip tax &amp; transfer fee toggle</li>
+          <li>Broker commission &amp; attorney fees</li>
+          <li>Section 121 capital gains estimate</li>
+        </ul>
+        <span class="card-cta cta-sell">Open Net Proceeds Calculator →</span>
       </div>
     </a>
 
@@ -241,9 +259,7 @@ const jsonLd = {
   grid-template-columns: repeat(6, 1fr);
   gap: 24px;
 }
-.calc-card           { grid-column: span 2; }
-.calc-card--row2-left  { grid-column: 2 / 4; }
-.calc-card--row2-right { grid-column: 4 / 6; }
+.calc-card { grid-column: span 2; }
 
 .calc-card {
   background: #fff;
@@ -274,6 +290,7 @@ const jsonLd = {
 .card-banner.condo      { background: linear-gradient(135deg, #1a3a6b, #0f2a54); }
 .card-banner.rent       { background: linear-gradient(135deg, #134e38, #0e3d2c); }
 .card-banner.affordable { background: linear-gradient(135deg, #1e1b4b, #111840); }
+.card-banner.sell       { background: linear-gradient(135deg, #0f766e, #042f2e); }
 .card-banner.compare    { background: linear-gradient(135deg, #78350f, #0f2a54); }
 
 .card-icon {
@@ -351,6 +368,7 @@ const jsonLd = {
 .cta-condo      { background: #1a3a6b; color: #e2e8f0; }
 .cta-rent       { background: #134e38; color: #e2e8f0; }
 .cta-affordable { background: #1e1b4b; color: #e0e7ff; }
+.cta-sell       { background: #0f766e; color: #e2e8f0; }
 .cta-compare    { background: #78350f; color: #e2e8f0; }
 
 .features {
