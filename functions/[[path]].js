@@ -127,6 +127,9 @@ function migrateLocalStorageThenRedirect(request, url, prefix) {
       'content-type': 'text/html; charset=utf-8',
       'cache-control': 'no-store',
       'x-robots-tag': 'noindex',
+      'x-content-type-options': 'nosniff',
+      'referrer-policy': 'strict-origin-when-cross-origin',
+      'x-frame-options': 'DENY',
     },
   });
 }
