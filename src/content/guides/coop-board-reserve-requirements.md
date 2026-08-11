@@ -10,6 +10,9 @@ sources:
     url: "https://www.skybriz.com/insights/down-payment-requirements-for-co-ops-in-nyc/"
   - label: "StreetEasy — Debt to Income Ratio for Co-op Boards"
     url: "https://streeteasy.com/blog/what-is-debt-to-income-ratio/"
+relatedGuides:
+  - coop-board-approval-process
+  - coop-flip-tax-nyc-explained
 cta:
   heading: "See your own reserve number"
   body: "The co-op calculator builds post-closing reserves in directly — set your building's required months and it tells you exactly how much liquid cash you need, on top of the down payment."

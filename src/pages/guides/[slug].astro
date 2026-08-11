@@ -28,6 +28,11 @@ const { guide } = Astro.props;
 const { data } = guide;
 const { Content } = await render(guide);
 
+const allGuides = await getCollection('guides', ({ data }) => !data.draft);
+const relatedGuides = data.relatedGuides
+  .map((slug) => allGuides.find((g) => g.id === slug))
+  .filter((g) => g !== undefined);
+
 const canonicalPath = `/guides/${guide.id}/`;
 const updatedLabel = new Date(`${data.updated}T00:00:00Z`).toLocaleDateString('en-US', {
   year: 'numeric',
@@ -101,6 +106,17 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
       ))}
     </ul>
   </div>
+
+  {relatedGuides.length > 0 && (
+    <div class="card">
+      <h3>Related guides</h3>
+      <ul class="related-list">
+        {relatedGuides.map((related) => (
+          <li><a href={`/guides/${related.id}/`}>{related.data.title}</a></li>
+        ))}
+      </ul>
+    </div>
+  )}
 
   <div class="cta-box">
     <h3>{data.cta.heading}</h3>

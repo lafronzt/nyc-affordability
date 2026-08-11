@@ -15,7 +15,9 @@ const SITEMAP_PAGE_META = {
   '/compare/':    { changefreq: 'monthly', priority: 0.8, lastmod: '2026-05-03' },
   '/guides/':     { changefreq: 'weekly',  priority: 0.8, lastmod: '2026-08-04' },
   '/about/':      { changefreq: 'yearly',  priority: 0.5, lastmod: '2026-08-02' },
+  '/contact/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-11' },
   '/privacy/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-02' },
+  '/terms/':      { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-11' },
 };
 const DEFAULT_PAGE_META = { changefreq: 'monthly', priority: 0.7 };
 
