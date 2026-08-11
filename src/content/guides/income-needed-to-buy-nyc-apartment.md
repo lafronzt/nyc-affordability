@@ -8,6 +8,9 @@ sources:
     url: "https://streeteasy.com/blog/what-is-debt-to-income-ratio/"
   - label: "NYC Department of Finance / ACRIS — Mortgage Recording Tax"
     url: "https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page"
+relatedGuides:
+  - coop-board-approval-process
+  - pmi-on-nyc-condos-explained
 cta:
   heading: "Run your exact numbers"
   body: "Both calculators reverse-engineer your max purchase price from your actual income and assets, instead of the other way around."

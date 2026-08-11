@@ -10,6 +10,9 @@ sources:
     url: "https://www.nysenate.gov/legislation/laws/RPP/227-G"
   - label: "The Real Deal — Appeals Court Rejects REBNY's FARE Act Appeal (July 2026)"
     url: "https://therealdeal.com/new-york/2026/07/14/appeals-court-rejects-rebnys-fare-act-appeal/"
+relatedGuides:
+  - nyc-security-deposit-move-in-costs
+  - nyc-40x-rent-rule
 cta:
   heading: "See your full move-in cost, broker fee included or not"
   body: "The rent calculator models the FARE Act rule directly — toggle whether you're hiring your own broker and see exactly how it changes your move-in cash requirement."

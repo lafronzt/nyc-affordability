@@ -29,6 +29,11 @@ export const GUIDE_AMI: FooterLink = { label: 'NYC AMI & Housing Connect Explain
 export const GUIDE_40X_RULE: FooterLink = { label: "NYC's 40x Rent Rule", href: '/guides/nyc-40x-rent-rule/' };
 export const GUIDE_COOP_VS_CONDO: FooterLink = { label: 'Co-op vs Condo: What Costs More', href: '/guides/coop-vs-condo-nyc-costs/' };
 export const GUIDE_INCOME_NEEDED: FooterLink = { label: 'Income Needed to Buy in NYC', href: '/guides/income-needed-to-buy-nyc-apartment/' };
+export const GUIDE_CLOSING_COSTS: FooterLink = { label: 'NYC Closing Costs for Buyers', href: '/guides/nyc-closing-costs-for-buyers/' };
+export const GUIDE_PMI: FooterLink = { label: 'PMI on NYC Condos Explained', href: '/guides/pmi-on-nyc-condos-explained/' };
+export const GUIDE_FLIP_TAX: FooterLink = { label: 'Co-op Flip Tax in NYC Explained', href: '/guides/coop-flip-tax-nyc-explained/' };
+export const GUIDE_BOARD_APPROVAL: FooterLink = { label: 'How Co-op Board Approval Works', href: '/guides/coop-board-approval-process/' };
+export const GUIDE_SECURITY_DEPOSIT: FooterLink = { label: 'Security Deposits & Move-In Costs', href: '/guides/nyc-security-deposit-move-in-costs/' };
 export const ALL_GUIDES: FooterLink[] = [
   GUIDE_MANSION_TAX,
   GUIDE_COOP_RESERVE,
@@ -37,6 +42,11 @@ export const ALL_GUIDES: FooterLink[] = [
   GUIDE_40X_RULE,
   GUIDE_COOP_VS_CONDO,
   GUIDE_INCOME_NEEDED,
+  GUIDE_CLOSING_COSTS,
+  GUIDE_PMI,
+  GUIDE_FLIP_TAX,
+  GUIDE_BOARD_APPROVAL,
+  GUIDE_SECURITY_DEPOSIT,
 ];
 
 /** Standalone Guides entry for the primary navbar (a different surface than the
@@ -45,7 +55,9 @@ export const ALL_GUIDES: FooterLink[] = [
 export const GUIDES_INDEX_LINK: FooterLink = { label: 'Guides', href: '/guides/' };
 
 export const ABOUT_LINK: FooterLink = { label: 'About This Project', href: '/about/' };
+export const CONTACT_LINK: FooterLink = { label: 'Contact', href: '/contact/' };
 export const PRIVACY_LINK: FooterLink = { label: 'Privacy Policy', href: '/privacy/' };
+export const TERMS_LINK: FooterLink = { label: 'Terms of Service', href: '/terms/' };
 export const GITHUB_LINK: FooterLink = { label: 'View on GitHub', href: 'https://github.com/lafronzt/nyc-affordability' };
 export const SUPPORT_LINK: FooterLink = { label: 'Support this project', href: 'https://buymeacoffee.com/lafronzt' };
 
@@ -54,7 +66,7 @@ export const SUPPORT_LINK: FooterLink = { label: 'Support this project', href: '
     so the old standalone GUIDES_LINK entry here was dropped to avoid a duplicate /guides/ link. */
 export const STANDARD_ABOUT_COLUMN: FooterColumn = {
   heading: 'About',
-  links: [ABOUT_LINK, PRIVACY_LINK, GITHUB_LINK, SUPPORT_LINK],
+  links: [ABOUT_LINK, CONTACT_LINK, PRIVACY_LINK, TERMS_LINK, GITHUB_LINK, SUPPORT_LINK],
 };
 
 // Links repeated verbatim (same URL) across 2+ pages with today's labels already

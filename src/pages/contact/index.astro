@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, CONTACT_LINK } from '../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Contact NYC Affordability',
+  url: 'https://www.nyc-affordability.com/contact/',
+  description: 'How to reach the maintainer of NYC Affordability to report an outdated rate, an error, or a feature request.',
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: 'https://www.nyc-affordability.com/' },
+};
+
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: CONTACT_LINK.label, path: CONTACT_LINK.href! },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+---
+<BaseLayout
+  variant="site"
+  pageTitle="Contact | NYC Affordability"
+  metaDescription="How to reach the maintainer of NYC Affordability: report an outdated rate or source, flag a calculator bug, or suggest a feature — all via GitHub Issues."
+  canonicalPath="/contact/"
+  ogTitle="Contact NYC Affordability"
+  ogDescription="How to reach the maintainer of NYC Affordability to report an outdated rate, an error, or a feature request."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
+  twitterTitle="Contact NYC Affordability"
+  twitterDescription="How to reach the maintainer of NYC Affordability to report an outdated rate, an error, or a feature request."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Contact</div>
+  <h2>Found an error, or have a<br>question? Here's how to reach us.</h2>
+  <p>NYC Affordability has no support inbox, no live chat, and no phone line — it's a small, open-source project maintained in the open. The fastest and only way to reach the maintainer is through GitHub.</p>
+</div>
+
+<div class="page">
+
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <div class="card">
+    <h3>Report an outdated rate or source</h3>
+    <p>Every default value on this site — mortgage rates, mansion tax tiers, AMI income limits, reserve requirements — is pulled from a named source and reviewed periodically, but rates and thresholds change over time. If you spot a figure that's out of date or a source link that's broken, <a href="https://github.com/lafronzt/nyc-affordability/issues/new" target="_blank" rel="noopener noreferrer">open an issue on GitHub</a> with the page, the figure, and a link to the current correct value if you have one. This is the single most useful kind of report you can send — it directly improves the site for every future visitor.</p>
+  </div>
+
+  <div class="card">
+    <h3>Report a calculator bug</h3>
+    <p>If a calculator is producing a result that looks wrong — a formula that doesn't match its "How this works" explanation, a number that doesn't update correctly, or a display issue — <a href="https://github.com/lafronzt/nyc-affordability/issues/new" target="_blank" rel="noopener noreferrer">open an issue</a> describing the inputs you used and what you expected versus what you saw. Screenshots help but aren't required.</p>
+  </div>
+
+  <div class="card">
+    <h3>Suggest a feature or a new guide topic</h3>
+    <p>Ideas for a new calculator, a comparison feature, or a guide topic this site doesn't cover yet are welcome the same way — <a href="https://github.com/lafronzt/nyc-affordability/issues/new" target="_blank" rel="noopener noreferrer">open an issue</a> describing what you'd find useful. Since this is a side project maintained by one person, there's no guaranteed turnaround, but every issue gets read.</p>
+  </div>
+
+  <div class="card">
+    <h3>Why GitHub, and not an email address</h3>
+    <p>Routing everything through GitHub Issues keeps reports public and searchable — if you've hit an issue, there's a decent chance someone else has too, and a public issue means you can see whether it's already been reported or fixed, rather than sending a message into a void. It also matches how the project itself is run: <a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">the full source code is public</a>, so anyone can verify exactly how a number is calculated rather than taking it on faith.</p>
+  </div>
+
+  <div class="card">
+    <h3>What this isn't</h3>
+    <p>This site provides free, informational calculators — it isn't a substitute for a mortgage broker, real estate attorney, or co-op board, and the maintainer isn't in a position to give individualized financial or legal advice. For guidance specific to your situation, see the licensed-professional links on the <a href="/about/">About page</a> or consult a mortgage professional and real estate attorney directly.</p>
+  </div>
+
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="These calculators are for informational purposes only and do not constitute financial, legal, or mortgage advice. Always verify all figures with a licensed mortgage professional and real estate attorney before making housing decisions."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+
+.page { max-width: 820px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 30px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.75; margin-bottom: 10px; }
+.card p:last-child { margin-bottom: 0; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+
+@media (max-width: 560px) {
+  .card { padding: 22px 18px 24px; }
+}
+</style>

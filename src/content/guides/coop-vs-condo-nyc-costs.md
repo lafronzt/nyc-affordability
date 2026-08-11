@@ -10,6 +10,9 @@ sources:
     url: "https://hauseit.medium.com/flip-tax-coop-nyc-79841ee7634e"
   - label: "Prevu — Flip Tax NYC: The Buyer's Guide"
     url: "https://www.prevu.com/blog/what-is-a-flip-tax-in-nyc"
+relatedGuides:
+  - coop-flip-tax-nyc-explained
+  - nyc-closing-costs-for-buyers
 cta:
   heading: "See your numbers side by side"
   body: "The comparison dashboard runs identical income and asset inputs through both the co-op and condo models and shows which constraint binds for you."

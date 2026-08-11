@@ -28,6 +28,8 @@ const guides = defineCollection({
     }),
     // Keep out of the sitemap and search index until the guide is real content.
     draft: z.boolean().default(false),
+    // Slugs (not full paths) of other guides to surface in the "Related guides" list.
+    relatedGuides: z.array(z.string()).default([]),
     sitemap: z
       .object({
         changefreq: z.string().default('monthly'),
