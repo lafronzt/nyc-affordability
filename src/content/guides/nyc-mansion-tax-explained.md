@@ -13,6 +13,7 @@ sources:
 relatedGuides:
   - nyc-closing-costs-for-buyers
   - coop-vs-condo-nyc-costs
+  - nyc-seller-closing-costs-explained
 cta:
   heading: "See how this affects your max purchase price"
   body: "The condo calculator builds the mansion tax cliff directly into your closing costs, so your max purchase price already accounts for which side of a bracket you land on."

@@ -1,0 +1,468 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AppHeader from '../../components/AppHeader.astro';
+import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_NET_PROCEEDS, otherCalculators, ALL_GUIDES, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Guides', links: ALL_GUIDES },
+  {
+    heading: 'NYC Seller Resources',
+    links: [
+      { label: 'NYC DOF: Real Property Transfer Tax', href: 'https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page' },
+      { label: 'NYS Real Estate Transfer Tax', href: 'https://www.tax.ny.gov/bus/transfer/rptidx.htm' },
+      { label: 'IRS Pub 523: Selling Your Home', href: 'https://www.irs.gov/publications/p523' },
+    ],
+  },
+  {
+    heading: 'Find an Attorney',
+    links: [{ label: 'NYC Bar Lawyer Referral', href: 'https://www.nycbar.org/lawyer-referral-service' }],
+  },
+  { heading: 'More NYC Calculators', links: otherCalculators(CALC_NET_PROCEEDS.href!) },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'NYC Sale Net Proceeds Calculator',
+  url: 'https://www.nyc-affordability.com/sell/',
+  description: 'A free NYC home sale net proceeds calculator that estimates what a seller walks away with after broker commission, NYC and NYS transfer tax, co-op flip tax, closing costs, and an optional capital gains estimate.',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  areaServed: { '@type': 'City', name: 'New York City', sameAs: 'https://www.wikidata.org/wiki/Q60' },
+};
+---
+<BaseLayout
+  variant="app"
+  ads
+  pageTitle="NYC Sale Net Proceeds Calculator | Estimate What You'll Walk Away With"
+  metaDescription="Free NYC seller closing cost calculator. Estimate your net proceeds from selling a condo, house, or co-op — broker commission, NYC &amp; NYS transfer tax, flip tax, and capital gains."
+  canonicalPath="/sell/"
+  ogTitle="NYC Sale Net Proceeds Calculator | Estimate What You'll Walk Away With"
+  ogDescription="Free NYC seller closing cost calculator. Estimate net proceeds from broker commission, transfer taxes, flip tax, and capital gains."
+  ogImage="/images/general-og.png"
+  ogImageAlt="How much will you net from selling in NYC? NYC Sale Net Proceeds Calculator from NYC Affordability."
+  twitterTitle="NYC Sale Net Proceeds Calculator"
+  twitterDescription="Free NYC seller closing cost calculator — estimate your net proceeds from broker commission, transfer taxes, flip tax, and capital gains."
+  jsonLd={jsonLd}
+>
+<AppHeader titleHtml="NYC <em>Sale</em> Net Proceeds Calculator" tagline="Estimate what you'll actually walk away with after broker commission, transfer taxes, and closing costs" />
+
+<main class="app-layout">
+
+  <!-- ===== INPUTS PANEL ===== -->
+  <div class="inputs-panel">
+
+    <!-- Card 1: Sale Basics -->
+    <div class="card">
+      <div class="card-title" id="card-title-1" aria-expanded="true" aria-controls="card-body-1"><span class="snum">1</span> Sale Basics<span class="card-chev" aria-hidden="true">▲</span></div>
+      <div class="card-body" id="card-body-1">
+        <div class="form-row">
+          <label class="lbl" for="property-type">Property type
+            <small>Co-ops add a building flip tax and transfer fee; condos and houses don't.</small>
+          </label>
+          <div class="iw w160"><select id="property-type">
+            <option value="condo" selected>Condo / House</option>
+            <option value="coop">Co-op</option>
+          </select></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="sale-price">Expected sale price</label>
+          <div class="iw w140"><span class="px">$</span><input type="number" id="sale-price" value="1200000" min="0" step="10000"></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="mortgage-balance">Remaining mortgage payoff
+            <small>Principal balance you'll owe your lender at closing (co-ops: outstanding share loan, if any)</small>
+          </label>
+          <div class="iw w140"><span class="px">$</span><input type="number" id="mortgage-balance" value="500000" min="0" step="5000"></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="purchase-price">Original purchase price
+            <small>Used for the optional capital gains estimate below</small>
+          </label>
+          <div class="iw w140"><span class="px">$</span><input type="number" id="purchase-price" value="700000" min="0" step="10000"></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="cap-improvements">Capital improvements
+            <small>Renovations that add to your cost basis (not repairs/maintenance) — see IRS Pub 523</small>
+          </label>
+          <div class="iw w140"><span class="px">$</span><input type="number" id="cap-improvements" value="0" min="0" step="1000"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Broker & Closing Costs -->
+    <div class="card">
+      <div class="card-title" id="card-title-2" aria-expanded="true" aria-controls="card-body-2"><span class="snum">2</span> Broker &amp; Closing Costs<span class="card-chev" aria-hidden="true">▲</span></div>
+      <div class="card-body" id="card-body-2">
+        <div class="form-row">
+          <label class="lbl" for="broker-pct">Broker commission
+            <small>Typical NYC range is 4%–6% of sale price, negotiable</small>
+          </label>
+          <div class="iw w120"><input type="number" id="broker-pct" value="5" min="0" max="10" step="0.25" style="text-align:right"><span class="sx">%</span></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="attorney-fee">Seller attorney fee
+            <small>NYC range roughly $1,500–$3,000 for a straightforward resale</small>
+          </label>
+          <div class="iw w140"><span class="px">$</span><input type="number" id="attorney-fee" value="2500" min="0" step="100"></div>
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="title-misc-fee">Title &amp; misc. closing costs
+            <small>Payoff/satisfaction fee, move-out deposit, filing fees, etc.</small>
+          </label>
+          <div class="iw w140"><span class="px">$</span><input type="number" id="title-misc-fee" value="1000" min="0" step="100"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Transfer Taxes & Building Costs -->
+    <div class="card">
+      <div class="card-title" id="card-title-3" aria-expanded="true" aria-controls="card-body-3"><span class="snum">3</span> Transfer Taxes &amp; Building Costs<span class="card-chev" aria-hidden="true">▲</span></div>
+      <div class="card-body" id="card-body-3">
+        <div class="tax-info-note">
+          <strong>Auto-calculated from sale price:</strong>
+          <div class="tax-info-row"><span>NYC Real Property Transfer Tax</span><span id="rptt-display">—</span></div>
+          <div class="tax-info-row"><span>NYS Transfer Tax</span><span id="nys-transfer-display">—</span></div>
+          <span class="tax-info-src">1.00%/1.425% NYC RPTT tiers ($500K); 0.4% NYS base + 0.25% additional NYC tax ≥ $3M (0.65% combined). Source: NYC DOF / NYS Tax Dept. Verify with closing attorney.</span>
+        </div>
+        <div id="coop-fields" hidden>
+          <div class="form-row">
+            <label class="lbl" for="flip-tax-pct">Flip tax
+              <small>Set by your building's proprietary lease — commonly 1%–3% of price, but varies widely. Check your building's bylaws.</small>
+            </label>
+            <div class="iw w120"><input type="number" id="flip-tax-pct" value="2" min="0" max="30" step="0.25" style="text-align:right"><span class="sx">%</span></div>
+          </div>
+          <div class="form-row">
+            <label class="lbl" for="coop-transfer-fee">Co-op transfer / processing fee
+              <small>Building's flat administrative fee for processing the share transfer</small>
+            </label>
+            <div class="iw w140"><span class="px">$</span><input type="number" id="coop-transfer-fee" value="500" min="0" step="50"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Capital Gains Estimate -->
+    <div class="card">
+      <div class="card-title" id="card-title-4" aria-expanded="true" aria-controls="card-body-4"><span class="snum">4</span> Capital Gains Estimate (Optional)<span class="card-chev" aria-hidden="true">▲</span></div>
+      <div class="card-body" id="card-body-4">
+        <label class="toggle-row">
+          <input type="checkbox" id="cap-gains-enabled">
+          Include a rough capital gains tax estimate
+          <small>(off by default — this is a simplified estimate, not tax advice)</small>
+        </label>
+        <div id="cap-gains-fields" hidden>
+          <div class="form-row">
+            <label class="lbl" for="filing-status">Filing status
+              <small>Section 121 primary-residence exclusion: $250,000 single, $500,000 married filing jointly</small>
+            </label>
+            <div class="iw w160"><select id="filing-status">
+              <option value="single" selected>Single</option>
+              <option value="mfj">Married filing jointly</option>
+            </select></div>
+          </div>
+          <div class="form-row">
+            <label class="lbl" for="fed-ltcg-pct">Federal long-term capital gains rate
+              <small>Typically 15% for most sellers; 20% at the highest income bracket</small>
+            </label>
+            <div class="iw w120"><input type="number" id="fed-ltcg-pct" value="15" min="0" max="40" step="1" style="text-align:right"><span class="sx">%</span></div>
+          </div>
+          <div class="form-row">
+            <label class="lbl" for="ny-combined-pct">NY State + NYC tax rate on gain
+              <small>NY has no separate capital gains rate — gains are taxed as ordinary income. Enter your combined marginal state + city rate.</small>
+            </label>
+            <div class="iw w120"><input type="number" id="ny-combined-pct" value="10.30" min="0" max="20" step="0.1" style="text-align:right"><span class="sx">%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /inputs-panel -->
+
+  <!-- ===== RESULTS PANEL ===== -->
+  <div class="results-panel">
+    <div class="results-card">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-eyebrow">Estimated Net Proceeds</div>
+        <div class="hero-price" id="hero-net">$—</div>
+        <div class="hero-warn" id="hero-warn" role="alert" aria-live="polite"></div>
+      </div>
+
+      <div class="results-body">
+
+        <!-- Waterfall -->
+        <div class="snap-block">
+          <div class="snap-title">Net Proceeds Waterfall</div>
+          <div class="snap-row"><span class="sr-lbl">Sale price</span><span class="sr-val" id="s-price">—</span></div>
+          <div class="snap-row"><span class="sr-lbl">Mortgage payoff</span><span class="sr-val" id="s-mortgage">—</span></div>
+          <div class="snap-row indent"><span class="sr-lbl">Broker commission</span><span class="sr-val" id="s-broker">—</span></div>
+          <div class="snap-row indent"><span class="sr-lbl">NYC RPTT</span><span class="sr-val" id="s-rptt">—</span></div>
+          <div class="snap-row indent"><span class="sr-lbl">NYS transfer tax</span><span class="sr-val" id="s-nys">—</span></div>
+          <div class="snap-row indent" id="fliptax-row" hidden><span class="sr-lbl">Flip tax</span><span class="sr-val" id="s-fliptax">—</span></div>
+          <div class="snap-row indent" id="coopfee-row" hidden><span class="sr-lbl">Co-op transfer fee</span><span class="sr-val" id="s-coopfee">—</span></div>
+          <div class="snap-row indent"><span class="sr-lbl">Attorney fee</span><span class="sr-val" id="s-attorney">—</span></div>
+          <div class="snap-row indent"><span class="sr-lbl">Title &amp; misc. costs</span><span class="sr-val" id="s-titlemisc">—</span></div>
+          <div class="snap-row subtot"><span class="sr-lbl">Net proceeds before tax</span><span class="sr-val" id="s-subtotal">—</span></div>
+          <div class="snap-row indent" id="capgains-row" hidden>
+            <span class="sr-lbl">Est. capital gains tax <span class="sr-note">(taxable gain: <span id="s-taxable-gain">—</span>, exclusion: <span id="s-exclusion">—</span>)</span></span>
+            <span class="sr-val" id="s-gain">—</span>
+          </div>
+        </div>
+
+      </div><!-- /results-body -->
+    </div><!-- /results-card -->
+  </div><!-- /results-panel -->
+
+</main>
+
+<!-- How This Works -->
+<div class="info-wrap">
+  <button class="info-btn" id="how-btn" aria-expanded="false" aria-controls="how-body" type="button">
+    <em class="info-caret" aria-hidden="true">▼</em> How This Calculator Works
+  </button>
+  <div class="info-body" id="how-body" role="region" aria-labelledby="how-btn">
+    <h3>Sale price minus everything you owe</h3>
+    <p>Net proceeds start at your sale price, then subtract your mortgage payoff and every seller-side selling cost: broker commission, NYC and NYS transfer tax, co-op flip tax and transfer fee (if applicable), attorney fees, and title/misc. costs. What's left is what you actually walk away with — before any capital gains tax.</p>
+    <h3>NYC RPTT &amp; NYS transfer tax — seller-paid, calculated automatically</h3>
+    <p>Unlike the buyer-paid mansion tax, NYC's Real Property Transfer Tax and New York State's transfer tax are seller-paid and apply to nearly every resale. NYC RPTT runs 1.00% of price up to $500,000 and 1.425% above that. NYS transfer tax is a flat 0.4%, plus an additional 0.25% NYC tax on residential sales of $3,000,000 or more — 0.65% combined at that tier. Both are calculated automatically from your sale price. See our <a href="/guides/nyc-seller-closing-costs-explained/">seller closing costs guide</a> for the full breakdown.</p>
+    <h3>Co-op flip tax</h3>
+    <p>A flip tax isn't a government tax — it's a fee set by your building's proprietary lease, and every building is different. Some charge a flat percentage of the sale price, others a percentage of profit, and some HDFC buildings charge much more. There's no reliable default — check your building's bylaws or ask your managing agent. See our <a href="/guides/coop-flip-tax-nyc-explained/">flip tax guide</a> for how it's typically structured.</p>
+    <h3>Capital gains estimate — a rough illustration, not tax advice</h3>
+    <p>If you enable the capital gains estimate, the calculator estimates your gain as sale price minus selling costs minus your adjusted cost basis (original purchase price plus capital improvements), applies the IRS Section 121 primary-residence exclusion ($250,000 single / $500,000 married filing jointly, if you owned and lived in the home 2 of the last 5 years), and taxes any remaining gain at your entered federal and combined NY State + NYC rates. This ignores depreciation recapture, AMT, and other situational rules — see <a href="https://www.irs.gov/publications/p523" target="_blank" rel="noopener noreferrer">IRS Publication 523</a> and consult a CPA before relying on it.</p>
+    <h3>This is an estimate — verify everything</h3>
+    <p>Transfer tax rates, title fees, and building policies vary and can change. Always confirm numbers with a <a href="https://www.nycbar.org/lawyer-referral-service" target="_blank" rel="noopener noreferrer">real estate attorney</a> and a CPA before making decisions. Buying instead? See our <a href="/guides/nyc-closing-costs-for-buyers/">buyer closing costs guide</a>. See our <a href="/about/">full sourcing methodology</a> for where every default in this calculator comes from.</p>
+  </div>
+</div>
+
+<AdSlot maxWidth="1300px" sidePadding="20px" />
+
+<Footer
+  variant="app"
+  disclaimer="This calculator is for informational purposes only and does not constitute financial, legal, or tax advice. NYC RPTT and NYS transfer tax are seller-paid estimates — verify with your closing attorney. Flip tax terms are set by each co-op's proprietary lease and vary widely by building. The capital gains estimate is a simplified illustration of the IRS Section 121 exclusion and does not account for depreciation recapture, AMT, or other situational rules — consult a CPA before relying on it."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<script>
+  import '../../scripts/sell';
+</script>
+
+<style>
+/* ===== MAIN LAYOUT ===== */
+main.app-layout {
+  display: grid;
+  grid-template-columns: 1fr 430px;
+  gap: 20px;
+  max-width: 1300px;
+  margin: 20px auto;
+  padding: 0 20px 60px;
+  align-items: start;
+}
+@media (max-width: 1060px) {
+  main.app-layout { grid-template-columns: 1fr; }
+}
+
+.inputs-panel { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.results-panel {
+  position: sticky;
+  top: calc(var(--header-h) + 20px);
+  max-height: calc(100vh - var(--header-h) - 40px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--g300) transparent;
+}
+@media (max-width: 1060px) { .results-panel { position: static; max-height: none; } }
+
+/* ===== COLLAPSIBLE SECTION (How This Works) ===== */
+.info-wrap { max-width: 1300px; margin: 0 auto 20px; padding: 0 20px; }
+.info-btn {
+  display: flex; align-items: center; gap: 6px;
+  width: 100%; text-align: left;
+  background: none; border: none; cursor: pointer;
+  font-size: 13px; color: var(--blue);
+  font-family: inherit; font-weight: 500; padding: 8px 0;
+}
+.info-btn:hover { color: #1d4ed8; }
+.info-caret { transition: transform .2s; font-style: normal; }
+.info-btn.open .info-caret { transform: rotate(180deg); }
+.info-body {
+  display: none; background: #fff;
+  border: 1px solid var(--border); border-radius: var(--r);
+  padding: 16px 20px; font-size: 13px; color: var(--g600); line-height: 1.65;
+}
+.info-body.open { display: block; }
+.info-body h3 { font-size: 13px; font-weight: 700; color: var(--g800); margin: 12px 0 4px; }
+.info-body h3:first-child { margin-top: 0; }
+.info-body p { margin-bottom: 7px; }
+.info-body a { color: var(--blue); }
+
+/* ===== INPUT CARD ===== */
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  overflow: hidden;
+}
+.card-title {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--g500);
+  padding: 12px 16px 11px;
+  border-bottom: 1px solid var(--g100);
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; user-select: none;
+  transition: background .12s;
+}
+.card-title:hover { background: var(--g50); }
+.snum {
+  background: var(--navy); color: #fff;
+  border-radius: 50%; width: 17px; height: 17px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; flex-shrink: 0;
+}
+.card-chev { font-size: 10px; color: var(--g400); margin-left: auto; transition: transform .2s; }
+.card-chev.open { transform: rotate(180deg); }
+.card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.card-body.collapsed { display: none; }
+
+/* ===== FORM ROWS ===== */
+.form-row {
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.lbl {
+  flex: 1;
+  font-size: 12.5px; color: var(--g700); font-weight: 500;
+  padding-top: 8px;
+}
+.lbl small {
+  display: block; font-size: 11px;
+  color: var(--g400); font-weight: 400;
+  margin-top: 2px; line-height: 1.4;
+}
+
+/* Input wrappers */
+.iw {
+  display: flex; align-items: stretch;
+  border: 1px solid var(--g300); border-radius: 5px;
+  background: #fff; overflow: hidden; flex-shrink: 0;
+  transition: border-color .15s, box-shadow .15s;
+}
+.iw:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.iw .px, .iw .sx {
+  background: var(--g50); padding: 0 8px;
+  font-size: 13px; color: var(--g500); font-weight: 500;
+  display: flex; align-items: center; user-select: none; white-space: nowrap;
+}
+.iw .px { border-right: 1px solid var(--g200); }
+.iw .sx { border-left:  1px solid var(--g200); }
+.iw input, .iw select {
+  border: none; outline: none; background: transparent;
+  padding: 7px 9px; font-size: 13px; font-family: inherit;
+  color: var(--g900); min-width: 0; -moz-appearance: textfield;
+}
+.iw input::-webkit-inner-spin-button,
+.iw input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.iw select { cursor: pointer; }
+.w120 { width: 120px; }
+.w140 { width: 140px; }
+.w160 { width: 160px; }
+
+/* Toggle row */
+.toggle-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12.5px; color: var(--g700); font-weight: 500;
+  cursor: pointer;
+}
+.toggle-row input[type="checkbox"] {
+  width: 14px; height: 14px; accent-color: var(--blue); flex-shrink: 0; cursor: pointer;
+}
+.toggle-row small { font-size: 11px; color: var(--g400); font-weight: 400; }
+
+/* Auto-calculated tax info box */
+.tax-info-note {
+  background: var(--blue-xlt); border: 1px solid var(--blue-lt);
+  border-radius: 5px; padding: 10px 12px;
+  font-size: 12px; color: var(--g600); line-height: 1.5;
+}
+.tax-info-note strong { display: block; color: var(--g800); margin-bottom: 4px; font-size: 11.5px; }
+.tax-info-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 2px 0; font-variant-numeric: tabular-nums;
+}
+.tax-info-row span:last-child { font-weight: 700; color: var(--g800); }
+.tax-info-src { display: block; margin-top: 6px; font-size: 10.5px; color: var(--g400); line-height: 1.4; }
+
+/* ===== RESULTS CARD ===== */
+.results-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.07);
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #0f2a54 100%);
+  padding: 22px 20px 17px; text-align: center;
+}
+.hero-eyebrow {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; color: #ffffff; margin-bottom: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: ""; height: 1px; width: 24px; background: #1e3a5f;
+}
+.hero-price {
+  font-size: 46px; font-weight: 800; font-variant-numeric: tabular-nums;
+  letter-spacing: -2px; color: #f0f9ff; line-height: 1.05;
+}
+.hero-price.zero { color: #fca5a5; }
+.hero-warn {
+  margin-top: 10px; padding: 7px 12px;
+  background: rgba(220,38,38,.15); border: 1px solid rgba(220,38,38,.3);
+  border-radius: 6px; font-size: 12px; color: #fca5a5; display: none;
+}
+
+/* Results body */
+.results-body { padding: 15px 17px; }
+
+/* Snap blocks */
+.snap-block { margin-bottom: 14px; }
+.snap-title {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.9px; color: var(--g400); margin-bottom: 5px;
+}
+.snap-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 3px 0; font-size: 12.5px;
+  border-bottom: 1px solid var(--g100);
+}
+.snap-row[hidden] { display: none; }
+.snap-row:last-child { border-bottom: none; }
+.sr-lbl { color: var(--g500); }
+.sr-note { font-size: 10.5px; color: var(--g400); }
+.sr-val { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--g800); }
+.snap-row.indent .sr-lbl { padding-left: 12px; color: var(--g400); font-size: 12px; }
+.snap-row.indent .sr-val { color: var(--g500); font-size: 12px; font-weight: 500; }
+.snap-row.subtot { border-top: 1px solid var(--g200); padding-top: 5px; border-bottom: none; margin-top: 1px; }
+.snap-row.subtot .sr-lbl, .snap-row.subtot .sr-val { font-weight: 700; color: var(--g900); font-size: 13px; }
+
+/* Print */
+@media print {
+  .inputs-panel, .info-wrap { display: none !important; }
+  :global(.app-header), :global(.app-footer) { display: none !important; }
+  :global(body) { background: #fff; }
+  main.app-layout { display: block; padding: 0; margin: 0; }
+  .results-panel { position: static; max-height: none; overflow: visible; }
+  .results-card { border: none; box-shadow: none; }
+  .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>

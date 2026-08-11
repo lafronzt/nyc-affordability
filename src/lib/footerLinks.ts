@@ -14,7 +14,8 @@ export const CALC_CONDO: FooterLink = { label: 'NYC Condo Affordability', href: 
 export const CALC_RENT: FooterLink = { label: 'NYC Rent Affordability', href: '/rent/' };
 export const CALC_AFFORDABLE: FooterLink = { label: 'NYC Affordable Housing Calculator', href: '/affordable/' };
 export const CALC_COMPARE: FooterLink = { label: 'Compare All Options', href: '/compare/' };
-export const ALL_CALCULATORS: FooterLink[] = [CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE];
+export const CALC_NET_PROCEEDS: FooterLink = { label: 'NYC Sale Net Proceeds Calculator', href: '/sell/' };
+export const ALL_CALCULATORS: FooterLink[] = [CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_NET_PROCEEDS];
 export const HUB_LINK: FooterLink = { label: 'NYC Affordability Hub', href: '/' };
 
 /** All calculators except the current page, plus the hub link, in canonical order. */
@@ -34,6 +35,7 @@ export const GUIDE_PMI: FooterLink = { label: 'PMI on NYC Condos Explained', hre
 export const GUIDE_FLIP_TAX: FooterLink = { label: 'Co-op Flip Tax in NYC Explained', href: '/guides/coop-flip-tax-nyc-explained/' };
 export const GUIDE_BOARD_APPROVAL: FooterLink = { label: 'How Co-op Board Approval Works', href: '/guides/coop-board-approval-process/' };
 export const GUIDE_SECURITY_DEPOSIT: FooterLink = { label: 'Security Deposits & Move-In Costs', href: '/guides/nyc-security-deposit-move-in-costs/' };
+export const GUIDE_SELLER_CLOSING_COSTS: FooterLink = { label: 'NYC Seller Closing Costs Explained', href: '/guides/nyc-seller-closing-costs-explained/' };
 export const ALL_GUIDES: FooterLink[] = [
   GUIDE_MANSION_TAX,
   GUIDE_COOP_RESERVE,
@@ -47,6 +49,7 @@ export const ALL_GUIDES: FooterLink[] = [
   GUIDE_FLIP_TAX,
   GUIDE_BOARD_APPROVAL,
   GUIDE_SECURITY_DEPOSIT,
+  GUIDE_SELLER_CLOSING_COSTS,
 ];
 
 /** Standalone Guides entry for the primary navbar (a different surface than the

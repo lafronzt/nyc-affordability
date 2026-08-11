@@ -13,6 +13,7 @@ sources:
 relatedGuides:
   - coop-vs-condo-nyc-costs
   - coop-board-reserve-requirements
+  - nyc-seller-closing-costs-explained
 cta:
   heading: "See how flip tax affects your co-op numbers"
   body: "Flip tax is a seller-side cost at resale, not a buyer closing cost — but if you're planning your total holding cost, the co-op calculator's reserve and DTI math shows what you're carrying until that day comes."
