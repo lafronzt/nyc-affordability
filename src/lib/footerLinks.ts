@@ -57,6 +57,16 @@ export const ALL_GUIDES: FooterLink[] = [
     /guides/ link the footer intentionally dropped — see note above). */
 export const GUIDES_INDEX_LINK: FooterLink = { label: 'Guides', href: '/guides/' };
 
+export const GLOSSARY_INDEX_LINK: FooterLink = { label: 'NYC Housing Glossary', href: '/glossary/' };
+export const INCOME_INDEX_LINK: FooterLink = { label: 'What Can I Afford by Income', href: '/income/' };
+export const BUY_INDEX_LINK: FooterLink = { label: 'What It Takes to Buy by Price', href: '/buy/' };
+
+/** Index-only links for the enumerated-parameter page types (income/buy) plus the
+    glossary — individual /income/[amount]/ or /buy/[price]/ pages aren't each
+    footer-linked, same as individual guides beyond the ALL_GUIDES content pages;
+    this mirrors GUIDES_INDEX_LINK's role for the primary navbar/footer. */
+export const EXPLORE_LINKS: FooterLink[] = [GLOSSARY_INDEX_LINK, INCOME_INDEX_LINK, BUY_INDEX_LINK];
+
 export const ABOUT_LINK: FooterLink = { label: 'About This Project', href: '/about/' };
 export const CONTACT_LINK: FooterLink = { label: 'Contact', href: '/contact/' };
 export const PRIVACY_LINK: FooterLink = { label: 'Privacy Policy', href: '/privacy/' };

@@ -13,6 +13,9 @@ sources:
 relatedGuides:
   - coop-board-reserve-requirements
   - income-needed-to-buy-nyc-apartment
+relatedTerms:
+  - board-package
+  - post-closing-liquidity
 cta:
   heading: "Check your numbers before you apply"
   body: "The co-op calculator models the same DTI and reserve math a board applies, so you can see whether you clear a typical board's bar before you invest time in a package."

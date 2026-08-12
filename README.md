@@ -1,8 +1,8 @@
 # NYC Affordability
 
-A suite of free NYC apartment, home, and housing affordability calculators, built with [Astro](https://astro.build) and deployed on one primary domain via a Cloudflare Worker with Static Assets.
+A free NYC housing affordability platform — calculators, sourced guides, a glossary, and salary/price landing pages — built with [Astro](https://astro.build) and deployed on one primary domain via a Cloudflare Worker with Static Assets. The positioning is "the financial guide to living in NYC": the calculators are the interactive core, and the guides/glossary/landing pages expose that same calculation engine as browsable, cited content.
 
-| Calculator | URL | Path |
+| Page | URL | Path |
 |---|---|---|
 | Landing page | [www.nyc-affordability.com](https://www.nyc-affordability.com/) | `/` |
 | Co-op Affordability | [www.nyc-affordability.com/coop](https://www.nyc-affordability.com/coop/) | `/coop/` |
@@ -10,8 +10,15 @@ A suite of free NYC apartment, home, and housing affordability calculators, buil
 | Rent Affordability | [www.nyc-affordability.com/rent](https://www.nyc-affordability.com/rent/) | `/rent/` |
 | Affordable Housing Finder | [www.nyc-affordability.com/affordable](https://www.nyc-affordability.com/affordable/) | `/affordable/` |
 | Compare All Options | [www.nyc-affordability.com/compare](https://www.nyc-affordability.com/compare/) | `/compare/` |
+| Sale Net Proceeds | [www.nyc-affordability.com/sell](https://www.nyc-affordability.com/sell/) | `/sell/` |
+| Guides (sourced explainers) | [www.nyc-affordability.com/guides](https://www.nyc-affordability.com/guides/) | `/guides/<slug>/` |
+| Glossary (NYC housing terms) | [www.nyc-affordability.com/glossary](https://www.nyc-affordability.com/glossary/) | `/glossary/<slug>/` |
+| What can I afford by income | [www.nyc-affordability.com/income](https://www.nyc-affordability.com/income/) | `/income/<amount>/` |
+| What it takes to buy by price | [www.nyc-affordability.com/buy](https://www.nyc-affordability.com/buy/) | `/buy/<price>/` |
 | About | [www.nyc-affordability.com/about](https://www.nyc-affordability.com/about/) | `/about/` |
+| Contact | [www.nyc-affordability.com/contact](https://www.nyc-affordability.com/contact/) | `/contact/` |
 | Privacy Policy | [www.nyc-affordability.com/privacy](https://www.nyc-affordability.com/privacy/) | `/privacy/` |
+| Terms of Service | [www.nyc-affordability.com/terms](https://www.nyc-affordability.com/terms/) | `/terms/` |
 | Co-op legacy domain | [nyc-co-op-affordability.com](https://www.nyc-co-op-affordability.com/) | redirects to `/coop/` |
 
 ---
@@ -74,24 +81,43 @@ The default Worker domain also serves all paths directly by file-system structur
 │   │   └── tokens.css             ← shared design tokens, reset, base body rules
 │   ├── lib/
 │   │   ├── format.ts              ← fmtMoney / fmtPercent
-│   │   ├── calc.ts                ← calcMansionTax / calcPmiRate / calcPmiMonthly / calcMortgageRecordingTax / bsearchMaxPrice
+│   │   ├── calc.ts                ← calcMansionTax / calcPmiRate / calcPmiMonthly / calcMortgageRecordingTax / calcNycRptt / calcNysTransferTax / bsearchMaxPrice
+│   │   ├── afford.ts              ← DOM-free build-time math for /income/ and /buy/ pages — mirrors (does not import) the DOM-coupled calculate()/priceAtDp() logic in src/scripts/{rent,coop,condo}.ts, same relationship compare.ts has to those scripts. See the file's header comment before editing.
+│   │   ├── amiTable.ts            ← the one shared data table (HUD AMI figures by household size, cited) — imported by both afford.ts and src/scripts/affordable.ts
 │   │   ├── sharedProfile.ts       ← nyc_shared_profile localStorage contract
+│   │   ├── breadcrumbs.ts         ← buildBreadcrumbJsonLd() for schema.org BreadcrumbList JSON-LD
+│   │   ├── adSlots.ts             ← AdSense ad-unit slot IDs
+│   │   ├── adsConfig.ts           ← ADS_ENABLED master switch — set to false site-wide to pull every ad (and the loader script) in one place
 │   │   └── footerLinks.ts         ← shared FooterLink/FooterColumn data reused across every page's footer
-│   ├── scripts/                   ← per-page calculator logic (coop.ts, condo.ts, rent.ts, affordable.ts, compare.ts)
-│   ├── content.config.ts          ← `guides` content collection schema (frontmatter shape, defaults)
+│   ├── scripts/                   ← per-page calculator logic (coop.ts, condo.ts, rent.ts, affordable.ts, compare.ts, sell.ts)
+│   ├── content.config.ts          ← `guides` and `glossary` content collection schemas (frontmatter shape, defaults)
 │   ├── content/
-│   │   └── guides/                ← one .md file per guide, rendered by src/pages/guides/[slug].astro
+│   │   ├── guides/                ← one .md file per guide, rendered by src/pages/guides/[slug].astro
+│   │   └── glossary/               ← one .md file per term, rendered by src/pages/glossary/[slug].astro
 │   └── pages/
 │       ├── index.astro            ← Landing page (NYC Affordability hub)
 │       ├── about/index.astro
+│       ├── contact/index.astro
 │       ├── privacy/index.astro
+│       ├── terms/index.astro
 │       ├── affordable/index.astro
 │       ├── compare/index.astro    ← Rent vs co-op vs condo comparison dashboard
 │       ├── condo/index.astro
 │       ├── coop/index.astro
 │       ├── rent/index.astro
-│       └── guides/
-│           └── [slug].astro       ← shared template for every /guides/<slug>/ page
+│       ├── sell/index.astro       ← Sale net proceeds calculator
+│       ├── guides/
+│       │   ├── index.astro
+│       │   └── [slug].astro       ← shared template for every /guides/<slug>/ page
+│       ├── glossary/
+│       │   ├── index.astro        ← grouped by category (renting/buying/coop/affordable-housing/taxes/general)
+│       │   └── [slug].astro       ← shared template for every /glossary/<slug>/ page
+│       ├── income/
+│       │   ├── index.astro
+│       │   └── [amount]/index.astro  ← static-generated for a fixed income list (see afford.ts)
+│       └── buy/
+│           ├── index.astro
+│           └── [price]/index.astro   ← static-generated for a fixed price list (see afford.ts)
 ├── public/                        ← pass-through static assets (images, robots.txt, ads.txt)
 ├── dist/                          ← Astro build output (git-ignored) — this is what wrangler deploys
 ├── functions/
@@ -104,15 +130,25 @@ The default Worker domain also serves all paths directly by file-system structur
 
 The site is built with [Astro](https://astro.build) in static output mode: `npm run build` compiles `src/pages/*.astro` into plain HTML/CSS/JS in `dist/`, which Cloudflare Workers Static Assets serves exactly as it served hand-written `public/` files before this migration — no server rendering, no data ever leaves the browser. Adding a new page is one new file under `src/pages/<slug>/index.astro` that reuses the shared layout/header/footer components.
 
-`sitemap.xml` is generated at build time by [`@astrojs/sitemap`](https://docs.astro.build/en/guides/integrations-guide/sitemap/) (configured in `astro.config.mjs`) from every page under `src/pages/`, so a new page is picked up automatically without hand-editing a sitemap file. Each page's `priority`/`changefreq`/`lastmod` come from the `SITEMAP_PAGE_META` map in `astro.config.mjs`; add an entry there for new pages (falls back to a sane default otherwise). The plugin itself only outputs `sitemap-index.xml` + `sitemap-0.xml` (it has no bare-`sitemap.xml` option); `npm run build` runs `scripts/rename-sitemap.mjs` as a second step to collapse that single chunk into a plain `dist/sitemap.xml`, matching the URL `robots.txt` (a hand-written static file under `public/`) has always pointed at. If the site ever grows past ~45,000 pages and the sitemap splits into multiple chunks, that script will throw and need updating. Draft guides (see below) are excluded from the sitemap via the integration's `filter` option, which reads `draft: true` directly off the guide's frontmatter.
+`sitemap.xml` is generated at build time by [`@astrojs/sitemap`](https://docs.astro.build/en/guides/integrations-guide/sitemap/) (configured in `astro.config.mjs`) from every page under `src/pages/`, so a new page is picked up automatically without hand-editing a sitemap file. Each page's `priority`/`changefreq`/`lastmod` come from the `SITEMAP_PAGE_META` map in `astro.config.mjs`; add an entry there for new pages (falls back to a sane default otherwise). The plugin itself only outputs `sitemap-index.xml` + `sitemap-0.xml` (it has no bare-`sitemap.xml` option); `npm run build` runs `scripts/rename-sitemap.mjs` as a second step to collapse that single chunk into a plain `dist/sitemap.xml`, matching the URL `robots.txt` (a hand-written static file under `public/`) has always pointed at. If the site ever grows past ~45,000 pages and the sitemap splits into multiple chunks, that script will throw and need updating. Draft guides and glossary entries (see below) are excluded from the sitemap via the integration's `filter` option, which reads `draft: true` directly off the content file's frontmatter. Enumerated routes (`/income/<amount>/`, `/buy/<price>/`, `/glossary/<slug>/`) get their `changefreq`/`priority` from a pattern-matched `ENUMERATED_ROUTE_META` list in `astro.config.mjs` rather than a hand-listed entry per page, since those lists grow.
 
 ### Guides (`/guides/<slug>/`)
 
-Long-form editorial content — separate from the five calculators above — lives as Markdown in `src/content/guides/`, one file per guide, and is rendered through the single shared template at `src/pages/guides/[slug].astro`. This is the one place in the site that isn't a hand-written `.astro` file per page; adding a guide means adding a `.md` file, not a new route.
+Long-form editorial content — separate from the calculators above — lives as Markdown in `src/content/guides/`, one file per guide, and is rendered through the single shared template at `src/pages/guides/[slug].astro`. This is one of two places in the site that isn't a hand-written `.astro` file per page (the other is the glossary, below); adding a guide means adding a `.md` file, not a new route.
 
-`src/content.config.ts` defines the frontmatter schema. Required fields: `title`, `metaDescription`, `intro`, `updated` (`YYYY-MM-DD`), `sources` (an array of `{ label, url }` citations rendered in the page's **Sources** section), and `cta` (`{ heading, body, label, href }`, rendered as a box linking to the relevant calculator). Optional: `ogTitle`/`ogDescription`/`ogImage`/`ogImageAlt`/`twitterTitle`/`twitterDescription` (all fall back to `title`/`metaDescription`/a default OG image), `draft` (defaults to `false`), and `sitemap.changefreq`/`sitemap.priority` (default `monthly` / `0.7`). The Markdown body becomes the guide's body sections.
+`src/content.config.ts` defines the frontmatter schema. Required fields: `title`, `metaDescription`, `intro`, `updated` (`YYYY-MM-DD`), `sources` (an array of `{ label, url }` citations rendered in the page's **Sources** section), and `cta` (`{ heading, body, label, href }`, rendered as a box linking to the relevant calculator). Optional: `ogTitle`/`ogDescription`/`ogImage`/`ogImageAlt`/`twitterTitle`/`twitterDescription` (all fall back to `title`/`metaDescription`/a default OG image), `draft` (defaults to `false`), `relatedGuides`/`relatedTerms` (slugs surfaced as "Related guides"/"Related terms" cards — `relatedTerms` points into the `glossary` collection below), and `sitemap.changefreq`/`sitemap.priority` (default `monthly` / `0.7`). The Markdown body becomes the guide's body sections.
 
 Setting `draft: true` on a guide sets `<meta name="robots" content="noindex, nofollow">` on that page and excludes it from `sitemap.xml` — the guide is still built and reachable by direct URL (so it can be reviewed), just not indexed or listed. Flip `draft` to `false` when the guide is ready to publish; no other change is needed.
+
+### Glossary (`/glossary/<slug>/`)
+
+Short definitional entries — AMI, DTI, flip tax, post-closing liquidity, etc. — live as Markdown in `src/content/glossary/`, one file per term, rendered through `src/pages/glossary/[slug].astro`. Same content-collection mechanics as guides: add a `.md` file, not a new route. The schema (in `src/content.config.ts`) additionally requires `term`, `shortDefinition` (used on the index/card view), and `category` (one of `renting` / `buying` / `coop` / `affordable-housing` / `taxes` / `general`, used to group the `/glossary/` index page); it shares `sources`, `relatedGuides`, `draft`, and `sitemap` with the guides schema, plus its own `relatedTerms` for cross-linking between glossary entries. Every entry's body should include a worked numeric example, not just a definition — that's the differentiator versus a generic glossary.
+
+### Salary / price landing pages (`/income/<amount>/`, `/buy/<price>/`)
+
+These expose the calculator engine as static content rather than an interactive tool: `/income/<amount>/` shows max rent/co-op/condo for a given income, `/buy/<price>/` shows the reverse (required income + estimated cash) for a given purchase price. Both are `getStaticPaths()`-driven Astro pages generated for a **fixed list** of amounts/prices (defined both in `src/lib/afford.ts`-adjacent literals and inline in each page's `getStaticPaths()` — see the comment in those files for why the literal is duplicated) — there's no SSR adapter configured, so arbitrary user-supplied values aren't possible; a "custom" scenario instead deep-links into `/compare/` via the shared profile.
+
+The numbers come from `src/lib/afford.ts`, a DOM-free mirror of the pure math inside `src/scripts/{rent,coop,condo}.ts` (see that file's header comment for why it's a deliberate, documented duplicate rather than a shared import — it follows the same pattern `compare.ts` already established). Because these pages have no real user account data, they compute an **income (DTI) ceiling only** — no cash/reserve check — and every page says so explicitly, linking back to the live calculator for a true number against real savings.
 
 The `/compare/` dashboard reads the shared browser profile saved at `nyc_shared_profile` and can update it when the page's Save toggle is enabled, then combines that profile with each calculator's saved assumptions to compare max affordable rent, max co-op price, max condo price, cash required, monthly housing cost, DTI, reserve requirement, and binding constraint.
 

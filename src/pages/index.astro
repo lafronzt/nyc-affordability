@@ -4,11 +4,22 @@ import SiteHeader from '../components/SiteHeader.astro';
 import Footer from '../components/Footer.astro';
 import AdSlot from '../components/AdSlot.astro';
 import type { FooterColumn } from '../lib/footerLinks';
-import { ALL_CALCULATORS, ALL_GUIDES, HPD_HOME_LINK, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, HPD_HOME_LINK, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../lib/footerLinks';
+import { fmtMoney } from '../lib/format';
+import { maxAffordableRent, maxAffordablePrice } from '../lib/afford';
+
+const SCENARIO_INCOMES = [75000, 150000, 250000];
+const scenarios = SCENARIO_INCOMES.map((income) => ({
+  income,
+  rent: maxAffordableRent({ annualIncome: income }).maxRent,
+  coop: maxAffordablePrice({ annualIncome: income, propertyType: 'coop' }).maxPrice,
+  condo: maxAffordablePrice({ annualIncome: income, propertyType: 'condo' }).maxPrice,
+}));
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
   { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
   {
     heading: 'NYC Housing Resources',
     links: [
@@ -58,13 +69,72 @@ const jsonLd = {
 <SiteHeader />
 
 <main><div class="hero">
-  <div class="hero-eyebrow">Free NYC Housing Calculators</div>
-  <h2>Know your numbers<br>before you sign anything.</h2>
-  <p>Six tools built for how NYC housing actually works — co-ops with board reserves, condos with closing-cost math, rentals with FARE Act rules, affordable housing with HPD's AMI framework, seller net proceeds, and a side-by-side comparison dashboard.</p>
+  <div class="hero-eyebrow">The Financial Guide to Living in NYC</div>
+  <h2>Can you actually afford<br>to live in NYC?</h2>
+  <p>Calculate what you can rent or buy, understand NYC's bizarre housing rules — board reserves, mansion tax, the 40× rule — and see exactly where your money would go.</p>
 </div>
 
+<section class="persona-section">
+  <div class="calc-section-title">I'm looking to&hellip;</div>
+  <div class="persona-grid">
+    <a class="persona-card" href="/rent/">
+      <div class="persona-icon">🏙️</div>
+      <div class="persona-title">Rent an apartment</div>
+      <div class="persona-q">"How much rent will a NYC landlord approve me for?"</div>
+    </a>
+    <a class="persona-card" href="/coop/">
+      <div class="persona-icon">🔑</div>
+      <div class="persona-title">Buy a co-op</div>
+      <div class="persona-q">"How much can I afford after board reserves?"</div>
+    </a>
+    <a class="persona-card" href="/condo/">
+      <div class="persona-icon">🏢</div>
+      <div class="persona-title">Buy a condo</div>
+      <div class="persona-q">"What purchase price can I actually carry?"</div>
+    </a>
+    <a class="persona-card" href="/affordable/">
+      <div class="persona-icon">🏠</div>
+      <div class="persona-title">Find affordable housing</div>
+      <div class="persona-q">"Which AMI bands do I qualify for?"</div>
+    </a>
+    <a class="persona-card" href="/compare/">
+      <div class="persona-icon">🤔</div>
+      <div class="persona-title">Decide: rent or buy</div>
+      <div class="persona-q">"Compare my options side by side."</div>
+    </a>
+    <a class="persona-card" href="/income/">
+      <div class="persona-icon">💵</div>
+      <div class="persona-title">See what my income gets me</div>
+      <div class="persona-q">"What does $150k actually afford in NYC?"</div>
+    </a>
+  </div>
+</section>
+
+<section class="scenario-section">
+  <div class="calc-section-title">What does it take to live in NYC?</div>
+  <div class="scenario-table-wrap">
+    <table class="scenario-table">
+      <thead>
+        <tr><th>Income</th><th>Max rent</th><th>Max co-op</th><th>Max condo</th><th></th></tr>
+      </thead>
+      <tbody>
+        {scenarios.map((s) => (
+          <tr>
+            <td>{fmtMoney(s.income)}/yr</td>
+            <td>{fmtMoney(s.rent)}/mo</td>
+            <td>{fmtMoney(s.coop)}</td>
+            <td>{fmtMoney(s.condo)}</td>
+            <td><a href={`/income/${s.income}/`}>Details &rarr;</a></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="scenario-note">Co-op/condo figures are an income (DTI) ceiling only — calculated from default assumptions, not your real savings, debts, or cash on hand, which usually caps the actual number lower. <a href="/income/">See more income levels &rarr;</a></p>
+</section>
+
 <section class="calc-section">
-  <div class="calc-section-title">Choose your calculator</div>
+  <div class="calc-section-title">Or choose your calculator directly</div>
   <div class="calc-grid">
 
     <!-- Co-op -->
@@ -239,10 +309,55 @@ const jsonLd = {
   line-height: 1.65;
 }
 
+.persona-section, .scenario-section {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 40px 24px 8px;
+}
+.persona-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.persona-card {
+  display: block;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px 18px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  transition: transform .18s, box-shadow .18s;
+}
+.persona-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+.persona-card:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.persona-icon { font-size: 24px; margin-bottom: 8px; line-height: 1; }
+.persona-title { font-size: 14.5px; font-weight: 750; color: var(--g900); margin-bottom: 6px; letter-spacing: -.1px; }
+.persona-q { font-size: 12.5px; color: var(--g500); line-height: 1.5; font-style: italic; }
+
+.scenario-table-wrap {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  overflow-x: auto;
+}
+.scenario-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 480px; }
+.scenario-table th, .scenario-table td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.scenario-table th { font-weight: 700; color: var(--g900); background: var(--g50); }
+.scenario-table td { color: var(--g600); }
+.scenario-table td a { color: var(--blue); text-decoration: none; font-weight: 700; }
+.scenario-table td a:hover { text-decoration: underline; }
+.scenario-table tr:last-child td { border-bottom: none; }
+.scenario-note { font-size: 12px; color: var(--g500); margin-top: 10px; }
+.scenario-note a { color: var(--blue); text-decoration: none; }
+.scenario-note a:hover { text-decoration: underline; }
+
 .calc-section {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 48px 24px 64px;
+  padding: 40px 24px 64px;
   flex: 1;
 }
 .calc-section-title {
@@ -394,6 +509,7 @@ const jsonLd = {
   .calc-card,
   .calc-card--row2-left,
   .calc-card--row2-right { grid-column: span 1; }
+  .persona-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 820px) {
   .calc-grid { grid-template-columns: repeat(2, 1fr); max-width: 640px; margin: 0 auto; }
@@ -403,6 +519,8 @@ const jsonLd = {
 @media (max-width: 560px) {
   .calc-grid { grid-template-columns: 1fr; max-width: 480px; }
   .calc-section { padding: 32px 16px 48px; }
+  .persona-grid { grid-template-columns: 1fr; }
+  .persona-section, .scenario-section { padding: 28px 16px 4px; }
   :global(.site-header) { padding: 0 16px; }
 }
 </style>

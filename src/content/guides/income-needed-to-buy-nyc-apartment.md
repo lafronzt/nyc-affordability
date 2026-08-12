@@ -11,6 +11,9 @@ sources:
 relatedGuides:
   - coop-board-approval-process
   - pmi-on-nyc-condos-explained
+relatedTerms:
+  - debt-to-income-ratio-dti
+  - post-closing-liquidity
 cta:
   heading: "Run your exact numbers"
   body: "Both calculators reverse-engineer your max purchase price from your actual income and assets, instead of the other way around."

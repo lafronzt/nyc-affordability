@@ -10,6 +10,8 @@ sources:
     url: "https://www.nyc.gov/site/hpd/services-and-information/area-median-income.page"
   - label: "NYC Housing Connect"
     url: "https://housingconnect.nyc.gov"
+relatedTerms:
+  - ami-area-median-income
 cta:
   heading: "Find your AMI percentage and eligible bands"
   body: "The affordable housing calculator takes your household size and income and shows your exact AMI percentage, which bands you qualify for, and the max rent at each one."

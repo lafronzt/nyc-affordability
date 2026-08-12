@@ -14,6 +14,8 @@ relatedGuides:
   - nyc-mansion-tax-explained
   - coop-flip-tax-nyc-explained
   - nyc-closing-costs-for-buyers
+relatedTerms:
+  - flip-tax
 cta:
   heading: "See your total net proceeds, not just the sale price"
   body: "The Net Proceeds calculator builds broker commission, NYC & NYS transfer tax, and co-op flip tax directly into a cash waterfall, so you can see exactly what you'd walk away with at any sale price."

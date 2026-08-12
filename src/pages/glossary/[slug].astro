@@ -18,28 +18,28 @@ const footerColumns: FooterColumn[] = [
 ];
 
 export async function getStaticPaths() {
-  const guides = await getCollection('guides');
-  return guides.map((guide) => ({
-    params: { slug: guide.id },
-    props: { guide },
+  const terms = await getCollection('glossary');
+  return terms.map((term) => ({
+    params: { slug: term.id },
+    props: { term },
   }));
 }
 
-const { guide } = Astro.props;
-const { data } = guide;
-const { Content } = await render(guide);
-
-const allGuides = await getCollection('guides', ({ data }) => !data.draft);
-const relatedGuides = data.relatedGuides
-  .map((slug) => allGuides.find((g) => g.id === slug))
-  .filter((g) => g !== undefined);
+const { term } = Astro.props;
+const { data } = term;
+const { Content } = await render(term);
 
 const allTerms = await getCollection('glossary', ({ data }) => !data.draft);
 const relatedTerms = data.relatedTerms
   .map((slug) => allTerms.find((t) => t.id === slug))
   .filter((t) => t !== undefined);
 
-const canonicalPath = `/guides/${guide.id}/`;
+const allGuides = await getCollection('guides', ({ data }) => !data.draft);
+const relatedGuides = data.relatedGuides
+  .map((slug) => allGuides.find((g) => g.id === slug))
+  .filter((g) => g !== undefined);
+
+const canonicalPath = `/glossary/${term.id}/`;
 const updatedLabel = new Date(`${data.updated}T00:00:00Z`).toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
@@ -51,19 +51,17 @@ const SITE_ORIGIN = 'https://www.nyc-affordability.com';
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: data.title,
+  '@type': 'DefinedTerm',
+  name: data.term,
   description: data.metaDescription,
   url: `${SITE_ORIGIN}${canonicalPath}`,
-  datePublished: data.updated,
-  dateModified: data.updated,
-  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
+  inDefinedTermSet: `${SITE_ORIGIN}/glossary/`,
 };
 
 const breadcrumbItems = [
   { name: 'Home', path: '/' },
-  { name: 'Guides', path: '/guides/' },
-  { name: data.title, path: canonicalPath },
+  { name: 'Glossary', path: '/glossary/' },
+  { name: data.term, path: canonicalPath },
 ];
 const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 ---
@@ -71,14 +69,14 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   variant="site"
   ads
   robots={data.draft ? 'noindex, nofollow' : undefined}
-  pageTitle={`${data.title} | NYC Affordability`}
+  pageTitle={`${data.term} | NYC Housing Glossary | NYC Affordability`}
   metaDescription={data.metaDescription}
   canonicalPath={canonicalPath}
-  ogTitle={data.ogTitle ?? data.title}
+  ogTitle={data.ogTitle ?? data.term}
   ogDescription={data.ogDescription ?? data.metaDescription}
   ogImage={data.ogImage}
-  ogImageAlt={data.ogImageAlt ?? data.title}
-  twitterTitle={data.twitterTitle ?? data.title}
+  ogImageAlt={data.ogImageAlt ?? data.term}
+  twitterTitle={data.twitterTitle ?? data.term}
   twitterDescription={data.twitterDescription ?? data.metaDescription}
   jsonLd={[jsonLd, breadcrumbJsonLd]}
 >
@@ -86,9 +84,9 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 <main>
 <div class="hero">
-  <div class="hero-eyebrow">Guide</div>
-  <h2>{data.title}</h2>
-  <p>{data.intro}</p>
+  <div class="hero-eyebrow">Glossary</div>
+  <h2>{data.term}</h2>
+  <p>{data.shortDefinition}</p>
   <span class="updated">Last updated: {updatedLabel}</span>
 </div>
 
@@ -135,12 +133,6 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
     </div>
   )}
 
-  <div class="cta-box">
-    <h3>{data.cta.heading}</h3>
-    <p>{data.cta.body}</p>
-    <a class="cta-button" href={data.cta.href}>{data.cta.label} &rarr;</a>
-  </div>
-
 </div>
 </main>
 
@@ -175,7 +167,6 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 .card a { color: var(--blue); text-decoration: none; }
 .card a:hover { text-decoration: underline; }
 
-/* Section headings inside markdown guide body (## in .md renders as h2) */
 .guide-body :global(h2) {
   font-size: 17px; font-weight: 800; color: var(--g900);
   letter-spacing: -.2px; margin-bottom: 10px; margin-top: 24px;
@@ -201,22 +192,6 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 @media (max-width: 560px) {
   .guide-body :global(table) { font-size: 12.5px; }
   .guide-body :global(th), .guide-body :global(td) { padding: 7px 8px; }
-}
-
-.cta-box {
-  background: var(--blue-xlt); border: 1px solid var(--blue-lt); border-radius: var(--r);
-  padding: 26px 28px 28px; text-align: center;
-}
-.cta-box h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 8px; letter-spacing: -.2px; }
-.cta-box p { font-size: 14px; color: var(--g600); line-height: 1.6; margin-bottom: 16px; max-width: 480px; margin-left: auto; margin-right: auto; }
-.cta-button {
-  display: inline-block; background: var(--blue); color: #fff; font-weight: 700; font-size: 14px;
-  padding: 11px 22px; border-radius: 8px; text-decoration: none;
-}
-.cta-button:hover { opacity: .9; }
-
-@media (max-width: 560px) {
   .card { padding: 22px 18px 24px; }
-  .cta-box { padding: 22px 18px 24px; }
 }
 </style>

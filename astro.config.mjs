@@ -15,24 +15,39 @@ const SITEMAP_PAGE_META = {
   '/compare/':    { changefreq: 'monthly', priority: 0.8, lastmod: '2026-05-03' },
   '/sell/':       { changefreq: 'monthly', priority: 0.9, lastmod: '2026-08-11' },
   '/guides/':     { changefreq: 'weekly',  priority: 0.8, lastmod: '2026-08-04' },
+  '/glossary/':   { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-08-12' },
+  '/income/':     { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-12' },
+  '/buy/':        { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-12' },
   '/about/':      { changefreq: 'yearly',  priority: 0.5, lastmod: '2026-08-02' },
   '/contact/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-11' },
   '/privacy/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-02' },
   '/terms/':      { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-11' },
 };
 const DEFAULT_PAGE_META = { changefreq: 'monthly', priority: 0.7 };
+// Enumerated-parameter routes (income/[amount]/, buy/[price]/) get a shared
+// meta block by pattern rather than a hand-listed entry per generated value,
+// since that list grows every time an amount/price is added.
+const ENUMERATED_ROUTE_META = [
+  { pattern: /^\/income\/\d+\/$/, meta: { changefreq: 'monthly', priority: 0.6 } },
+  { pattern: /^\/buy\/\d+\/$/,    meta: { changefreq: 'monthly', priority: 0.6 } },
+  { pattern: /^\/glossary\/[^/]+\/$/, meta: { changefreq: 'yearly', priority: 0.5 } },
+];
 
 // @astrojs/sitemap's filter only gets the final URL, not frontmatter, so draft
-// guides (which render noindex but still get built as real pages) need to be
-// excluded by slug here. Read directly off the content files rather than via
-// `astro:content`, which isn't available this early in config loading.
-const guidesDir = fileURLToPath(new URL('./src/content/guides/', import.meta.url));
-const draftGuideSlugs = new Set(
-  readdirSync(guidesDir)
-    .filter((f) => f.endsWith('.md'))
-    .filter((f) => /^draft:\s*true\s*$/m.test(readFileSync(guidesDir + f, 'utf-8')))
-    .map((f) => f.replace(/\.md$/, ''))
-);
+// guides/glossary entries (which render noindex but still get built as real
+// pages) need to be excluded by slug here. Read directly off the content
+// files rather than via `astro:content`, which isn't available this early in
+// config loading.
+function draftSlugsIn(dir) {
+  return new Set(
+    readdirSync(dir)
+      .filter((f) => f.endsWith('.md'))
+      .filter((f) => /^draft:\s*true\s*$/m.test(readFileSync(dir + f, 'utf-8')))
+      .map((f) => f.replace(/\.md$/, ''))
+  );
+}
+const draftGuideSlugs = draftSlugsIn(fileURLToPath(new URL('./src/content/guides/', import.meta.url)));
+const draftGlossarySlugs = draftSlugsIn(fileURLToPath(new URL('./src/content/glossary/', import.meta.url)));
 
 export default defineConfig({
   site: 'https://www.nyc-affordability.com',
@@ -44,12 +59,16 @@ export default defineConfig({
     sitemap({
       filter: (url) => {
         const pathname = new URL(url).pathname;
-        const slug = pathname.match(/^\/guides\/([^/]+)\/$/)?.[1];
-        return slug === undefined || !draftGuideSlugs.has(slug);
+        const guideSlug = pathname.match(/^\/guides\/([^/]+)\/$/)?.[1];
+        if (guideSlug !== undefined) return !draftGuideSlugs.has(guideSlug);
+        const glossarySlug = pathname.match(/^\/glossary\/([^/]+)\/$/)?.[1];
+        if (glossarySlug !== undefined) return !draftGlossarySlugs.has(glossarySlug);
+        return true;
       },
       serialize(item) {
         const pathname = new URL(item.url).pathname;
-        const meta = SITEMAP_PAGE_META[pathname] ?? DEFAULT_PAGE_META;
+        const enumerated = ENUMERATED_ROUTE_META.find((r) => r.pattern.test(pathname));
+        const meta = SITEMAP_PAGE_META[pathname] ?? enumerated?.meta ?? DEFAULT_PAGE_META;
         return { ...item, ...meta };
       },
     }),

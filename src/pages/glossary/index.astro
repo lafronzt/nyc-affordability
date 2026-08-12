@@ -1,0 +1,186 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../lib/footerLinks';
+import { AD_MULTIPLEX_HORIZONTAL } from '../../lib/adSlots';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const CATEGORY_LABELS: Record<string, string> = {
+  renting: 'Renting',
+  buying: 'Buying',
+  coop: 'Co-ops',
+  'affordable-housing': 'Affordable Housing',
+  taxes: 'Taxes',
+  general: 'General',
+};
+const CATEGORY_ORDER = ['renting', 'buying', 'coop', 'affordable-housing', 'taxes', 'general'];
+
+const allTerms = await getCollection('glossary', ({ data }) => !data.draft);
+const terms = allTerms.sort((a, b) => a.data.term.localeCompare(b.data.term));
+
+const grouped = CATEGORY_ORDER.map((cat) => ({
+  category: cat,
+  label: CATEGORY_LABELS[cat],
+  terms: terms.filter((t) => t.data.category === cat),
+})).filter((g) => g.terms.length > 0);
+
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'DefinedTermSet',
+  name: 'NYC Housing Glossary',
+  url: `${SITE_ORIGIN}/glossary/`,
+  description: 'Plain-language definitions of NYC housing, co-op, and tax terms — AMI, DTI, flip tax, mansion tax, post-closing liquidity, and more — each with a worked example and a named source.',
+  hasDefinedTerm: terms.map((t) => ({
+    '@type': 'DefinedTerm',
+    name: t.data.term,
+    url: `${SITE_ORIGIN}/glossary/${t.id}/`,
+  })),
+};
+
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Glossary', path: '/glossary/' },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+---
+<BaseLayout
+  variant="site"
+  ads
+  pageTitle="NYC Housing Glossary | NYC Affordability"
+  metaDescription="Plain-language definitions of NYC housing terms — AMI, DTI, flip tax, mansion tax, post-closing liquidity, guarantor, and more — each with a worked example and a named source."
+  canonicalPath="/glossary/"
+  ogTitle="NYC Housing Glossary"
+  ogDescription="Plain-language definitions of NYC housing terms, each with a worked example and a named source."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Housing Glossary from NYC Affordability."
+  twitterTitle="NYC Housing Glossary"
+  twitterDescription="Plain-language definitions of NYC housing terms, each with a worked example and a named source."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Glossary</div>
+  <h2>The NYC housing terms<br>everyone assumes you know.</h2>
+  <p>AMI, DTI, flip tax, post-closing liquidity — the shorthand that shows up in every listing, board package, and closing statement. Every term here comes with a worked example and a named source, and links straight into the calculator that runs the math for you.</p>
+</div>
+
+<div class="page">
+
+  <Breadcrumbs items={breadcrumbItems} />
+
+  {terms.length === 0 ? (
+    <div class="card">
+      <h3>The glossary is coming soon</h3>
+      <p>We're working on the first batch of terms. In the meantime, try one of the <a href="/">calculators</a> or browse the <a href="/guides/">guides</a>.</p>
+    </div>
+  ) : (
+    grouped.map((group) => (
+      <div class="category-group">
+        <h3 class="category-heading">{group.label}</h3>
+        <div class="term-grid">
+          {group.terms.map((term) => (
+            <a class="term-card" href={`/glossary/${term.id}/`}>
+              <div class="term-name">{term.data.term}</div>
+              <p class="term-def">{term.data.shortDefinition}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))
+  )}
+
+  {terms.length > 0 && (
+    <div style="margin-bottom:20px;">
+      <AdSlot slot={AD_MULTIPLEX_HORIZONTAL} format="multiplex" maxWidth="100%" sidePadding="0" />
+    </div>
+  )}
+
+  <div class="card">
+    <h3>Run your own numbers</h3>
+    <p>Every term here feeds into one of our calculators — once you understand the rule, see exactly how it affects your max price or affordable rent.</p>
+    <div class="tool-grid">
+      <a href="/coop/">NYC Co-op Affordability</a>
+      <a href="/condo/">NYC Condo Affordability</a>
+      <a href="/rent/">NYC Rent Affordability</a>
+      <a href="/affordable/">NYC Affordable Housing Finder</a>
+      <a href="/guides/">NYC Housing Guides</a>
+      <a href="/">NYC Affordability Hub</a>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="These calculators are for informational purposes only and do not constitute financial, legal, or mortgage advice. Always verify all figures with a licensed mortgage professional and real estate attorney before making housing decisions."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+
+.page { max-width: 900px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+
+.category-group { margin-bottom: 28px; }
+.category-heading {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--g500); margin-bottom: 12px;
+}
+.term-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.term-card {
+  display: block; background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  padding: 16px 18px; text-decoration: none; color: inherit;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  transition: transform .18s, box-shadow .18s;
+}
+.term-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+.term-card:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.term-name { font-size: 14.5px; font-weight: 750; color: var(--g900); margin-bottom: 4px; letter-spacing: -.1px; }
+.term-def { font-size: 13px; color: var(--g600); line-height: 1.55; }
+
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 30px; margin-bottom: 20px; margin-top: 32px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.75; margin-bottom: 10px; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+
+.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin-top: 6px; }
+.tool-grid a {
+  display: block; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;
+  font-weight: 650; font-size: 13.5px; color: var(--g800); text-decoration: none; background: var(--g50);
+}
+.tool-grid a:hover { border-color: var(--blue-lt); background: var(--blue-lt); color: var(--blue); }
+
+@media (max-width: 560px) {
+  .term-grid { grid-template-columns: 1fr; }
+  .card { padding: 22px 18px 24px; }
+  .tool-grid { grid-template-columns: 1fr; }
+}
+</style>

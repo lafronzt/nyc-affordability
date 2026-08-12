@@ -1,19 +1,8 @@
 import { fmtMoney as fmt$, fmtPercent as fmtPct } from '../lib/format';
 import { loadSharedProfile, saveSharedProfile, SHARED_KEY } from '../lib/sharedProfile';
+import { AMI_BASE } from '../lib/amiTable';
 
 const LS_KEY = 'nyc_affordable_inputs';
-
-/* ── HUD FY2026 Income Limits — New York HMFA ── */
-const AMI_BASE: Record<number, number> = {
-  1: 97000,
-  2: 110850,
-  3: 124700,
-  4: 138550,
-  5: 149650,
-  6: 160700,
-  7: 171800,
-  8: 182900,
-};
 
 const BANDS = [30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130];
 

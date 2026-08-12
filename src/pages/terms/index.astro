@@ -2,9 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, TERMS_LINK } from '../../lib/footerLinks';
+import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 
 const footerColumns: FooterColumn[] = [
@@ -30,6 +32,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 ---
 <BaseLayout
   variant="site"
+  ads
   pageTitle="Terms of Service | NYC Affordability"
   metaDescription="Terms of service for NYC Affordability: acceptable use, no warranty on calculator outputs, and limitation of liability for this free, open-source housing calculator project."
   canonicalPath="/terms/"
@@ -88,6 +91,10 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   <div class="card">
     <h3>Changes to these terms</h3>
     <p>These terms may be updated from time to time; the "last updated" date at the top of this page reflects the most recent change. Continued use of the site after an update constitutes acceptance of the revised terms.</p>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
   </div>
 
   <div class="card">
