@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../lib/footerLinks';
+import { AD_MULTIPLEX_HORIZONTAL } from '../../lib/adSlots';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+import { fmtMoney } from '../../lib/format';
+import { requiredIncomeForPrice } from '../../lib/afford';
+
+const PRICES = [500000, 750000, 1000000, 1500000];
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const rows = PRICES.map((price) => ({
+  price,
+  coop: requiredIncomeForPrice({ targetPrice: price, propertyType: 'coop' }).annualIncomeNeeded,
+  condo: requiredIncomeForPrice({ targetPrice: price, propertyType: 'condo' }).annualIncomeNeeded,
+}));
+
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Buying', path: '/buy/' },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'What Does It Take to Buy in NYC?',
+  url: `${SITE_ORIGIN}/buy/`,
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
+};
+---
+<BaseLayout
+  variant="site"
+  ads
+  pageTitle="What Does It Take to Buy in NYC? By Price | NYC Affordability"
+  metaDescription="Required income to buy a NYC co-op or condo at $500k, $750k, $1M, and $1.5M — calculated using our affordability engine's default assumptions."
+  canonicalPath="/buy/"
+  ogTitle="What Does It Take to Buy in NYC?"
+  ogDescription="Required income by purchase price, calculated using our affordability engine."
+  ogImage="/images/general-og.png"
+  ogImageAlt="What it takes to buy in NYC by purchase price."
+  twitterTitle="What Does It Take to Buy in NYC?"
+  twitterDescription="Required income by purchase price."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Buying</div>
+  <h2>What does it take to buy in NYC?</h2>
+  <p>Pick a purchase price to see the income, down payment, and cash you'd need — calculated using the same math as the calculators.</p>
+</div>
+
+<div class="page">
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <p class="calc-caveat">Income figures are the minimum to clear the DTI limit at that price — you'd separately need the down payment, closing cost, and (for co-ops) reserve cash on hand. See a page's "Details" link for the full cash breakdown.</p>
+
+  <div class="card">
+    <table>
+      <thead><tr><th>Price</th><th>Co-op income needed</th><th>Condo income needed</th><th></th></tr></thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr>
+            <td>{fmtMoney(r.price)}</td>
+            <td>{fmtMoney(r.coop)}/yr</td>
+            <td>{fmtMoney(r.condo)}/yr</td>
+            <td><a href={`/buy/${r.price}/`}>Details &rarr;</a></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_MULTIPLEX_HORIZONTAL} format="multiplex" maxWidth="100%" sidePadding="0" />
+  </div>
+
+  <div class="cta-box">
+    <h3>Have a different target price?</h3>
+    <p>These pages use round-number defaults. For an exact price, open a calculator and use its Afford Target tab.</p>
+    <a class="cta-button" href="/coop/">Open the Co-op Calculator &rarr;</a>
+  </div>
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="These figures are calculated using default assumptions and do not reflect your actual accounts, debts, or a specific building's financials. They are for informational purposes only and do not constitute financial, legal, or mortgage advice."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+
+.page { max-width: 860px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+.calc-caveat { font-size: 12.5px; color: var(--g500); line-height: 1.6; margin-bottom: 14px; }
+
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 24px 26px 26px; margin-bottom: 20px; overflow-x: auto;
+}
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 460px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+th { font-weight: 700; color: var(--g900); background: var(--g50); }
+td { color: var(--g600); }
+td a { color: var(--blue); text-decoration: none; font-weight: 700; }
+td a:hover { text-decoration: underline; }
+
+.cta-box {
+  background: var(--blue-xlt); border: 1px solid var(--blue-lt); border-radius: var(--r);
+  padding: 26px 28px 28px; text-align: center;
+}
+.cta-box h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 8px; letter-spacing: -.2px; }
+.cta-box p { font-size: 14px; color: var(--g600); line-height: 1.6; margin-bottom: 16px; max-width: 480px; margin-left: auto; margin-right: auto; }
+.cta-button {
+  display: inline-block; background: var(--blue); color: #fff; font-weight: 700; font-size: 14px;
+  padding: 11px 22px; border-radius: 8px; text-decoration: none;
+}
+.cta-button:hover { opacity: .9; text-decoration: none; }
+
+@media (max-width: 560px) {
+  .card { padding: 20px 18px 22px; }
+  .cta-box { padding: 22px 18px 24px; }
+}
+</style>

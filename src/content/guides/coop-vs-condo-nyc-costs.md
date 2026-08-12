@@ -13,6 +13,10 @@ sources:
 relatedGuides:
   - coop-flip-tax-nyc-explained
   - nyc-closing-costs-for-buyers
+relatedTerms:
+  - common-charges
+  - maintenance-coop
+  - mortgage-recording-tax
 cta:
   heading: "See your numbers side by side"
   body: "The comparison dashboard runs identical income and asset inputs through both the co-op and condo models and shows which constraint binds for you."

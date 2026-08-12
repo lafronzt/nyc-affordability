@@ -6,13 +6,14 @@ import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
-import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../lib/footerLinks';
 import { AD_MULTIPLEX_HORIZONTAL } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
   { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
   STANDARD_ABOUT_COLUMN,
 ];
 

@@ -13,6 +13,9 @@ sources:
 relatedGuides:
   - coop-board-approval-process
   - coop-flip-tax-nyc-explained
+relatedTerms:
+  - post-closing-liquidity
+  - debt-to-income-ratio-dti
 cta:
   heading: "See your own reserve number"
   body: "The co-op calculator builds post-closing reserves in directly — set your building's required months and it tells you exactly how much liquid cash you need, on top of the down payment."

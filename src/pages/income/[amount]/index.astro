@@ -1,0 +1,228 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import Footer from '../../../components/Footer.astro';
+import AdSlot from '../../../components/AdSlot.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../../lib/footerLinks';
+import { AD_IN_ARTICLE } from '../../../lib/adSlots';
+import { buildBreadcrumbJsonLd } from '../../../lib/breadcrumbs';
+import { fmtMoney } from '../../../lib/format';
+import { maxAffordableRent, maxAffordablePrice, requiredIncomeForPrice, DEFAULT_ASSUMPTIONS } from '../../../lib/afford';
+
+// Kept in sync with the identical literal inside getStaticPaths() below —
+// Astro extracts getStaticPaths into its own isolated module at build time,
+// so it can't close over a module-scope const defined in this frontmatter.
+const AMOUNTS = [75000, 100000, 150000, 200000, 250000, 300000];
+
+export function getStaticPaths() {
+  const AMOUNTS = [75000, 100000, 150000, 200000, 250000, 300000];
+  return AMOUNTS.map((amount) => ({
+    params: { amount: String(amount) },
+    props: { amount },
+  }));
+}
+
+const { amount } = Astro.props;
+
+const rent = maxAffordableRent({ annualIncome: amount });
+const coop = maxAffordablePrice({ annualIncome: amount, propertyType: 'coop' });
+const condo = maxAffordablePrice({ annualIncome: amount, propertyType: 'condo' });
+const coopCash = requiredIncomeForPrice({ targetPrice: coop.maxPrice, propertyType: 'coop' });
+const condoCash = requiredIncomeForPrice({ targetPrice: condo.maxPrice, propertyType: 'condo' });
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const canonicalPath = `/income/${amount}/`;
+const amountLabel = fmtMoney(amount);
+const pageTitle = `Living in NYC on ${amountLabel} | NYC Affordability`;
+const metaDescription = `What ${amountLabel}/year gets you in NYC housing: max rent under the 40x rule, max co-op and condo purchase price, and the cash you'd need to close, using our calculators' default assumptions.`;
+
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: `Living in NYC on ${amountLabel}`,
+  description: metaDescription,
+  url: `${SITE_ORIGIN}${canonicalPath}`,
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
+};
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'What can I afford', path: '/income/' },
+  { name: amountLabel, path: canonicalPath },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+
+const otherAmounts = AMOUNTS.filter((a) => a !== amount);
+---
+<BaseLayout
+  variant="site"
+  ads
+  pageTitle={pageTitle}
+  metaDescription={metaDescription}
+  canonicalPath={canonicalPath}
+  ogTitle={`What ${amountLabel}/year gets you in NYC`}
+  ogDescription={metaDescription}
+  ogImage="/images/general-og.png"
+  ogImageAlt={`What ${amountLabel}/year gets you in NYC housing.`}
+  twitterTitle={`Living in NYC on ${amountLabel}`}
+  twitterDescription={metaDescription}
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">What Can I Afford</div>
+  <h2>Living in NYC on {amountLabel}</h2>
+  <p>Here's what {amountLabel}/year gets you across renting, co-op, and condo — calculated using this site's own affordability engine, not a rule of thumb.</p>
+</div>
+
+<div class="page">
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <div class="calc-note card">
+    <p><strong>These co-op and condo numbers are an income ceiling only</strong> — calculated by running {amountLabel}/year through the same DTI limits as the live calculators below, assuming no other monthly debts. They do <strong>not</strong> check down payment cash, closing costs, or (for co-ops) post-closing reserves against any real savings — those almost always cap the actual number lower than what's shown here. On the <a href="/coop/">Co-op Calculator</a>'s own default sample accounts, for example, a comparable income is cash-constrained well below its DTI ceiling. Open a full calculator and enter your real accounts to see your actual max.</p>
+  </div>
+
+  <div class="result-grid">
+    <div class="result-card">
+      <div class="result-label">Max rent (40× rule)</div>
+      <div class="result-value">{fmtMoney(rent.maxRent)}<span class="result-unit">/mo</span></div>
+      <div class="result-binding">{rent.binding}</div>
+      <a class="result-link" href="/rent/">Open Rent Calculator &rarr;</a>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Max co-op purchase price</div>
+      <div class="result-value">{fmtMoney(coop.maxPrice)}</div>
+      <div class="result-binding">{coop.binding} · {DEFAULT_ASSUMPTIONS.coopDownPaymentPct}% down, {DEFAULT_ASSUMPTIONS.coopMaxDtiPct}% DTI</div>
+      <a class="result-link" href="/coop/">Open Co-op Calculator &rarr;</a>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Max condo purchase price</div>
+      <div class="result-value">{fmtMoney(condo.maxPrice)}</div>
+      <div class="result-binding">{condo.binding} · {DEFAULT_ASSUMPTIONS.condoDownPaymentPct}% down, {DEFAULT_ASSUMPTIONS.condoMaxDtiPct}% DTI</div>
+      <a class="result-link" href="/condo/">Open Condo Calculator &rarr;</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Cash needed to buy at your max</h3>
+    <p>At your max purchase price, here's the estimated cash you'd need at closing — down payment, closing costs, mansion tax if applicable, and (for co-ops) post-closing reserves. This is an estimate, not a check against real savings — the calculators do that.</p>
+    <table>
+      <thead><tr><th></th><th>Co-op</th><th>Condo</th></tr></thead>
+      <tbody>
+        <tr><td>Purchase price</td><td>{fmtMoney(coop.maxPrice)}</td><td>{fmtMoney(condo.maxPrice)}</td></tr>
+        <tr><td>Down payment</td><td>{fmtMoney(coopCash.downPayment)}</td><td>{fmtMoney(condoCash.downPayment)}</td></tr>
+        <tr><td>Est. closing costs</td><td>{fmtMoney(coopCash.estimatedClosingCosts)}</td><td>{fmtMoney(condoCash.estimatedClosingCosts)}</td></tr>
+        <tr><td>Est. reserves (co-op only)</td><td>{fmtMoney(coopCash.estimatedReserves)}</td><td>&mdash;</td></tr>
+        <tr class="total-row"><td>Total est. cash needed</td><td>{fmtMoney(coopCash.estimatedCashNeeded)}</td><td>{fmtMoney(condoCash.estimatedCashNeeded)}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
+  </div>
+
+  <div class="card">
+    <h3>See a different income</h3>
+    <div class="chip-row">
+      {otherAmounts.map((a) => (
+        <a class="chip" href={`/income/${a}/`}>{fmtMoney(a)}</a>
+      ))}
+    </div>
+    <p class="custom-note">Have a different salary? <a href="/compare/">Run your exact numbers on the Comparison Dashboard</a>, or open any calculator above and enter your own income.</p>
+  </div>
+
+  <div class="cta-box">
+    <h3>Want your actual numbers, not defaults?</h3>
+    <p>These figures use standard assumptions and don't know your real savings, debts, or the specific building's maintenance or common charges. Run your own numbers for an answer built on your actual finances.</p>
+    <a class="cta-button" href="/compare/">Compare all your options &rarr;</a>
+  </div>
+
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="These figures are calculated using default assumptions (mortgage rate, down payment, DTI, and closing-cost estimates) and do not reflect your actual accounts, debts, or a specific building's financials. They are for informational purposes only and do not constitute financial, legal, or mortgage advice. Always verify with a licensed mortgage professional and real estate attorney."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+
+.page { max-width: 860px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+
+.calc-note { background: var(--blue-xlt, #eef4ff); border: 1px solid var(--blue-lt, #cfe0fb); }
+.calc-note p { font-size: 13px; color: var(--g700); line-height: 1.6; margin: 0; }
+
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 24px 26px 26px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.7; margin-bottom: 10px; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+
+.result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+.result-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 20px 18px 18px; text-align: center;
+}
+.result-label { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--g500); margin-bottom: 8px; }
+.result-value { font-size: 26px; font-weight: 800; color: var(--g900); letter-spacing: -.5px; }
+.result-unit { font-size: 14px; font-weight: 600; color: var(--g500); }
+.result-binding { font-size: 12px; color: var(--g500); margin: 6px 0 12px; }
+.result-link { font-size: 12.5px; font-weight: 700; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); }
+th { font-weight: 700; color: var(--g900); background: var(--g50); }
+td { color: var(--g600); }
+.total-row td { font-weight: 750; color: var(--g900); border-top: 2px solid var(--border); }
+
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip {
+  display: inline-block; padding: 7px 14px; border: 1px solid var(--border); border-radius: 999px;
+  font-size: 13px; font-weight: 650; color: var(--g800); background: var(--g50); text-decoration: none;
+}
+.chip:hover { border-color: var(--blue-lt); background: var(--blue-lt); color: var(--blue); text-decoration: none; }
+.custom-note { font-size: 13px; margin-top: 4px; }
+
+.cta-box {
+  background: var(--blue-xlt); border: 1px solid var(--blue-lt); border-radius: var(--r);
+  padding: 26px 28px 28px; text-align: center;
+}
+.cta-box h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 8px; letter-spacing: -.2px; }
+.cta-box p { font-size: 14px; color: var(--g600); line-height: 1.6; margin-bottom: 16px; max-width: 480px; margin-left: auto; margin-right: auto; }
+.cta-button {
+  display: inline-block; background: var(--blue); color: #fff; font-weight: 700; font-size: 14px;
+  padding: 11px 22px; border-radius: 8px; text-decoration: none;
+}
+.cta-button:hover { opacity: .9; text-decoration: none; }
+
+@media (max-width: 720px) {
+  .result-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .card { padding: 20px 18px 22px; }
+  .cta-box { padding: 22px 18px 24px; }
+}
+</style>

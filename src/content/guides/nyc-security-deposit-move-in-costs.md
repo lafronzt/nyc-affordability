@@ -13,6 +13,9 @@ sources:
 relatedGuides:
   - fare-act-broker-fees-explained
   - nyc-40x-rent-rule
+relatedTerms:
+  - fare-act
+  - guarantor
 cta:
   heading: "See your full move-in cash requirement"
   body: "The rent calculator adds your security deposit, application fee, and broker fee (if any) to first month's rent, so you see the actual cash you need before signing."

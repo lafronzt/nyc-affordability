@@ -13,6 +13,8 @@ sources:
 relatedGuides:
   - nyc-security-deposit-move-in-costs
   - nyc-40x-rent-rule
+relatedTerms:
+  - fare-act
 cta:
   heading: "See your full move-in cost, broker fee included or not"
   body: "The rent calculator models the FARE Act rule directly — toggle whether you're hiring your own broker and see exactly how it changes your move-in cash requirement."

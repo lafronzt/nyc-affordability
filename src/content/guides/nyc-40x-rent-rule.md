@@ -10,6 +10,9 @@ sources:
     url: "https://propertyclub.nyc/article/40x-rent-rule-nyc"
   - label: "StreetEasy — How Much Rent Can I Afford in NYC?"
     url: "https://streeteasy.com/blog/how-much-rent-can-i-afford-in-nyc/"
+relatedTerms:
+  - nyc-40x-rule
+  - guarantor
 cta:
   heading: "See what income you need for the rent you want"
   body: "The rent calculator runs the 40x rule (or your building's actual multiplier) against your income automatically, alongside an optional DTI check."

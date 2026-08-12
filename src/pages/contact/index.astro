@@ -2,9 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, CONTACT_LINK } from '../../lib/footerLinks';
+import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 
 const footerColumns: FooterColumn[] = [
@@ -30,6 +32,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 ---
 <BaseLayout
   variant="site"
+  ads
   pageTitle="Contact | NYC Affordability"
   metaDescription="How to reach the maintainer of NYC Affordability: report an outdated rate or source, flag a calculator bug, or suggest a feature — all via GitHub Issues."
   canonicalPath="/contact/"
@@ -72,6 +75,10 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   <div class="card">
     <h3>Why GitHub, and not an email address</h3>
     <p>Routing everything through GitHub Issues keeps reports public and searchable — if you've hit an issue, there's a decent chance someone else has too, and a public issue means you can see whether it's already been reported or fixed, rather than sending a message into a void. It also matches how the project itself is run: <a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">the full source code is public</a>, so anyone can verify exactly how a number is calculated rather than taking it on faith.</p>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
   </div>
 
   <div class="card">
