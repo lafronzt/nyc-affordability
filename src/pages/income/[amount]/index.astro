@@ -61,6 +61,11 @@ const breadcrumbItems = [
 const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 const otherAmounts = AMOUNTS.filter((a) => a !== amount);
+
+const shareText = `What ${amountLabel}/year gets you in NYC:\n` +
+  `🏙 Rent: up to ${fmtMoney(rent.maxRent)}/mo\n` +
+  `🔑 Co-op: up to ${fmtMoney(coop.maxPrice)}\n` +
+  `🏢 Condo: up to ${fmtMoney(condo.maxPrice)}`;
 ---
 <BaseLayout
   variant="site"
@@ -132,6 +137,10 @@ const otherAmounts = AMOUNTS.filter((a) => a !== amount);
     <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
   </div>
 
+  <div class="share-row">
+    <button class="btn-share" id="income-share" data-share-title={`What ${amountLabel}/year gets you in NYC`} data-share-text={shareText} data-share-url={`https://www.nyc-affordability.com${canonicalPath}`} type="button">Share this result</button>
+  </div>
+
   <div class="card">
     <h3>See a different income</h3>
     <div class="chip-row">
@@ -157,6 +166,15 @@ const otherAmounts = AMOUNTS.filter((a) => a !== amount);
   columns={footerColumns}
 />
 </BaseLayout>
+
+<script>
+  import { wireShareButton } from '../../../lib/share';
+  wireShareButton('income-share', (btn) => ({
+    title: btn.dataset.shareTitle ?? '',
+    text: btn.dataset.shareText ?? '',
+    url: btn.dataset.shareUrl ?? window.location.href,
+  }));
+</script>
 
 <style>
 .hero {
@@ -197,6 +215,14 @@ th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--bor
 th { font-weight: 700; color: var(--g900); background: var(--g50); }
 td { color: var(--g600); }
 .total-row td { font-weight: 750; color: var(--g900); border-top: 2px solid var(--border); }
+
+.share-row { display: flex; justify-content: center; margin-bottom: 20px; }
+.btn-share {
+  border: 1px solid var(--blue-lt); background: #fff; color: var(--blue); border-radius: 6px;
+  padding: 10px 20px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: background .15s;
+}
+.btn-share:hover { background: var(--blue-xlt); }
 
 .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .chip {

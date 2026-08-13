@@ -3,6 +3,7 @@ title: "Co-op vs Condo in NYC: What Actually Costs More"
 metaDescription: "Condos cost more upfront in mortgage recording tax; co-ops cost more over time in reserves and flip tax. See the real numbers on both sides before deciding which fits your budget."
 intro: "\"Co-ops are cheaper\" and \"condos are easier\" are both true and both incomplete. Co-ops cost less to buy but come with board scrutiny, reserve requirements, and a resale flip tax condos don't have. Condos cost more upfront in taxes but qualify on a much looser debt-to-income standard. Here's where the real dollars land on each side."
 updated: "2026-08-04"
+category: "buying"
 sources:
   - label: "NYC Department of Finance / ACRIS — Mortgage Recording Tax"
     url: "https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page"

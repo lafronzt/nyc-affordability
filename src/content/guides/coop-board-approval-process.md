@@ -3,6 +3,7 @@ title: "How NYC Co-op Board Approval and the Board Package Work"
 metaDescription: "NYC co-op boards can reject a buyer without giving a reason. See what goes into a board package, how the interview works, typical processing fees, and how long approval actually takes."
 intro: "Getting a co-op board's approval is a separate hurdle from qualifying for a mortgage — a lender can approve your financing and a board can still reject you, without explanation, for reasons that have nothing to do with your ability to pay. Here's what the process actually involves."
 updated: "2026-08-11"
+category: "coop"
 sources:
   - label: "Skybriz — NYC Co-op Board Package Checklist"
     url: "https://www.skybriz.com/insights/nyc-co-op-board-package-checklist/"

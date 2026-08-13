@@ -1,6 +1,7 @@
 import { fmtMoney as fmt$, fmtPercent as fmtPct } from '../lib/format';
 import { loadSharedProfile, saveSharedProfile, SHARED_KEY } from '../lib/sharedProfile';
 import { AMI_BASE } from '../lib/amiTable';
+import { wireShareButton } from '../lib/share';
 
 const LS_KEY = 'nyc_affordable_inputs';
 
@@ -94,10 +95,13 @@ function calculate(inp: Inputs) {
   return { amiPct, bandClass, eligibility, rentTable, hh100 };
 }
 
+let lastResult: ReturnType<typeof calculate> | null = null;
+
 /* ── Render results ── */
 function updateResults() {
   const inp = readInputs();
   const r   = calculate(inp);
+  lastResult = r;
 
   const heroEl  = $('hero-ami-pct')!;
   heroEl.textContent = fmtPct(r.amiPct);
@@ -412,5 +416,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key !== SHARED_KEY) return;
     applyIncomeFromSharedProfile();
     updateResults();
+  });
+
+  // Share result
+  wireShareButton('affordable-share', () => {
+    const r = lastResult;
+    const text = r
+      ? `My NYC AMI eligibility: ${fmtPct(r.amiPct)} AMI (${r.bandClass.name})`
+      : 'My NYC affordable housing eligibility';
+    return { title: 'My NYC Affordable Housing Eligibility', text, url: 'https://www.nyc-affordability.com/affordable/' };
   });
 });

@@ -1,5 +1,6 @@
 import { calcNycRptt, calcNysTransferTax } from '../lib/calc';
 import { fmtMoney } from '../lib/format';
+import { wireShareButton } from '../lib/share';
 
 /* ============================================================
    NYC Sale Net Proceeds Calculator
@@ -125,9 +126,12 @@ function compute(inp: Inputs): Waterfall {
   };
 }
 
+let lastWaterfall: Waterfall | null = null;
+
 function render() {
   const inp = readInputs();
   const w = compute(inp);
+  lastWaterfall = w;
 
   // Toggle co-op-only fields/rows
   const coopFieldsEl = $('coop-fields');
@@ -220,6 +224,15 @@ document.addEventListener('DOMContentLoaded', () => {
       howBody.classList.toggle('open');
     });
   }
+
+  // Share result
+  wireShareButton('sell-share', () => {
+    const w = lastWaterfall;
+    const text = w
+      ? `My NYC sale net proceeds estimate: ${fmtSigned(w.netProceeds)}`
+      : 'My NYC sale net proceeds estimate';
+    return { title: 'My NYC Sale Net Proceeds', text, url: 'https://www.nyc-affordability.com/sell/' };
+  });
 
   render();
 });

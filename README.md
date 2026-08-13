@@ -10,6 +10,7 @@ A free NYC housing affordability platform — calculators, sourced guides, a glo
 | Rent Affordability | [www.nyc-affordability.com/rent](https://www.nyc-affordability.com/rent/) | `/rent/` |
 | Affordable Housing Finder | [www.nyc-affordability.com/affordable](https://www.nyc-affordability.com/affordable/) | `/affordable/` |
 | Compare All Options | [www.nyc-affordability.com/compare](https://www.nyc-affordability.com/compare/) | `/compare/` |
+| Housing Reality Check | [www.nyc-affordability.com/reality-check](https://www.nyc-affordability.com/reality-check/) | `/reality-check/` |
 | Sale Net Proceeds | [www.nyc-affordability.com/sell](https://www.nyc-affordability.com/sell/) | `/sell/` |
 | Guides (sourced explainers) | [www.nyc-affordability.com/guides](https://www.nyc-affordability.com/guides/) | `/guides/<slug>/` |
 | Glossary (NYC housing terms) | [www.nyc-affordability.com/glossary](https://www.nyc-affordability.com/glossary/) | `/glossary/<slug>/` |
@@ -86,10 +87,11 @@ The default Worker domain also serves all paths directly by file-system structur
 │   │   ├── amiTable.ts            ← the one shared data table (HUD AMI figures by household size, cited) — imported by both afford.ts and src/scripts/affordable.ts
 │   │   ├── sharedProfile.ts       ← nyc_shared_profile localStorage contract
 │   │   ├── breadcrumbs.ts         ← buildBreadcrumbJsonLd() for schema.org BreadcrumbList JSON-LD
+│   │   ├── share.ts               ← wireShareButton() — Web Share API with a clipboard-text fallback, used by Reality Check and /income/<amount>/
 │   │   ├── adSlots.ts             ← AdSense ad-unit slot IDs
 │   │   ├── adsConfig.ts           ← ADS_ENABLED master switch — set to false site-wide to pull every ad (and the loader script) in one place
 │   │   └── footerLinks.ts         ← shared FooterLink/FooterColumn data reused across every page's footer
-│   ├── scripts/                   ← per-page calculator logic (coop.ts, condo.ts, rent.ts, affordable.ts, compare.ts, sell.ts)
+│   ├── scripts/                   ← per-page calculator logic (coop.ts, condo.ts, rent.ts, affordable.ts, compare.ts, sell.ts, reality-check.ts)
 │   ├── content.config.ts          ← `guides` and `glossary` content collection schemas (frontmatter shape, defaults)
 │   ├── content/
 │   │   ├── guides/                ← one .md file per guide, rendered by src/pages/guides/[slug].astro
@@ -101,13 +103,14 @@ The default Worker domain also serves all paths directly by file-system structur
 │       ├── privacy/index.astro
 │       ├── terms/index.astro
 │       ├── affordable/index.astro
-│       ├── compare/index.astro    ← Rent vs co-op vs condo comparison dashboard
+│       ├── compare/index.astro    ← Rent vs co-op vs condo comparison dashboard, incl. "What if...?" scenario sliders
+│       ├── reality-check/index.astro ← Lighter single-savings-number triage tool: verdicts across rent/co-op/condo/affordable housing
 │       ├── condo/index.astro
 │       ├── coop/index.astro
 │       ├── rent/index.astro
 │       ├── sell/index.astro       ← Sale net proceeds calculator
 │       ├── guides/
-│       │   ├── index.astro
+│       │   ├── index.astro        ← grouped by category (renting/buying/coop/affordable-housing)
 │       │   └── [slug].astro       ← shared template for every /guides/<slug>/ page
 │       ├── glossary/
 │       │   ├── index.astro        ← grouped by category (renting/buying/coop/affordable-housing/taxes/general)
@@ -136,7 +139,7 @@ The site is built with [Astro](https://astro.build) in static output mode: `npm 
 
 Long-form editorial content — separate from the calculators above — lives as Markdown in `src/content/guides/`, one file per guide, and is rendered through the single shared template at `src/pages/guides/[slug].astro`. This is one of two places in the site that isn't a hand-written `.astro` file per page (the other is the glossary, below); adding a guide means adding a `.md` file, not a new route.
 
-`src/content.config.ts` defines the frontmatter schema. Required fields: `title`, `metaDescription`, `intro`, `updated` (`YYYY-MM-DD`), `sources` (an array of `{ label, url }` citations rendered in the page's **Sources** section), and `cta` (`{ heading, body, label, href }`, rendered as a box linking to the relevant calculator). Optional: `ogTitle`/`ogDescription`/`ogImage`/`ogImageAlt`/`twitterTitle`/`twitterDescription` (all fall back to `title`/`metaDescription`/a default OG image), `draft` (defaults to `false`), `relatedGuides`/`relatedTerms` (slugs surfaced as "Related guides"/"Related terms" cards — `relatedTerms` points into the `glossary` collection below), and `sitemap.changefreq`/`sitemap.priority` (default `monthly` / `0.7`). The Markdown body becomes the guide's body sections.
+`src/content.config.ts` defines the frontmatter schema. Required fields: `title`, `metaDescription`, `intro`, `updated` (`YYYY-MM-DD`), `category` (one of `renting` / `buying` / `coop` / `affordable-housing` — used to group the "NYC Housing Rules" sections on `/guides/`; a narrower set than the glossary's category enum below since every guide fits one of these four), `sources` (an array of `{ label, url }` citations rendered in the page's **Sources** section), and `cta` (`{ heading, body, label, href }`, rendered as a box linking to the relevant calculator). Optional: `ogTitle`/`ogDescription`/`ogImage`/`ogImageAlt`/`twitterTitle`/`twitterDescription` (all fall back to `title`/`metaDescription`/a default OG image), `draft` (defaults to `false`), `relatedGuides`/`relatedTerms` (slugs surfaced as "Related guides"/"Related terms" cards — `relatedTerms` points into the `glossary` collection below), and `sitemap.changefreq`/`sitemap.priority` (default `monthly` / `0.7`). The Markdown body becomes the guide's body sections.
 
 Setting `draft: true` on a guide sets `<meta name="robots" content="noindex, nofollow">` on that page and excludes it from `sitemap.xml` — the guide is still built and reachable by direct URL (so it can be reviewed), just not indexed or listed. Flip `draft` to `false` when the guide is ready to publish; no other change is needed.
 
@@ -151,6 +154,20 @@ These expose the calculator engine as static content rather than an interactive 
 The numbers come from `src/lib/afford.ts`, a DOM-free mirror of the pure math inside `src/scripts/{rent,coop,condo}.ts` (see that file's header comment for why it's a deliberate, documented duplicate rather than a shared import — it follows the same pattern `compare.ts` already established). Because these pages have no real user account data, they compute an **income (DTI) ceiling only** — no cash/reserve check — and every page says so explicitly, linking back to the live calculator for a true number against real savings.
 
 The `/compare/` dashboard reads the shared browser profile saved at `nyc_shared_profile` and can update it when the page's Save toggle is enabled, then combines that profile with each calculator's saved assumptions to compare max affordable rent, max co-op price, max condo price, cash required, monthly housing cost, DTI, reserve requirement, and binding constraint.
+
+### "What if...?" scenario sliders (`/compare/`)
+
+Three range sliders (salary +$0–100k, savings +$0–200k, mortgage rate −2%–0%) let a visitor explore scenarios without touching their saved profile. The deltas live in a module-level `WHATIF` object in `src/scripts/compare.ts` that's applied only inside `render()` — added to the `base` inputs passed to `calcRent`/`calcCoop`/`calcCondo`, and passed as an optional rate-override second argument to `calcCoop`/`calcCondo` — and are never written to `profileState`, `ASMP`, or any localStorage key, even with Save on. A banner and a "Reset to saved profile" button make clear when a what-if scenario is being shown instead of the real saved numbers.
+
+### Housing Reality Check (`/reality-check/`)
+
+A lighter sibling of `/compare/`, not a replacement: `src/scripts/reality-check.ts` mirrors the same rent/co-op/condo math (plus an AMI eligibility check via `src/lib/amiTable.ts`) but takes a single "liquid savings" number instead of `/compare/`'s full multi-account editor, and returns a plain verdict per housing type (Rent gets a Comfortable/Stretch/Unlikely badge; co-op/condo/affordable-housing get a max value + a plain-English explanation of the limiting constraint) rather than a side-by-side table. It's meant to answer "where do I even start?" in under a minute.
+
+Income and other-debts are read from/written to the shared profile (`nyc_shared_profile`) like every other calculator, since those are safe scalar fields — but `liquidSavings` and `householdSize` are deliberately **not** written into the shared profile's `accounts` array. Reality Check's single-number simplification would silently flatten a richer multi-account breakdown a visitor already built on `/coop/`, `/condo/`, or `/compare/`, so those two fields live in their own page-local `nyc_reality_check_inputs` key instead — read the file's header comment for the full reasoning.
+
+### Shareable results (`src/lib/share.ts`)
+
+`wireShareButton(buttonId, buildPayload)` calls the Web Share API when available (mobile Safari/Chrome, some desktop browsers) and falls back to copying a text summary to the clipboard everywhere else — there's no image-generation infrastructure on this site (no `@vercel/og`/Satori equivalent), so personalized OG-card images are an explicitly deferred, not-yet-built idea rather than something this ships. Wired up on `/reality-check/` (dynamic, built from the page's live-computed verdicts) and each `/income/<amount>/` page (static, built at compile time from that page's own numbers via `data-share-*` attributes read by a small inline script).
 
 ---
 

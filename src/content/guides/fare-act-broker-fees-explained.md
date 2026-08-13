@@ -3,6 +3,7 @@ title: "FARE Act: Who Pays Broker Fees in NYC Now"
 metaDescription: "The FARE Act (effective June 11, 2025) shifted NYC broker fees from tenant-paid to whoever hires the broker. See the rule, a worked move-in cost example, and the law's current legal status."
 intro: "Since June 11, 2025, NYC tenants no longer pay a broker fee just because the landlord happened to use a broker to list the apartment — the FARE Act made whoever hires the broker responsible for paying them. Here's exactly what changed, what a tenant can still be charged, and where the law stands after a year of legal challenges."
 updated: "2026-08-04"
+category: "renting"
 sources:
   - label: "NYC Department of Consumer and Worker Protection — FARE Act FAQ"
     url: "https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page"

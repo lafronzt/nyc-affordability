@@ -3,6 +3,7 @@ title: "NYC Closing Costs for Buyers: The Full Breakdown"
 metaDescription: "NYC buyer closing costs typically run 2%-4% of price for a financed resale condo and 3%-7%+ for new development — see every line item, from mortgage recording tax to title insurance to attorney fees."
 intro: "Buyers moving to New York from almost anywhere else in the country are caught off guard by closing costs here — not because any single fee is unusual, but because NYC stacks a mortgage recording tax, title insurance, and (above $1M) a mansion tax on top of the attorney and lender fees every market charges. Here's every line item, in the order it actually shows up on a closing statement."
 updated: "2026-08-11"
+category: "buying"
 sources:
   - label: "NYC Department of Finance — Recording Property-Related Documents (Mortgage Recording Tax)"
     url: "https://www.nyc.gov/site/finance/property/property-recording-property-related-documents.page"

@@ -3,6 +3,7 @@ title: "NYC Seller Closing Costs Explained: What You Actually Net"
 metaDescription: "NYC sellers typically pay 7%-10% of price in closing costs — broker commission, NYC & NYS transfer tax, and (for co-ops) a flip tax. See every line item and what determines your net proceeds."
 intro: "Buyers get most of the attention in NYC closing-cost breakdowns, but sellers pay more of them. Between broker commission, two layers of transfer tax, and — for co-op sellers — a building-specific flip tax, it's common for 7%-10% of the sale price to disappear before a seller sees a dollar. Here's every line item, in the order it actually shows up on a closing statement."
 updated: "2026-08-11"
+category: "buying"
 sources:
   - label: "NYC Department of Finance — Real Property Transfer Tax (RPTT)"
     url: "https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page"
@@ -35,7 +36,7 @@ Most U.S. markets split closing costs roughly evenly between buyer and seller, w
 
 **NYS Real Estate Transfer Tax.** A separate state tax layered on top of NYC RPTT: a flat **0.4%** of the price ($2 per $500 of consideration), plus an additional **0.25%** NYC tax on residential sales of **$3,000,000 or more** — **0.65% combined** at that tier. Also seller-paid. See our [mansion tax guide](/guides/nyc-mansion-tax-explained/) for the buyer-paid tax this is often confused with — they apply to opposite sides of the same transaction.
 
-**Co-op flip tax (co-ops only).** Not a government tax at all — a fee set by the co-op corporation's own proprietary lease, charged when shares change hands. Rates typically run **1%-3% of the sale price** at market-rate buildings and can run far higher (**5%-30%**) at income-restricted HDFC co-ops. Every building sets its own rate and structure, and some charge none at all. See our [full flip tax guide](/guides/coop-flip-tax-nyc-explained/) for how it's typically calculated.
+**Co-op flip tax (co-ops only).** Not a government tax at all — a fee set by the co-op corporation's own proprietary lease, charged when shares change hands. Rates typically run **1%-3% of the sale price** at market-rate buildings and can run far higher — **commonly around 30% of profit, and up to 70% of sale price** — at income-restricted HDFC co-ops. Every building sets its own rate and structure, and some charge none at all. See our [full flip tax guide](/guides/coop-flip-tax-nyc-explained/) for how it's typically calculated.
 
 **Attorney fees.** New York requires attorney representation on both sides of a residential closing. Seller-side fees typically run **$1,500-$3,000** for a straightforward resale, more for complex deals.
 

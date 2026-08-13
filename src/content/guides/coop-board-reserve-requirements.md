@@ -3,6 +3,7 @@ title: "How Much Reserve Does a NYC Co-op Board Require?"
 metaDescription: "NYC co-op boards typically require 12 months of post-closing liquid reserves — 24+ at conservative buildings. See how the math works, what counts as liquid, and a worked example."
 intro: "A NYC co-op board doesn't just check that you can afford the down payment — it wants proof you could keep paying maintenance and your mortgage for months after closing if your income stopped. That's the post-closing reserve requirement, and it catches more buyers off guard than the down payment itself."
 updated: "2026-08-04"
+category: "coop"
 sources:
   - label: "Aaron and Geoff at Compass — Decoding 2026 NYC Co-op Board Liquidity Rules"
     url: "https://www.aaronandgeoff.com/decoding-2026-nyc-co-op-board-liquidity-rules-what-buyers-need-to-know/"

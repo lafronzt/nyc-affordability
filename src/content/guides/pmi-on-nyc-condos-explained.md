@@ -3,6 +3,7 @@ title: "PMI on NYC Condos: When You Need It and How Much It Costs"
 metaDescription: "Private mortgage insurance kicks in on conventional condo loans with under 20% down. See the rate tiers by down payment, a worked monthly cost example, and how to get PMI cancelled once you hit 20% equity."
 intro: "Putting less than 20% down on an NYC condo doesn't just mean a bigger loan — it means the lender adds private mortgage insurance (PMI) to your monthly payment until you build enough equity. Here's how the rate is set, what it actually costs on a real NYC purchase, and how federal law requires it to eventually go away."
 updated: "2026-08-11"
+category: "buying"
 sources:
   - label: "Consumer Financial Protection Bureau — What Is Private Mortgage Insurance?"
     url: "https://www.consumerfinance.gov/ask-cfpb/what-is-private-mortgage-insurance-en-122/"

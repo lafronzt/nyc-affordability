@@ -3,6 +3,7 @@ title: "Security Deposits & Move-In Costs for NYC Renters"
 metaDescription: "NYC security deposits are capped at one month's rent and application fees at $20. See exactly what a landlord can and can't charge at move-in, how deposit refunds work, and a worked cost example."
 intro: "Since 2019, New York law has drawn a hard line around what a landlord can charge a tenant before handing over keys — a security deposit capped at one month's rent, an application fee capped at $20, and no separate 'move-in fee' of any kind. Here's exactly what that means for your total move-in cash, and what happens to your deposit when you move out."
 updated: "2026-08-11"
+category: "renting"
 sources:
   - label: "New York State Senate — RPL §227-g (Security Deposit Cap, HSTPA 2019)"
     url: "https://www.nysenate.gov/legislation/laws/RPP/227-G"

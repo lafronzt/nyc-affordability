@@ -1,5 +1,6 @@
 import { loadSharedProfile, saveSharedProfile, SHARED_KEY, type SharedProfile } from '../lib/sharedProfile';
 import { calcPmiRate, calcPmiMonthly, calcMansionTax, bsearchMaxPrice } from '../lib/calc';
+import { wireShareButton } from '../lib/share';
 
 /* ============================================================
    NYC Co-op Affordability Calculator — TypeScript port
@@ -1819,9 +1820,12 @@ function scheduleOptimizerRender(inp: Inputs) {
   });
 }
 
+let lastResult: CalcResult | null = null;
+
 function onChange() {
   const inp = readInputs();
   const r = calculate(inp);
+  lastResult = r;
   updateResults(r);
   scheduleOptimizerRender(inp);
   scheduleAffordRender(inp);
@@ -2094,6 +2098,15 @@ document.addEventListener('DOMContentLoaded', () => {
   howBtn.addEventListener('click', () => {
     howBtn.classList.toggle('open');
     howBody.classList.toggle('open');
+  });
+
+  // Share result
+  wireShareButton('coop-share', () => {
+    const r = lastResult;
+    const text = r
+      ? `My NYC co-op max purchase price: ${fmt$(r.maxPrice)} (${r.binding} bound)`
+      : 'My NYC co-op affordability result';
+    return { title: 'My NYC Co-op Affordability', text, url: 'https://www.nyc-affordability.com/coop/' };
   });
 
   // Initial render

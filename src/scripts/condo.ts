@@ -1,5 +1,6 @@
 import { loadSharedProfile, saveSharedProfile, SHARED_KEY, type SharedProfile } from '../lib/sharedProfile';
 import { calcMortgageRecordingTax, calcPmiRate, calcPmiMonthly, calcMansionTax, bsearchMaxPrice } from '../lib/calc';
+import { wireShareButton } from '../lib/share';
 
 /* ============================================================
    NYC Condo Affordability Calculator — TypeScript port
@@ -1214,9 +1215,12 @@ function scheduleOptimizerRender(inp: Inputs) {
   requestAnimationFrame(() => { optRenderPending = false; if (!(view.hidden) && optRenderInp) renderOptimizerView(optRenderInp); });
 }
 
+let lastResult: CalcResult | null = null;
+
 function onChange() {
   const inp = readInputs();
   const r   = calculate(inp);
+  lastResult = r;
   updateResults(r);
   scheduleOptimizerRender(inp);
   scheduleAffordRender(inp);
@@ -1409,6 +1413,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Collapsible
   $('how-btn')!.addEventListener('click', () => { $('how-btn')!.classList.toggle('open'); $('how-body')!.classList.toggle('open'); });
+
+  // Share result
+  wireShareButton('condo-share', () => {
+    const r = lastResult;
+    const text = r
+      ? `My NYC condo max purchase price: ${fmt$(r.maxPrice)} (${r.binding} bound)`
+      : 'My NYC condo affordability result';
+    return { title: 'My NYC Condo Affordability', text, url: 'https://www.nyc-affordability.com/condo/' };
+  });
 
   // Initial render
   onChange();
