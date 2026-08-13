@@ -13,6 +13,7 @@ const SITEMAP_PAGE_META = {
   '/rent/':       { changefreq: 'monthly', priority: 0.9, lastmod: '2026-05-03' },
   '/affordable/': { changefreq: 'monthly', priority: 0.9, lastmod: '2026-05-02' },
   '/compare/':    { changefreq: 'monthly', priority: 0.8, lastmod: '2026-05-03' },
+  '/reality-check/': { changefreq: 'monthly', priority: 0.85, lastmod: '2026-08-13' },
   '/sell/':       { changefreq: 'monthly', priority: 0.9, lastmod: '2026-08-11' },
   '/guides/':     { changefreq: 'weekly',  priority: 0.8, lastmod: '2026-08-04' },
   '/glossary/':   { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-08-12' },

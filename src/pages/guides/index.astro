@@ -22,6 +22,19 @@ const guides = allGuides.sort(
   (a, b) => new Date(b.data.updated).getTime() - new Date(a.data.updated).getTime()
 );
 
+const CATEGORY_LABELS: Record<string, string> = {
+  renting: 'Renting',
+  buying: 'Buying',
+  coop: 'Co-ops',
+  'affordable-housing': 'Affordable Housing',
+};
+const CATEGORY_ORDER = ['renting', 'buying', 'coop', 'affordable-housing'];
+const grouped = CATEGORY_ORDER.map((cat) => ({
+  category: cat,
+  label: CATEGORY_LABELS[cat],
+  guides: guides.filter((g) => g.data.category === cat),
+})).filter((g) => g.guides.length > 0);
+
 const formatUpdated = (updated: string) =>
   new Date(`${updated}T00:00:00Z`).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -89,16 +102,21 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
       <p>We're working on the first batch of sourced explainers. In the meantime, try one of the <a href="/">calculators</a>.</p>
     </div>
   ) : (
-    guides.map((guide) => (
-      <a class="card guide-card" href={`/guides/${guide.id}/`}>
-        <div class="guide-card-eyebrow">Guide</div>
-        <h3>{guide.data.title}</h3>
-        <p>{guide.data.metaDescription}</p>
-        <div class="guide-card-footer">
-          <span class="updated">Last updated: {formatUpdated(guide.data.updated)}</span>
-          <span class="read-link">Read the guide &rarr;</span>
-        </div>
-      </a>
+    grouped.map((group) => (
+      <div class="category-group">
+        <h3 class="category-heading">{group.label}</h3>
+        {group.guides.map((guide) => (
+          <a class="card guide-card" href={`/guides/${guide.id}/`}>
+            <div class="guide-card-eyebrow">Guide</div>
+            <h3>{guide.data.title}</h3>
+            <p>{guide.data.metaDescription}</p>
+            <div class="guide-card-footer">
+              <span class="updated">Last updated: {formatUpdated(guide.data.updated)}</span>
+              <span class="read-link">Read the guide &rarr;</span>
+            </div>
+          </a>
+        ))}
+      </div>
     ))
   )}
 
@@ -152,6 +170,12 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 .card p:last-child { margin-bottom: 0; }
 .card a { color: var(--blue); text-decoration: none; }
 .card a:hover { text-decoration: underline; }
+
+.category-group { margin-bottom: 28px; }
+.category-heading {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--g500); margin-bottom: 12px;
+}
 
 .guide-card {
   display: block; text-decoration: none; color: inherit;

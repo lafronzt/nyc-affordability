@@ -15,7 +15,8 @@ export const CALC_RENT: FooterLink = { label: 'NYC Rent Affordability', href: '/
 export const CALC_AFFORDABLE: FooterLink = { label: 'NYC Affordable Housing Calculator', href: '/affordable/' };
 export const CALC_COMPARE: FooterLink = { label: 'Compare All Options', href: '/compare/' };
 export const CALC_NET_PROCEEDS: FooterLink = { label: 'NYC Sale Net Proceeds Calculator', href: '/sell/' };
-export const ALL_CALCULATORS: FooterLink[] = [CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_NET_PROCEEDS];
+export const CALC_REALITY_CHECK: FooterLink = { label: 'NYC Housing Reality Check', href: '/reality-check/' };
+export const ALL_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_NET_PROCEEDS];
 export const HUB_LINK: FooterLink = { label: 'NYC Affordability Hub', href: '/' };
 
 /** All calculators except the current page, plus the hub link, in canonical order. */

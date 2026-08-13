@@ -1,15 +1,16 @@
 ---
 title: "Co-op Flip Tax in NYC Explained"
-metaDescription: "NYC co-op flip taxes typically run 1%-3% of the sale price, seller-paid, and can hit 5%-30% at income-restricted HDFC buildings. See how it's structured, who actually pays, and a worked example."
+metaDescription: "NYC co-op flip taxes typically run 1%-3% of the sale price, seller-paid, and can run far higher — commonly around 30% of profit — at income-restricted HDFC buildings. See how it's structured, who actually pays, and a worked example."
 intro: "A flip tax is one of the few NYC housing costs that has nothing to do with government — it's a fee the co-op corporation itself charges when shares change hands, written into the building's proprietary lease, and it varies more from building to building than almost any other cost on this site."
 updated: "2026-08-11"
+category: "coop"
 sources:
   - label: "Hauseit — Flip Tax in NYC: What Is the Average Flip Tax and Who Pays It?"
     url: "https://www.hauseit.com/flip-tax-nyc/"
   - label: "StreetEasy — What Is an HDFC Co-op?"
     url: "https://streeteasy.com/blog/what-is-an-hdfc-co-op/"
   - label: "NYC HPD — HDFC Program Overview"
-    url: "https://home.nyc.gov/site/hpd/services-and-information/hdfc.page"
+    url: "https://www.nyc.gov/site/hpd/services-and-information/hdfc.page"
 relatedGuides:
   - coop-vs-condo-nyc-costs
   - coop-board-reserve-requirements
@@ -33,7 +34,7 @@ Buildings adopt a flip tax as a way to raise money for capital improvements, res
 
 At most standard NYC co-ops, flip tax runs **1% to 3% of the sale price**, with Manhattan buildings averaging closer to **2%**. On a $900,000 sale at the 2% average, that's **$18,000** coming out of the seller's proceeds.
 
-**HDFC co-ops are the major exception.** These are income-restricted buildings created through NYC's Housing Development Fund Corporation program — subject to Article XI of the state's Private Housing Finance Law, which generally caps eligible buyer income at 165% of Area Median Income by default (individual buildings can set stricter limits in their own offering plan). Because HDFC apartments are sold well below market rate to preserve affordability, many of these buildings charge a much steeper flip tax — commonly **5% to 30%** of the sale price or profit — specifically to discourage buyers from treating a subsidized unit as a short-term investment and to recapture some of the below-market discount for the building's benefit when a unit does resell.
+**HDFC co-ops are the major exception.** These are income-restricted buildings created through NYC's Housing Development Fund Corporation program — subject to Article XI of the state's Private Housing Finance Law, which generally caps eligible buyer income at 165% of Area Median Income by default (individual buildings can set stricter limits in their own offering plan). Because HDFC apartments are sold well below market rate to preserve affordability, many of these buildings charge a much steeper flip tax — commonly **around 30% of the seller's profit**, and at some buildings as much as **70% of the total sale price** — specifically to discourage buyers from treating a subsidized unit as a short-term investment and to recapture some of the below-market discount for the building's benefit when a unit does resell.
 
 ## How it can be structured
 

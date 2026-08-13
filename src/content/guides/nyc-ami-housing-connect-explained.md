@@ -3,6 +3,7 @@ title: "What Is AMI in NYC? Housing Connect Bands Explained"
 metaDescription: "AMI (Area Median Income) sets every income limit on NYC's Housing Connect affordable housing lottery. See the HUD FY2026 income table by household size and how bands from 30% to 130% AMI work."
 intro: "Every affordable apartment listed on NYC's Housing Connect lottery is tagged with an AMI band — 30%, 60%, 100%, whatever it is — and that single number determines both who's eligible and what the rent will be. Here's what AMI actually measures, the current income limits by household size, and how a band translates into a real rent."
 updated: "2026-08-05"
+category: "affordable-housing"
 sources:
   - label: "HUD — FY2026 Income Limits Documentation System"
     url: "https://www.huduser.gov/portal/datasets/il.html"

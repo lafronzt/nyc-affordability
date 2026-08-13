@@ -1,0 +1,289 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import AppHeader from '../../components/AppHeader.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_REALITY_CHECK, otherCalculators, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: otherCalculators(CALC_REALITY_CHECK.href!) },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'NYC Housing Reality Check',
+  url: 'https://www.nyc-affordability.com/reality-check/',
+  description: 'Enter your income and savings and see what NYC housing options — renting, co-op, condo, or affordable housing — are realistically available to you.',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  areaServed: { '@type': 'City', name: 'New York City', sameAs: 'https://www.wikidata.org/wiki/Q60' },
+};
+---
+<BaseLayout
+  variant="app"
+  ads
+  pageTitle="NYC Housing Reality Check | What Can I Actually Afford?"
+  metaDescription="Enter your income and savings — see what NYC housing options are realistically available to you across renting, co-op, condo, and affordable housing."
+  canonicalPath="/reality-check/"
+  ogTitle="NYC Housing Reality Check"
+  ogDescription="Enter your income and savings and see what NYC housing options are realistically available to you."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Housing Reality Check — what can I actually afford in NYC."
+  twitterTitle="NYC Housing Reality Check"
+  twitterDescription="Enter your income and savings and see what's realistically available to you in NYC."
+  jsonLd={jsonLd}
+>
+<AppHeader
+  titleHtml="NYC Housing <em>Reality Check</em>"
+  tagline="Enter your income and savings. We'll tell you what's realistically available."
+  showSaveToggle
+/>
+
+<main class="page">
+  <section class="hero">
+    <div class="eyebrow">Quick Triage Tool</div>
+    <h2>What does NYC housing actually look like for you?</h2>
+    <p>Four numbers, four verdicts — rent, co-op, condo, and affordable housing — using the same math as the full calculators. This page won't match your accounts down to the penny like <a href="/compare/">the full comparison dashboard</a> does; it's built to answer "where do I even start?" in under a minute.</p>
+    <div class="notice" id="missing-inputs">Showing a sample profile until you enter and save your own numbers below.</div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Your numbers</div>
+    <div class="editor-body">
+      <div class="editor-grid">
+        <div class="field">
+          <label for="rc-income">Annual gross income</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rc-income" min="0" step="1000"></div>
+        </div>
+        <div class="field">
+          <label for="rc-savings">Liquid savings</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rc-savings" min="0" step="1000"></div>
+        </div>
+        <div class="field">
+          <label for="rc-debts">Other monthly debts</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rc-debts" min="0" step="100"></div>
+        </div>
+        <div class="field">
+          <label for="rc-household">Household size</label>
+          <div class="input-wrap"><select id="rc-household">
+            <option value="1">1 person</option>
+            <option value="2" selected>2 people</option>
+            <option value="3">3 people</option>
+            <option value="4">4 people</option>
+            <option value="5">5 people</option>
+            <option value="6">6 people</option>
+            <option value="7">7 people</option>
+            <option value="8">8 people</option>
+          </select></div>
+        </div>
+      </div>
+      <p class="editor-note">"Liquid savings" is treated as one fully-available pool for this quick check — cash, brokerage, everything combined. The full calculators let you break that down by account and liquidity %.</p>
+    </div>
+  </section>
+
+  <section class="summary-grid" aria-label="Reality check results">
+    <article class="option-card">
+      <div class="option-top rent">
+        <div class="option-title">Rent</div>
+        <div id="rc-rent-verdict" class="verdict-badge">&mdash;</div>
+        <div class="option-value" id="rc-rent-max">&mdash;</div>
+        <div class="option-sub">max affordable monthly rent</div>
+      </div>
+      <div class="option-body">
+        <p class="why" id="rc-rent-why">&mdash;</p>
+        <a class="calc-link" href="/rent/">Open Rent Calculator &rarr;</a>
+      </div>
+    </article>
+
+    <article class="option-card">
+      <div class="option-top coop">
+        <div class="option-title">Co-op</div>
+        <div class="option-value" id="rc-coop-max">&mdash;</div>
+        <div class="option-sub">max purchase price</div>
+      </div>
+      <div class="option-body">
+        <p class="why" id="rc-coop-why">&mdash;</p>
+        <a class="calc-link" href="/coop/">Open Co-op Calculator &rarr;</a>
+      </div>
+    </article>
+
+    <article class="option-card">
+      <div class="option-top condo">
+        <div class="option-title">Condo</div>
+        <div class="option-value" id="rc-condo-max">&mdash;</div>
+        <div class="option-sub">max purchase price</div>
+      </div>
+      <div class="option-body">
+        <p class="why" id="rc-condo-why">&mdash;</p>
+        <a class="calc-link" href="/condo/">Open Condo Calculator &rarr;</a>
+      </div>
+    </article>
+
+    <article class="option-card">
+      <div class="option-top affordable">
+        <div class="option-title">Affordable Housing</div>
+        <div class="option-value" id="rc-ami-pct">&mdash;</div>
+        <div class="option-sub" id="rc-ami-band">&mdash;</div>
+      </div>
+      <div class="option-body">
+        <p class="why">Eligible bands: <span id="rc-ami-bands">&mdash;</span></p>
+        <a class="calc-link" href="/affordable/">Open Affordable Housing Finder &rarr;</a>
+      </div>
+    </article>
+  </section>
+
+  <div class="share-row">
+    <button class="btn-share" id="rc-share" type="button">Share your result</button>
+  </div>
+
+  <section class="section-card">
+    <div class="section-title">What's holding you back?</div>
+    <div class="table-wrap">
+      <table aria-label="Binding constraint by housing type">
+        <thead><tr><th>Housing type</th><th>Limiting factor</th></tr></thead>
+        <tbody>
+          <tr><td>Rent</td><td id="rc-holdback-rent">&mdash;</td></tr>
+          <tr><td>Co-op</td><td id="rc-holdback-coop">&mdash;</td></tr>
+          <tr><td>Condo</td><td id="rc-holdback-condo">&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose-body">
+      <p>Knowing which constraint binds tells you what actually moves the number: if cash is the limit, more savings raises your ceiling; if income/DTI is the limit, paying down debt or increasing income does. See the <a href="/compare/">comparison dashboard</a>'s "What binding constraint means" section for the full explanation, or run your exact numbers there once you know which lever to pull.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">How this works</div>
+    <div class="prose-body">
+      <p>This page runs your income, savings, and debts through the same rent (40&times; rule), co-op (board DTI + reserves), condo (lender DTI + closing costs), and affordable housing (HUD AMI) math as the individual calculators — just with a single "liquid savings" number instead of a full account-by-account breakdown, and no separately editable assumptions panel. The Rent verdict (Comfortable / Stretch / Unlikely) reflects whether your savings or your income screening is the tighter constraint at your max affordable rent.</p>
+      <p>For a precise number — factoring in retirement vs. brokerage vs. cash liquidity, your building's actual maintenance or common charges, or a specific target price — open the relevant calculator above, or the <a href="/compare/">full comparison dashboard</a> for all three side by side.</p>
+    </div>
+  </section>
+</main>
+
+<AdSlot maxWidth="1300px" sidePadding="20px" />
+
+<Footer
+  variant="app"
+  disclaimer="This tool is for informational purposes only and does not constitute financial, legal, or mortgage advice. It uses default assumptions and a simplified single-savings-number model — open an individual calculator for detailed inputs and source notes."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<script>
+  import '../../scripts/reality-check';
+</script>
+
+<style>
+.page { max-width: 1300px; margin: 20px auto; padding: 0 20px 60px; }
+.hero {
+  background: linear-gradient(135deg, #0a1628 0%, #0f2a54 100%);
+  border: 1px solid #1e3a5f; border-radius: var(--r); overflow: hidden; color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 16px; padding: 26px 24px 22px;
+}
+.eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 8px; }
+.hero h2 { font-size: clamp(24px, 3.6vw, 36px); line-height: 1.1; letter-spacing: -0.6px; color: #f0f9ff; margin-bottom: 10px; }
+.hero p { color: #93b4d0; max-width: 720px; font-size: 14px; line-height: 1.65; }
+.hero p a { color: #cfe0fb; }
+.notice {
+  display: none; background: rgba(245,158,11,.14); border: 1px solid rgba(245,158,11,.35); color: #fbbf24;
+  padding: 10px 14px; border-radius: 6px; font-size: 12.5px; margin-top: 14px;
+}
+.notice.show { display: block; }
+
+.section-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 16px;
+}
+.section-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--g500);
+  padding: 12px 18px 11px; border-bottom: 1px solid var(--g100);
+}
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 420px; }
+th { text-align: left; font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; padding: 12px 16px; border-bottom: 1px solid var(--g100); background: var(--g50); }
+td { padding: 12px 16px; border-bottom: 1px solid var(--g100); color: var(--g800); font-weight: 650; }
+tbody tr:last-child td { border-bottom: none; }
+
+.editor-body { padding: 16px 18px 18px; }
+.editor-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; color: var(--g700); font-weight: 650; margin-bottom: 5px; }
+.input-wrap {
+  display: flex; align-items: stretch; border: 1px solid var(--g300); border-radius: 5px; background: #fff;
+  overflow: hidden; transition: border-color .15s, box-shadow .15s;
+}
+.input-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.input-wrap span {
+  background: var(--g50); border-right: 1px solid var(--g200); padding: 0 8px; color: var(--g500);
+  font-size: 13px; font-weight: 600; display: flex; align-items: center;
+}
+.input-wrap input, .input-wrap select {
+  border: 0; outline: 0; padding: 8px 9px; min-width: 0; width: 100%; font: inherit; color: var(--g900); background: #fff;
+}
+.editor-note { font-size: 12px; color: var(--g500); line-height: 1.6; }
+.save-state { font-size: 12px; color: var(--g500); }
+
+.summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+
+.share-row { display: flex; justify-content: center; margin-bottom: 16px; }
+.btn-share {
+  border: 1px solid var(--blue-lt); background: #fff; color: var(--blue); border-radius: 6px;
+  padding: 10px 20px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: background .15s;
+}
+.btn-share:hover { background: var(--blue-xlt); }
+.option-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.option-top { padding: 16px 18px 14px; color: #f0f9ff; }
+.option-top.coop { background: var(--navy); }
+.option-top.condo { background: linear-gradient(135deg,#1a3a6b,#0f2a54); }
+.option-top.rent { background: linear-gradient(135deg,#134e38,#0e3d2c); }
+.option-top.affordable { background: linear-gradient(135deg,#1e1b4b,#111840); }
+.option-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: rgba(255,255,255,.75); }
+.option-value { font-size: 28px; line-height: 1; font-weight: 850; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.option-sub { font-size: 12px; color: rgba(255,255,255,.62); margin-top: 7px; }
+.option-body { padding: 15px 18px 17px; }
+.why { font-size: 12.5px; color: var(--g600); line-height: 1.6; margin-bottom: 12px; min-height: 34px; }
+.why span { font-weight: 700; color: var(--g800); }
+.calc-link {
+  display: inline-flex; align-items: center; justify-content: center; width: 100%;
+  padding: 10px 14px; border-radius: 6px; border: 0; text-decoration: none; font-size: 13px; font-weight: 700;
+  background: var(--navy); color: #e2e8f0;
+}
+.calc-link:hover { opacity: .88; }
+
+.verdict-badge {
+  display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px;
+}
+.verdict-comfortable { background: rgba(34,197,94,.18); color: #bbf7d0; }
+.verdict-stretch { background: rgba(245,158,11,.2); color: #fde68a; }
+.verdict-unlikely { background: rgba(239,68,68,.2); color: #fecaca; }
+
+.prose-body { padding: 16px 18px 18px; }
+.prose-body p { font-size: 13px; color: var(--g600); line-height: 1.7; margin-bottom: 8px; }
+.prose-body p:last-child { margin-bottom: 0; }
+.prose-body a { color: var(--blue); text-decoration: none; }
+.prose-body a:hover { text-decoration: underline; }
+
+@media (max-width: 960px) {
+  .editor-grid { grid-template-columns: 1fr 1fr; }
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .page { padding: 0 14px 44px; margin-top: 14px; }
+  .hero { padding: 22px 18px 18px; }
+  .editor-grid { grid-template-columns: 1fr; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .option-value { font-size: 24px; }
+}
+</style>

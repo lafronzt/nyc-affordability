@@ -3,6 +3,7 @@ title: "How Much Income Do You Need to Buy a NYC Apartment?"
 metaDescription: "The income you need to buy a NYC apartment depends on whether it's a co-op (28% board DTI) or condo (43% lender DTI) — the same price can require a $70K+ income gap. See the math."
 intro: "There's no single answer to \"how much do I need to make to buy in NYC,\" because the honest answer depends on what you're buying, not just what it costs. A co-op board and a condo lender apply different debt-to-income ceilings to the identical purchase price — and that gap alone can mean tens of thousands of dollars of required income."
 updated: "2026-08-04"
+category: "buying"
 sources:
   - label: "StreetEasy — Debt to Income Ratio for Co-op Boards"
     url: "https://streeteasy.com/blog/what-is-debt-to-income-ratio/"

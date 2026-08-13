@@ -3,6 +3,7 @@ title: "NYC Mansion Tax Explained: 2026 Tiers and the $1 Cliff"
 metaDescription: "The NYC mansion tax runs from 1% to 3.9% of the purchase price on residential sales of $1,000,000 or more. See the current tier table, how the $1,000,000 cliff works, and a worked example."
 intro: "New York's mansion tax is a buyer-paid tax that starts at 1% of the full purchase price once a residential sale hits $1,000,000 — and because it's a whole-price bracket, not a marginal one, crossing a threshold by even a dollar raises the entire bill, not just the amount above it."
 updated: "2026-08-04"
+category: "buying"
 sources:
   - label: "NYS Dept. of Taxation and Finance — TSB-M-19(1)R, Summary of Amendments to the Real Estate Transfer Tax"
     url: "https://www.tax.ny.gov/pdf/memos/real_estate/m19-1r.pdf"

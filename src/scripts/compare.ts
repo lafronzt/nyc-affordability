@@ -305,6 +305,15 @@ const ASMP = {
   condo: { mortgageRate: 6.30, dpPct: 20, commonCharges: 1000, propTaxes: 1250, hoInsurance: 75, maxDtiPct: 43 } as CondoAssumptions,
 };
 
+/* ── "What if...?" scenario sliders — purely ephemeral display-time deltas,
+   never written to profileState or ASMP and never persisted (even with Save
+   on), so they can't be mistaken for the user's real saved numbers. Applied
+   only inside render() by adjusting the `base` passed to calcRent/calcCoop/
+   calcCondo and by overriding the mortgage rate via calcCoop/calcCondo's
+   optional second parameter — the real ASMP.coop/condo.mortgageRate (and
+   the Adjust Assumptions panel that edits them) are never mutated. ── */
+const WHATIF = { salaryDelta: 0, savingsDelta: 0, rateDelta: 0 };
+
 function calcRent(base: BaseInputs): RentResult {
   const inp = {
     ...base,
@@ -342,10 +351,10 @@ function calcRent(base: BaseInputs): RentResult {
   return { maxRent, cashRequired, monthlyTotal, dti, reserve, binding };
 }
 
-function calcCoop(base: BaseInputs): CoopResult {
+function calcCoop(base: BaseInputs, rateOverride?: number): CoopResult {
   const inp = {
     ...base,
-    mortgageRate: ASMP.coop.mortgageRate,
+    mortgageRate: rateOverride ?? ASMP.coop.mortgageRate,
     loanTerm: 30,
     dpPct: ASMP.coop.dpPct,
     reserveMo: ASMP.coop.reserveMo,
@@ -390,10 +399,10 @@ function calcCoop(base: BaseInputs): CoopResult {
   return { maxPrice, cashRequired, monthlyTotal, dti, reserve, binding };
 }
 
-function calcCondo(base: BaseInputs): CondoResult {
+function calcCondo(base: BaseInputs, rateOverride?: number): CondoResult {
   const inp = {
     ...base,
-    mortgageRate: ASMP.condo.mortgageRate,
+    mortgageRate: rateOverride ?? ASMP.condo.mortgageRate,
     loanTerm: 30,
     dpPct: ASMP.condo.dpPct,
     reserveMo: 6,
@@ -448,15 +457,21 @@ function calcCondo(base: BaseInputs): CondoResult {
 }
 
 function render() {
+  const whatIfActive = WHATIF.salaryDelta !== 0 || WHATIF.savingsDelta !== 0 || WHATIF.rateDelta !== 0;
+  const accounts = normalizeAccounts(profileState.accounts);
   const base: BaseInputs = {
-    annualIncome: profileState.annualIncome,
+    annualIncome: profileState.annualIncome + WHATIF.salaryDelta,
     otherDebts: profileState.otherDebts,
-    accounts: normalizeAccounts(profileState.accounts),
+    accounts: WHATIF.savingsDelta !== 0
+      ? [...accounts, { name: 'What-if savings', balance: WHATIF.savingsDelta, liquidity: 100, closing: true }]
+      : accounts,
   };
   const rent = calcRent(base);
-  const coop = calcCoop(base);
-  const condo = calcCondo(base);
+  const coop = calcCoop(base, ASMP.coop.mortgageRate + WHATIF.rateDelta);
+  const condo = calcCondo(base, ASMP.condo.mortgageRate + WHATIF.rateDelta);
   const cash = weightedAssets(base.accounts);
+
+  $('whatif-banner')?.classList.toggle('show', whatIfActive);
 
   $('missing-profile')!.classList.toggle('show', !hasSavedProfile);
   setText('profile-income', money(base.annualIncome));
@@ -571,6 +586,36 @@ document.addEventListener('DOMContentLoaded', () => {
   asmpFields.forEach(([id, setter]) => {
     const el = $input(id) || $select(id);
     if (el) el.addEventListener('input', () => { setter(num(el.value)); saveSharedAssumptions(); render(); });
+  });
+
+  // "What if...?" sliders — ephemeral, never persisted (see WHATIF's own comment above).
+  const whatIfSliders: [string, string, (v: number) => void][] = [
+    ['whatif-salary', 'whatif-salary-val', v => { WHATIF.salaryDelta = v; }],
+    ['whatif-savings', 'whatif-savings-val', v => { WHATIF.savingsDelta = v; }],
+    ['whatif-rate', 'whatif-rate-val', v => { WHATIF.rateDelta = v; }],
+  ];
+  whatIfSliders.forEach(([id, valId]) => {
+    const el = $input(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      const setter = whatIfSliders.find(([sid]) => sid === id)![2];
+      setter(num(el.value));
+      const label = id === 'whatif-rate'
+        ? (num(el.value) === 0 ? '+0.00%' : (num(el.value) > 0 ? '+' : '') + num(el.value).toFixed(2) + '%')
+        : (num(el.value) === 0 ? '+$0' : (num(el.value) > 0 ? '+' : '') + money(num(el.value)));
+      setText(valId, label);
+      render();
+    });
+  });
+  $('whatif-reset')?.addEventListener('click', () => {
+    WHATIF.salaryDelta = 0; WHATIF.savingsDelta = 0; WHATIF.rateDelta = 0;
+    ($input('whatif-salary'))!.value = '0';
+    ($input('whatif-savings'))!.value = '0';
+    ($input('whatif-rate'))!.value = '0';
+    setText('whatif-salary-val', '+$0');
+    setText('whatif-savings-val', '+$0');
+    setText('whatif-rate-val', '+0.00%');
+    render();
   });
 
   window.addEventListener('storage', e => {

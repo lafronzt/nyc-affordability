@@ -3,6 +3,7 @@ title: "Placeholder Guide — Scaffold Test"
 metaDescription: "Placeholder guide used to verify the /guides/ template scaffold. Not real content — replace before publishing."
 intro: "This is placeholder intro copy that stands in for a real guide's opening paragraph, so the template's spacing and typography can be checked before any actual content is written."
 updated: "2026-08-04"
+category: "buying"
 draft: true
 sources:
   - label: "Freddie Mac Primary Mortgage Market Survey (PMMS)"
