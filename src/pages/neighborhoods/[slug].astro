@@ -1,0 +1,262 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../lib/footerLinks';
+import { AD_IN_ARTICLE } from '../../lib/adSlots';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+import { fmtMoney } from '../../lib/format';
+import { requiredIncomeForRent, requiredIncomeForPrice } from '../../lib/afford';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const BOROUGH_LABELS: Record<string, string> = {
+  manhattan: 'Manhattan',
+  brooklyn: 'Brooklyn',
+  queens: 'Queens',
+  bronx: 'The Bronx',
+  'staten-island': 'Staten Island',
+};
+
+export async function getStaticPaths() {
+  const hoods = await getCollection('neighborhoods');
+  return hoods.map((hood) => ({
+    params: { slug: hood.id },
+    props: { hood },
+  }));
+}
+
+const { hood } = Astro.props;
+const { data } = hood;
+const { Content } = await render(hood);
+
+const allTerms = await getCollection('glossary', ({ data }) => !data.draft);
+const relatedTerms = data.relatedTerms
+  .map((slug) => allTerms.find((t) => t.id === slug))
+  .filter((t) => t !== undefined);
+
+const allGuides = await getCollection('guides', ({ data }) => !data.draft);
+const relatedGuides = data.relatedGuides
+  .map((slug) => allGuides.find((g) => g.id === slug))
+  .filter((g) => g !== undefined);
+
+const rentIncome = requiredIncomeForRent({ targetRent: data.medianRent });
+const coopIncome = requiredIncomeForPrice({ targetPrice: data.medianSalePrice, propertyType: 'coop' });
+const condoIncome = requiredIncomeForPrice({ targetPrice: data.medianSalePrice, propertyType: 'condo' });
+
+const canonicalPath = `/neighborhoods/${hood.id}/`;
+const updatedLabel = new Date(`${data.updated}T00:00:00Z`).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: `Can I afford ${data.name}?`,
+  description: data.metaDescription,
+  url: `${SITE_ORIGIN}${canonicalPath}`,
+  datePublished: data.updated,
+  dateModified: data.updated,
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
+};
+
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Neighborhoods', path: '/neighborhoods/' },
+  { name: data.name, path: canonicalPath },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+---
+<BaseLayout
+  variant="site"
+  ads
+  robots={data.draft ? 'noindex, nofollow' : undefined}
+  pageTitle={`Can I Afford ${data.name}? | NYC Affordability`}
+  metaDescription={data.metaDescription}
+  canonicalPath={canonicalPath}
+  ogTitle={data.ogTitle ?? `Can I afford ${data.name}?`}
+  ogDescription={data.ogDescription ?? data.metaDescription}
+  ogImage={data.ogImage}
+  ogImageAlt={data.ogImageAlt ?? data.name}
+  twitterTitle={data.twitterTitle ?? `Can I afford ${data.name}?`}
+  twitterDescription={data.twitterDescription ?? data.metaDescription}
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">{BOROUGH_LABELS[data.borough]}</div>
+  <h2>Can I afford {data.name}?</h2>
+  <p>{data.intro}</p>
+  <span class="updated">Page last checked: {updatedLabel}</span>
+</div>
+
+<div class="page">
+
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">{data.medianRentLabel}</div>
+      <div class="stat-value">{fmtMoney(data.medianRent)}<span class="stat-unit">/mo</span></div>
+      <div class="stat-asof">As of {data.medianRentAsOf}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">{data.medianSalePriceLabel}</div>
+      <div class="stat-value">{fmtMoney(data.medianSalePrice)}</div>
+      <div class="stat-asof">As of {data.medianSalePriceAsOf}</div>
+    </div>
+  </div>
+  <p class="data-note">Cited figures — see Sources below. These are market data points, not calculated by this site.</p>
+
+  <div class="card guide-body">
+    <Content />
+  </div>
+
+  <div class="card calc-card">
+    <h3>What it takes to live here</h3>
+    <p class="calc-disclaimer">The figures below are <strong>calculated</strong> — not cited market data — by running {data.name}'s median rent and sale price through this site's calculator assumptions (40× rent rule, co-op/condo DTI limits). They assume no other monthly debts and don't check against real savings. Open the linked calculator to run your own numbers.</p>
+    <table>
+      <tbody>
+        <tr>
+          <td>Rent at the median (<a href="/rent/">Rent Calculator</a>)</td>
+          <td>{fmtMoney(rentIncome.annualIncomeNeeded)}/yr income needed</td>
+        </tr>
+        <tr>
+          <td>Buy the median co-op (<a href="/coop/">Co-op Calculator</a>)</td>
+          <td>{fmtMoney(coopIncome.annualIncomeNeeded)}/yr income needed</td>
+        </tr>
+        <tr>
+          <td>Buy the median condo (<a href="/condo/">Condo Calculator</a>)</td>
+          <td>{fmtMoney(condoIncome.annualIncomeNeeded)}/yr income needed</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
+  </div>
+
+  <div class="card">
+    <h3>Sources</h3>
+    <ul>
+      {data.sources.map((source) => (
+        <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a></li>
+      ))}
+    </ul>
+    <p class="sources-note">Market data changes constantly — verify current figures against the source above before relying on them for a real decision.</p>
+  </div>
+
+  {relatedTerms.length > 0 && (
+    <div class="card">
+      <h3>Related terms</h3>
+      <ul class="related-list">
+        {relatedTerms.map((related) => (
+          <li><a href={`/glossary/${related.id}/`}>{related.data.term}</a></li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {relatedGuides.length > 0 && (
+    <div class="card">
+      <h3>Related guides</h3>
+      <ul class="related-list">
+        {relatedGuides.map((related) => (
+          <li><a href={`/guides/${related.id}/`}>{related.data.title}</a></li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  <div class="card">
+    <h3>See more neighborhoods</h3>
+    <p><a href="/neighborhoods/">Browse all neighborhoods &rarr;</a> or check your exact numbers on the <a href="/reality-check/">Housing Reality Check</a>.</p>
+  </div>
+
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="Median rent and sale price figures are sourced market data, cited above, and are not calculated by this site. Affordability figures elsewhere on this page are calculated using default assumptions and do not reflect your actual accounts, debts, or a specific building's financials. This page is for informational purposes only and does not constitute financial, legal, or mortgage advice."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+.hero .updated { display: inline-block; margin-top: 16px; font-size: 11px; color: #6b8ab8; letter-spacing: .4px; }
+
+.page { max-width: 820px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px; }
+.stat-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 18px 20px; text-align: center;
+}
+.stat-label { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--g500); margin-bottom: 8px; }
+.stat-value { font-size: 26px; font-weight: 800; color: var(--g900); letter-spacing: -.5px; }
+.stat-asof { font-size: 11px; color: var(--g500); margin-top: 8px; }
+.stat-unit { font-size: 14px; font-weight: 600; color: var(--g500); }
+.data-note { font-size: 12px; color: var(--g500); text-align: center; margin-bottom: 20px; }
+
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 30px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.75; margin-bottom: 10px; }
+.card p:last-child { margin-bottom: 0; }
+.card ul, .card ol { padding-left: 20px; color: var(--g600); font-size: 14px; line-height: 1.75; margin-bottom: 10px; }
+.card li { margin-bottom: 4px; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+
+.calc-card { background: var(--blue-xlt); border-color: var(--blue-lt); }
+.calc-disclaimer { font-size: 12.5px; color: var(--g700); }
+.calc-card table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 8px; }
+.calc-card td { padding: 9px 0; border-bottom: 1px solid rgba(37,99,235,.15); color: var(--g800); }
+.calc-card tr:last-child td { border-bottom: none; }
+.calc-card td:last-child { text-align: right; font-weight: 700; }
+
+.sources-note { font-size: 12px; color: var(--g500); margin-top: 10px; }
+
+.guide-body :global(h2) {
+  font-size: 17px; font-weight: 800; color: var(--g900);
+  letter-spacing: -.2px; margin-bottom: 10px; margin-top: 24px;
+}
+.guide-body :global(h2:first-child) { margin-top: 0; }
+.guide-body :global(p) { font-size: 14px; color: var(--g600); line-height: 1.75; margin-bottom: 10px; }
+.guide-body :global(ul), .guide-body :global(ol) { padding-left: 20px; color: var(--g600); font-size: 14px; line-height: 1.75; margin-bottom: 10px; }
+.guide-body :global(li) { margin-bottom: 4px; }
+.guide-body :global(a) { color: var(--blue); text-decoration: none; }
+.guide-body :global(a:hover) { text-decoration: underline; }
+
+@media (max-width: 560px) {
+  .stat-grid { grid-template-columns: 1fr; }
+  .card { padding: 22px 18px 24px; }
+}
+</style>

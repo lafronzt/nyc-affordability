@@ -1,0 +1,185 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../lib/footerLinks';
+import { AD_IN_ARTICLE } from '../../lib/adSlots';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+import { fmtMoney } from '../../lib/format';
+import { AFFORDABILITY_INDEX } from '../../data/affordabilityIndex';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const latest = AFFORDABILITY_INDEX[AFFORDABILITY_INDEX.length - 1];
+const rentHistory = AFFORDABILITY_INDEX.filter((s) => s.medianRent).map((s) => ({ month: s.publishedMonth, value: s.medianRent.value }));
+const hasHistory = rentHistory.length >= 2;
+
+// Hand-rolled SVG sparkline — no chart dependency, following the same "no new deps"
+// precedent as coop.ts's/condo.ts's Canvas-based optimizer charts. Only meaningful
+// once 2+ published months exist; see the honest-scoping note in affordabilityIndex.ts.
+function buildSparklinePath(points: number[], width: number, height: number, pad = 8): string {
+  if (points.length < 2) return '';
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min || 1;
+  const stepX = (width - pad * 2) / (points.length - 1);
+  return points
+    .map((v, i) => {
+      const x = pad + i * stepX;
+      const y = height - pad - ((v - min) / range) * (height - pad * 2);
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(' ');
+}
+const sparklinePath = hasHistory ? buildSparklinePath(rentHistory.map((r) => r.value), 600, 160) : '';
+
+const canonicalPath = '/affordability-index/';
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: 'NYC Affordability Index',
+  description: 'A tracked snapshot of NYC citywide median rent and co-op sale price, updated as an editorial process, not automatically.',
+  url: `${SITE_ORIGIN}${canonicalPath}`,
+};
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Affordability Index', path: canonicalPath },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+---
+<BaseLayout
+  variant="site"
+  ads
+  pageTitle="NYC Affordability Index | NYC Affordability"
+  metaDescription="A tracked snapshot of NYC citywide median rent and co-op sale price, with sources and as-of dates for every figure."
+  canonicalPath={canonicalPath}
+  ogTitle="NYC Affordability Index"
+  ogDescription="A tracked snapshot of NYC citywide median rent and co-op sale price."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Affordability Index."
+  twitterTitle="NYC Affordability Index"
+  twitterDescription="A tracked snapshot of NYC citywide median rent and co-op sale price."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Affordability Index</div>
+  <h2>Is NYC getting more or less affordable?</h2>
+  <p>A tracked snapshot of citywide housing costs — not a single "as of today" number, but each figure labeled with exactly when and where it came from.</p>
+</div>
+
+<div class="page">
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <div class="card process-note">
+    <p><strong>How this actually gets updated:</strong> this site has no backend or scheduled job — "updated monthly" here means a real editorial process, not an automatic one. Someone checks the latest reports and edits this page's data file by hand. Below is exactly one snapshot so far ({latest.publishedMonth}); history builds up as future updates are added. We won't claim a monthly cadence has happened until it actually has.</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Citywide median rent</div>
+      <div class="stat-value">{fmtMoney(latest.medianRent.value)}<span class="stat-unit">/mo</span></div>
+      <div class="stat-asof">As of {latest.medianRent.asOf} — <a href={latest.medianRent.url} target="_blank" rel="noopener noreferrer">{latest.medianRent.source}</a></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Citywide median co-op price</div>
+      <div class="stat-value">{fmtMoney(latest.medianCoopPrice.value)}</div>
+      <div class="stat-asof">As of {latest.medianCoopPrice.asOf} — <a href={latest.medianCoopPrice.url} target="_blank" rel="noopener noreferrer">{latest.medianCoopPrice.source}</a></div>
+    </div>
+    <div class="stat-card stat-card--pending">
+      <div class="stat-label">Citywide median condo price</div>
+      <div class="stat-value stat-value--pending">Not yet tracked</div>
+      <div class="stat-asof">A stable, citywide (not Manhattan-only) source hasn't been confirmed yet — see below.</div>
+    </div>
+  </div>
+
+  <p class="mismatch-note">Note the rent and co-op figures above are from different periods ({latest.medianRent.asOf} vs. {latest.medianCoopPrice.asOf}) — each is the most recent figure we could verify against a stable, dated source at the time this was built. We'd rather show you the real gap than paper over it with a single invented "as of" date.</p>
+
+  <div class="card">
+    <h3>Rent trend</h3>
+    {hasHistory ? (
+      <svg viewBox="0 0 600 160" class="sparkline" role="img" aria-label="Citywide median rent over time">
+        <path d={sparklinePath} fill="none" stroke="var(--blue)" stroke-width="2.5" />
+      </svg>
+    ) : (
+      <p>Only one data point exists so far — a trend needs at least two. Check back after the next update, or see the <a href="/guides/nyc-40x-rent-rule/">40x rent rule guide</a> for what today's median means in practice.</p>
+    )}
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
+  </div>
+
+  <div class="card">
+    <h3>What this means for you</h3>
+    <p>These are citywide medians — your actual number depends heavily on borough, neighborhood, and unit size (see <a href="/neighborhoods/">neighborhood pages</a> for more specific figures where available). Run the citywide median through your own numbers on the <a href="/rent/">Rent Calculator</a> or <a href="/coop/">Co-op Calculator</a>, or get a quick read on where you stand with the <a href="/reality-check/">Housing Reality Check</a>.</p>
+  </div>
+
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="Index figures are sourced market data, cited above, and are not calculated by this site. This page is updated as a manual editorial process, not automatically — see the note above for what that means. For informational purposes only; not financial, legal, or investment advice."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+
+.page { max-width: 820px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 30px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.75; margin-bottom: 10px; }
+.card p:last-child { margin-bottom: 0; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+
+.process-note { background: var(--blue-xlt); border-color: var(--blue-lt); }
+.process-note p { font-size: 13px; color: var(--g700); }
+
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 10px; }
+.stat-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 18px 18px 16px; text-align: center;
+}
+.stat-card--pending { background: var(--g50); }
+.stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--g500); margin-bottom: 8px; }
+.stat-value { font-size: 24px; font-weight: 800; color: var(--g900); letter-spacing: -.5px; }
+.stat-value--pending { font-size: 16px; color: var(--g400); font-weight: 700; }
+.stat-unit { font-size: 13px; font-weight: 600; color: var(--g500); }
+.stat-asof { font-size: 11px; color: var(--g500); margin-top: 8px; line-height: 1.5; }
+
+.mismatch-note { font-size: 12px; color: var(--g500); text-align: center; margin-bottom: 24px; line-height: 1.6; }
+
+.sparkline { width: 100%; height: auto; background: var(--g50); border-radius: 8px; }
+
+@media (max-width: 720px) {
+  .stat-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .card { padding: 22px 18px 24px; }
+}
+</style>
