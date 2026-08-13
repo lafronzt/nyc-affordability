@@ -16,6 +16,8 @@ A free NYC housing affordability platform — calculators, sourced guides, a glo
 | Glossary (NYC housing terms) | [www.nyc-affordability.com/glossary](https://www.nyc-affordability.com/glossary/) | `/glossary/<slug>/` |
 | What can I afford by income | [www.nyc-affordability.com/income](https://www.nyc-affordability.com/income/) | `/income/<amount>/` |
 | What it takes to buy by price | [www.nyc-affordability.com/buy](https://www.nyc-affordability.com/buy/) | `/buy/<price>/` |
+| Neighborhood affordability | [www.nyc-affordability.com/neighborhoods](https://www.nyc-affordability.com/neighborhoods/) | `/neighborhoods/<slug>/` |
+| Affordability Index | [www.nyc-affordability.com/affordability-index](https://www.nyc-affordability.com/affordability-index/) | `/affordability-index/` |
 | About | [www.nyc-affordability.com/about](https://www.nyc-affordability.com/about/) | `/about/` |
 | Contact | [www.nyc-affordability.com/contact](https://www.nyc-affordability.com/contact/) | `/contact/` |
 | Privacy Policy | [www.nyc-affordability.com/privacy](https://www.nyc-affordability.com/privacy/) | `/privacy/` |
@@ -92,10 +94,13 @@ The default Worker domain also serves all paths directly by file-system structur
 │   │   ├── adsConfig.ts           ← ADS_ENABLED master switch — set to false site-wide to pull every ad (and the loader script) in one place
 │   │   └── footerLinks.ts         ← shared FooterLink/FooterColumn data reused across every page's footer
 │   ├── scripts/                   ← per-page calculator logic (coop.ts, condo.ts, rent.ts, affordable.ts, compare.ts, sell.ts, reality-check.ts)
-│   ├── content.config.ts          ← `guides` and `glossary` content collection schemas (frontmatter shape, defaults)
+│   ├── content.config.ts          ← `guides`, `glossary`, and `neighborhoods` content collection schemas (frontmatter shape, defaults)
+│   ├── data/
+│   │   └── affordabilityIndex.ts  ← versioned array of monthly market snapshots, hand-edited (no backend/cron) — see its own header comment before adding an entry
 │   ├── content/
 │   │   ├── guides/                ← one .md file per guide, rendered by src/pages/guides/[slug].astro
-│   │   └── glossary/               ← one .md file per term, rendered by src/pages/glossary/[slug].astro
+│   │   ├── glossary/               ← one .md file per term, rendered by src/pages/glossary/[slug].astro
+│   │   └── neighborhoods/         ← one .md file per neighborhood, rendered by src/pages/neighborhoods/[slug].astro
 │   └── pages/
 │       ├── index.astro            ← Landing page (NYC Affordability hub)
 │       ├── about/index.astro
@@ -118,9 +123,14 @@ The default Worker domain also serves all paths directly by file-system structur
 │       ├── income/
 │       │   ├── index.astro
 │       │   └── [amount]/index.astro  ← static-generated for a fixed income list (see afford.ts)
-│       └── buy/
-│           ├── index.astro
-│           └── [price]/index.astro   ← static-generated for a fixed price list (see afford.ts)
+│       ├── buy/
+│       │   ├── index.astro
+│       │   └── [price]/index.astro   ← static-generated for a fixed price list (see afford.ts)
+│       ├── neighborhoods/
+│       │   ├── index.astro        ← grouped by borough
+│       │   └── [slug].astro       ← shared template for every /neighborhoods/<slug>/ page
+│       └── affordability-index/
+│           └── index.astro        ← reads src/data/affordabilityIndex.ts
 ├── public/                        ← pass-through static assets (images, robots.txt, ads.txt)
 ├── dist/                          ← Astro build output (git-ignored) — this is what wrangler deploys
 ├── functions/
@@ -133,7 +143,7 @@ The default Worker domain also serves all paths directly by file-system structur
 
 The site is built with [Astro](https://astro.build) in static output mode: `npm run build` compiles `src/pages/*.astro` into plain HTML/CSS/JS in `dist/`, which Cloudflare Workers Static Assets serves exactly as it served hand-written `public/` files before this migration — no server rendering, no data ever leaves the browser. Adding a new page is one new file under `src/pages/<slug>/index.astro` that reuses the shared layout/header/footer components.
 
-`sitemap.xml` is generated at build time by [`@astrojs/sitemap`](https://docs.astro.build/en/guides/integrations-guide/sitemap/) (configured in `astro.config.mjs`) from every page under `src/pages/`, so a new page is picked up automatically without hand-editing a sitemap file. Each page's `priority`/`changefreq`/`lastmod` come from the `SITEMAP_PAGE_META` map in `astro.config.mjs`; add an entry there for new pages (falls back to a sane default otherwise). The plugin itself only outputs `sitemap-index.xml` + `sitemap-0.xml` (it has no bare-`sitemap.xml` option); `npm run build` runs `scripts/rename-sitemap.mjs` as a second step to collapse that single chunk into a plain `dist/sitemap.xml`, matching the URL `robots.txt` (a hand-written static file under `public/`) has always pointed at. If the site ever grows past ~45,000 pages and the sitemap splits into multiple chunks, that script will throw and need updating. Draft guides and glossary entries (see below) are excluded from the sitemap via the integration's `filter` option, which reads `draft: true` directly off the content file's frontmatter. Enumerated routes (`/income/<amount>/`, `/buy/<price>/`, `/glossary/<slug>/`) get their `changefreq`/`priority` from a pattern-matched `ENUMERATED_ROUTE_META` list in `astro.config.mjs` rather than a hand-listed entry per page, since those lists grow.
+`sitemap.xml` is generated at build time by [`@astrojs/sitemap`](https://docs.astro.build/en/guides/integrations-guide/sitemap/) (configured in `astro.config.mjs`) from every page under `src/pages/`, so a new page is picked up automatically without hand-editing a sitemap file. Each page's `priority`/`changefreq`/`lastmod` come from the `SITEMAP_PAGE_META` map in `astro.config.mjs`; add an entry there for new pages (falls back to a sane default otherwise). The plugin itself only outputs `sitemap-index.xml` + `sitemap-0.xml` (it has no bare-`sitemap.xml` option); `npm run build` runs `scripts/rename-sitemap.mjs` as a second step to collapse that single chunk into a plain `dist/sitemap.xml`, matching the URL `robots.txt` (a hand-written static file under `public/`) has always pointed at. If the site ever grows past ~45,000 pages and the sitemap splits into multiple chunks, that script will throw and need updating. Draft guides, glossary entries, and neighborhoods (see below) are excluded from the sitemap via the integration's `filter` option, which reads `draft: true` directly off the content file's frontmatter — `draftSlugsIn()` in `astro.config.mjs` tolerates a collection directory not existing yet (returns an empty set) rather than throwing, since a brand-new collection may start with zero content files. Enumerated routes (`/income/<amount>/`, `/buy/<price>/`, `/glossary/<slug>/`, `/neighborhoods/<slug>/`) get their `changefreq`/`priority` from a pattern-matched `ENUMERATED_ROUTE_META` list in `astro.config.mjs` rather than a hand-listed entry per page, since those lists grow.
 
 ### Guides (`/guides/<slug>/`)
 
@@ -167,7 +177,21 @@ Income and other-debts are read from/written to the shared profile (`nyc_shared_
 
 ### Shareable results (`src/lib/share.ts`)
 
-`wireShareButton(buttonId, buildPayload)` calls the Web Share API when available (mobile Safari/Chrome, some desktop browsers) and falls back to copying a text summary to the clipboard everywhere else — there's no image-generation infrastructure on this site (no `@vercel/og`/Satori equivalent), so personalized OG-card images are an explicitly deferred, not-yet-built idea rather than something this ships. Wired up on `/reality-check/` (dynamic, built from the page's live-computed verdicts) and each `/income/<amount>/` page (static, built at compile time from that page's own numbers via `data-share-*` attributes read by a small inline script).
+`wireShareButton(buttonId, buildPayload)` calls the Web Share API when available (mobile Safari/Chrome, some desktop browsers) and falls back to copying a text summary to the clipboard everywhere else — there's no image-generation infrastructure on this site (no `@vercel/og`/Satori equivalent), so personalized OG-card images are an explicitly deferred, not-yet-built idea rather than something this ships. `buildPayload` receives the already-looked-up button element (so callers reading `data-share-*` attributes don't re-query the DOM), and only ever returns a computed text summary — never raw account data. Wired up on `/reality-check/`, all six calculators (`/coop/`, `/condo/`, `/rent/`, `/affordable/`, `/sell/`, `/compare/`), and each `/income/<amount>/` page.
+
+### Neighborhoods (`/neighborhoods/<slug>/`)
+
+The highest citation-risk content on the site — real estate market data, not tax code or the site's own calculator math, so it can drift after publication in a way guides/glossary entries don't. Markdown in `src/content/neighborhoods/`, one file per neighborhood, rendered through `src/pages/neighborhoods/[slug].astro`; grouped by borough on `/neighborhoods/`. The schema (`src/content.config.ts`) deliberately avoids a fixed "1BR"/"studio" shape for `medianRent`/`medianSalePrice` — each carries its own `*Label` string saying exactly what it represents, since what's actually available varies by source, and its own `*AsOf` date, since rent and sale figures routinely come from different reports published on different schedules (a shared date would hide that gap).
+
+**Sourcing rule for this collection specifically: never cite a live/IDX-feed page** (a "market report" that updates every 15 minutes) — cite a dated, stable snapshot instead (a quarterly report PDF, a dated news article) that won't have silently changed by the time a reader clicks through. The first batch (Upper West Side, Chelsea, Harlem, Astoria, Long Island City) intentionally excludes three other candidate neighborhoods — Park Slope and Forest Hills had no rent figure from any stable source, and Williamsburg's only available rent figure was an average (not median) from a single sub-neighborhood with a 44% year-over-year swing, a red flag for a small/skewed sample. Several published pages also caveat that their figure comes from a broker-defined zone broader than the named neighborhood (e.g. Chelsea and Harlem's Manhattan-wide submarket zones; Astoria and LIC share one "Northwest Queens" rent figure since no neighborhood-specific rent source existed) — read the body of an affected page for the specific zone boundaries before treating the number as neighborhood-exact.
+
+Each neighborhood page also has a "What it takes to live here" card computed from `src/lib/afford.ts` (`requiredIncomeForRent`/`requiredIncomeForPrice`) against that page's own cited median — explicitly labeled as calculated, not market data, same derived-vs-cited distinction used on `/income/<amount>/` and `/buy/<price>/`.
+
+### Affordability Index (`/affordability-index/`)
+
+`src/data/affordabilityIndex.ts` is a hand-edited, versioned array of monthly snapshots — read its header comment before adding an entry. Two things it's deliberately honest about: **"monthly updated" cannot be an automatic feature** on a static site with no backend or scheduled job, so the page says so explicitly rather than implying a cadence that hasn't happened yet; and **each metric carries its own `asOf` date** rather than one shared snapshot date, because e.g. the first entry's rent figure (March 2026, reused from `/rent/`'s own citation) and co-op figure (Q1 2025, reused from `/coop/`'s own citation) are over a year apart — the page states that gap outright instead of implying false precision. `medianCondoPrice` is `null` in the first entry because no stable, genuinely citywide (not Manhattan-only) source could be confirmed — add it once one is found, don't fill in an estimate.
+
+The historical chart is a hand-rolled inline SVG path (`buildSparklinePath()` in the page itself) — no chart dependency, following the same precedent as `coop.ts`'s/`condo.ts`'s Canvas-based optimizer charts — and only renders once 2+ snapshots exist; with a single data point it shows a plain message instead of a fabricated one-point "trend."
 
 ---
 

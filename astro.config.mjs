@@ -19,6 +19,8 @@ const SITEMAP_PAGE_META = {
   '/glossary/':   { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-08-12' },
   '/income/':     { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-12' },
   '/buy/':        { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-12' },
+  '/neighborhoods/':      { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-08-13' },
+  '/affordability-index/': { changefreq: 'weekly', priority: 0.6, lastmod: '2026-08-13' },
   '/about/':      { changefreq: 'yearly',  priority: 0.5, lastmod: '2026-08-02' },
   '/contact/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-11' },
   '/privacy/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-02' },
@@ -32,6 +34,7 @@ const ENUMERATED_ROUTE_META = [
   { pattern: /^\/income\/\d+\/$/, meta: { changefreq: 'monthly', priority: 0.6 } },
   { pattern: /^\/buy\/\d+\/$/,    meta: { changefreq: 'monthly', priority: 0.6 } },
   { pattern: /^\/glossary\/[^/]+\/$/, meta: { changefreq: 'yearly', priority: 0.5 } },
+  { pattern: /^\/neighborhoods\/[^/]+\/$/, meta: { changefreq: 'weekly', priority: 0.6 } },
 ];
 
 // @astrojs/sitemap's filter only gets the final URL, not frontmatter, so draft
@@ -40,8 +43,14 @@ const ENUMERATED_ROUTE_META = [
 // files rather than via `astro:content`, which isn't available this early in
 // config loading.
 function draftSlugsIn(dir) {
+  let files;
+  try {
+    files = readdirSync(dir);
+  } catch (e) {
+    return new Set(); // collection directory doesn't exist yet (e.g. no content added so far)
+  }
   return new Set(
-    readdirSync(dir)
+    files
       .filter((f) => f.endsWith('.md'))
       .filter((f) => /^draft:\s*true\s*$/m.test(readFileSync(dir + f, 'utf-8')))
       .map((f) => f.replace(/\.md$/, ''))
@@ -49,6 +58,7 @@ function draftSlugsIn(dir) {
 }
 const draftGuideSlugs = draftSlugsIn(fileURLToPath(new URL('./src/content/guides/', import.meta.url)));
 const draftGlossarySlugs = draftSlugsIn(fileURLToPath(new URL('./src/content/glossary/', import.meta.url)));
+const draftNeighborhoodSlugs = draftSlugsIn(fileURLToPath(new URL('./src/content/neighborhoods/', import.meta.url)));
 
 export default defineConfig({
   site: 'https://www.nyc-affordability.com',
@@ -64,6 +74,8 @@ export default defineConfig({
         if (guideSlug !== undefined) return !draftGuideSlugs.has(guideSlug);
         const glossarySlug = pathname.match(/^\/glossary\/([^/]+)\/$/)?.[1];
         if (glossarySlug !== undefined) return !draftGlossarySlugs.has(glossarySlug);
+        const neighborhoodSlug = pathname.match(/^\/neighborhoods\/([^/]+)\/$/)?.[1];
+        if (neighborhoodSlug !== undefined) return !draftNeighborhoodSlugs.has(neighborhoodSlug);
         return true;
       },
       serialize(item) {

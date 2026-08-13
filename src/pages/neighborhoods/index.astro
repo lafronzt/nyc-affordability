@@ -1,0 +1,196 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../lib/footerLinks';
+import { AD_MULTIPLEX_HORIZONTAL } from '../../lib/adSlots';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+import { fmtMoney } from '../../lib/format';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const BOROUGH_LABELS: Record<string, string> = {
+  manhattan: 'Manhattan',
+  brooklyn: 'Brooklyn',
+  queens: 'Queens',
+  bronx: 'The Bronx',
+  'staten-island': 'Staten Island',
+};
+const BOROUGH_ORDER = ['manhattan', 'brooklyn', 'queens', 'bronx', 'staten-island'];
+
+const allHoods = await getCollection('neighborhoods', ({ data }) => !data.draft);
+const hoods = allHoods.sort((a, b) => a.data.name.localeCompare(b.data.name));
+
+const grouped = BOROUGH_ORDER.map((b) => ({
+  borough: b,
+  label: BOROUGH_LABELS[b],
+  hoods: hoods.filter((h) => h.data.borough === b),
+})).filter((g) => g.hoods.length > 0);
+
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'NYC Neighborhood Affordability',
+  url: `${SITE_ORIGIN}/neighborhoods/`,
+  description: 'Median rent and sale price by NYC neighborhood, with the income it takes to afford each one, calculated from cited market data.',
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
+};
+
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Neighborhoods', path: '/neighborhoods/' },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+---
+<BaseLayout
+  variant="site"
+  ads
+  pageTitle="Can I Afford to Live Here? NYC Neighborhoods | NYC Affordability"
+  metaDescription="Median rent and sale price by NYC neighborhood, with the income it takes to afford each one — cited market data, calculated affordability."
+  canonicalPath="/neighborhoods/"
+  ogTitle="NYC Neighborhood Affordability"
+  ogDescription="Median rent and sale price by NYC neighborhood, with the income it takes to afford each one."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC neighborhood affordability from NYC Affordability."
+  twitterTitle="NYC Neighborhood Affordability"
+  twitterDescription="Median rent and sale price by NYC neighborhood, with the income it takes to afford each one."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Neighborhoods</div>
+  <h2>Where can you actually afford to live?</h2>
+  <p>Median rent and sale price for a starting set of NYC neighborhoods, each backed by a dated, named source — plus the income it takes to afford each one, calculated using this site's own assumptions.</p>
+</div>
+
+<div class="page">
+
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <div class="card coverage-note">
+    <p><strong>Coverage note:</strong> this is a starting set, not full NYC coverage — a small number of well-known neighborhoods, chosen so every figure could be hand-verified against a dated source before publishing. More will be added over time. Don't see your neighborhood? Try the <a href="/reality-check/">Housing Reality Check</a> or a full calculator instead.</p>
+  </div>
+
+  {hoods.length === 0 ? (
+    <div class="card">
+      <h3>Neighborhood pages are coming soon</h3>
+      <p>In the meantime, try one of the <a href="/">calculators</a>.</p>
+    </div>
+  ) : (
+    grouped.map((group) => (
+      <div class="borough-group">
+        <h3 class="borough-heading">{group.label}</h3>
+        <div class="hood-grid">
+          {group.hoods.map((hood) => (
+            <a class="hood-card" href={`/neighborhoods/${hood.id}/`}>
+              <div class="hood-name">{hood.data.name}</div>
+              <div class="hood-stats">
+                <span>{fmtMoney(hood.data.medianRent)}/mo</span>
+                <span class="sep">·</span>
+                <span>{fmtMoney(hood.data.medianSalePrice)}</span>
+              </div>
+              <div class="hood-asof">See page for sources &amp; dates</div>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))
+  )}
+
+  {hoods.length > 0 && (
+    <div style="margin-bottom:20px;">
+      <AdSlot slot={AD_MULTIPLEX_HORIZONTAL} format="multiplex" maxWidth="100%" sidePadding="0" />
+    </div>
+  )}
+
+  <div class="card">
+    <h3>Run your own numbers</h3>
+    <p>Every neighborhood page feeds into the same calculators — see exactly what a specific price or rent means for your own income and savings.</p>
+    <div class="tool-grid">
+      <a href="/coop/">NYC Co-op Affordability</a>
+      <a href="/condo/">NYC Condo Affordability</a>
+      <a href="/rent/">NYC Rent Affordability</a>
+      <a href="/reality-check/">Housing Reality Check</a>
+      <a href="/compare/">Compare All Options</a>
+      <a href="/">NYC Affordability Hub</a>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="Median rent and sale price figures are sourced market data, cited on each page, and are not calculated by this site. Affordability figures are calculated using default assumptions and do not reflect your actual accounts, debts, or a specific building's financials. This page is for informational purposes only and does not constitute financial, legal, or mortgage advice."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+
+.page { max-width: 900px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 30px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.75; margin-bottom: 10px; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+
+.coverage-note { background: var(--blue-xlt); border-color: var(--blue-lt); }
+.coverage-note p { font-size: 13px; color: var(--g700); margin: 0; }
+
+.borough-group { margin-bottom: 28px; }
+.borough-heading {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--g500); margin-bottom: 12px;
+}
+.hood-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.hood-card {
+  display: block; background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  padding: 16px 18px; text-decoration: none; color: inherit;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  transition: transform .18s, box-shadow .18s;
+}
+.hood-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+.hood-card:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.hood-name { font-size: 15px; font-weight: 750; color: var(--g900); margin-bottom: 6px; letter-spacing: -.1px; }
+.hood-stats { font-size: 13px; color: var(--g600); font-weight: 650; margin-bottom: 4px; }
+.hood-stats .sep { color: var(--g300); margin: 0 4px; }
+.hood-asof { font-size: 11px; color: var(--g500); }
+
+.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin-top: 6px; }
+.tool-grid a {
+  display: block; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;
+  font-weight: 650; font-size: 13.5px; color: var(--g800); text-decoration: none; background: var(--g50);
+}
+.tool-grid a:hover { border-color: var(--blue-lt); background: var(--blue-lt); color: var(--blue); }
+
+@media (max-width: 560px) {
+  .hood-grid { grid-template-columns: 1fr; }
+  .card { padding: 22px 18px 24px; }
+  .tool-grid { grid-template-columns: 1fr; }
+}
+</style>

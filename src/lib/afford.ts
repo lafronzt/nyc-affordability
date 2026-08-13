@@ -89,6 +89,17 @@ export function maxAffordableRent(inp: RentAffordInputs): RentAffordResult {
   return { maxRent, binding: `Income (${mult}× rule)` };
 }
 
+// ---- Rent: target rent -> required income (inverse of maxAffordableRent, for
+// "what income do you need for this rent" content like neighborhood pages) ----
+export interface RequiredIncomeForRentInputs {
+  targetRent: number;
+  incomeMultiplier?: number;
+}
+export function requiredIncomeForRent(inp: RequiredIncomeForRentInputs): { annualIncomeNeeded: number } {
+  const mult = inp.incomeMultiplier ?? DEFAULT_ASSUMPTIONS.rentIncomeMultiplier;
+  return { annualIncomeNeeded: Math.max(0, inp.targetRent) * mult };
+}
+
 // ---- Co-op / condo: income -> max purchase price (DTI ceiling only) ----
 export interface PurchaseAffordInputs {
   annualIncome: number;
