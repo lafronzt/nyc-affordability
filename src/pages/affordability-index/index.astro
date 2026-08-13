@@ -19,7 +19,7 @@ const footerColumns: FooterColumn[] = [
 ];
 
 const latest = AFFORDABILITY_INDEX[AFFORDABILITY_INDEX.length - 1];
-const rentHistory = AFFORDABILITY_INDEX.filter((s) => s.medianRent).map((s) => ({ month: s.publishedMonth, value: s.medianRent.value }));
+const rentHistory = AFFORDABILITY_INDEX.map((s) => ({ month: s.publishedMonth, value: s.medianRent.value }));
 const hasHistory = rentHistory.length >= 2;
 
 // Hand-rolled SVG sparkline — no chart dependency, following the same "no new deps"
