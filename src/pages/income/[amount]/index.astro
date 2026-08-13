@@ -169,14 +169,11 @@ const shareText = `What ${amountLabel}/year gets you in NYC:\n` +
 
 <script>
   import { wireShareButton } from '../../../lib/share';
-  const btn = document.getElementById('income-share');
-  if (btn) {
-    wireShareButton('income-share', () => ({
-      title: btn.dataset.shareTitle ?? '',
-      text: btn.dataset.shareText ?? '',
-      url: btn.dataset.shareUrl ?? window.location.href,
-    }));
-  }
+  wireShareButton('income-share', (btn) => ({
+    title: btn.dataset.shareTitle ?? '',
+    text: btn.dataset.shareText ?? '',
+    url: btn.dataset.shareUrl ?? window.location.href,
+  }));
 </script>
 
 <style>

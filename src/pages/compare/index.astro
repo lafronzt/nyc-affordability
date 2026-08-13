@@ -144,6 +144,10 @@ const jsonLd = {
     </article>
   </section>
 
+  <div class="share-row">
+    <button class="btn-share-standalone" id="compare-share" type="button">Share your result</button>
+  </div>
+
   <section class="section-card">
     <div class="section-title">What if&hellip;? <span>Explore scenarios without changing your saved profile</span></div>
     <div class="whatif-body">
@@ -356,6 +360,14 @@ const jsonLd = {
 
 /* ===== SUMMARY CARDS ===== */
 .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+
+.share-row { display: flex; justify-content: center; margin-bottom: 16px; }
+.btn-share-standalone {
+  border: 1px solid var(--blue-lt); background: #fff; color: var(--blue); border-radius: 6px;
+  padding: 10px 20px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: background .15s;
+}
+.btn-share-standalone:hover { background: var(--blue-xlt); }
 .option-card {
   background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
   box-shadow: 0 1px 3px rgba(0,0,0,.05);

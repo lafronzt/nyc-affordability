@@ -79,10 +79,16 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
           <tr><td><code>nyc_condo_inputs</code></td><td>Condo calculator</td><td>Full set of condo-specific calculator inputs</td></tr>
           <tr><td><code>nyc_rent_inputs</code></td><td>Rent calculator</td><td>Full set of rent-specific calculator inputs</td></tr>
           <tr><td><code>nyc_affordable_inputs</code></td><td>Affordable Housing Finder</td><td>Household size, income, and unit-size inputs for AMI eligibility</td></tr>
+          <tr><td><code>nyc_reality_check_inputs</code></td><td>Housing Reality Check</td><td>Liquid savings and household size for the Reality Check tool — kept separate from <code>nyc_shared_profile</code> so its single-number simplification never overwrites a fuller account breakdown you've built on another calculator</td></tr>
         </tbody>
       </table>
     </div>
-    <p>These values persist until you clear your browser's site data or storage for www.nyc-affordability.com, or until you turn off saving. The <a href="https://www.nyc-co-op-affordability.com/">legacy co-op domain</a> uses a one-time redirect that copies <code>nyc_coop_inputs</code> and <code>nyc_shared_profile</code> into a URL fragment so a saved profile can carry over to the canonical domain — that fragment is read once by your browser and then removed from the address bar; it is never sent to any server in the process.</p>
+    <p>These values persist until you clear your browser's site data or storage for www.nyc-affordability.com, or until you turn off saving. The <a href="https://www.nyc-co-op-affordability.com/">legacy co-op domain</a> uses a one-time redirect that copies <code>nyc_coop_inputs</code> and <code>nyc_shared_profile</code> into a URL fragment so a saved profile can carry over to the canonical domain — that fragment is read once by your browser and then removed from the address bar; it is never sent to any server in the process. The NYC Sale Net Proceeds calculator (<code>/sell/</code>) stores nothing — it doesn't have a Save toggle and resets when you close the tab.</p>
+  </div>
+
+  <div class="card">
+    <h3>Sharing your result</h3>
+    <p>Calculator pages and the Reality Check tool have a "Share your result" button. Clicking it builds a short text summary of your calculated result (e.g. a max purchase price and which limit it hit) and hands that text to your device's native share sheet, or — on browsers/devices without one — copies it to your clipboard instead. Only that computed summary is included: no account balances, account names, debts, or other raw inputs are ever part of the shared text, and nothing is sent to any server we control in the process. Where you share it from there is up to you and subject to that app's own privacy practices, not ours.</p>
   </div>
 
   <div class="card">

@@ -1,4 +1,5 @@
 import { loadSharedProfile, saveSharedProfile, SHARED_KEY, type SharedProfile } from '../lib/sharedProfile';
+import { wireShareButton } from '../lib/share';
 
 /* ============================================================
    NYC Rent Affordability Finder — TypeScript port
@@ -305,10 +306,13 @@ function snapshot(tgt: number, inp: Inputs, calc: CalcResult): Snapshot {
   };
 }
 
+let lastCalc: CalcResult | null = null;
+
 /* ── update all results ── */
 function updateResults() {
   const inp = readInputs();
   const calc = calculate(inp);
+  lastCalc = calc;
 
   // monthly income display
   $input('monthly-income')!.value = String(Math.round(inp.annualIncome / 12));
@@ -1063,4 +1067,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Broker rows initial state
   updateBrokerRows();
+
+  // Share result
+  wireShareButton('rent-share', () => {
+    const c = lastCalc;
+    const text = c
+      ? `My NYC max affordable rent: ${fmt(c.maxRent)}/mo (${c.binding})`
+      : 'My NYC rent affordability result';
+    return { title: 'My NYC Rent Affordability', text, url: 'https://www.nyc-affordability.com/rent/' };
+  });
 });

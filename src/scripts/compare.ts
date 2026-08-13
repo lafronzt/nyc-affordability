@@ -1,4 +1,5 @@
 import { loadSharedProfile, saveSharedProfile, SHARED_KEY } from '../lib/sharedProfile';
+import { wireShareButton } from '../lib/share';
 
 /* ============================================================
    NYC Housing Affordability Comparison Dashboard — TypeScript port
@@ -469,15 +470,17 @@ function render() {
   const rent = calcRent(base);
   const coop = calcCoop(base, ASMP.coop.mortgageRate + WHATIF.rateDelta);
   const condo = calcCondo(base, ASMP.condo.mortgageRate + WHATIF.rateDelta);
-  const cash = weightedAssets(base.accounts);
 
   $('whatif-banner')?.classList.toggle('show', whatIfActive);
 
   $('missing-profile')!.classList.toggle('show', !hasSavedProfile);
-  setText('profile-income', money(base.annualIncome));
-  setText('profile-debts', monthly(base.otherDebts));
-  setText('profile-cash', money(cash));
-  setText('profile-accounts', String(base.accounts.length));
+  // Saved-profile summary always reflects the real saved profile, never the
+  // what-if deltas — those only affect the result cards/table below (see
+  // WHATIF's own header comment for the guarantee this enforces).
+  setText('profile-income', money(profileState.annualIncome));
+  setText('profile-debts', monthly(profileState.otherDebts));
+  setText('profile-cash', money(weightedAssets(accounts)));
+  setText('profile-accounts', String(accounts.length));
 
   setText('rent-max', monthly(rent.maxRent));
   setText('coop-max', money(coop.maxPrice));
@@ -630,5 +633,26 @@ document.addEventListener('DOMContentLoaded', () => {
       applySharedAssumptions(loadSharedAssumptions());
       render();
     }
+  });
+
+  // Share result — always recomputed from the real saved profile, ignoring any
+  // active what-if sliders, so a what-if scenario can never be shared as if it
+  // were the user's actual saved numbers (same guarantee render() enforces for
+  // the profile-summary panel above).
+  wireShareButton('compare-share', () => {
+    const realBase: BaseInputs = {
+      annualIncome: profileState.annualIncome,
+      otherDebts: profileState.otherDebts,
+      accounts: normalizeAccounts(profileState.accounts),
+    };
+    const rent = calcRent(realBase);
+    const coop = calcCoop(realBase);
+    const condo = calcCondo(realBase);
+    const text =
+      `My NYC housing options:\n` +
+      `🏙 Rent: up to ${monthly(rent.maxRent)}\n` +
+      `🔑 Co-op: up to ${money(coop.maxPrice)}\n` +
+      `🏢 Condo: up to ${money(condo.maxPrice)}`;
+    return { title: 'My NYC Housing Options', text, url: 'https://www.nyc-affordability.com/compare/' };
   });
 });

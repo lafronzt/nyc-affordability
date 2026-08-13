@@ -36,13 +36,19 @@ export async function shareResult(title: string, text: string, url: string): Pro
   return { ok: false, method: 'none' };
 }
 
-/** Wires a button to shareResult(), swapping its label to confirm success/failure. */
-export function wireShareButton(buttonId: string, buildPayload: () => { title: string; text: string; url: string }) {
+/** Wires a button to shareResult(), swapping its label to confirm success/failure.
+    buildPayload receives the already-looked-up button element so callers that need
+    to read data off it (e.g. data-share-* attributes) don't have to re-query the DOM
+    or re-guard against it being missing — this function already did both. */
+export function wireShareButton(
+  buttonId: string,
+  buildPayload: (btn: HTMLButtonElement) => { title: string; text: string; url: string }
+) {
   const btn = document.getElementById(buttonId) as HTMLButtonElement | null;
   if (!btn) return;
   const defaultLabel = btn.textContent ?? 'Share';
   btn.addEventListener('click', async () => {
-    const { title, text, url } = buildPayload();
+    const { title, text, url } = buildPayload(btn);
     const result = await shareResult(title, text, url);
     if (result.method === 'share' && result.ok) return; // native share sheet handled it
     btn.textContent = result.ok ? 'Copied to clipboard!' : 'Could not share — copy manually';
