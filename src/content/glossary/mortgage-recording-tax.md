@@ -7,6 +7,8 @@ category: "taxes"
 sources:
   - label: "NYC Department of Finance — Recording Property-Related Documents (Mortgage Recording Tax)"
     url: "https://www.nyc.gov/site/finance/property/property-recording-property-related-documents.page"
+  - label: "Avenue Law Firm — NYC Condo Closing Costs"
+    url: "https://www.avenuelawfirm.com/condominium-closing-costs-nyc/"
 relatedTerms:
   - mansion-tax
 relatedGuides:

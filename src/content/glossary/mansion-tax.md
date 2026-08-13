@@ -5,8 +5,8 @@ metaDescription: "New York's mansion tax is a buyer-paid tax starting at 1% on r
 updated: "2026-08-12"
 category: "taxes"
 sources:
-  - label: "NYS Dept. of Taxation and Finance — Publication 577, FAQs Regarding the Additional Tax (Mansion Tax)"
-    url: "https://www.tax.ny.gov/pdf/publications/real_estate/pub577.pdf"
+  - label: "NYS Dept. of Taxation and Finance — TSB-M-19(1)R, Summary of Amendments to the Real Estate Transfer Tax"
+    url: "https://www.tax.ny.gov/pdf/memos/real_estate/m19-1r.pdf"
   - label: "NYS Dept. of Taxation and Finance — Real Estate Transfer Tax overview"
     url: "https://www.tax.ny.gov/bus/transfer/rptidx.htm"
 relatedTerms:

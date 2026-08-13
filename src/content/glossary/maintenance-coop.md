@@ -5,6 +5,8 @@ metaDescription: "Co-op maintenance is the monthly fee shareholders pay in NYC, 
 updated: "2026-08-12"
 category: "coop"
 sources:
+  - label: "Miller Samuel / Douglas Elliman — New York City Market Reports"
+    url: "https://millersamuel.com/market-reports/new-york-city/"
   - label: "Consumer Financial Protection Bureau — Owning a Home Guide"
     url: "https://www.consumerfinance.gov/owning-a-home/"
 relatedTerms:
