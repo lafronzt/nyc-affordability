@@ -1,4 +1,4 @@
-import { calcPmiRate, calcPmiMonthly, calcMansionTax } from './calc';
+import { calcPmiRate, calcPmiMonthly, calcMansionTax, calcMortgageRecordingTax } from './calc';
 
 /* ============================================================
    Build-time affordability math for salary/price landing pages
@@ -174,7 +174,8 @@ export function requiredIncomeForPrice(inp: RequiredIncomeInputs): RequiredIncom
   const variableCC = isCoop
     ? price * (a.coopVariableClosingPct / 100)
     : price * (a.condoTitlePricePct / 100) + loanAmt * (a.condoTitleLoanPct / 100);
-  const estimatedClosingCosts = fixedCC + variableCC + mansionTax;
+  const mortgageRecordingTax = isCoop ? 0 : calcMortgageRecordingTax(loanAmt); // coops are personal property, not subject to NYC/NYS MRT
+  const estimatedClosingCosts = fixedCC + variableCC + mortgageRecordingTax + mansionTax;
 
   const reserveMonths = isCoop ? a.coopReserveMonths : 0; // condo reserves off by default, matches condo.ts state.reservesEnabled
   const estimatedReserves = reserveMonths * (monthlyPI + monthlyPmi + carrying);
