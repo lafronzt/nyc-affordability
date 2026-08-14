@@ -19,6 +19,7 @@ const SITEMAP_PAGE_META = {
   '/glossary/':   { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-08-12' },
   '/income/':     { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-12' },
   '/buy/':        { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-12' },
+  '/rent/prices/': { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-14' },
   '/neighborhoods/':      { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-08-13' },
   '/affordability-index/': { changefreq: 'weekly', priority: 0.6, lastmod: '2026-08-13' },
   '/about/':      { changefreq: 'yearly',  priority: 0.5, lastmod: '2026-08-02' },
@@ -33,6 +34,7 @@ const DEFAULT_PAGE_META = { changefreq: 'monthly', priority: 0.7 };
 const ENUMERATED_ROUTE_META = [
   { pattern: /^\/income\/\d+\/$/, meta: { changefreq: 'monthly', priority: 0.6 } },
   { pattern: /^\/buy\/\d+\/$/,    meta: { changefreq: 'monthly', priority: 0.6 } },
+  { pattern: /^\/rent\/\d+\/$/,   meta: { changefreq: 'monthly', priority: 0.6 } },
   { pattern: /^\/glossary\/[^/]+\/$/, meta: { changefreq: 'yearly', priority: 0.5 } },
   { pattern: /^\/neighborhoods\/[^/]+\/$/, meta: { changefreq: 'weekly', priority: 0.6 } },
 ];

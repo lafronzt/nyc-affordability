@@ -1,16 +1,16 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import SiteHeader from '../../components/SiteHeader.astro';
-import Footer from '../../components/Footer.astro';
-import AdSlot from '../../components/AdSlot.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import type { FooterColumn } from '../../lib/footerLinks';
-import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../lib/footerLinks';
-import { AD_MULTIPLEX_HORIZONTAL } from '../../lib/adSlots';
-import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
-import { fmtMoney } from '../../lib/format';
-import { requiredIncomeForPrice } from '../../lib/afford';
-import { BUY_PRICES as PRICES } from '../../data/priceGrids';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import Footer from '../../../components/Footer.astro';
+import AdSlot from '../../../components/AdSlot.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../../lib/footerLinks';
+import { AD_MULTIPLEX_HORIZONTAL } from '../../../lib/adSlots';
+import { buildBreadcrumbJsonLd } from '../../../lib/breadcrumbs';
+import { fmtMoney } from '../../../lib/format';
+import { requiredIncomeForRent } from '../../../lib/afford';
+import { RENT_PRICES as PRICES } from '../../../data/priceGrids';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -21,62 +21,60 @@ const footerColumns: FooterColumn[] = [
 
 const rows = PRICES.map((price) => ({
   price,
-  coop: requiredIncomeForPrice({ targetPrice: price, propertyType: 'coop' }).annualIncomeNeeded,
-  condo: requiredIncomeForPrice({ targetPrice: price, propertyType: 'condo' }).annualIncomeNeeded,
+  income: requiredIncomeForRent({ targetRent: price }).annualIncomeNeeded,
 }));
 
 const breadcrumbItems = [
   { name: 'Home', path: '/' },
-  { name: 'Buying', path: '/buy/' },
+  { name: 'Renting', path: '/rent/prices/' },
 ];
 const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 const SITE_ORIGIN = 'https://www.nyc-affordability.com';
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  name: 'What Does It Take to Buy in NYC?',
-  url: `${SITE_ORIGIN}/buy/`,
+  name: 'What Income Do You Need to Rent in NYC?',
+  url: `${SITE_ORIGIN}/rent/prices/`,
   isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
 };
 ---
 <BaseLayout
   variant="site"
   ads
-  pageTitle="What Does It Take to Buy in NYC? By Price | NYC Affordability"
-  metaDescription="Required income to buy a NYC co-op or condo, from $300k to $3M — calculated using our affordability engine's default assumptions."
-  canonicalPath="/buy/"
-  ogTitle="What Does It Take to Buy in NYC?"
-  ogDescription="Required income by purchase price, calculated using our affordability engine."
+  pageTitle="What Income Do You Need to Rent in NYC? By Price | NYC Affordability"
+  metaDescription="Salary needed to rent a NYC apartment under the 40x rule, by monthly rent — calculated using our affordability engine's default assumptions."
+  canonicalPath="/rent/prices/"
+  ogTitle="What Income Do You Need to Rent in NYC?"
+  ogDescription="Salary needed by monthly rent, calculated using our affordability engine."
   ogImage="/images/general-og.png"
-  ogImageAlt="What it takes to buy in NYC by purchase price."
-  twitterTitle="What Does It Take to Buy in NYC?"
-  twitterDescription="Required income by purchase price."
+  ogImageAlt="Salary needed to rent in NYC by monthly rent."
+  twitterTitle="What Income Do You Need to Rent in NYC?"
+  twitterDescription="Salary needed by monthly rent."
   jsonLd={[jsonLd, breadcrumbJsonLd]}
 >
 <SiteHeader />
 
 <main>
 <div class="hero">
-  <div class="hero-eyebrow">Buying</div>
-  <h2>What does it take to buy in NYC?</h2>
-  <p>Pick a purchase price to see the income, down payment, and cash you'd need — calculated using the same math as the calculators.</p>
+  <div class="hero-eyebrow">Renting</div>
+  <h2>What income do you need to rent in NYC?</h2>
+  <p>Pick a monthly rent to see the annual income a landlord typically wants under the 40&times; rule — calculated using the same math as the Rent Calculator.</p>
 </div>
 
 <div class="page">
   <Breadcrumbs items={breadcrumbItems} />
 
-  <p class="calc-caveat">Income figures are the minimum to clear the DTI limit at that price — you'd separately need the down payment, closing cost, and (for co-ops) reserve cash on hand. See a page's "Details" link for the full cash breakdown.</p>
+  <p class="calc-caveat">Income figures are the 40&times; rule screening threshold only — not a check against your real savings or debts, and not move-in cash. See a page's "Details" link for the guarantor figure too.</p>
 
   <div class="card">
     <table>
-      <thead><tr><th>Price</th><th>Co-op income needed</th><th>Condo income needed</th><th></th></tr></thead>
+      <thead><tr><th>Monthly rent</th><th>Income needed</th><th></th></tr></thead>
       <tbody>
         {rows.map((r) => (
           <tr>
             <td>{fmtMoney(r.price)}</td>
-            <td>{fmtMoney(r.coop)}/yr</td>
-            <td>{fmtMoney(r.condo)}/yr</td>
-            <td><a href={`/buy/${r.price}/`}>Details &rarr;</a></td>
+            <td>{fmtMoney(r.income)}/yr</td>
+            <td><a href={`/rent/${r.price}/`}>Details &rarr;</a></td>
           </tr>
         ))}
       </tbody>
@@ -88,16 +86,16 @@ const jsonLd = {
   </div>
 
   <div class="cta-box">
-    <h3>Have a different target price?</h3>
-    <p>These pages use round-number defaults. For an exact price, open a calculator and use its Afford Target tab.</p>
-    <a class="cta-button" href="/coop/">Open the Co-op Calculator &rarr;</a>
+    <h3>Have a different target rent?</h3>
+    <p>These pages use round-number defaults. For an exact rent, open the calculator and enter your own numbers.</p>
+    <a class="cta-button" href="/rent/">Open the Rent Calculator &rarr;</a>
   </div>
 </div>
 </main>
 
 <Footer
   variant="site"
-  disclaimer="These figures are calculated using default assumptions and do not reflect your actual accounts, debts, or a specific building's financials. They are for informational purposes only and do not constitute financial, legal, or mortgage advice."
+  disclaimer="These figures are calculated using default assumptions and do not reflect your actual accounts, debts, or a specific landlord's screening criteria. They are for informational purposes only and do not constitute financial or legal advice."
   columns={footerColumns}
 />
 </BaseLayout>
@@ -118,7 +116,7 @@ const jsonLd = {
   background: #fff; border: 1px solid var(--border); border-radius: var(--r);
   box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 24px 26px 26px; margin-bottom: 20px; overflow-x: auto;
 }
-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 460px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 360px; }
 th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
 th { font-weight: 700; color: var(--g900); background: var(--g50); }
 td { color: var(--g600); }
