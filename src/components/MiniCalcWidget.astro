@@ -1,0 +1,55 @@
+---
+interface Props {
+  mode: 'income' | 'buy-price' | 'rent-price';
+  defaultValue: number;
+}
+const { mode, defaultValue } = Astro.props;
+
+const label = mode === 'income' ? 'annual income' : mode === 'rent-price' ? 'monthly rent' : 'purchase price';
+const step = mode === 'rent-price' ? 100 : mode === 'income' ? 5000 : 25000;
+const suffix = mode === 'rent-price' ? '/mo' : mode === 'income' ? '/yr' : '';
+---
+<div class="card mini-calc">
+  <h3>Try a different number</h3>
+  <label class="mini-calc-label" for="mini-calc-input">Your {label}</label>
+  <div class="mini-calc-row">
+    <span class="mini-calc-prefix">$</span>
+    <input
+      type="number"
+      id="mini-calc-input"
+      value={defaultValue}
+      min="0"
+      step={step}
+      data-mode={mode}
+      inputmode="numeric"
+    />
+    {suffix && <span class="mini-calc-suffix">{suffix}</span>}
+  </div>
+  <p class="mini-calc-hint">The results above update as you type — no page reload, nothing sent anywhere.</p>
+</div>
+
+<script>
+  import { wireMiniCalc } from '../scripts/miniCalc';
+  wireMiniCalc();
+</script>
+
+<style>
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 24px 26px 26px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 14px; letter-spacing: -.2px; }
+.mini-calc-label { display: block; font-size: 12px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.mini-calc-row {
+  display: flex; align-items: center; gap: 4px; border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; background: var(--g50); max-width: 260px;
+}
+.mini-calc-prefix, .mini-calc-suffix { font-size: 16px; font-weight: 700; color: var(--g500); }
+.mini-calc-row input {
+  flex: 1; border: none; background: transparent; font: inherit; font-size: 18px; font-weight: 700;
+  color: var(--g900); outline: none; width: 100%; min-width: 0;
+}
+.mini-calc-row input::-webkit-outer-spin-button,
+.mini-calc-row input::-webkit-inner-spin-button { opacity: 1; }
+.mini-calc-hint { font-size: 12px; color: var(--g500); margin: 10px 0 0; }
+</style>

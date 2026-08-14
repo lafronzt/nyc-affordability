@@ -1,0 +1,45 @@
+---
+export interface RelatedBudgetItem {
+  label: string;
+  sublabel: string;
+  href: string;
+}
+
+interface Props {
+  heading: string;
+  items: RelatedBudgetItem[];
+}
+const { heading, items } = Astro.props;
+---
+<div class="card">
+  <h3>{heading}</h3>
+  <div class="related-grid">
+    {items.map((item) => (
+      <a class="related-item" href={item.href}>
+        <div class="related-label">{item.label}</div>
+        <div class="related-sublabel">{item.sublabel}</div>
+      </a>
+    ))}
+  </div>
+</div>
+
+<style>
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 24px 26px 26px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 14px; letter-spacing: -.2px; }
+
+.related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.related-item {
+  display: block; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--g50); text-decoration: none;
+}
+.related-item:hover { border-color: var(--blue-lt); background: var(--blue-xlt); }
+.related-label { font-size: 14px; font-weight: 750; color: var(--g900); }
+.related-sublabel { font-size: 12px; color: var(--g500); margin-top: 2px; }
+
+@media (max-width: 560px) {
+  .card { padding: 20px 18px 22px; }
+}
+</style>

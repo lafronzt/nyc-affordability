@@ -10,8 +10,7 @@ import { AD_MULTIPLEX_HORIZONTAL } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { fmtMoney } from '../../lib/format';
 import { maxAffordableRent, maxAffordablePrice } from '../../lib/afford';
-
-const AMOUNTS = [75000, 100000, 150000, 200000, 250000, 300000];
+import { INCOME_AMOUNTS as AMOUNTS } from '../../data/priceGrids';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -45,7 +44,7 @@ const jsonLd = {
   variant="site"
   ads
   pageTitle="What Can I Afford in NYC? By Income | NYC Affordability"
-  metaDescription="See max rent, co-op, and condo purchase price by income level — $75k to $300k/year — calculated using our affordability engine's default assumptions."
+  metaDescription="See max rent, co-op, and condo purchase price by income level — $50k to $500k/year — calculated using our affordability engine's default assumptions."
   canonicalPath="/income/"
   ogTitle="What Can I Afford in NYC?"
   ogDescription="Max rent, co-op, and condo purchase price by income level, calculated using our affordability engine."

@@ -4,20 +4,18 @@ import SiteHeader from '../../../components/SiteHeader.astro';
 import Footer from '../../../components/Footer.astro';
 import AdSlot from '../../../components/AdSlot.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import RelatedBudgets from '../../../components/RelatedBudgets.astro';
+import MiniCalcWidget from '../../../components/MiniCalcWidget.astro';
 import type { FooterColumn } from '../../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../../lib/footerLinks';
 import { AD_IN_ARTICLE } from '../../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../../lib/breadcrumbs';
 import { fmtMoney } from '../../../lib/format';
 import { maxAffordableRent, maxAffordablePrice, requiredIncomeForPrice, DEFAULT_ASSUMPTIONS } from '../../../lib/afford';
-
-// Kept in sync with the identical literal inside getStaticPaths() below —
-// Astro extracts getStaticPaths into its own isolated module at build time,
-// so it can't close over a module-scope const defined in this frontmatter.
-const AMOUNTS = [75000, 100000, 150000, 200000, 250000, 300000];
+import { nearest } from '../../../lib/relatedPages';
+import { INCOME_AMOUNTS as AMOUNTS, RENT_PRICES, BUY_PRICES } from '../../../data/priceGrids';
 
 export function getStaticPaths() {
-  const AMOUNTS = [75000, 100000, 150000, 200000, 250000, 300000];
   return AMOUNTS.map((amount) => ({
     params: { amount: String(amount) },
     props: { amount },
@@ -62,6 +60,22 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 const otherAmounts = AMOUNTS.filter((a) => a !== amount);
 
+// Cross-family related links: condo is used as the canonical purchase-price
+// basis (rather than co-op) since its 43% DTI convention is the more common
+// general-purpose mortgage-industry figure quoted for "income needed to buy."
+// Below a certain income, condo.maxPrice is 0 (the carrying-cost floor alone
+// exceeds the DTI budget) — nearest() would still snap that to the lowest
+// BUY_PRICES bucket, producing a misleading "see what it takes to buy $X"
+// link when the true answer is "you can't," so the item is omitted instead.
+const relatedRentPrice = nearest(rent.maxRent, RENT_PRICES);
+const relatedBuyPrice = condo.maxPrice > 0 ? nearest(condo.maxPrice, BUY_PRICES) : null;
+const relatedItems = [
+  { label: `${fmtMoney(relatedRentPrice)}/mo rent`, sublabel: 'See what income that rent needs', href: `/rent/${relatedRentPrice}/` },
+  ...(relatedBuyPrice !== null
+    ? [{ label: `${fmtMoney(relatedBuyPrice)} purchase`, sublabel: 'See what it takes to buy at that price', href: `/buy/${relatedBuyPrice}/` }]
+    : []),
+];
+
 const shareText = `What ${amountLabel}/year gets you in NYC:\n` +
   `🏙 Rent: up to ${fmtMoney(rent.maxRent)}/mo\n` +
   `🔑 Co-op: up to ${fmtMoney(coop.maxPrice)}\n` +
@@ -100,23 +114,25 @@ const shareText = `What ${amountLabel}/year gets you in NYC:\n` +
   <div class="result-grid">
     <div class="result-card">
       <div class="result-label">Max rent (40× rule)</div>
-      <div class="result-value">{fmtMoney(rent.maxRent)}<span class="result-unit">/mo</span></div>
+      <div class="result-value"><span id="result-rent" aria-live="polite">{fmtMoney(rent.maxRent)}</span><span class="result-unit">/mo</span></div>
       <div class="result-binding">{rent.binding}</div>
       <a class="result-link" href="/rent/">Open Rent Calculator &rarr;</a>
     </div>
     <div class="result-card">
       <div class="result-label">Max co-op purchase price</div>
-      <div class="result-value">{fmtMoney(coop.maxPrice)}</div>
+      <div class="result-value"><span id="result-coop" aria-live="polite">{fmtMoney(coop.maxPrice)}</span></div>
       <div class="result-binding">{coop.binding} · {DEFAULT_ASSUMPTIONS.coopDownPaymentPct}% down, {DEFAULT_ASSUMPTIONS.coopMaxDtiPct}% DTI</div>
       <a class="result-link" href="/coop/">Open Co-op Calculator &rarr;</a>
     </div>
     <div class="result-card">
       <div class="result-label">Max condo purchase price</div>
-      <div class="result-value">{fmtMoney(condo.maxPrice)}</div>
+      <div class="result-value"><span id="result-condo" aria-live="polite">{fmtMoney(condo.maxPrice)}</span></div>
       <div class="result-binding">{condo.binding} · {DEFAULT_ASSUMPTIONS.condoDownPaymentPct}% down, {DEFAULT_ASSUMPTIONS.condoMaxDtiPct}% DTI</div>
       <a class="result-link" href="/condo/">Open Condo Calculator &rarr;</a>
     </div>
   </div>
+
+  <MiniCalcWidget mode="income" defaultValue={amount} />
 
   <div class="card">
     <h3>Cash needed to buy at your max</h3>
@@ -140,6 +156,11 @@ const shareText = `What ${amountLabel}/year gets you in NYC:\n` +
   <div class="share-row">
     <button class="btn-share" id="income-share" data-share-title={`What ${amountLabel}/year gets you in NYC`} data-share-text={shareText} data-share-url={`https://www.nyc-affordability.com${canonicalPath}`} type="button">Share this result</button>
   </div>
+
+  <RelatedBudgets
+    heading="This budget, from a different angle"
+    items={relatedItems}
+  />
 
   <div class="card">
     <h3>See a different income</h3>

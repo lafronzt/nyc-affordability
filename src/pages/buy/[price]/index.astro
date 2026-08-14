@@ -4,20 +4,18 @@ import SiteHeader from '../../../components/SiteHeader.astro';
 import Footer from '../../../components/Footer.astro';
 import AdSlot from '../../../components/AdSlot.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import RelatedBudgets from '../../../components/RelatedBudgets.astro';
+import MiniCalcWidget from '../../../components/MiniCalcWidget.astro';
 import type { FooterColumn } from '../../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../../lib/footerLinks';
 import { AD_IN_ARTICLE } from '../../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../../lib/breadcrumbs';
 import { fmtMoney } from '../../../lib/format';
-import { requiredIncomeForPrice, DEFAULT_ASSUMPTIONS } from '../../../lib/afford';
-
-// Kept in sync with the identical literal inside getStaticPaths() below —
-// Astro extracts getStaticPaths into its own isolated module at build time,
-// so it can't close over a module-scope const defined in this frontmatter.
-const PRICES = [500000, 750000, 1000000, 1500000];
+import { requiredIncomeForPrice, maxAffordableRent, DEFAULT_ASSUMPTIONS } from '../../../lib/afford';
+import { nearest } from '../../../lib/relatedPages';
+import { BUY_PRICES as PRICES, INCOME_AMOUNTS, RENT_PRICES } from '../../../data/priceGrids';
 
 export function getStaticPaths() {
-  const PRICES = [500000, 750000, 1000000, 1500000];
   return PRICES.map((price) => ({
     params: { price: String(price) },
     props: { price },
@@ -56,6 +54,11 @@ const breadcrumbItems = [
 ];
 const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 const otherPrices = PRICES.filter((p) => p !== price);
+
+// Condo income is used as the canonical basis for cross-family links (rather
+// than co-op), matching the same convention used on the income pages.
+const relatedIncome = nearest(condo.annualIncomeNeeded, INCOME_AMOUNTS);
+const relatedRentPrice = nearest(maxAffordableRent({ annualIncome: condo.annualIncomeNeeded }).maxRent, RENT_PRICES);
 ---
 <BaseLayout
   variant="site"
@@ -90,17 +93,19 @@ const otherPrices = PRICES.filter((p) => p !== price);
   <div class="result-grid">
     <div class="result-card">
       <div class="result-label">Co-op — income needed</div>
-      <div class="result-value">{fmtMoney(coop.annualIncomeNeeded)}<span class="result-unit">/yr</span></div>
+      <div class="result-value"><span id="result-coop-income" aria-live="polite">{fmtMoney(coop.annualIncomeNeeded)}</span><span class="result-unit">/yr</span></div>
       <div class="result-binding">{DEFAULT_ASSUMPTIONS.coopDownPaymentPct}% down · {DEFAULT_ASSUMPTIONS.coopMaxDtiPct}% board DTI</div>
       <a class="result-link" href="/coop/">Open Co-op Calculator &rarr;</a>
     </div>
     <div class="result-card">
       <div class="result-label">Condo — income needed</div>
-      <div class="result-value">{fmtMoney(condo.annualIncomeNeeded)}<span class="result-unit">/yr</span></div>
+      <div class="result-value"><span id="result-condo-income" aria-live="polite">{fmtMoney(condo.annualIncomeNeeded)}</span><span class="result-unit">/yr</span></div>
       <div class="result-binding">{DEFAULT_ASSUMPTIONS.condoDownPaymentPct}% down · {DEFAULT_ASSUMPTIONS.condoMaxDtiPct}% lender DTI</div>
       <a class="result-link" href="/condo/">Open Condo Calculator &rarr;</a>
     </div>
   </div>
+
+  <MiniCalcWidget mode="buy-price" defaultValue={price} />
 
   <div class="card">
     <h3>Total liquid cash you'd want</h3>
@@ -122,6 +127,14 @@ const otherPrices = PRICES.filter((p) => p !== price);
   <div style="margin-bottom:20px;">
     <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
   </div>
+
+  <RelatedBudgets
+    heading="This budget, from a different angle"
+    items={[
+      { label: `${fmtMoney(relatedIncome)}/yr income`, sublabel: 'See what that income affords', href: `/income/${relatedIncome}/` },
+      { label: `${fmtMoney(relatedRentPrice)}/mo rent`, sublabel: 'The equivalent rent budget', href: `/rent/${relatedRentPrice}/` },
+    ]}
+  />
 
   <div class="card">
     <h3>See a different price</h3>

@@ -61,6 +61,7 @@ export const GUIDES_INDEX_LINK: FooterLink = { label: 'Guides', href: '/guides/'
 export const GLOSSARY_INDEX_LINK: FooterLink = { label: 'NYC Housing Glossary', href: '/glossary/' };
 export const INCOME_INDEX_LINK: FooterLink = { label: 'What Can I Afford by Income', href: '/income/' };
 export const BUY_INDEX_LINK: FooterLink = { label: 'What It Takes to Buy by Price', href: '/buy/' };
+export const RENT_PRICES_INDEX_LINK: FooterLink = { label: 'What It Takes to Rent by Price', href: '/rent/prices/' };
 export const NEIGHBORHOODS_INDEX_LINK: FooterLink = { label: 'NYC Neighborhood Affordability', href: '/neighborhoods/' };
 export const AFFORDABILITY_INDEX_LINK: FooterLink = { label: 'NYC Affordability Index', href: '/affordability-index/' };
 
@@ -72,6 +73,7 @@ export const EXPLORE_LINKS: FooterLink[] = [
   GLOSSARY_INDEX_LINK,
   INCOME_INDEX_LINK,
   BUY_INDEX_LINK,
+  RENT_PRICES_INDEX_LINK,
   NEIGHBORHOODS_INDEX_LINK,
   AFFORDABILITY_INDEX_LINK,
 ];
