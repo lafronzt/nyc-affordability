@@ -97,13 +97,13 @@ const relatedBuyPrice = nearest(
   <div class="result-grid">
     <div class="result-card">
       <div class="result-label">Income needed (40&times; rule)</div>
-      <div class="result-value"><span id="result-standard-income">{fmtMoney(standard.annualIncomeNeeded)}</span><span class="result-unit">/yr</span></div>
+      <div class="result-value"><span id="result-standard-income" aria-live="polite">{fmtMoney(standard.annualIncomeNeeded)}</span><span class="result-unit">/yr</span></div>
       <div class="result-binding">{DEFAULT_ASSUMPTIONS.rentIncomeMultiplier}&times; monthly rent</div>
       <a class="result-link" href="/rent/">Open Rent Calculator &rarr;</a>
     </div>
     <div class="result-card">
       <div class="result-label">Guarantor income needed</div>
-      <div class="result-value"><span id="result-guarantor-income">{fmtMoney(guarantor.annualIncomeNeeded)}</span><span class="result-unit">/yr</span></div>
+      <div class="result-value"><span id="result-guarantor-income" aria-live="polite">{fmtMoney(guarantor.annualIncomeNeeded)}</span><span class="result-unit">/yr</span></div>
       <div class="result-binding">{guarantorMultiplier}&times; monthly rent</div>
       <a class="result-link" href="/guides/nyc-40x-rent-rule/">Read the 40x rule guide &rarr;</a>
     </div>
