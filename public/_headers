@@ -5,3 +5,25 @@
   Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), usb=(), xr-spatial-tracking=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Content-Security-Policy: default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://static.cloudflareinsights.com 'sha256-L9NtTqBLxf1z3sIza7z/JTtm01m91a8xVl07p4WTMYw=' 'sha256-FHzInWGOwPu22bgiFfXpW+a3ARH+opocFy9PcqHJ460='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://pagead2.googlesyndication.com; font-src 'self'; connect-src 'self' https://static.cloudflareinsights.com; frame-src https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+
+# Astro fingerprints these filenames with a content hash, so a given URL's
+# content never changes — safe to cache for a year in both Cloudflare's edge
+# and visitors' browsers. Overrides the platform default of
+# `Cache-Control: public, max-age=0, must-revalidate`, which otherwise forces
+# a revalidation round-trip on every load even though the file can't change.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Unhashed static files (OG images, icons) change rarely but aren't
+# fingerprinted, so cache for a day and let clients revalidate after that.
+/images/*
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/favicon.png
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/favicon-48.png
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=86400, must-revalidate
