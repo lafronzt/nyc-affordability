@@ -33,7 +33,7 @@ const isExternal = (link: FooterLink) => !!link.href && /^https?:\/\//.test(link
 <style>
 .footer {
   background: var(--navy);
-  color: #4a6fa5;
+  color: #6f93c9;
   font-size: 12px;
   line-height: 1.7;
   border-top: 2px solid #1e3a5f;
@@ -41,8 +41,9 @@ const isExternal = (link: FooterLink) => !!link.href && /^https?:\/\//.test(link
 .footer-inner { margin: 0 auto; display: flex; flex-wrap: wrap; }
 .footer :global(.footer-col) { flex: 1; min-width: 160px; }
 .footer :global(.footer-heading) { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #6b8ab8; margin-bottom: 8px; }
-.footer :global(a) { color: #4a6fa5; text-decoration: none; }
-.footer :global(a:hover) { color: #e2e8f0; text-decoration: underline; }
+.footer :global(li) { padding: 4px 0; }
+.footer :global(a) { color: #6f93c9; text-decoration: underline; text-decoration-color: rgba(111, 147, 201, .4); display: inline-block; padding: 2px 0; }
+.footer :global(a:hover) { color: #e2e8f0; text-decoration-color: currentColor; }
 .footer :global(ul) { list-style: none; padding: 0; margin: 0; }
 .footer-disclaimer { width: 100%; border-top: 1px solid #1e3a5f; margin-top: 16px; padding-top: 14px; font-size: 11px; }
 
