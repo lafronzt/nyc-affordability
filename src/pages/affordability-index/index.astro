@@ -49,6 +49,12 @@ const jsonLd = {
   name: 'NYC Affordability Index',
   description: 'A tracked snapshot of NYC citywide median rent and co-op sale price, updated as an editorial process, not automatically.',
   url: `${SITE_ORIGIN}${canonicalPath}`,
+  creator: {
+    '@type': 'Organization',
+    name: 'NYC Affordability',
+    url: `${SITE_ORIGIN}/`,
+  },
+  license: `${SITE_ORIGIN}/terms/`,
 };
 const breadcrumbItems = [
   { name: 'Home', path: '/' },
