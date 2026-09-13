@@ -11,7 +11,8 @@ sources:
     url: "https://streeteasy.com/blog/what-is-an-hdfc-co-op/"
   - label: "NYC HPD — HDFC Program Overview"
     url: "https://www.nyc.gov/site/hpd/services-and-information/hdfc.page"
-relatedTerms: []
+relatedTerms:
+  - hdfc-co-op
 relatedGuides:
   - coop-flip-tax-nyc-explained
   - coop-vs-condo-nyc-costs

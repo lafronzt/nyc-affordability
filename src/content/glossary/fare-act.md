@@ -9,7 +9,8 @@ sources:
     url: "https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page"
   - label: "The Real Deal — Appeals Court Rejects REBNY's FARE Act Appeal (July 2026)"
     url: "https://therealdeal.com/new-york/2026/07/14/appeals-court-rejects-rebnys-fare-act-appeal/"
-relatedTerms: []
+relatedTerms:
+  - key-money
 relatedGuides:
   - fare-act-broker-fees-explained
   - nyc-security-deposit-move-in-costs

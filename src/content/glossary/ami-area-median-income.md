@@ -9,7 +9,9 @@ sources:
     url: "https://www.huduser.gov/portal/datasets/il.html"
   - label: "NYC HPD — Area Median Income"
     url: "https://www.nyc.gov/site/hpd/services-and-information/area-median-income.page"
-relatedTerms: []
+relatedTerms:
+  - hdfc-co-op
+  - housing-choice-voucher-section-8
 relatedGuides:
   - nyc-ami-housing-connect-explained
 draft: false
