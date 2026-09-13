@@ -37,6 +37,8 @@ export const GUIDE_FLIP_TAX: FooterLink = { label: 'Co-op Flip Tax in NYC Explai
 export const GUIDE_BOARD_APPROVAL: FooterLink = { label: 'How Co-op Board Approval Works', href: '/guides/coop-board-approval-process/' };
 export const GUIDE_SECURITY_DEPOSIT: FooterLink = { label: 'Security Deposits & Move-In Costs', href: '/guides/nyc-security-deposit-move-in-costs/' };
 export const GUIDE_SELLER_CLOSING_COSTS: FooterLink = { label: 'NYC Seller Closing Costs Explained', href: '/guides/nyc-seller-closing-costs-explained/' };
+export const GUIDE_RENT_STABILIZATION: FooterLink = { label: 'NYC Rent Stabilization Explained', href: '/guides/nyc-rent-stabilization-explained/' };
+export const GUIDE_485X: FooterLink = { label: '485-x Tax Abatement for Condo Buyers', href: '/guides/485-x-tax-abatement-condo-buyers/' };
 export const ALL_GUIDES: FooterLink[] = [
   GUIDE_MANSION_TAX,
   GUIDE_COOP_RESERVE,
@@ -51,6 +53,8 @@ export const ALL_GUIDES: FooterLink[] = [
   GUIDE_BOARD_APPROVAL,
   GUIDE_SECURITY_DEPOSIT,
   GUIDE_SELLER_CLOSING_COSTS,
+  GUIDE_RENT_STABILIZATION,
+  GUIDE_485X,
 ];
 
 /** Standalone Guides entry for the primary navbar (a different surface than the
