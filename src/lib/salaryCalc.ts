@@ -23,10 +23,18 @@ export type HsaCoverage = 'none' | 'selfOnly' | 'family';
 export interface RequiredSalaryInputs {
   filingStatus: FilingStatus;
   /** 0-100. Also stands in for 403(b)/457(b)/NYC pension (NYCERS/TRS/BERS) —
-      this model gives all of them the same tax treatment as a 401(k); the
-      distinction is UI-label-only. */
+      this model gives all of them the same Traditional/Roth tax treatment as
+      a 401(k); see retirementCapApplies for the one place they differ. */
   k401PercentOfGross: number;
   k401IsTraditional: boolean;
+  /** False for a mandatory pension (NYCERS/TRS/BERS): those are §414(h)(2)
+      "picked-up" contributions, not elective deferrals, so they're NOT subject
+      to the IRC §402(g) cap that applies to 401(k)/403(b)/457(b). Defaults to
+      true (capped) when omitted. Note this model still can't represent
+      contributing to two independently-capped plans at once (e.g. a 401(k)
+      AND a 457(b) in the same year, which real 402(g)/457(b) rules allow) —
+      only one plan type and one shared cap at a time. */
+  retirementCapApplies?: boolean;
   /** Informational only — does NOT reduce required salary. 0-100. */
   employerMatchPercentOfGross?: number;
   /** Informational only — optional dollar cap on the employer match. */
@@ -153,6 +161,12 @@ export function getDependentCareFsaCap(constants: TaxYearConstants): number {
   return constants.fsa.dependentCareAnnual;
 }
 
+/** Shared by every capped pre-tax deduction below (HSA, commuter transit/parking,
+    both FSAs) so the clamp-and-flag logic isn't hand-copied per deduction type. */
+function clampToCap(requested: number, cap: number): { value: number; clamped: boolean } {
+  return { value: Math.min(requested, cap), clamped: requested > cap + 1e-9 };
+}
+
 /** Full payslip-style breakdown of a given gross salary under the supplied inputs. */
 export function computeBreakdown(gross: number, inputs: RequiredSalaryInputs, constants: TaxYearConstants): PaycheckBreakdown {
   const status = inputs.filingStatus;
@@ -164,39 +178,34 @@ export function computeBreakdown(gross: number, inputs: RequiredSalaryInputs, co
 
   const transitCap = getCommuterCap('transit', constants);
   const requestedTransit = Math.max(0, inputs.commuterTransitMonthly ?? 0) * 12;
-  const commuterTransit = Math.min(requestedTransit, transitCap);
-  const commuterTransitClamped = requestedTransit > transitCap + 1e-9;
+  const { value: commuterTransit, clamped: commuterTransitClamped } = clampToCap(requestedTransit, transitCap);
 
   const parkingCap = getCommuterCap('parking', constants);
   const requestedParking = Math.max(0, inputs.commuterParkingMonthly ?? 0) * 12;
-  const commuterParking = Math.min(requestedParking, parkingCap);
-  const commuterParkingClamped = requestedParking > parkingCap + 1e-9;
+  const { value: commuterParking, clamped: commuterParkingClamped } = clampToCap(requestedParking, parkingCap);
 
   // Healthcare FSA and HSA are mutually exclusive under IRS rules — HSA enrollment
   // wins regardless of what the caller passed for healthcareFsaAnnual.
   const healthcareFsaCap = getHealthcareFsaCap(constants);
   const requestedHealthcareFsa = inputs.hsaCoverage === 'none' ? Math.max(0, inputs.healthcareFsaAnnual ?? 0) : 0;
-  const healthcareFsa = Math.min(requestedHealthcareFsa, healthcareFsaCap);
-  const healthcareFsaClamped = requestedHealthcareFsa > healthcareFsaCap + 1e-9;
+  const { value: healthcareFsa, clamped: healthcareFsaClamped } = clampToCap(requestedHealthcareFsa, healthcareFsaCap);
 
   const dependentCareFsaCap = getDependentCareFsaCap(constants);
   const requestedDependentCareFsa = Math.max(0, inputs.dependentCareFsaAnnual ?? 0);
-  const dependentCareFsa = Math.min(requestedDependentCareFsa, dependentCareFsaCap);
-  const dependentCareFsaClamped = requestedDependentCareFsa > dependentCareFsaCap + 1e-9;
+  const { value: dependentCareFsa, clamped: dependentCareFsaClamped } = clampToCap(requestedDependentCareFsa, dependentCareFsaCap);
 
   const hsaCap = getHsaCap(inputs.hsaCoverage, inputs.age50Plus, constants);
   const requestedHsa = inputs.hsaCoverage === 'none' ? 0 : Math.max(0, inputs.hsaContribution);
-  const hsaContribution = Math.min(requestedHsa, hsaCap);
-  const hsaClamped = requestedHsa > hsaCap + 1e-9;
+  const { value: hsaContribution, clamped: hsaClamped } = clampToCap(requestedHsa, hsaCap);
 
   const cafeteria125Total = healthPremium + dentalVisionPremium + commuterTransit + commuterParking
     + healthcareFsa + dependentCareFsa + hsaContribution;
 
-  // ---- Retirement (401(k)/403(b)/457(b)/pension, all modeled identically) ----
-  const k401Cap = getK401Cap(inputs.age50Plus, constants);
+  // ---- Retirement (401(k)/403(b)/457(b)/pension, all modeled identically except
+  // for whether the 402(g) elective-deferral cap applies — see retirementCapApplies) ----
+  const k401Cap = inputs.retirementCapApplies === false ? Infinity : getK401Cap(inputs.age50Plus, constants);
   const requestedK401 = g * (inputs.k401PercentOfGross / 100);
-  const k401Contribution = Math.min(requestedK401, k401Cap);
-  const k401Clamped = requestedK401 > k401Cap + 1e-9;
+  const { value: k401Contribution, clamped: k401Clamped } = clampToCap(requestedK401, k401Cap);
   // Traditional reduces taxable income; Roth does not. Neither ever reduces FICA wages.
   const incomeTaxDeduction = inputs.k401IsTraditional ? k401Contribution : 0;
 
@@ -269,6 +278,19 @@ export function computeBreakdown(gross: number, inputs: RequiredSalaryInputs, co
   };
 }
 
+/** Baseline scenario shared by every /salary/ page (the hub table, each
+    /salary/[amount]/ detail page, and that page's live mini-calc widget) so
+    the three can't silently drift apart: single filer, no 401(k)/HSA/other
+    deductions — the cleanest gross-to-net comparison point. */
+export const SALARY_LANDING_PAGE_BASELINE: RequiredSalaryInputs = {
+  filingStatus: 'single',
+  k401PercentOfGross: 0,
+  k401IsTraditional: true,
+  hsaCoverage: 'none',
+  hsaContribution: 0,
+  age50Plus: false,
+};
+
 export function netTakeHomeForGross(gross: number, inputs: RequiredSalaryInputs, constants: TaxYearConstants): number {
   return computeBreakdown(gross, inputs, constants).netTakeHome;
 }
@@ -292,18 +314,24 @@ export function solveRequiredSalary(annualNetNeeded: number, inputs: RequiredSal
 }
 
 /** Required salary at the target savings goal plus +-5%/+-10% variations, so a user
-    can see the marginal cost of saving more. */
+    can see the marginal cost of saving more.
+    baseRequiredAnnualSalary, if provided, is reused for the deltaPct===0 row instead
+    of re-running a full binary search for a value the caller (render()) already
+    solved moments earlier for the same inputs. */
 export function computeSensitivityTable(
   monthlyExpenses: number,
   monthlySavingsGoal: number,
   inputs: RequiredSalaryInputs,
   constants: TaxYearConstants,
   deltasPct: number[] = [-10, -5, 0, 5, 10],
+  baseRequiredAnnualSalary?: number,
 ): SensitivityRow[] {
   return deltasPct.map((deltaPct) => {
     const adjustedSavingsGoal = monthlySavingsGoal * (1 + deltaPct / 100);
     const annualNetNeeded = (monthlyExpenses + adjustedSavingsGoal) * 12;
-    const requiredAnnualSalary = solveRequiredSalary(annualNetNeeded, inputs, constants);
+    const requiredAnnualSalary = deltaPct === 0 && baseRequiredAnnualSalary !== undefined
+      ? baseRequiredAnnualSalary
+      : solveRequiredSalary(annualNetNeeded, inputs, constants);
     return {
       deltaPct,
       monthlySavingsGoal: adjustedSavingsGoal,

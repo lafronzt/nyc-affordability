@@ -26,10 +26,14 @@ import type { FilingStatus } from '../lib/salaryTaxConstants2026';
    shape the other calculators share, so there's nothing meaningful to
    read from or write back to nyc_shared_profile.
 
-   retirementPlanType is UI-label-only — it never reaches RequiredSalaryInputs.
-   401(k)/403(b)/457(b)/pension all get identical tax treatment in the calc
-   engine (see salaryCalc.ts's RequiredSalaryInputs.k401PercentOfGross doc
-   comment); this field only changes what the form/table call it.
+   retirementPlanType changes two things in the calc engine, not just a
+   label: the Traditional/Roth tax treatment is identical for all four
+   plan types, but "Pension" turns off the 402(g) elective-deferral cap
+   (see RequiredSalaryInputs.retirementCapApplies in salaryCalc.ts) since
+   NYCERS/TRS/BERS contributions aren't elective deferrals in the first
+   place. This model still can't represent contributing to two
+   independently-capped plans at once (e.g. a 401(k) AND a 457(b) in the
+   same year, which real rules allow) — only one plan, one shared cap.
    ============================================================ */
 
 const LS_KEY = 'nyc_required_salary_inputs';
@@ -66,6 +70,12 @@ interface FormInputs {
   disabilityInsuranceMonthly: number;
   unionDuesMonthly: number;
 }
+
+/** Keys of FormInputs whose value is always a plain number — used by the
+    generic field binders below so a getter/setter pair doesn't have to be
+    hand-written per field. */
+type NumberFormInputKey = { [K in keyof FormInputs]: FormInputs[K] extends number ? K : never }[keyof FormInputs];
+type BooleanFormInputKey = { [K in keyof FormInputs]: FormInputs[K] extends boolean ? K : never }[keyof FormInputs];
 
 const DEFAULTS: FormInputs = {
   monthlyExpenses: 5000,
@@ -124,7 +134,14 @@ let hasSaved = false;
 function loadInputs(): FormInputs {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (raw) { hasSaved = true; return { ...DEFAULTS, ...JSON.parse(raw) }; }
+    if (raw) {
+      // Parse BEFORE flipping hasSaved — a corrupted/incompatible entry should
+      // fall through to defaults with the save toggle left unchecked, not
+      // silently claim a save that isn't actually usable.
+      const parsed = JSON.parse(raw);
+      hasSaved = true;
+      return { ...DEFAULTS, ...parsed };
+    }
   } catch (e) { /* ignore */ }
   return { ...DEFAULTS };
 }
@@ -142,36 +159,76 @@ function persist() {
   } catch (e) { /* ignore — best-effort persistence only */ }
 }
 
+/** Config-driven description of every "$ amount, optionally pinned to an IRS
+    max" field (HSA, commuter transit/parking, both FSAs) — collapses what
+    used to be five hand-copied implementations of the same pattern (a value
+    field, a "use max" checkbox, a cap lookup, and an extra disable condition
+    for the one or two fields that have one) into one table plus a few small
+    loops. Declared after the helpers above so getCap can reference CONSTANTS. */
+interface MaxToggleField {
+  valueId: string;
+  maxId: string;
+  valueKey: NumberFormInputKey;
+  maxKey: BooleanFormInputKey;
+  getCap: () => number;
+  /** True when this field must be forced to $0 regardless of the max toggle —
+      e.g. HSA is disabled without coverage; Healthcare FSA is disabled with HSA. */
+  extraDisabled?: () => boolean;
+}
+
+const HSA_FIELD: MaxToggleField = {
+  valueId: 'rs-hsa-amount', maxId: 'rs-hsa-max',
+  valueKey: 'hsaContribution', maxKey: 'hsaUseMax',
+  getCap: () => getHsaCap(inputs.hsaCoverage, inputs.age50Plus, CONSTANTS),
+  extraDisabled: () => inputs.hsaCoverage === 'none',
+};
+const COMMUTER_TRANSIT_FIELD: MaxToggleField = {
+  valueId: 'rs-commuter-transit', maxId: 'rs-commuter-transit-max',
+  valueKey: 'commuterTransitMonthly', maxKey: 'commuterTransitUseMax',
+  getCap: () => CONSTANTS.commuterBenefit.transitMonthly,
+};
+const COMMUTER_PARKING_FIELD: MaxToggleField = {
+  valueId: 'rs-commuter-parking', maxId: 'rs-commuter-parking-max',
+  valueKey: 'commuterParkingMonthly', maxKey: 'commuterParkingUseMax',
+  getCap: () => CONSTANTS.commuterBenefit.parkingMonthly,
+};
+const HEALTHCARE_FSA_FIELD: MaxToggleField = {
+  valueId: 'rs-healthcare-fsa', maxId: 'rs-healthcare-fsa-max',
+  valueKey: 'healthcareFsaAnnual', maxKey: 'healthcareFsaUseMax',
+  getCap: () => CONSTANTS.fsa.healthcareAnnual,
+  extraDisabled: () => inputs.hsaCoverage !== 'none',
+};
+const DEPENDENT_CARE_FSA_FIELD: MaxToggleField = {
+  valueId: 'rs-dependent-care-fsa', maxId: 'rs-dependent-care-fsa-max',
+  valueKey: 'dependentCareFsaAnnual', maxKey: 'dependentCareFsaUseMax',
+  getCap: () => CONSTANTS.fsa.dependentCareAnnual,
+};
+const MAX_TOGGLE_FIELDS: MaxToggleField[] = [
+  HSA_FIELD, COMMUTER_TRANSIT_FIELD, COMMUTER_PARKING_FIELD, HEALTHCARE_FSA_FIELD, DEPENDENT_CARE_FSA_FIELD,
+];
+
+function resolveMaxToggleField(f: MaxToggleField): number {
+  if (f.extraDisabled?.()) return 0;
+  return (inputs[f.maxKey] as boolean) ? f.getCap() : (inputs[f.valueKey] as number);
+}
+
 function toCalcInputs(): RequiredSalaryInputs {
-  const hsaCap = getHsaCap(inputs.hsaCoverage, inputs.age50Plus, CONSTANTS);
-  const hsaContribution = inputs.hsaCoverage === 'none'
-    ? 0
-    : inputs.hsaUseMax
-      ? hsaCap
-      : inputs.hsaContribution;
-
-  const commuterTransitMonthly = inputs.commuterTransitUseMax ? CONSTANTS.commuterBenefit.transitMonthly : inputs.commuterTransitMonthly;
-  const commuterParkingMonthly = inputs.commuterParkingUseMax ? CONSTANTS.commuterBenefit.parkingMonthly : inputs.commuterParkingMonthly;
-  const healthcareFsaAnnual = inputs.hsaCoverage !== 'none'
-    ? 0
-    : inputs.healthcareFsaUseMax ? CONSTANTS.fsa.healthcareAnnual : inputs.healthcareFsaAnnual;
-  const dependentCareFsaAnnual = inputs.dependentCareFsaUseMax ? CONSTANTS.fsa.dependentCareAnnual : inputs.dependentCareFsaAnnual;
-
   return {
     filingStatus: inputs.filingStatus,
     k401PercentOfGross: inputs.k401PercentOfGross,
     k401IsTraditional: inputs.k401IsTraditional,
+    retirementCapApplies: inputs.retirementPlanType !== 'pension',
     employerMatchPercentOfGross: inputs.employerMatchPercentOfGross,
     employerMatchCapDollars: inputs.employerMatchCapDollars ?? undefined,
     hsaCoverage: inputs.hsaCoverage,
-    hsaContribution,
+    hsaContribution: resolveMaxToggleField(HSA_FIELD),
     age50Plus: inputs.age50Plus,
     healthPremiumMonthly: inputs.healthPremiumMonthly,
     dentalVisionPremiumMonthly: inputs.dentalVisionPremiumMonthly,
-    commuterTransitMonthly,
-    commuterParkingMonthly,
-    healthcareFsaAnnual,
-    dependentCareFsaAnnual,
+    commuterTransitMonthly: resolveMaxToggleField(COMMUTER_TRANSIT_FIELD),
+    commuterParkingMonthly: resolveMaxToggleField(COMMUTER_PARKING_FIELD),
+    healthcareFsaAnnual: resolveMaxToggleField(HEALTHCARE_FSA_FIELD),
+    dependentCareFsaAnnual: resolveMaxToggleField(DEPENDENT_CARE_FSA_FIELD),
     lifeInsuranceMonthly: inputs.lifeInsuranceMonthly,
     disabilityInsuranceMonthly: inputs.disabilityInsuranceMonthly,
     unionDuesMonthly: inputs.unionDuesMonthly,
@@ -194,32 +251,19 @@ function syncFields() {
   $input('rs-match-cap')!.value = inputs.employerMatchCapDollars != null ? String(inputs.employerMatchCapDollars) : '';
 
   $select('rs-hsa-coverage')!.value = inputs.hsaCoverage;
-  $input('rs-hsa-amount')!.value = String(inputs.hsaContribution);
-  $input('rs-hsa-max')!.checked = inputs.hsaUseMax;
-  $input('rs-hsa-amount')!.disabled = inputs.hsaCoverage === 'none' || inputs.hsaUseMax;
-  $input('rs-hsa-max')!.disabled = inputs.hsaCoverage === 'none';
+  $('rs-healthcare-fsa-hsa-note')!.hidden = inputs.hsaCoverage === 'none';
+
+  for (const f of MAX_TOGGLE_FIELDS) {
+    const useMax = inputs[f.maxKey] as boolean;
+    const extraDisabled = f.extraDisabled?.() ?? false;
+    $input(f.valueId)!.value = String(inputs[f.valueKey]);
+    $input(f.maxId)!.checked = useMax;
+    $input(f.valueId)!.disabled = useMax || extraDisabled;
+    $input(f.maxId)!.disabled = extraDisabled;
+  }
 
   $input('rs-health-premium')!.value = String(inputs.healthPremiumMonthly);
   $input('rs-dental-vision-premium')!.value = String(inputs.dentalVisionPremiumMonthly);
-
-  $input('rs-commuter-transit')!.value = String(inputs.commuterTransitMonthly);
-  $input('rs-commuter-transit-max')!.checked = inputs.commuterTransitUseMax;
-  $input('rs-commuter-transit')!.disabled = inputs.commuterTransitUseMax;
-  $input('rs-commuter-parking')!.value = String(inputs.commuterParkingMonthly);
-  $input('rs-commuter-parking-max')!.checked = inputs.commuterParkingUseMax;
-  $input('rs-commuter-parking')!.disabled = inputs.commuterParkingUseMax;
-
-  const hsaEnrolled = inputs.hsaCoverage !== 'none';
-  $input('rs-healthcare-fsa')!.value = String(inputs.healthcareFsaAnnual);
-  $input('rs-healthcare-fsa-max')!.checked = inputs.healthcareFsaUseMax;
-  $input('rs-healthcare-fsa')!.disabled = hsaEnrolled || inputs.healthcareFsaUseMax;
-  $input('rs-healthcare-fsa-max')!.disabled = hsaEnrolled;
-  $('rs-healthcare-fsa-hsa-note')!.hidden = !hsaEnrolled;
-
-  $input('rs-dependent-care-fsa')!.value = String(inputs.dependentCareFsaAnnual);
-  $input('rs-dependent-care-fsa-max')!.checked = inputs.dependentCareFsaUseMax;
-  $input('rs-dependent-care-fsa')!.disabled = inputs.dependentCareFsaUseMax;
-
   $input('rs-life-insurance')!.value = String(inputs.lifeInsuranceMonthly);
   $input('rs-disability-insurance')!.value = String(inputs.disabilityInsuranceMonthly);
   $input('rs-union-dues')!.value = String(inputs.unionDuesMonthly);
@@ -279,6 +323,7 @@ function render() {
   const annualNetNeeded = (inputs.monthlyExpenses + inputs.monthlySavingsGoal) * 12;
   const requiredAnnual = solveRequiredSalary(annualNetNeeded, calcInputs, CONSTANTS);
   const breakdown = computeBreakdown(requiredAnnual, calcInputs, CONSTANTS);
+  const retirementCapApplies = inputs.retirementPlanType !== 'pension';
 
   setText('rs-required-annual', fmtMoney(requiredAnnual) + '/yr');
   setText('rs-required-monthly', fmtMonthly(requiredAnnual / 12));
@@ -356,8 +401,9 @@ function render() {
     deductionsWarn.classList.remove('warn');
   }
 
-  // Sensitivity table
-  const sensitivityRows = computeSensitivityTable(inputs.monthlyExpenses, inputs.monthlySavingsGoal, calcInputs, CONSTANTS);
+  // Sensitivity table — reuses requiredAnnual (already solved above) for the
+  // deltaPct===0 row instead of asking computeSensitivityTable to re-solve it.
+  const sensitivityRows = computeSensitivityTable(inputs.monthlyExpenses, inputs.monthlySavingsGoal, calcInputs, CONSTANTS, undefined, requiredAnnual);
   const sensitivityBody = $('rs-sensitivity-body')!;
   sensitivityBody.innerHTML = '';
   for (const row of sensitivityRows) {
@@ -374,10 +420,13 @@ function render() {
     ['Filing status', FILING_STATUS_LABELS[inputs.filingStatus]],
     ['Tax jurisdiction', 'NYC resident'],
   ];
-  assumptions.push(
-    [`${planLabel} contribution`, `${inputs.k401PercentOfGross}% of gross, ${inputs.k401IsTraditional ? 'Traditional' : 'Roth'}`],
-    [`${planLabel} annual cap used`, fmtMoney(getK401Cap(inputs.age50Plus, CONSTANTS)) + (inputs.age50Plus ? ' (incl. 50+ catch-up)' : '')],
-  );
+  assumptions.push([`${planLabel} contribution`, `${inputs.k401PercentOfGross}% of gross, ${inputs.k401IsTraditional ? 'Traditional' : 'Roth'}`]);
+  assumptions.push([
+    `${planLabel} annual cap used`,
+    retirementCapApplies
+      ? fmtMoney(getK401Cap(inputs.age50Plus, CONSTANTS)) + (inputs.age50Plus ? ' (incl. 50+ catch-up)' : '')
+      : 'No 402(g) cap — mandatory pension contributions are not elective deferrals',
+  ]);
   if (inputs.employerMatchPercentOfGross > 0) {
     assumptions.push(['Employer match (informational)', `${inputs.employerMatchPercentOfGross}% of gross${inputs.employerMatchCapDollars != null ? `, capped at ${fmtMoney(inputs.employerMatchCapDollars)}` : ''} = ${fmtMoney(breakdown.employerMatchDollars)}`]);
   }
@@ -394,17 +443,31 @@ function render() {
   list.innerHTML = assumptions.map(([k, v]) => `<li><span>${k}</span><span>${v}</span></li>`).join('');
 }
 
+/** Binds a plain "$/% number in, clamp, persist, re-render" field — the shape
+    shared by roughly a dozen of this form's inputs. min/max clamp in the UI
+    layer the same way the calc engine defensively clamps its own inputs. */
+function bindNumberField(id: string, key: NumberFormInputKey, opts: { min?: number; max?: number } = {}) {
+  $input(id)!.addEventListener('input', () => {
+    let v = num($input(id)!.value);
+    if (opts.min !== undefined) v = Math.max(opts.min, v);
+    if (opts.max !== undefined) v = Math.min(opts.max, v);
+    (inputs[key] as number) = v;
+    persist();
+    render();
+  });
+}
+
+function bindCheckboxField(id: string, key: BooleanFormInputKey) {
+  $input(id)!.addEventListener('change', () => {
+    (inputs[key] as boolean) = $input(id)!.checked;
+    persist();
+    render();
+  });
+}
+
 function attachFieldListeners() {
-  $input('rs-expenses')!.addEventListener('input', () => {
-    inputs.monthlyExpenses = num($input('rs-expenses')!.value);
-    persist();
-    render();
-  });
-  $input('rs-savings-goal')!.addEventListener('input', () => {
-    inputs.monthlySavingsGoal = num($input('rs-savings-goal')!.value);
-    persist();
-    render();
-  });
+  bindNumberField('rs-expenses', 'monthlyExpenses', { min: 0 });
+  bindNumberField('rs-savings-goal', 'monthlySavingsGoal', { min: 0 });
   $select('rs-filing-status')!.addEventListener('change', () => {
     inputs.filingStatus = $select('rs-filing-status')!.value as FilingStatus;
     persist();
@@ -416,26 +479,14 @@ function attachFieldListeners() {
     persist();
     render();
   });
-  $input('rs-401k-pct')!.addEventListener('input', () => {
-    inputs.k401PercentOfGross = Math.min(100, Math.max(0, num($input('rs-401k-pct')!.value)));
-    persist();
-    render();
-  });
+  bindNumberField('rs-401k-pct', 'k401PercentOfGross', { min: 0, max: 100 });
   $select('rs-401k-type')!.addEventListener('change', () => {
     inputs.k401IsTraditional = $select('rs-401k-type')!.value === 'traditional';
     persist();
     render();
   });
-  $input('rs-age50')!.addEventListener('change', () => {
-    inputs.age50Plus = $input('rs-age50')!.checked;
-    persist();
-    render();
-  });
-  $input('rs-match-pct')!.addEventListener('input', () => {
-    inputs.employerMatchPercentOfGross = num($input('rs-match-pct')!.value);
-    persist();
-    render();
-  });
+  bindCheckboxField('rs-age50', 'age50Plus');
+  bindNumberField('rs-match-pct', 'employerMatchPercentOfGross', { min: 0 });
   $input('rs-match-cap')!.addEventListener('input', () => {
     const raw = $input('rs-match-cap')!.value;
     inputs.employerMatchCapDollars = raw === '' ? null : num(raw);
@@ -449,90 +500,22 @@ function attachFieldListeners() {
     persist();
     render();
   });
-  $input('rs-hsa-amount')!.addEventListener('input', () => {
-    inputs.hsaContribution = num($input('rs-hsa-amount')!.value);
-    persist();
-    render();
-  });
-  $input('rs-hsa-max')!.addEventListener('change', () => {
-    inputs.hsaUseMax = $input('rs-hsa-max')!.checked;
-    syncFields();
-    persist();
-    render();
-  });
 
-  $input('rs-health-premium')!.addEventListener('input', () => {
-    inputs.healthPremiumMonthly = num($input('rs-health-premium')!.value);
-    persist();
-    render();
-  });
-  $input('rs-dental-vision-premium')!.addEventListener('input', () => {
-    inputs.dentalVisionPremiumMonthly = num($input('rs-dental-vision-premium')!.value);
-    persist();
-    render();
-  });
+  for (const f of MAX_TOGGLE_FIELDS) {
+    bindNumberField(f.valueId, f.valueKey, { min: 0 });
+    $input(f.maxId)!.addEventListener('change', () => {
+      (inputs[f.maxKey] as boolean) = $input(f.maxId)!.checked;
+      syncFields();
+      persist();
+      render();
+    });
+  }
 
-  $input('rs-commuter-transit')!.addEventListener('input', () => {
-    inputs.commuterTransitMonthly = num($input('rs-commuter-transit')!.value);
-    persist();
-    render();
-  });
-  $input('rs-commuter-transit-max')!.addEventListener('change', () => {
-    inputs.commuterTransitUseMax = $input('rs-commuter-transit-max')!.checked;
-    syncFields();
-    persist();
-    render();
-  });
-  $input('rs-commuter-parking')!.addEventListener('input', () => {
-    inputs.commuterParkingMonthly = num($input('rs-commuter-parking')!.value);
-    persist();
-    render();
-  });
-  $input('rs-commuter-parking-max')!.addEventListener('change', () => {
-    inputs.commuterParkingUseMax = $input('rs-commuter-parking-max')!.checked;
-    syncFields();
-    persist();
-    render();
-  });
-
-  $input('rs-healthcare-fsa')!.addEventListener('input', () => {
-    inputs.healthcareFsaAnnual = num($input('rs-healthcare-fsa')!.value);
-    persist();
-    render();
-  });
-  $input('rs-healthcare-fsa-max')!.addEventListener('change', () => {
-    inputs.healthcareFsaUseMax = $input('rs-healthcare-fsa-max')!.checked;
-    syncFields();
-    persist();
-    render();
-  });
-  $input('rs-dependent-care-fsa')!.addEventListener('input', () => {
-    inputs.dependentCareFsaAnnual = num($input('rs-dependent-care-fsa')!.value);
-    persist();
-    render();
-  });
-  $input('rs-dependent-care-fsa-max')!.addEventListener('change', () => {
-    inputs.dependentCareFsaUseMax = $input('rs-dependent-care-fsa-max')!.checked;
-    syncFields();
-    persist();
-    render();
-  });
-
-  $input('rs-life-insurance')!.addEventListener('input', () => {
-    inputs.lifeInsuranceMonthly = num($input('rs-life-insurance')!.value);
-    persist();
-    render();
-  });
-  $input('rs-disability-insurance')!.addEventListener('input', () => {
-    inputs.disabilityInsuranceMonthly = num($input('rs-disability-insurance')!.value);
-    persist();
-    render();
-  });
-  $input('rs-union-dues')!.addEventListener('input', () => {
-    inputs.unionDuesMonthly = num($input('rs-union-dues')!.value);
-    persist();
-    render();
-  });
+  bindNumberField('rs-health-premium', 'healthPremiumMonthly', { min: 0 });
+  bindNumberField('rs-dental-vision-premium', 'dentalVisionPremiumMonthly', { min: 0 });
+  bindNumberField('rs-life-insurance', 'lifeInsuranceMonthly', { min: 0 });
+  bindNumberField('rs-disability-insurance', 'disabilityInsuranceMonthly', { min: 0 });
+  bindNumberField('rs-union-dues', 'unionDuesMonthly', { min: 0 });
 }
 
 document.addEventListener('DOMContentLoaded', () => {

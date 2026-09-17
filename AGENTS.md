@@ -28,7 +28,7 @@ Keep `src/lib/afford.ts` DOM-free. When changing calculator formulas, update cor
 
 ## Testing Guidelines
 
-No committed automated test suite, test naming convention, or coverage threshold exists. Playwright is a development dependency, but no test runner is configured. Run `npm run build` for changes, then manually check affected pages, calculator boundary cases, saved-input behavior, and mobile layouts. For routing changes, use the local Worker and requests with custom `Host` headers. Record validation in the PR.
+`test/*.test.ts` holds automated unit tests (pure calculation logic only — e.g. `src/lib/salaryCalc.ts`) run via Node's built-in test runner: `npm test` (`node --experimental-strip-types --test test/**/*.test.ts`). Add tests there for new calculator math, following the existing `*.test.ts` naming and `node:test`/`node:assert` style. There's no coverage threshold, and Playwright is still a development dependency with no browser test runner configured — for anything touching the DOM (a page, a script, saved-input behavior), run `npm run build` and manually check affected pages, calculator boundary cases, and mobile layouts. For routing changes, use the local Worker and requests with custom `Host` headers. Record validation in the PR.
 
 ## Commit & Pull Request Guidelines
 
