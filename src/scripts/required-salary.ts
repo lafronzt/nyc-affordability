@@ -7,7 +7,6 @@ import {
   getK401Cap,
   getHsaCap,
   getCommuterCap,
-  getHealthcareFsaCap,
   getDependentCareFsaCap,
 } from '../lib/salaryCalc';
 import type { RequiredSalaryInputs, HsaCoverage } from '../lib/salaryCalc';
@@ -224,10 +223,32 @@ function syncFields() {
   $input('rs-life-insurance')!.value = String(inputs.lifeInsuranceMonthly);
   $input('rs-disability-insurance')!.value = String(inputs.disabilityInsuranceMonthly);
   $input('rs-union-dues')!.value = String(inputs.unionDuesMonthly);
+}
 
-  setText('rs-commuter-transit-max-hint', ` (up to ${fmtMoney(CONSTANTS.commuterBenefit.transitMonthly)}/mo)`);
-  setText('rs-commuter-parking-max-hint', ` (up to ${fmtMoney(CONSTANTS.commuterBenefit.parkingMonthly)}/mo)`);
-  setText('rs-dependent-care-fsa-max-hint', ` (up to ${fmtMoney(CONSTANTS.fsa.dependentCareAnnual)}/yr)`);
+/** Shows a "N active" badge on the collapsed "Other paycheck deductions" summary
+    so a user who entered values and collapsed the section can still tell at a
+    glance that something's in there, without re-expanding it. */
+function updateActiveDeductionsCount() {
+  // A "use max" toggle counts as active even while its raw stored amount is
+  // still $0 — the resolved calc input (via toCalcInputs()) is the IRS cap, not $0.
+  const activeCount = [
+    inputs.healthPremiumMonthly > 0,
+    inputs.dentalVisionPremiumMonthly > 0,
+    inputs.commuterTransitMonthly > 0 || inputs.commuterTransitUseMax,
+    inputs.commuterParkingMonthly > 0 || inputs.commuterParkingUseMax,
+    inputs.healthcareFsaAnnual > 0 || inputs.healthcareFsaUseMax,
+    inputs.dependentCareFsaAnnual > 0 || inputs.dependentCareFsaUseMax,
+    inputs.lifeInsuranceMonthly > 0,
+    inputs.disabilityInsuranceMonthly > 0,
+    inputs.unionDuesMonthly > 0,
+  ].filter(Boolean).length;
+  const badge = $('rs-other-deductions-count')!;
+  if (activeCount > 0) {
+    badge.textContent = `${activeCount} active`;
+    badge.hidden = false;
+  } else {
+    badge.hidden = true;
+  }
 }
 
 const FILING_STATUS_LABELS: Record<FilingStatus, string> = {
@@ -261,6 +282,7 @@ function render() {
 
   setText('rs-required-annual', fmtMoney(requiredAnnual) + '/yr');
   setText('rs-required-monthly', fmtMonthly(requiredAnnual / 12));
+  updateActiveDeductionsCount();
 
   // Breakdown table — built dynamically so zero-value optional deductions can be
   // skipped instead of cluttering the table with rows nobody entered.
@@ -301,7 +323,7 @@ function render() {
   }
 
   const hsaCap = getHsaCap(inputs.hsaCoverage, inputs.age50Plus, CONSTANTS);
-  setText('rs-hsa-max-hint', inputs.hsaCoverage === 'none' ? '' : ` (up to ${fmtMoney(hsaCap)})`);
+  setText('rs-hsa-max-hint', inputs.hsaCoverage === 'none' ? '' : `up to ${fmtMoney(hsaCap)}`);
 
   const hsaWarn = $('rs-hsa-warn')!;
   if (breakdown.hsaClamped) {
@@ -312,8 +334,6 @@ function render() {
     hsaWarn.hidden = true;
     hsaWarn.classList.remove('warn');
   }
-
-  setText('rs-healthcare-fsa-max-hint', ` (up to ${fmtMoney(getHealthcareFsaCap(CONSTANTS))}/yr)`);
 
   // Other-deductions clamp warnings, consolidated into one line
   const deductionWarnings: string[] = [];
