@@ -8,9 +8,24 @@
    deduplicated for multiple instances.
    ============================================================ */
 import { maxAffordableRent, maxAffordablePrice, requiredIncomeForPrice, requiredIncomeForRent } from '../lib/afford';
+import { computeBreakdown } from '../lib/salaryCalc';
+import type { RequiredSalaryInputs } from '../lib/salaryCalc';
+import { TAX_CONSTANTS_2026 } from '../lib/salaryTaxConstants2026';
 import { fmtMoney } from '../lib/format';
 
-type Mode = 'income' | 'buy-price' | 'rent-price';
+type Mode = 'income' | 'buy-price' | 'rent-price' | 'salary';
+
+// Baseline scenario for the /salary/[amount]/ mini-calc: single filer, no
+// 401(k)/HSA elections — matches that page's own static baseline breakdown,
+// so the live-updated headline stays consistent with the server-rendered table.
+const SALARY_BASELINE_INPUTS: RequiredSalaryInputs = {
+  filingStatus: 'single',
+  k401PercentOfGross: 0,
+  k401IsTraditional: true,
+  hsaCoverage: 'none',
+  hsaContribution: 0,
+  age50Plus: false,
+};
 
 function setText(id: string, value: number) {
   const el = document.getElementById(id);
@@ -37,6 +52,8 @@ export function wireMiniCalc() {
     } else if (mode === 'rent-price') {
       setText('result-standard-income', requiredIncomeForRent({ targetRent: value }).annualIncomeNeeded);
       setText('result-guarantor-income', requiredIncomeForRent({ targetRent: value, incomeMultiplier: 80 }).annualIncomeNeeded);
+    } else if (mode === 'salary') {
+      setText('result-salary-net', computeBreakdown(value, SALARY_BASELINE_INPUTS, TAX_CONSTANTS_2026).netTakeHome);
     }
   });
 }

@@ -1,13 +1,13 @@
 ---
 interface Props {
-  mode: 'income' | 'buy-price' | 'rent-price';
+  mode: 'income' | 'buy-price' | 'rent-price' | 'salary';
   defaultValue: number;
 }
 const { mode, defaultValue } = Astro.props;
 
-const label = mode === 'income' ? 'annual income' : mode === 'rent-price' ? 'monthly rent' : 'purchase price';
-const step = mode === 'rent-price' ? 100 : mode === 'income' ? 5000 : 25000;
-const suffix = mode === 'rent-price' ? '/mo' : mode === 'income' ? '/yr' : '';
+const label = mode === 'income' ? 'annual income' : mode === 'salary' ? 'gross salary' : mode === 'rent-price' ? 'monthly rent' : 'purchase price';
+const step = mode === 'rent-price' ? 100 : mode === 'income' || mode === 'salary' ? 5000 : 25000;
+const suffix = mode === 'rent-price' ? '/mo' : mode === 'income' || mode === 'salary' ? '/yr' : '';
 ---
 <div class="card mini-calc">
   <h3>Try a different number</h3>

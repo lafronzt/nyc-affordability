@@ -74,6 +74,7 @@ const relatedItems = [
   ...(relatedBuyPrice !== null
     ? [{ label: `${fmtMoney(relatedBuyPrice)} purchase`, sublabel: 'See what it takes to buy at that price', href: `/buy/${relatedBuyPrice}/` }]
     : []),
+  { label: 'Know your target take-home?', sublabel: 'Work backwards to the salary you need', href: '/required-salary/' },
 ];
 
 const shareText = `What ${amountLabel}/year gets you in NYC:\n` +

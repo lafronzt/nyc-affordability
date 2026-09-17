@@ -27,8 +27,9 @@ const CATEGORY_LABELS: Record<string, string> = {
   buying: 'Buying',
   coop: 'Co-ops',
   'affordable-housing': 'Affordable Housing',
+  income: 'Income & Salary',
 };
-const CATEGORY_ORDER = ['renting', 'buying', 'coop', 'affordable-housing'];
+const CATEGORY_ORDER = ['renting', 'buying', 'coop', 'affordable-housing', 'income'];
 const grouped = CATEGORY_ORDER.map((cat) => ({
   category: cat,
   label: CATEGORY_LABELS[cat],

@@ -1,0 +1,347 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import AppHeader from '../../components/AppHeader.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_REQUIRED_SALARY, otherCalculators, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: otherCalculators(CALC_REQUIRED_SALARY.href!) },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'NYC Required Salary Calculator',
+  url: 'https://www.nyc-affordability.com/required-salary/',
+  description: 'Enter your monthly expenses and savings goal and find the gross salary you need after federal, NY State, NYC, and FICA taxes, plus 401(k) and HSA contributions.',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  areaServed: { '@type': 'City', name: 'New York City', sameAs: 'https://www.wikidata.org/wiki/Q60' },
+};
+---
+<BaseLayout
+  variant="app"
+  ads
+  pageTitle="Required Salary Calculator | What Salary Do I Need? | NYC Affordability"
+  metaDescription="Work backwards from your monthly expenses and savings goal to the gross salary you need, after federal, NY State, and NYC tax, FICA, 401(k), and HSA contributions."
+  canonicalPath="/required-salary/"
+  ogTitle="Required Salary Calculator"
+  ogDescription="Enter your target take-home pay and see the gross salary you need to hit it, after taxes and pre-tax contributions."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Required Salary Calculator — reverse-engineer the gross salary you need."
+  twitterTitle="Required Salary Calculator"
+  twitterDescription="What gross salary do you need to take home a target amount, after taxes and 401(k)/HSA?"
+  jsonLd={jsonLd}
+>
+<AppHeader
+  titleHtml="Required <em>Salary</em> Calculator"
+  tagline="Tell us what you need to take home each month. We'll work backwards to the gross salary."
+  showSaveToggle
+/>
+
+<main class="page">
+  <section class="hero">
+    <div class="eyebrow">Reverse Paycheck Calculator</div>
+    <h2>What gross salary do you actually need?</h2>
+    <p>Most calculators go salary &rarr; take-home. This one runs the other way: tell us your monthly expenses and savings goal, and we solve for the gross salary that gets you there after federal, NY State, and NYC tax, FICA, and your 401(k)/HSA contributions.</p>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Your target take-home</div>
+    <div class="editor-body">
+      <div class="editor-grid cols-2">
+        <div class="field">
+          <label for="rs-expenses">Monthly expenses</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-expenses" min="0" step="50"></div>
+        </div>
+        <div class="field">
+          <label for="rs-savings-goal">Extra monthly savings goal</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-savings-goal" min="0" step="50"></div>
+        </div>
+      </div>
+      <p class="editor-note">We add these together and multiply by 12 to get the annual take-home you need — that's the number every tax and contribution calculation below solves backwards from.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Tax situation</div>
+    <div class="editor-body">
+      <div class="field field-narrow">
+        <label for="rs-filing-status">Filing status</label>
+        <div class="input-wrap"><select id="rs-filing-status">
+          <option value="single">Single</option>
+          <option value="marriedFilingJointly">Married Filing Jointly</option>
+          <option value="headOfHousehold">Head of Household</option>
+        </select></div>
+      </div>
+      <p class="editor-note">This calculator is built for NYC residents — federal, NY State, and the NYC resident local surcharge are always applied.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Pre-tax contributions</div>
+    <div class="editor-body">
+      <div class="subsection-label">401(k)</div>
+      <div class="editor-grid cols-3">
+        <div class="field">
+          <label for="rs-401k-pct">401(k) contribution</label>
+          <div class="input-wrap"><input type="number" id="rs-401k-pct" min="0" max="100" step="1"><span>% of gross</span></div>
+        </div>
+        <div class="field">
+          <label for="rs-401k-type">401(k) type</label>
+          <div class="input-wrap"><select id="rs-401k-type">
+            <option value="traditional">Traditional</option>
+            <option value="roth">Roth</option>
+          </select></div>
+        </div>
+        <div class="field">
+          <label class="checkbox-label" for="rs-age50">
+            <input type="checkbox" id="rs-age50">
+            Age 50+ (catch-up limits)
+          </label>
+        </div>
+      </div>
+      <p class="editor-note" id="rs-401k-warn" hidden aria-live="polite"></p>
+
+      <div class="subsection-label">Employer 401(k) match <span class="subsection-hint">(informational only)</span></div>
+      <div class="editor-grid cols-2">
+        <div class="field">
+          <label for="rs-match-pct">Employer match</label>
+          <div class="input-wrap"><input type="number" id="rs-match-pct" min="0" max="100" step="1"><span>% of gross</span></div>
+        </div>
+        <div class="field">
+          <label for="rs-match-cap">Match cap (optional)</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-match-cap" min="0" step="500" placeholder="No cap"></div>
+        </div>
+      </div>
+      <p class="editor-note">The match is money on top of your paycheck — it does not reduce the salary you need.</p>
+
+      <div class="subsection-label">HSA</div>
+      <div class="editor-grid cols-3">
+        <div class="field">
+          <label for="rs-hsa-coverage">HSA enrollment</label>
+          <div class="input-wrap"><select id="rs-hsa-coverage">
+            <option value="none">None</option>
+            <option value="selfOnly">Self-only</option>
+            <option value="family">Family</option>
+          </select></div>
+        </div>
+        <div class="field">
+          <label for="rs-hsa-amount">HSA contribution</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-hsa-amount" min="0" step="100"></div>
+        </div>
+        <div class="field">
+          <label class="checkbox-label" for="rs-hsa-max">
+            <input type="checkbox" id="rs-hsa-max">
+            Contribute the max<span id="rs-hsa-max-hint" class="max-hint"></span>
+          </label>
+        </div>
+      </div>
+      <p class="editor-note" id="rs-hsa-warn" hidden aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="headline-card">
+    <div class="headline-eyebrow">You need a gross salary of</div>
+    <div class="headline-value" id="rs-required-annual" aria-live="polite">&mdash;</div>
+    <div class="headline-sub"><span id="rs-required-monthly" aria-live="polite">&mdash;</span> / month, before taxes</div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Where it goes</div>
+    <div class="table-wrap">
+      <table aria-label="Salary breakdown">
+        <thead><tr><th>Line item</th><th>Annual</th><th>Monthly</th></tr></thead>
+        <tbody>
+          <tr><td>Gross salary</td><td id="rs-bd-gross">&mdash;</td><td id="rs-bd-gross-mo">&mdash;</td></tr>
+          <tr><td>401(k) contribution</td><td id="rs-bd-401k">&mdash;</td><td id="rs-bd-401k-mo">&mdash;</td></tr>
+          <tr><td>HSA contribution</td><td id="rs-bd-hsa">&mdash;</td><td id="rs-bd-hsa-mo">&mdash;</td></tr>
+          <tr><td>Federal income tax</td><td id="rs-bd-fed">&mdash;</td><td id="rs-bd-fed-mo">&mdash;</td></tr>
+          <tr><td>State income tax</td><td id="rs-bd-state">&mdash;</td><td id="rs-bd-state-mo">&mdash;</td></tr>
+          <tr><td>Local (NYC) tax</td><td id="rs-bd-local">&mdash;</td><td id="rs-bd-local-mo">&mdash;</td></tr>
+          <tr><td>FICA (Social Security + Medicare)</td><td id="rs-bd-fica">&mdash;</td><td id="rs-bd-fica-mo">&mdash;</td></tr>
+          <tr class="row-total"><td>Net take-home</td><td id="rs-bd-net" aria-live="polite">&mdash;</td><td id="rs-bd-net-mo" aria-live="polite">&mdash;</td></tr>
+          <tr><td>Your expenses + savings goal</td><td id="rs-bd-spend">&mdash;</td><td id="rs-bd-spend-mo">&mdash;</td></tr>
+          <tr><td>Leftover</td><td id="rs-bd-leftover" aria-live="polite">&mdash;</td><td id="rs-bd-leftover-mo" aria-live="polite">&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">The cost of saving more</div>
+    <div class="table-wrap">
+      <table aria-label="Required salary sensitivity to savings goal">
+        <thead><tr><th>Savings goal</th><th>Monthly savings</th><th>Required annual salary</th></tr></thead>
+        <tbody id="rs-sensitivity-body">
+        </tbody>
+      </table>
+    </div>
+    <div class="prose-body">
+      <p>This shows how much more gross salary you'd need if you pushed your monthly savings goal up (or down) by 5% and 10% — everything else about your tax situation and contributions held constant.</p>
+    </div>
+  </section>
+
+  <details class="section-card assumptions">
+    <summary class="section-title">Assumptions used (click to expand)</summary>
+    <div class="prose-body">
+      <ul id="rs-assumptions-list" class="assumptions-list"></ul>
+    </div>
+  </details>
+
+  <div class="share-row">
+    <button class="btn-share" id="rs-share" type="button">Share your result</button>
+  </div>
+
+  <section class="section-card">
+    <div class="section-title">How this works</div>
+    <div class="prose-body">
+      <p>We take your monthly expenses plus savings goal, multiply by 12, and binary-search for the gross salary whose net take-home lands on that number — after federal, NY State, and NYC resident tax brackets, the Social Security wage base cap, the Additional Medicare surtax, and your 401(k)/HSA elections. Traditional 401(k) contributions reduce taxable income; Roth contributions don't. HSA contributions are exempt from both income tax and FICA, regardless of 401(k) type.</p>
+      <p>This is a planning estimate, not a paycheck. It assumes no other pre-tax deductions (health insurance premiums, FSA, commuter benefits) and a single job with no other income.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Related tools</div>
+    <div class="related-grid">
+      <a class="related-item" href="/reality-check/">
+        <div class="related-label">NYC Housing Reality Check</div>
+        <div class="related-sublabel">Already know your income? See what rent, co-op, condo, or affordable housing it gets you.</div>
+      </a>
+      <a class="related-item" href="/income/">
+        <div class="related-label">What Can I Afford by Income</div>
+        <div class="related-sublabel">See max rent and purchase price at set income levels, not just your take-home target.</div>
+      </a>
+      <a class="related-item" href="/salary/">
+        <div class="related-label">Salary After Taxes in NYC</div>
+        <div class="related-sublabel">Working forward instead? See what a specific gross salary nets you.</div>
+      </a>
+      <a class="related-item" href="/compare/">
+        <div class="related-label">Compare All Options</div>
+        <div class="related-sublabel">Run your real accounts and debts through rent, co-op, and condo side by side.</div>
+      </a>
+    </div>
+  </section>
+</main>
+
+<AdSlot maxWidth="1300px" sidePadding="20px" />
+
+<Footer
+  variant="app"
+  disclaimer="Estimate only, not tax advice. Assumes 2026 federal, New York State, and NYC resident tax brackets and contribution limits, and no other pre-tax deductions like health insurance premiums, FSA, or commuter benefits. Consult a tax professional for guidance specific to your situation."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<script>
+  import '../../scripts/required-salary';
+</script>
+
+<style>
+.page { max-width: 1300px; margin: 20px auto; padding: 0 20px 60px; }
+.hero {
+  background: linear-gradient(135deg, #0a1628 0%, #0f2a54 100%);
+  border: 1px solid #1e3a5f; border-radius: var(--r); overflow: hidden; color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 16px; padding: 26px 24px 22px;
+}
+.eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 8px; }
+.hero h2 { font-size: clamp(24px, 3.6vw, 36px); line-height: 1.1; letter-spacing: -0.6px; color: #f0f9ff; margin-bottom: 10px; }
+.hero p { color: #93b4d0; max-width: 760px; font-size: 14px; line-height: 1.65; }
+
+.section-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 16px;
+}
+.section-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--g500);
+  padding: 12px 18px 11px; border-bottom: 1px solid var(--g100);
+}
+.assumptions summary.section-title { cursor: pointer; list-style: none; }
+.assumptions summary::-webkit-details-marker { display: none; }
+.assumptions summary::after { content: '\25BE'; float: right; }
+.assumptions[open] summary::after { content: '\25B4'; }
+
+.editor-body { padding: 16px 18px 18px; }
+.editor-grid { display: grid; gap: 14px; margin-bottom: 12px; }
+.editor-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.editor-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.field-narrow { max-width: 320px; margin-bottom: 12px; }
+.subsection-label { font-size: 11px; font-weight: 700; color: var(--g600); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px; }
+.subsection-label:not(:first-child) { margin-top: 18px; }
+.subsection-hint { text-transform: none; font-weight: 500; color: var(--g400); letter-spacing: 0; }
+.max-hint { font-weight: 500; color: var(--g500); text-transform: none; letter-spacing: 0; margin-left: 4px; }
+.field label { display: block; font-size: 12px; color: var(--g700); font-weight: 650; margin-bottom: 5px; }
+.field .checkbox-label { display: flex; align-items: center; gap: 8px; margin-top: 22px; cursor: pointer; }
+.field .checkbox-label input { width: 16px; height: 16px; }
+.input-wrap {
+  display: flex; align-items: stretch; border: 1px solid var(--g300); border-radius: 5px; background: #fff;
+  overflow: hidden; transition: border-color .15s, box-shadow .15s;
+}
+.input-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.input-wrap span {
+  background: var(--g50); border-right: 1px solid var(--g200); padding: 0 8px; color: var(--g500);
+  font-size: 13px; font-weight: 600; display: flex; align-items: center; white-space: nowrap;
+}
+.input-wrap span:last-child { border-right: 0; border-left: 1px solid var(--g200); }
+.input-wrap input, .input-wrap select {
+  border: 0; outline: 0; padding: 8px 9px; min-width: 0; width: 100%; font: inherit; color: var(--g900); background: #fff;
+}
+.editor-note { font-size: 12px; color: var(--g500); line-height: 1.6; margin-bottom: 8px; }
+.editor-note.warn { color: #b45309; background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.3); padding: 8px 10px; border-radius: 5px; }
+
+.headline-card {
+  background: var(--navy); border-radius: var(--r); overflow: hidden; color: #f0f9ff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 16px; padding: 26px 24px; text-align: center;
+}
+.headline-eyebrow { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,.65); margin-bottom: 8px; }
+.headline-value { font-size: clamp(34px, 6vw, 56px); font-weight: 850; letter-spacing: -1.5px; font-variant-numeric: tabular-nums; line-height: 1; }
+.headline-sub { font-size: 14px; color: rgba(255,255,255,.75); margin-top: 10px; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 420px; }
+th { text-align: left; font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; padding: 12px 16px; border-bottom: 1px solid var(--g100); background: var(--g50); }
+th:not(:first-child), td:not(:first-child) { text-align: right; }
+td { padding: 10px 16px; border-bottom: 1px solid var(--g100); color: var(--g800); font-weight: 600; font-variant-numeric: tabular-nums; }
+tbody tr:last-child td { border-bottom: none; }
+.row-total td { font-weight: 800; background: var(--g50); }
+
+.assumptions-list { list-style: none; padding: 0 18px 16px; font-size: 13px; color: var(--g700); line-height: 2; }
+.assumptions-list li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--g100); padding: 4px 0; }
+.assumptions-list li:last-child { border-bottom: none; }
+.assumptions-list span:last-child { font-weight: 700; color: var(--g900); }
+
+.share-row { display: flex; justify-content: center; margin-bottom: 16px; }
+.btn-share {
+  border: 1px solid var(--blue-lt); background: #fff; color: var(--blue); border-radius: 6px;
+  padding: 10px 20px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: background .15s;
+}
+.btn-share:hover { background: var(--blue-xlt); }
+
+.prose-body { padding: 16px 18px 18px; }
+.prose-body p { font-size: 13px; color: var(--g600); line-height: 1.7; margin-bottom: 8px; }
+.prose-body p:last-child { margin-bottom: 0; }
+
+.related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; padding: 16px 18px 18px; }
+.related-item {
+  display: block; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--g50); text-decoration: none;
+}
+.related-item:hover { border-color: var(--blue-lt); background: var(--blue-xlt); }
+.related-label { font-size: 14px; font-weight: 750; color: var(--g900); }
+.related-sublabel { font-size: 12px; color: var(--g500); margin-top: 4px; line-height: 1.5; }
+
+@media (max-width: 720px) {
+  .editor-grid.cols-2, .editor-grid.cols-3 { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .page { padding: 0 14px 44px; margin-top: 14px; }
+  .hero { padding: 22px 18px 18px; }
+}
+</style>

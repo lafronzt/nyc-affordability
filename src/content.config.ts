@@ -34,8 +34,10 @@ const guides = defineCollection({
     relatedTerms: z.array(z.string()).default([]),
     // NYC Housing Rules knowledge-center grouping, shown on /guides/. Intentionally a
     // narrower set than the glossary's `category` enum (which also has taxes/general) —
-    // every guide fits one of these four buying/renting/ownership-structure buckets.
-    category: z.enum(['renting', 'buying', 'coop', 'affordable-housing']),
+    // every guide fits one of these five buying/renting/ownership-structure/income
+    // buckets. 'income' was added alongside the Required Salary Calculator for guides
+    // about what you earn rather than what you rent or buy (e.g. paycheck tax mechanics).
+    category: z.enum(['renting', 'buying', 'coop', 'affordable-housing', 'income']),
     sitemap: z
       .object({
         changefreq: z.string().default('monthly'),
