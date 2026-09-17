@@ -155,9 +155,12 @@ const shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.ne
         <tr><td>NY State income tax</td><td>-{fmtMoney(breakdown.stateTax)}</td><td>-{fmtMoney(breakdown.stateTax / 12)}</td></tr>
         <tr><td>NYC resident tax</td><td>-{fmtMoney(breakdown.localTax)}</td><td>-{fmtMoney(breakdown.localTax / 12)}</td></tr>
         <tr><td>FICA (Social Security + Medicare)</td><td>-{fmtMoney(breakdown.fica)}</td><td>-{fmtMoney(breakdown.fica / 12)}</td></tr>
+        <tr><td>NY Paid Family Leave (PFL)</td><td>-{fmtMoney(breakdown.nyPFL)}</td><td>-{fmtMoney(breakdown.nyPFL / 12)}</td></tr>
+        <tr><td>NY State Disability Insurance (SDI)</td><td>-{fmtMoney(breakdown.nySDI)}</td><td>-{fmtMoney(breakdown.nySDI / 12)}</td></tr>
         <tr class="total-row"><td>Net take-home</td><td>{fmtMoney(breakdown.netTakeHome)}</td><td>{fmtMoney(breakdown.netTakeHome / 12)}</td></tr>
       </tbody>
     </table>
+    <p class="custom-note">NY SDI and PFL are mandatory payroll deductions for every NY W-2 employee — self-employed/1099 filers don't have this line.</p>
   </div>
 
   <div class="card">

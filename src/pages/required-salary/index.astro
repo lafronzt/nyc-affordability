@@ -18,7 +18,7 @@ const jsonLd = {
   '@type': 'WebApplication',
   name: 'NYC Required Salary Calculator',
   url: 'https://www.nyc-affordability.com/required-salary/',
-  description: 'Enter your monthly expenses and savings goal and find the gross salary you need after federal, NY State, NYC, and FICA taxes, plus 401(k) and HSA contributions.',
+  description: 'Enter your monthly expenses and savings goal and find the gross salary you need after federal, NY State, NYC, and FICA taxes, plus 401(k), HSA, health insurance, and other paycheck deductions.',
   applicationCategory: 'FinanceApplication',
   operatingSystem: 'Any',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -49,7 +49,7 @@ const jsonLd = {
   <section class="hero">
     <div class="eyebrow">Reverse Paycheck Calculator</div>
     <h2>What gross salary do you actually need?</h2>
-    <p>Most calculators go salary &rarr; take-home. This one runs the other way: tell us your monthly expenses and savings goal, and we solve for the gross salary that gets you there after federal, NY State, and NYC tax, FICA, and your 401(k)/HSA contributions.</p>
+    <p>Most calculators go salary &rarr; take-home. This one runs the other way: tell us your monthly expenses and savings goal, and we solve for the gross salary that gets you there after federal, NY State, and NYC tax, FICA, and your 401(k)/HSA/health insurance elections.</p>
   </section>
 
   <section class="section-card">
@@ -87,14 +87,23 @@ const jsonLd = {
   <section class="section-card">
     <div class="section-title">Pre-tax contributions</div>
     <div class="editor-body">
-      <div class="subsection-label">401(k)</div>
+      <div class="subsection-label">Retirement</div>
       <div class="editor-grid cols-3">
         <div class="field">
-          <label for="rs-401k-pct">401(k) contribution</label>
+          <label for="rs-retirement-type">Plan type</label>
+          <div class="input-wrap"><select id="rs-retirement-type">
+            <option value="k401">401(k)</option>
+            <option value="k403b">403(b)</option>
+            <option value="k457b">457(b)</option>
+            <option value="pension">NYC Pension (NYCERS/TRS/BERS)</option>
+          </select></div>
+        </div>
+        <div class="field">
+          <label for="rs-401k-pct" id="rs-401k-pct-label">401(k) contribution</label>
           <div class="input-wrap"><input type="number" id="rs-401k-pct" min="0" max="100" step="1"><span>% of gross</span></div>
         </div>
         <div class="field">
-          <label for="rs-401k-type">401(k) type</label>
+          <label for="rs-401k-type">Traditional or Roth</label>
           <div class="input-wrap"><select id="rs-401k-type">
             <option value="traditional">Traditional</option>
             <option value="roth">Roth</option>
@@ -107,9 +116,10 @@ const jsonLd = {
           </label>
         </div>
       </div>
+      <p class="editor-note">401(k)/403(b)/457(b)/pension all get the same tax treatment in this calculator — the plan type only changes the label.</p>
       <p class="editor-note" id="rs-401k-warn" hidden aria-live="polite"></p>
 
-      <div class="subsection-label">Employer 401(k) match <span class="subsection-hint">(informational only)</span></div>
+      <div class="subsection-label">Employer <span id="rs-match-plan-label">401(k)</span> match <span class="subsection-hint">(informational only)</span></div>
       <div class="editor-grid cols-2">
         <div class="field">
           <label for="rs-match-pct">Employer match</label>
@@ -147,6 +157,95 @@ const jsonLd = {
     </div>
   </section>
 
+  <details class="section-card">
+    <summary class="section-title">Other paycheck deductions (click to expand)</summary>
+    <div class="editor-body">
+      <p class="editor-note">Most people only need to touch health insurance and maybe a commuter benefit — the rest are here if they apply to you.</p>
+
+      <div class="subsection-label">Health &amp; insurance</div>
+      <div class="editor-grid cols-2">
+        <div class="field">
+          <label for="rs-health-premium">Health insurance premium</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-health-premium" min="0" step="10"><span>/mo</span></div>
+        </div>
+        <div class="field">
+          <label for="rs-dental-vision-premium">Dental / vision premium</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-dental-vision-premium" min="0" step="5"><span>/mo</span></div>
+        </div>
+      </div>
+      <p class="editor-note">Both are pre-tax (Section 125) for the vast majority of employer plans — they reduce income tax and FICA, same as an HSA.</p>
+
+      <div class="subsection-label">Commuter benefits <span class="subsection-hint">(pre-tax, two separate buckets)</span></div>
+      <div class="editor-grid cols-2">
+        <div class="field">
+          <label for="rs-commuter-transit">Transit</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-commuter-transit" min="0" step="10"><span>/mo</span></div>
+        </div>
+        <div class="field">
+          <label class="checkbox-label" for="rs-commuter-transit-max">
+            <input type="checkbox" id="rs-commuter-transit-max">
+            Use IRS max<span id="rs-commuter-transit-max-hint" class="max-hint"></span>
+          </label>
+        </div>
+        <div class="field">
+          <label for="rs-commuter-parking">Parking</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-commuter-parking" min="0" step="10"><span>/mo</span></div>
+        </div>
+        <div class="field">
+          <label class="checkbox-label" for="rs-commuter-parking-max">
+            <input type="checkbox" id="rs-commuter-parking-max">
+            Use IRS max<span id="rs-commuter-parking-max-hint" class="max-hint"></span>
+          </label>
+        </div>
+      </div>
+      <p class="editor-note">Transit and parking are separate IRS-capped buckets, not one shared allowance — maxing out both is allowed.</p>
+
+      <div class="subsection-label">FSAs</div>
+      <div class="editor-grid cols-2">
+        <div class="field">
+          <label for="rs-healthcare-fsa">Healthcare FSA</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-healthcare-fsa" min="0" step="50"><span>/yr</span></div>
+        </div>
+        <div class="field">
+          <label class="checkbox-label" for="rs-healthcare-fsa-max">
+            <input type="checkbox" id="rs-healthcare-fsa-max">
+            Use IRS max<span id="rs-healthcare-fsa-max-hint" class="max-hint"></span>
+          </label>
+        </div>
+        <div class="field">
+          <label for="rs-dependent-care-fsa">Dependent Care FSA</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-dependent-care-fsa" min="0" step="50"><span>/yr</span></div>
+        </div>
+        <div class="field">
+          <label class="checkbox-label" for="rs-dependent-care-fsa-max">
+            <input type="checkbox" id="rs-dependent-care-fsa-max">
+            Use IRS max<span id="rs-dependent-care-fsa-max-hint" class="max-hint"></span>
+          </label>
+        </div>
+      </div>
+      <p class="editor-note" id="rs-healthcare-fsa-hsa-note" hidden>You can't have both a Healthcare FSA and an HSA — since HSA enrollment is set above, Healthcare FSA is disabled.</p>
+      <p class="editor-note">Dependent Care FSA is independent of HSA/Healthcare FSA — you can have both.</p>
+      <p class="editor-note" id="rs-deductions-warn" hidden aria-live="polite"></p>
+
+      <div class="subsection-label">Post-tax deductions <span class="subsection-hint">(no tax benefit)</span></div>
+      <div class="editor-grid cols-3">
+        <div class="field">
+          <label for="rs-life-insurance">Life insurance</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-life-insurance" min="0" step="5"><span>/mo</span></div>
+        </div>
+        <div class="field">
+          <label for="rs-disability-insurance">Disability insurance</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-disability-insurance" min="0" step="5"><span>/mo</span></div>
+        </div>
+        <div class="field">
+          <label for="rs-union-dues">Union dues</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-union-dues" min="0" step="5"><span>/mo</span></div>
+        </div>
+      </div>
+      <p class="editor-note">Voluntary disability insurance is deliberately post-tax here — if premiums were pre-tax, any benefit paid out would be taxable, so most people pay these post-tax on purpose.</p>
+    </div>
+  </details>
+
   <section class="headline-card">
     <div class="headline-eyebrow">You need a gross salary of</div>
     <div class="headline-value" id="rs-required-annual" aria-live="polite">&mdash;</div>
@@ -158,19 +257,11 @@ const jsonLd = {
     <div class="table-wrap">
       <table aria-label="Salary breakdown">
         <thead><tr><th>Line item</th><th>Annual</th><th>Monthly</th></tr></thead>
-        <tbody>
-          <tr><td>Gross salary</td><td id="rs-bd-gross">&mdash;</td><td id="rs-bd-gross-mo">&mdash;</td></tr>
-          <tr><td>401(k) contribution</td><td id="rs-bd-401k">&mdash;</td><td id="rs-bd-401k-mo">&mdash;</td></tr>
-          <tr><td>HSA contribution</td><td id="rs-bd-hsa">&mdash;</td><td id="rs-bd-hsa-mo">&mdash;</td></tr>
-          <tr><td>Federal income tax</td><td id="rs-bd-fed">&mdash;</td><td id="rs-bd-fed-mo">&mdash;</td></tr>
-          <tr><td>State income tax</td><td id="rs-bd-state">&mdash;</td><td id="rs-bd-state-mo">&mdash;</td></tr>
-          <tr><td>Local (NYC) tax</td><td id="rs-bd-local">&mdash;</td><td id="rs-bd-local-mo">&mdash;</td></tr>
-          <tr><td>FICA (Social Security + Medicare)</td><td id="rs-bd-fica">&mdash;</td><td id="rs-bd-fica-mo">&mdash;</td></tr>
-          <tr class="row-total"><td>Net take-home</td><td id="rs-bd-net" aria-live="polite">&mdash;</td><td id="rs-bd-net-mo" aria-live="polite">&mdash;</td></tr>
-          <tr><td>Your expenses + savings goal</td><td id="rs-bd-spend">&mdash;</td><td id="rs-bd-spend-mo">&mdash;</td></tr>
-          <tr><td>Leftover</td><td id="rs-bd-leftover" aria-live="polite">&mdash;</td><td id="rs-bd-leftover-mo" aria-live="polite">&mdash;</td></tr>
-        </tbody>
+        <tbody id="rs-breakdown-body"></tbody>
       </table>
+    </div>
+    <div class="prose-body">
+      <p>NY State Disability Insurance and Paid Family Leave are mandatory payroll deductions for every NY W-2 employee — self-employed/1099 filers don't have this line.</p>
     </div>
   </section>
 
@@ -203,7 +294,7 @@ const jsonLd = {
     <div class="section-title">How this works</div>
     <div class="prose-body">
       <p>We take your monthly expenses plus savings goal, multiply by 12, and binary-search for the gross salary whose net take-home lands on that number — after federal, NY State, and NYC resident tax brackets, the Social Security wage base cap, the Additional Medicare surtax, and your 401(k)/HSA elections. Traditional 401(k) contributions reduce taxable income; Roth contributions don't. HSA contributions are exempt from both income tax and FICA, regardless of 401(k) type.</p>
-      <p>This is a planning estimate, not a paycheck. It assumes no other pre-tax deductions (health insurance premiums, FSA, commuter benefits) and a single job with no other income.</p>
+      <p>This is a planning estimate, not a paycheck. Health insurance, commuter benefits, FSAs, life/disability insurance, union dues, and NY's mandatory SDI/PFL are all modeled in "Other paycheck deductions" above if you enter them — leave them at $0 if they don't apply. It otherwise assumes a single job with no other income.</p>
     </div>
   </section>
 
@@ -234,7 +325,7 @@ const jsonLd = {
 
 <Footer
   variant="app"
-  disclaimer="Estimate only, not tax advice. Assumes 2026 federal, New York State, and NYC resident tax brackets and contribution limits, and no other pre-tax deductions like health insurance premiums, FSA, or commuter benefits. Consult a tax professional for guidance specific to your situation."
+  disclaimer="Estimate only, not tax advice. Assumes 2026 federal, New York State, and NYC resident tax brackets and contribution limits. Health insurance, FSA, commuter benefit, and other paycheck deduction figures are only as accurate as what you enter, and NY SDI/PFL are modeled as flat statutory amounts, not your employer's exact payroll calculation. Consult a tax professional for guidance specific to your situation."
   columns={footerColumns}
 />
 </BaseLayout>
@@ -262,10 +353,10 @@ const jsonLd = {
   font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--g500);
   padding: 12px 18px 11px; border-bottom: 1px solid var(--g100);
 }
-.assumptions summary.section-title { cursor: pointer; list-style: none; }
-.assumptions summary::-webkit-details-marker { display: none; }
-.assumptions summary::after { content: '\25BE'; float: right; }
-.assumptions[open] summary::after { content: '\25B4'; }
+details.section-card summary.section-title { cursor: pointer; list-style: none; }
+details.section-card summary::-webkit-details-marker { display: none; }
+details.section-card summary::after { content: '\25BE'; float: right; }
+details.section-card[open] summary::after { content: '\25B4'; }
 
 .editor-body { padding: 16px 18px 18px; }
 .editor-grid { display: grid; gap: 14px; margin-bottom: 12px; }

@@ -6,6 +6,9 @@ import {
   computeSensitivityTable,
   getK401Cap,
   getHsaCap,
+  getCommuterCap,
+  getHealthcareFsaCap,
+  getDependentCareFsaCap,
 } from '../lib/salaryCalc';
 import type { RequiredSalaryInputs, HsaCoverage } from '../lib/salaryCalc';
 import { TAX_CONSTANTS_2026 } from '../lib/salaryTaxConstants2026';
@@ -15,23 +18,31 @@ import type { FilingStatus } from '../lib/salaryTaxConstants2026';
    Required Salary Calculator — DOM wiring.
    ============================================================
    Pure math lives in ../lib/salaryCalc.ts + ../lib/salaryTaxConstants2026.ts;
-   this file only reads the form, resolves "contribute the max" into a
-   concrete dollar figure, calls the solver, and renders the result.
+   this file only reads the form, resolves "use max" toggles into concrete
+   dollar figures, calls the solver, and renders the result.
 
    Standalone localStorage key (not the shared profile) — this tool's
    inputs (monthly expenses, savings goal, filing status, contribution
    elections) don't overlap with the annualIncome/otherDebts/accounts
    shape the other calculators share, so there's nothing meaningful to
    read from or write back to nyc_shared_profile.
+
+   retirementPlanType is UI-label-only — it never reaches RequiredSalaryInputs.
+   401(k)/403(b)/457(b)/pension all get identical tax treatment in the calc
+   engine (see salaryCalc.ts's RequiredSalaryInputs.k401PercentOfGross doc
+   comment); this field only changes what the form/table call it.
    ============================================================ */
 
 const LS_KEY = 'nyc_required_salary_inputs';
 const CONSTANTS = TAX_CONSTANTS_2026;
 
+type RetirementPlanType = 'k401' | 'k403b' | 'k457b' | 'pension';
+
 interface FormInputs {
   monthlyExpenses: number;
   monthlySavingsGoal: number;
   filingStatus: FilingStatus;
+  retirementPlanType: RetirementPlanType;
   k401PercentOfGross: number;
   k401IsTraditional: boolean;
   employerMatchPercentOfGross: number;
@@ -40,12 +51,28 @@ interface FormInputs {
   hsaContribution: number;
   hsaUseMax: boolean;
   age50Plus: boolean;
+
+  healthPremiumMonthly: number;
+  dentalVisionPremiumMonthly: number;
+  commuterTransitMonthly: number;
+  commuterTransitUseMax: boolean;
+  commuterParkingMonthly: number;
+  commuterParkingUseMax: boolean;
+  healthcareFsaAnnual: number;
+  healthcareFsaUseMax: boolean;
+  dependentCareFsaAnnual: number;
+  dependentCareFsaUseMax: boolean;
+
+  lifeInsuranceMonthly: number;
+  disabilityInsuranceMonthly: number;
+  unionDuesMonthly: number;
 }
 
 const DEFAULTS: FormInputs = {
   monthlyExpenses: 5000,
   monthlySavingsGoal: 1000,
   filingStatus: 'single',
+  retirementPlanType: 'k401',
   k401PercentOfGross: 5,
   k401IsTraditional: true,
   employerMatchPercentOfGross: 0,
@@ -54,6 +81,28 @@ const DEFAULTS: FormInputs = {
   hsaContribution: 0,
   hsaUseMax: false,
   age50Plus: false,
+
+  healthPremiumMonthly: 0,
+  dentalVisionPremiumMonthly: 0,
+  commuterTransitMonthly: 0,
+  commuterTransitUseMax: false,
+  commuterParkingMonthly: 0,
+  commuterParkingUseMax: false,
+  healthcareFsaAnnual: 0,
+  healthcareFsaUseMax: false,
+  dependentCareFsaAnnual: 0,
+  dependentCareFsaUseMax: false,
+
+  lifeInsuranceMonthly: 0,
+  disabilityInsuranceMonthly: 0,
+  unionDuesMonthly: 0,
+};
+
+const RETIREMENT_PLAN_LABELS: Record<RetirementPlanType, string> = {
+  k401: '401(k)',
+  k403b: '403(b)',
+  k457b: '457(b)',
+  pension: 'Pension',
 };
 
 /* ── DOM helpers ── */
@@ -101,6 +150,14 @@ function toCalcInputs(): RequiredSalaryInputs {
     : inputs.hsaUseMax
       ? hsaCap
       : inputs.hsaContribution;
+
+  const commuterTransitMonthly = inputs.commuterTransitUseMax ? CONSTANTS.commuterBenefit.transitMonthly : inputs.commuterTransitMonthly;
+  const commuterParkingMonthly = inputs.commuterParkingUseMax ? CONSTANTS.commuterBenefit.parkingMonthly : inputs.commuterParkingMonthly;
+  const healthcareFsaAnnual = inputs.hsaCoverage !== 'none'
+    ? 0
+    : inputs.healthcareFsaUseMax ? CONSTANTS.fsa.healthcareAnnual : inputs.healthcareFsaAnnual;
+  const dependentCareFsaAnnual = inputs.dependentCareFsaUseMax ? CONSTANTS.fsa.dependentCareAnnual : inputs.dependentCareFsaAnnual;
+
   return {
     filingStatus: inputs.filingStatus,
     k401PercentOfGross: inputs.k401PercentOfGross,
@@ -110,6 +167,15 @@ function toCalcInputs(): RequiredSalaryInputs {
     hsaCoverage: inputs.hsaCoverage,
     hsaContribution,
     age50Plus: inputs.age50Plus,
+    healthPremiumMonthly: inputs.healthPremiumMonthly,
+    dentalVisionPremiumMonthly: inputs.dentalVisionPremiumMonthly,
+    commuterTransitMonthly,
+    commuterParkingMonthly,
+    healthcareFsaAnnual,
+    dependentCareFsaAnnual,
+    lifeInsuranceMonthly: inputs.lifeInsuranceMonthly,
+    disabilityInsuranceMonthly: inputs.disabilityInsuranceMonthly,
+    unionDuesMonthly: inputs.unionDuesMonthly,
   };
 }
 
@@ -117,17 +183,51 @@ function syncFields() {
   $input('rs-expenses')!.value = String(inputs.monthlyExpenses);
   $input('rs-savings-goal')!.value = String(inputs.monthlySavingsGoal);
   $select('rs-filing-status')!.value = inputs.filingStatus;
+
+  $select('rs-retirement-type')!.value = inputs.retirementPlanType;
+  const planLabel = RETIREMENT_PLAN_LABELS[inputs.retirementPlanType];
+  setText('rs-401k-pct-label', `${planLabel} contribution`);
+  setText('rs-match-plan-label', planLabel);
   $input('rs-401k-pct')!.value = String(inputs.k401PercentOfGross);
   $select('rs-401k-type')!.value = inputs.k401IsTraditional ? 'traditional' : 'roth';
   $input('rs-age50')!.checked = inputs.age50Plus;
   $input('rs-match-pct')!.value = String(inputs.employerMatchPercentOfGross);
   $input('rs-match-cap')!.value = inputs.employerMatchCapDollars != null ? String(inputs.employerMatchCapDollars) : '';
+
   $select('rs-hsa-coverage')!.value = inputs.hsaCoverage;
   $input('rs-hsa-amount')!.value = String(inputs.hsaContribution);
   $input('rs-hsa-max')!.checked = inputs.hsaUseMax;
-
   $input('rs-hsa-amount')!.disabled = inputs.hsaCoverage === 'none' || inputs.hsaUseMax;
   $input('rs-hsa-max')!.disabled = inputs.hsaCoverage === 'none';
+
+  $input('rs-health-premium')!.value = String(inputs.healthPremiumMonthly);
+  $input('rs-dental-vision-premium')!.value = String(inputs.dentalVisionPremiumMonthly);
+
+  $input('rs-commuter-transit')!.value = String(inputs.commuterTransitMonthly);
+  $input('rs-commuter-transit-max')!.checked = inputs.commuterTransitUseMax;
+  $input('rs-commuter-transit')!.disabled = inputs.commuterTransitUseMax;
+  $input('rs-commuter-parking')!.value = String(inputs.commuterParkingMonthly);
+  $input('rs-commuter-parking-max')!.checked = inputs.commuterParkingUseMax;
+  $input('rs-commuter-parking')!.disabled = inputs.commuterParkingUseMax;
+
+  const hsaEnrolled = inputs.hsaCoverage !== 'none';
+  $input('rs-healthcare-fsa')!.value = String(inputs.healthcareFsaAnnual);
+  $input('rs-healthcare-fsa-max')!.checked = inputs.healthcareFsaUseMax;
+  $input('rs-healthcare-fsa')!.disabled = hsaEnrolled || inputs.healthcareFsaUseMax;
+  $input('rs-healthcare-fsa-max')!.disabled = hsaEnrolled;
+  $('rs-healthcare-fsa-hsa-note')!.hidden = !hsaEnrolled;
+
+  $input('rs-dependent-care-fsa')!.value = String(inputs.dependentCareFsaAnnual);
+  $input('rs-dependent-care-fsa-max')!.checked = inputs.dependentCareFsaUseMax;
+  $input('rs-dependent-care-fsa')!.disabled = inputs.dependentCareFsaUseMax;
+
+  $input('rs-life-insurance')!.value = String(inputs.lifeInsuranceMonthly);
+  $input('rs-disability-insurance')!.value = String(inputs.disabilityInsuranceMonthly);
+  $input('rs-union-dues')!.value = String(inputs.unionDuesMonthly);
+
+  setText('rs-commuter-transit-max-hint', ` (up to ${fmtMoney(CONSTANTS.commuterBenefit.transitMonthly)}/mo)`);
+  setText('rs-commuter-parking-max-hint', ` (up to ${fmtMoney(CONSTANTS.commuterBenefit.parkingMonthly)}/mo)`);
+  setText('rs-dependent-care-fsa-max-hint', ` (up to ${fmtMoney(CONSTANTS.fsa.dependentCareAnnual)}/yr)`);
 }
 
 const FILING_STATUS_LABELS: Record<FilingStatus, string> = {
@@ -135,6 +235,23 @@ const FILING_STATUS_LABELS: Record<FilingStatus, string> = {
   marriedFilingJointly: 'Married Filing Jointly',
   headOfHousehold: 'Head of Household',
 };
+
+/** Appends a breakdown-table row. Rows with skipIfZero=true are omitted entirely
+    (not shown as $0) when their annual amount rounds to zero — keeps the table
+    from cluttering up with deductions nobody entered. */
+function addBreakdownRow(
+  tbody: HTMLElement,
+  label: string,
+  annual: number,
+  opts: { total?: boolean; skipIfZero?: boolean; ariaLive?: boolean } = {},
+) {
+  if (opts.skipIfZero && Math.abs(annual) < 0.5) return;
+  const tr = document.createElement('tr');
+  if (opts.total) tr.className = 'row-total';
+  const live = opts.ariaLive ? ' aria-live="polite"' : '';
+  tr.innerHTML = `<td>${label}</td><td${live}>${fmtSigned(annual)}</td><td${live}>${fmtSigned(annual / 12)}</td>`;
+  tbody.appendChild(tr);
+}
 
 function render() {
   const calcInputs = toCalcInputs();
@@ -145,27 +262,37 @@ function render() {
   setText('rs-required-annual', fmtMoney(requiredAnnual) + '/yr');
   setText('rs-required-monthly', fmtMonthly(requiredAnnual / 12));
 
-  const rows: [string, number][] = [
-    ['rs-bd-gross', breakdown.gross],
-    ['rs-bd-401k', -breakdown.k401Contribution],
-    ['rs-bd-hsa', -breakdown.hsaContribution],
-    ['rs-bd-fed', -breakdown.federalTax],
-    ['rs-bd-state', -breakdown.stateTax],
-    ['rs-bd-local', -breakdown.localTax],
-    ['rs-bd-fica', -breakdown.fica],
-    ['rs-bd-net', breakdown.netTakeHome],
-    ['rs-bd-spend', -annualNetNeeded],
-    ['rs-bd-leftover', breakdown.netTakeHome - annualNetNeeded],
-  ];
-  for (const [id, annual] of rows) {
-    setText(id, fmtSigned(annual));
-    setText(id + '-mo', fmtSigned(annual / 12));
-  }
+  // Breakdown table — built dynamically so zero-value optional deductions can be
+  // skipped instead of cluttering the table with rows nobody entered.
+  const planLabel = RETIREMENT_PLAN_LABELS[inputs.retirementPlanType];
+  const tbody = $('rs-breakdown-body')!;
+  tbody.innerHTML = '';
+  addBreakdownRow(tbody, 'Gross salary', breakdown.gross);
+  addBreakdownRow(tbody, `${planLabel} contribution`, -breakdown.k401Contribution);
+  addBreakdownRow(tbody, 'HSA contribution', -breakdown.hsaContribution);
+  addBreakdownRow(tbody, 'Health insurance premium', -breakdown.healthPremium, { skipIfZero: true });
+  addBreakdownRow(tbody, 'Dental / vision premium', -breakdown.dentalVisionPremium, { skipIfZero: true });
+  addBreakdownRow(tbody, 'Commuter benefit — transit', -breakdown.commuterTransit, { skipIfZero: true });
+  addBreakdownRow(tbody, 'Commuter benefit — parking', -breakdown.commuterParking, { skipIfZero: true });
+  addBreakdownRow(tbody, 'Healthcare FSA', -breakdown.healthcareFsa, { skipIfZero: true });
+  addBreakdownRow(tbody, 'Dependent Care FSA', -breakdown.dependentCareFsa, { skipIfZero: true });
+  addBreakdownRow(tbody, 'Federal income tax', -breakdown.federalTax);
+  addBreakdownRow(tbody, 'State income tax', -breakdown.stateTax);
+  addBreakdownRow(tbody, 'Local (NYC) tax', -breakdown.localTax);
+  addBreakdownRow(tbody, 'FICA (Social Security + Medicare)', -breakdown.fica);
+  addBreakdownRow(tbody, 'NY Paid Family Leave (PFL)', -breakdown.nyPFL);
+  addBreakdownRow(tbody, 'NY State Disability Insurance (SDI)', -breakdown.nySDI);
+  addBreakdownRow(tbody, 'Life insurance', -breakdown.lifeInsurance, { skipIfZero: true });
+  addBreakdownRow(tbody, 'Disability insurance', -breakdown.disabilityInsurance, { skipIfZero: true });
+  addBreakdownRow(tbody, 'Union dues', -breakdown.unionDues, { skipIfZero: true });
+  addBreakdownRow(tbody, 'Net take-home', breakdown.netTakeHome, { total: true, ariaLive: true });
+  addBreakdownRow(tbody, 'Your expenses + savings goal', -annualNetNeeded);
+  addBreakdownRow(tbody, 'Leftover', breakdown.netTakeHome - annualNetNeeded, { ariaLive: true });
 
   // Clamp warnings
   const k401Warn = $('rs-401k-warn')!;
   if (breakdown.k401Clamped) {
-    k401Warn.textContent = `Your 401(k) % would exceed the ${inputs.age50Plus ? 'age 50+ ' : ''}annual dollar cap of ${fmtMoney(getK401Cap(inputs.age50Plus, CONSTANTS))} at this salary — contribution capped at that dollar amount instead.`;
+    k401Warn.textContent = `Your ${planLabel} % would exceed the ${inputs.age50Plus ? 'age 50+ ' : ''}annual dollar cap of ${fmtMoney(getK401Cap(inputs.age50Plus, CONSTANTS))} at this salary — contribution capped at that dollar amount instead.`;
     k401Warn.hidden = false;
     k401Warn.classList.add('warn');
   } else {
@@ -186,16 +313,39 @@ function render() {
     hsaWarn.classList.remove('warn');
   }
 
+  setText('rs-healthcare-fsa-max-hint', ` (up to ${fmtMoney(getHealthcareFsaCap(CONSTANTS))}/yr)`);
+
+  // Other-deductions clamp warnings, consolidated into one line
+  const deductionWarnings: string[] = [];
+  if (breakdown.commuterTransitClamped) {
+    deductionWarnings.push(`Transit capped at ${fmtMoney(getCommuterCap('transit', CONSTANTS))}/yr.`);
+  }
+  if (breakdown.commuterParkingClamped) {
+    deductionWarnings.push(`Parking capped at ${fmtMoney(getCommuterCap('parking', CONSTANTS))}/yr.`);
+  }
+  if (breakdown.dependentCareFsaClamped) {
+    deductionWarnings.push(`Dependent Care FSA capped at ${fmtMoney(getDependentCareFsaCap(CONSTANTS))}/yr.`);
+  }
+  const deductionsWarn = $('rs-deductions-warn')!;
+  if (deductionWarnings.length) {
+    deductionsWarn.textContent = deductionWarnings.join(' ');
+    deductionsWarn.hidden = false;
+    deductionsWarn.classList.add('warn');
+  } else {
+    deductionsWarn.hidden = true;
+    deductionsWarn.classList.remove('warn');
+  }
+
   // Sensitivity table
   const sensitivityRows = computeSensitivityTable(inputs.monthlyExpenses, inputs.monthlySavingsGoal, calcInputs, CONSTANTS);
-  const tbody = $('rs-sensitivity-body')!;
-  tbody.innerHTML = '';
+  const sensitivityBody = $('rs-sensitivity-body')!;
+  sensitivityBody.innerHTML = '';
   for (const row of sensitivityRows) {
     const tr = document.createElement('tr');
     if (row.deltaPct === 0) tr.className = 'row-total';
     const label = row.deltaPct === 0 ? 'Your goal' : `${row.deltaPct > 0 ? '+' : ''}${row.deltaPct}%`;
     tr.innerHTML = `<td>${label}</td><td>${fmtMonthly(row.monthlySavingsGoal)}</td><td>${fmtMoney(row.requiredAnnualSalary)}/yr</td>`;
-    tbody.appendChild(tr);
+    sensitivityBody.appendChild(tr);
   }
 
   // Assumptions panel
@@ -205,8 +355,8 @@ function render() {
     ['Tax jurisdiction', 'NYC resident'],
   ];
   assumptions.push(
-    ['401(k) contribution', `${inputs.k401PercentOfGross}% of gross, ${inputs.k401IsTraditional ? 'Traditional' : 'Roth'}`],
-    ['401(k) annual cap used', fmtMoney(getK401Cap(inputs.age50Plus, CONSTANTS)) + (inputs.age50Plus ? ' (incl. 50+ catch-up)' : '')],
+    [`${planLabel} contribution`, `${inputs.k401PercentOfGross}% of gross, ${inputs.k401IsTraditional ? 'Traditional' : 'Roth'}`],
+    [`${planLabel} annual cap used`, fmtMoney(getK401Cap(inputs.age50Plus, CONSTANTS)) + (inputs.age50Plus ? ' (incl. 50+ catch-up)' : '')],
   );
   if (inputs.employerMatchPercentOfGross > 0) {
     assumptions.push(['Employer match (informational)', `${inputs.employerMatchPercentOfGross}% of gross${inputs.employerMatchCapDollars != null ? `, capped at ${fmtMoney(inputs.employerMatchCapDollars)}` : ''} = ${fmtMoney(breakdown.employerMatchDollars)}`]);
@@ -216,6 +366,8 @@ function render() {
     assumptions.push(['HSA annual cap used', fmtMoney(hsaCap) + (inputs.age50Plus ? ' (incl. 55+ catch-up)' : '')]);
   }
   assumptions.push(['Age 50+ catch-up', inputs.age50Plus ? 'Yes' : 'No']);
+  assumptions.push(['NY Paid Family Leave', `${(CONSTANTS.ny.pflRate * 100).toFixed(3)}% of gross, capped at ${fmtMoney(CONSTANTS.ny.pflAnnualCap)}/yr`]);
+  assumptions.push(['NY State Disability Insurance', fmtMoney(CONSTANTS.ny.sdiAnnualCap) + '/yr (fixed statutory cap)']);
   assumptions.push(['Social Security wage base', fmtMoney(CONSTANTS.fica.socialSecurityWageBase)]);
 
   const list = $('rs-assumptions-list')!;
@@ -235,6 +387,12 @@ function attachFieldListeners() {
   });
   $select('rs-filing-status')!.addEventListener('change', () => {
     inputs.filingStatus = $select('rs-filing-status')!.value as FilingStatus;
+    persist();
+    render();
+  });
+  $select('rs-retirement-type')!.addEventListener('change', () => {
+    inputs.retirementPlanType = $select('rs-retirement-type')!.value as RetirementPlanType;
+    syncFields();
     persist();
     render();
   });
@@ -279,6 +437,79 @@ function attachFieldListeners() {
   $input('rs-hsa-max')!.addEventListener('change', () => {
     inputs.hsaUseMax = $input('rs-hsa-max')!.checked;
     syncFields();
+    persist();
+    render();
+  });
+
+  $input('rs-health-premium')!.addEventListener('input', () => {
+    inputs.healthPremiumMonthly = num($input('rs-health-premium')!.value);
+    persist();
+    render();
+  });
+  $input('rs-dental-vision-premium')!.addEventListener('input', () => {
+    inputs.dentalVisionPremiumMonthly = num($input('rs-dental-vision-premium')!.value);
+    persist();
+    render();
+  });
+
+  $input('rs-commuter-transit')!.addEventListener('input', () => {
+    inputs.commuterTransitMonthly = num($input('rs-commuter-transit')!.value);
+    persist();
+    render();
+  });
+  $input('rs-commuter-transit-max')!.addEventListener('change', () => {
+    inputs.commuterTransitUseMax = $input('rs-commuter-transit-max')!.checked;
+    syncFields();
+    persist();
+    render();
+  });
+  $input('rs-commuter-parking')!.addEventListener('input', () => {
+    inputs.commuterParkingMonthly = num($input('rs-commuter-parking')!.value);
+    persist();
+    render();
+  });
+  $input('rs-commuter-parking-max')!.addEventListener('change', () => {
+    inputs.commuterParkingUseMax = $input('rs-commuter-parking-max')!.checked;
+    syncFields();
+    persist();
+    render();
+  });
+
+  $input('rs-healthcare-fsa')!.addEventListener('input', () => {
+    inputs.healthcareFsaAnnual = num($input('rs-healthcare-fsa')!.value);
+    persist();
+    render();
+  });
+  $input('rs-healthcare-fsa-max')!.addEventListener('change', () => {
+    inputs.healthcareFsaUseMax = $input('rs-healthcare-fsa-max')!.checked;
+    syncFields();
+    persist();
+    render();
+  });
+  $input('rs-dependent-care-fsa')!.addEventListener('input', () => {
+    inputs.dependentCareFsaAnnual = num($input('rs-dependent-care-fsa')!.value);
+    persist();
+    render();
+  });
+  $input('rs-dependent-care-fsa-max')!.addEventListener('change', () => {
+    inputs.dependentCareFsaUseMax = $input('rs-dependent-care-fsa-max')!.checked;
+    syncFields();
+    persist();
+    render();
+  });
+
+  $input('rs-life-insurance')!.addEventListener('input', () => {
+    inputs.lifeInsuranceMonthly = num($input('rs-life-insurance')!.value);
+    persist();
+    render();
+  });
+  $input('rs-disability-insurance')!.addEventListener('input', () => {
+    inputs.disabilityInsuranceMonthly = num($input('rs-disability-insurance')!.value);
+    persist();
+    render();
+  });
+  $input('rs-union-dues')!.addEventListener('input', () => {
+    inputs.unionDuesMonthly = num($input('rs-union-dues')!.value);
     persist();
     render();
   });

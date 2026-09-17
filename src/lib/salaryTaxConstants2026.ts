@@ -27,9 +27,29 @@
      (3.078% / 3.762% / 3.819% / 3.876%) — fixed dollar thresholds, not
      inflation-indexed; unchanged for many tax years per NY IT-201
      instructions.
+   - Commuter benefit (transit/parking) + Healthcare FSA limits: IRS 2026
+     COLA adjustments, same annual Rev. Proc. 2025-32 as the federal
+     brackets above (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf).
+   - Dependent Care FSA limit ($7,500): OBBBA §70404, the first permanent
+     increase to this cap since 1986 (previously a fixed, non-indexed
+     $5,000) — effective for plan years beginning in 2026. We don't model
+     Married Filing Separately, so the separate $3,750 MFS cap isn't used.
+   - NY Paid Family Leave rate/cap (0.432%, $411.91/yr): NYS Workers'
+     Compensation Board 2026 announcement,
+     https://www.wcb.ny.gov/content/main/PressRe/paid-family-leave-2026.jsp
+   - NY State Disability Insurance (SDI/DBL) employee contribution cap
+     ($0.60/week = $31.20/year): a long-standing fixed statutory cap under
+     the NY Disability Benefits Law, not inflation-indexed. Modeled as a
+     flat annual constant rather than a real per-paycheck formula — every
+     wage earner above a trivial income hits this cap almost immediately,
+     so computing it more precisely wouldn't change the number for any
+     salary this calculator is realistically used for.
+
    This tool is scoped to NYC residents only — NY State tax plus the NYC
    resident local surcharge always apply; there is no other-jurisdiction
-   option.
+   option. NY SDI/PFL are therefore always-on too. (NJ has its own
+   SDI/family-leave-insurance program at different rates — out of scope
+   unless a NJ jurisdiction option gets reintroduced.)
    ============================================================ */
 
 export type FilingStatus = 'single' | 'marriedFilingJointly' | 'headOfHousehold';
@@ -66,6 +86,10 @@ export interface TaxYearConstants {
     k401: { standard: number; catchUp50: number };
     hsa: { selfOnly: number; family: number; catchUp55: number };
   };
+  commuterBenefit: { transitMonthly: number; parkingMonthly: number };
+  fsa: { healthcareAnnual: number; dependentCareAnnual: number };
+  /** NY-specific mandatory payroll deductions — always apply, since this tool is NYC-only. */
+  ny: { pflRate: number; pflAnnualCap: number; sdiAnnualCap: number };
 }
 
 export const TAX_CONSTANTS_2026: TaxYearConstants = {
@@ -186,4 +210,7 @@ export const TAX_CONSTANTS_2026: TaxYearConstants = {
     k401: { standard: 24500, catchUp50: 8000 },
     hsa: { selfOnly: 4400, family: 8750, catchUp55: 1000 },
   },
+  commuterBenefit: { transitMonthly: 340, parkingMonthly: 340 },
+  fsa: { healthcareAnnual: 3400, dependentCareAnnual: 7500 },
+  ny: { pflRate: 0.00432, pflAnnualCap: 411.91, sdiAnnualCap: 31.20 },
 };
