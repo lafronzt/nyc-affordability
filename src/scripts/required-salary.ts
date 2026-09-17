@@ -256,7 +256,10 @@ function syncFields() {
   for (const f of MAX_TOGGLE_FIELDS) {
     const useMax = inputs[f.maxKey] as boolean;
     const extraDisabled = f.extraDisabled?.() ?? false;
-    $input(f.valueId)!.value = String(inputs[f.valueKey]);
+    // When "Max" is on, show the actual capped dollar amount instead of the
+    // raw (often $0) stored value — otherwise the field looks unchanged after
+    // clicking Max, which reads as the button not doing anything.
+    $input(f.valueId)!.value = useMax ? String(f.getCap()) : String(inputs[f.valueKey]);
     $input(f.maxId)!.checked = useMax;
     $input(f.valueId)!.disabled = useMax || extraDisabled;
     $input(f.maxId)!.disabled = extraDisabled;
