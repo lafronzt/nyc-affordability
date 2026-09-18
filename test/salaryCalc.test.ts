@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { computeBreakdown, solveRequiredSalary, applyBrackets, getHsaCap, getCommuterCap, getHealthcareFsaCap, getDependentCareFsaCap } from '../src/lib/salaryCalc.ts';
+import { computeBreakdown, solveRequiredSalary, applyBrackets, getHsaCap, getCommuterCap, getHealthcareFsaCap, getDependentCareFsaCap, saltCapAfterPhaseout } from '../src/lib/salaryCalc.ts';
 import type { RequiredSalaryInputs } from '../src/lib/salaryCalc.ts';
 import { TAX_CONSTANTS_2026 } from '../src/lib/salaryTaxConstants2026.ts';
 
@@ -210,4 +210,121 @@ test('zero savings goal (pure expense-covering case) still solves', () => {
   // Not exactly $0: the mandatory flat $31.20/yr NY SDI deduction means a tiny
   // positive gross is needed to net $0, once FICA/PFL take their (small) cut too.
   assert.ok(requiredGross < 50, `expected required gross near the NY SDI floor, got $${requiredGross}`);
+});
+
+// Extends the $193k base case with a co-op owner's itemizable expenses:
+// $28,000 mortgage interest, $9,500 property tax (both co-op shareholder
+// shares), $4,000 charitable giving, $0 medical. At this income, federal
+// SALT-eligible = NY state tax (~$9,545 from the base case) + $9,500
+// property tax =~ $19,045, well under the $40,400 cap (no phaseout below
+// $505k MAGI). Federal itemized total =~ $19,045 + $28,000 mortgage interest
+// + charitable-above-the-0.5%-floor =~ $56,000+, comfortably above the
+// $16,100 single standard deduction -> 'auto' should itemize federally and
+// produce a non-zero W-4 Step 4(b) figure.
+test('itemizing (co-op owner): auto-selects federal itemize and lowers required salary vs. standard', () => {
+  const base: RequiredSalaryInputs = {
+    filingStatus: 'single',
+    k401PercentOfGross: 0,
+    k401IsTraditional: true,
+    hsaCoverage: 'none',
+    hsaContribution: 0,
+    age50Plus: false,
+  };
+  const annualNetNeeded = computeBreakdown(193000, base, TAX_CONSTANTS_2026).netTakeHome;
+
+  const withItemizing: RequiredSalaryInputs = {
+    ...base,
+    itemizeChoice: 'auto',
+    mortgageInterestAnnual: 28000,
+    propertyTaxAnnual: 9500,
+    charitableContributionsAnnual: 4000,
+    medicalExpensesAnnual: 0,
+  };
+  const requiredGrossItemized = solveRequiredSalary(annualNetNeeded, withItemizing, TAX_CONSTANTS_2026);
+  const breakdown = computeBreakdown(requiredGrossItemized, withItemizing, TAX_CONSTANTS_2026);
+
+  assert.equal(breakdown.fedItemized, true, 'expected auto to itemize federally given the large itemized total');
+  assert.ok(
+    breakdown.federalItemizedTotal > 45000,
+    `expected federal itemized total comfortably above the $16,100 standard deduction, got $${breakdown.federalItemizedTotal.toFixed(0)}`,
+  );
+  assert.ok(breakdown.saltEligibleBeforeCap < TAX_CONSTANTS_2026.federal.salt.cap, 'expected SALT well under the cap at this income');
+  assert.equal(breakdown.saltCapApplied, false);
+  assert.ok(breakdown.w4Step4bAmount > 0, 'expected a non-zero W-4 Step 4(b) recommendation');
+
+  const forcedStandard: RequiredSalaryInputs = { ...withItemizing, itemizeChoice: 'standard' };
+  const requiredGrossStandard = solveRequiredSalary(annualNetNeeded, forcedStandard, TAX_CONSTANTS_2026);
+  assert.ok(
+    requiredGrossItemized < requiredGrossStandard,
+    `expected itemizing to need a lower gross salary (itemized $${requiredGrossItemized.toFixed(0)} vs standard $${requiredGrossStandard.toFixed(0)})`,
+  );
+});
+
+test('renters (no mortgage/property tax) transparently fall back to the standard deduction under auto', () => {
+  const inputs: RequiredSalaryInputs = {
+    filingStatus: 'single',
+    k401PercentOfGross: 0,
+    k401IsTraditional: true,
+    hsaCoverage: 'none',
+    hsaContribution: 0,
+    age50Plus: false,
+    itemizeChoice: 'auto',
+    charitableContributionsAnnual: 500,
+  };
+  const breakdown = computeBreakdown(150000, inputs, TAX_CONSTANTS_2026);
+  assert.equal(breakdown.fedItemized, false);
+  assert.equal(breakdown.nyItemized, false);
+  assert.equal(breakdown.fedDeductionUsed, TAX_CONSTANTS_2026.federal.standardDeduction.single);
+  assert.equal(breakdown.w4Step4bAmount, 0);
+  // Small giving (under the OBBBA non-itemizer cap) while taking the
+  // standard deduction is deductible in full above-the-line.
+  assert.equal(breakdown.nonItemizerCharitableDeduction, 500);
+});
+
+test('federal and NY itemize choices are independent under auto (NY excludes state income tax from its own itemized total)', () => {
+  // Property tax alone (no mortgage interest, modest charitable) can clear
+  // NY's uncapped, income-tax-free itemized total while staying under the
+  // federal standard deduction once federal SALT capping/floors are applied.
+  const inputs: RequiredSalaryInputs = {
+    filingStatus: 'single',
+    k401PercentOfGross: 0,
+    k401IsTraditional: true,
+    hsaCoverage: 'none',
+    hsaContribution: 0,
+    age50Plus: false,
+    itemizeChoice: 'auto',
+    propertyTaxAnnual: 9000,
+  };
+  const breakdown = computeBreakdown(60000, inputs, TAX_CONSTANTS_2026);
+  assert.equal(breakdown.nyItemized, true, 'expected NY to itemize on property tax alone');
+  assert.equal(breakdown.fedItemized, false, 'expected federal to still prefer the (larger) standard deduction');
+});
+
+test('SALT cap phases out above $505,000 MAGI and floors at $10,000', () => {
+  const belowThreshold = saltCapAfterPhaseout(400000, TAX_CONSTANTS_2026);
+  assert.equal(belowThreshold, TAX_CONSTANTS_2026.federal.salt.cap);
+
+  const wayAbove = saltCapAfterPhaseout(2000000, TAX_CONSTANTS_2026);
+  assert.equal(wayAbove, TAX_CONSTANTS_2026.federal.salt.floor);
+
+  const partial = saltCapAfterPhaseout(600000, TAX_CONSTANTS_2026);
+  const expected = TAX_CONSTANTS_2026.federal.salt.cap - (600000 - TAX_CONSTANTS_2026.federal.salt.phaseoutStartMagi) * TAX_CONSTANTS_2026.federal.salt.phaseoutRate;
+  assert.ok(Math.abs(partial - expected) < 0.01);
+});
+
+test('itemizeChoice "itemize" forces itemizing even when it is worse than the standard deduction', () => {
+  const inputs: RequiredSalaryInputs = {
+    filingStatus: 'single',
+    k401PercentOfGross: 0,
+    k401IsTraditional: true,
+    hsaCoverage: 'none',
+    hsaContribution: 0,
+    age50Plus: false,
+    itemizeChoice: 'itemize',
+  };
+  const breakdown = computeBreakdown(80000, inputs, TAX_CONSTANTS_2026);
+  assert.equal(breakdown.fedItemized, true);
+  assert.equal(breakdown.nyItemized, true);
+  assert.equal(breakdown.fedDeductionUsed, breakdown.federalItemizedTotal);
+  assert.equal(breakdown.nyDeductionUsed, breakdown.nyItemizedTotal);
 });

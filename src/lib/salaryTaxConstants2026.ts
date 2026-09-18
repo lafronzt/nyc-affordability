@@ -44,6 +44,20 @@
      wage earner above a trivial income hits this cap almost immediately,
      so computing it more precisely wouldn't change the number for any
      salary this calculator is realistically used for.
+   - Federal SALT cap ($40,400) and its MAGI phaseout ($505,000 threshold,
+     30 cents per dollar over, $10,000 floor), plus the OBBBA above-the-line
+     charitable deduction for non-itemizers ($1,000 single/HOH, $2,000 MFJ):
+     One Big Beautiful Bill Act (OBBBA), signed 2025, effective tax year
+     2026 — https://www.irs.gov/pub/irs-drop/rp-25-32.pdf and OBBBA §70424
+     (SALT), §70425 (non-itemizer charitable deduction).
+   - Itemized-deduction floors/ceilings (60%-of-AGI charitable ceiling,
+     0.5%-of-AGI charitable floor added by OBBBA, 7.5%-of-AGI medical floor)
+     and the $750,000 mortgage acquisition-debt cap ($1M if grandfathered
+     pre-12/16/2017): IRC §170(b), §213(a), §163(h)(3) as amended by OBBBA
+     and the TCJA. The mortgage acquisition-debt cap is not separately
+     enforced here — this tool takes mortgage interest PAID as a direct
+     input rather than a loan balance, so it can't check the underlying
+     debt against the cap; it's surfaced as an assumption instead.
 
    This tool is scoped to NYC residents only — NY State tax plus the NYC
    resident local surcharge always apply; there is no other-jurisdiction
@@ -65,6 +79,13 @@ export interface TaxYearConstants {
   federal: {
     standardDeduction: Record<FilingStatus, number>;
     brackets: Record<FilingStatus, TaxBracket[]>;
+    /** OBBBA SALT cap, phased down 30 cents per dollar of MAGI over
+        phaseoutStartMagi, never below floor. Not filing-status-specific. */
+    salt: { cap: number; phaseoutStartMagi: number; phaseoutRate: number; floor: number };
+    /** OBBBA above-the-line charitable deduction available ONLY when taking
+        the standard deduction (i.e. NOT itemizing) — separate from and not
+        part of the itemized total. */
+    nonItemizerCharitableCap: Record<FilingStatus, number>;
   };
   fica: {
     socialSecurityRate: number;
@@ -90,6 +111,17 @@ export interface TaxYearConstants {
   fsa: { healthcareAnnual: number; dependentCareAnnual: number };
   /** NY-specific mandatory payroll deductions — always apply, since this tool is NYC-only. */
   ny: { pflRate: number; pflAnnualCap: number; sdiAnnualCap: number };
+  itemized: {
+    /** Cash gifts to public charities: eligible up to this % of AGI. */
+    charitableAgiCeilingPct: number;
+    /** OBBBA floor: only giving above this % of AGI counts toward itemized total. */
+    charitableFloorPct: number;
+    /** Only unreimbursed medical/dental expenses above this % of AGI are deductible. */
+    medicalFloorPct: number;
+    /** Informational only (see file header) — not enforced against the mortgage
+        interest input, since this tool doesn't collect a loan balance. */
+    mortgageAcquisitionDebtCap: number;
+  };
 }
 
 export const TAX_CONSTANTS_2026: TaxYearConstants = {
@@ -129,6 +161,8 @@ export const TAX_CONSTANTS_2026: TaxYearConstants = {
         { upTo: Infinity, rate: 0.37 },
       ],
     },
+    salt: { cap: 40400, phaseoutStartMagi: 505000, phaseoutRate: 0.30, floor: 10000 },
+    nonItemizerCharitableCap: { single: 1000, marriedFilingJointly: 2000, headOfHousehold: 1000 },
   },
   fica: {
     socialSecurityRate: 0.062,
@@ -213,4 +247,10 @@ export const TAX_CONSTANTS_2026: TaxYearConstants = {
   commuterBenefit: { transitMonthly: 340, parkingMonthly: 340 },
   fsa: { healthcareAnnual: 3400, dependentCareAnnual: 7500 },
   ny: { pflRate: 0.00432, pflAnnualCap: 411.91, sdiAnnualCap: 31.20 },
+  itemized: {
+    charitableAgiCeilingPct: 0.60,
+    charitableFloorPct: 0.005,
+    medicalFloorPct: 0.075,
+    mortgageAcquisitionDebtCap: 750000,
+  },
 };

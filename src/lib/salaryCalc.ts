@@ -20,6 +20,12 @@ import type { FilingStatus, TaxBracket, TaxYearConstants } from './salaryTaxCons
 
 export type HsaCoverage = 'none' | 'selfOnly' | 'family';
 
+/** 'standard'/'itemize' force that choice on BOTH federal and NY returns;
+    'auto' (the default) lets federal and NY pick independently, since a
+    taxpayer can itemize on one return and take the standard deduction on
+    the other. */
+export type ItemizeChoice = 'standard' | 'itemize' | 'auto';
+
 export interface RequiredSalaryInputs {
   filingStatus: FilingStatus;
   /** 0-100. Also stands in for 403(b)/457(b)/NYC pension (NYCERS/TRS/BERS) —
@@ -69,6 +75,24 @@ export interface RequiredSalaryInputs {
   disabilityInsuranceMonthly?: number;
   /** $/month. */
   unionDuesMonthly?: number;
+
+  // ---- Itemized vs. standard deduction. Itemizing REPLACES the standard
+  // deduction in the tax math (federal and NY are chosen independently —
+  // see ItemizeChoice) rather than adding a new payroll line item. Defaults
+  // to 'auto' when omitted. ----
+  itemizeChoice?: ItemizeChoice;
+  /** $/year. For a co-op, the shareholder's proportionate share of interest
+      on the building's underlying mortgage. */
+  mortgageInterestAnnual?: number;
+  /** $/year. For a co-op, the shareholder's proportionate share of the
+      building's real estate tax. Uncapped on the NY return; part of the
+      capped federal SALT bucket. */
+  propertyTaxAnnual?: number;
+  /** $/year. Cash and non-cash combined. */
+  charitableContributionsAnnual?: number;
+  /** $/year, unreimbursed. Only the amount above 7.5% of AGI is deductible —
+      the engine does that math, not the caller. */
+  medicalExpensesAnnual?: number;
 }
 
 export interface PaycheckBreakdown {
@@ -112,6 +136,31 @@ export interface PaycheckBreakdown {
 
   netTakeHome: number;
   employerMatchDollars: number;
+
+  /** True when the federal/NY return ends up itemizing (whether forced by
+      itemizeChoice or picked by 'auto' because it beat the standard deduction). */
+  fedItemized: boolean;
+  nyItemized: boolean;
+  /** Raw itemized totals BEFORE the standard-vs-itemized choice is applied —
+      shown to the user even when the standard deduction was actually used,
+      so "you're $412 short of itemizing" messaging is possible. */
+  federalItemizedTotal: number;
+  nyItemizedTotal: number;
+  /** The deduction amount actually used in the tax math above (whichever of
+      standard/itemized was chosen). */
+  fedDeductionUsed: number;
+  nyDeductionUsed: number;
+  /** State/local tax paid eligible for the federal SALT bucket, before the
+      cap; and whether the cap (or its MAGI phaseout) actually bound. */
+  saltEligibleBeforeCap: number;
+  saltCapApplied: boolean;
+  /** OBBBA above-the-line charitable deduction — only applies when NOT
+      itemizing federally, separate from and not part of federalItemizedTotal. */
+  nonItemizerCharitableDeduction: number;
+  /** What to tell the employer on Form W-4 Step 4(b): how much the federal
+      deduction actually used exceeds the plain standard deduction. $0 when
+      not itemizing federally. Doesn't change the solve — see required-salary.ts. */
+  w4Step4bAmount: number;
 }
 
 export interface SensitivityRow {
@@ -167,6 +216,74 @@ function clampToCap(requested: number, cap: number): { value: number; clamped: b
   return { value: Math.min(requested, cap), clamped: requested > cap + 1e-9 };
 }
 
+/** OBBBA SALT cap after its MAGI phaseout — skips the phaseout math entirely
+    below the threshold (the common case for this tool's users). */
+export function saltCapAfterPhaseout(magi: number, constants: TaxYearConstants): number {
+  const { cap, phaseoutStartMagi, phaseoutRate, floor } = constants.federal.salt;
+  if (magi <= phaseoutStartMagi) return cap;
+  return Math.max(floor, cap - (magi - phaseoutStartMagi) * phaseoutRate);
+}
+
+interface ItemizedResult {
+  total: number;
+  charitableAboveFloor: number;
+  medicalAboveFloor: number;
+}
+
+/** Federal itemized total: SALT (state/local income tax + property tax,
+    capped and phased out) + mortgage interest + charitable above the OBBBA
+    0.5%-of-AGI floor (and under the 60%-of-AGI ceiling) + medical above the
+    7.5%-of-AGI floor. Misc. itemized deductions (unreimbursed job expenses,
+    tax prep fees) stay suspended and are left out of the model entirely. */
+function calculateFederalItemized(
+  inputs: RequiredSalaryInputs,
+  approxAGI: number,
+  stateIncomeTaxPaid: number,
+  constants: TaxYearConstants,
+): ItemizedResult & { saltEligibleBeforeCap: number; saltCapApplied: boolean } {
+  const propertyTax = Math.max(0, inputs.propertyTaxAnnual ?? 0);
+  const mortgageInterest = Math.max(0, inputs.mortgageInterestAnnual ?? 0);
+  const charitable = Math.max(0, inputs.charitableContributionsAnnual ?? 0);
+  const medical = Math.max(0, inputs.medicalExpensesAnnual ?? 0);
+
+  const saltEligibleBeforeCap = propertyTax + Math.max(0, stateIncomeTaxPaid);
+  const saltCap = saltCapAfterPhaseout(approxAGI, constants);
+  const saltEligible = Math.min(saltEligibleBeforeCap, saltCap);
+
+  const charitableEligible = Math.min(charitable, Math.max(0, constants.itemized.charitableAgiCeilingPct * approxAGI));
+  const charitableAboveFloor = Math.max(0, charitableEligible - constants.itemized.charitableFloorPct * approxAGI);
+  const medicalAboveFloor = Math.max(0, medical - constants.itemized.medicalFloorPct * approxAGI);
+
+  return {
+    total: saltEligible + mortgageInterest + charitableAboveFloor + medicalAboveFloor,
+    charitableAboveFloor,
+    medicalAboveFloor,
+    saltEligibleBeforeCap,
+    saltCapApplied: saltEligibleBeforeCap > saltCap + 1e-9,
+  };
+}
+
+/** NY itemized total (IT-196): unlike the federal side, NY disallows
+    deducting state/local INCOME tax from its own return, and applies no
+    SALT cap at all — property tax is deductible in full. NY largely
+    conforms to the federal charitable/medical floors and ceiling. */
+function calculateNYItemized(inputs: RequiredSalaryInputs, approxAGI: number, constants: TaxYearConstants): ItemizedResult {
+  const propertyTax = Math.max(0, inputs.propertyTaxAnnual ?? 0);
+  const mortgageInterest = Math.max(0, inputs.mortgageInterestAnnual ?? 0);
+  const charitable = Math.max(0, inputs.charitableContributionsAnnual ?? 0);
+  const medical = Math.max(0, inputs.medicalExpensesAnnual ?? 0);
+
+  const charitableEligible = Math.min(charitable, Math.max(0, constants.itemized.charitableAgiCeilingPct * approxAGI));
+  const charitableAboveFloor = Math.max(0, charitableEligible - constants.itemized.charitableFloorPct * approxAGI);
+  const medicalAboveFloor = Math.max(0, medical - constants.itemized.medicalFloorPct * approxAGI);
+
+  return {
+    total: propertyTax + mortgageInterest + charitableAboveFloor + medicalAboveFloor,
+    charitableAboveFloor,
+    medicalAboveFloor,
+  };
+}
+
 /** Full payslip-style breakdown of a given gross salary under the supplied inputs. */
 export function computeBreakdown(gross: number, inputs: RequiredSalaryInputs, constants: TaxYearConstants): PaycheckBreakdown {
   const status = inputs.filingStatus;
@@ -217,14 +334,44 @@ export function computeBreakdown(gross: number, inputs: RequiredSalaryInputs, co
   const additionalMedicare = Math.max(0, ficaWages - additionalMedicareThreshold) * constants.fica.additionalMedicareRate;
   const fica = socialSecurity + medicare + additionalMedicare;
 
-  // ---- Income tax ----
-  const fedTaxable = Math.max(0, g - incomeTaxDeduction - cafeteria125Total - constants.federal.standardDeduction[status]);
-  const federalTax = applyBrackets(fedTaxable, constants.federal.brackets[status]);
+  // ---- Itemized vs. standard deduction ----
+  // Rough AGI stand-in good enough for the SALT phaseout and the charitable/
+  // medical floors — doesn't need to be IRS-exact. Computed before either
+  // return's taxable income so it doesn't depend on which deduction wins.
+  const approxAGI = Math.max(0, g - incomeTaxDeduction - cafeteria125Total);
+  const itemizeChoice = inputs.itemizeChoice ?? 'auto';
+
+  // NY side first: NY's own itemized total doesn't depend on NY state tax
+  // paid (NY disallows deducting its own income tax), so there's no
+  // circularity computing it before stateTax below.
+  const nyItemizedResult = calculateNYItemized(inputs, approxAGI, constants);
+  const nyStandardDeduction = constants.nyState.standardDeduction[status];
+  const nyItemized = itemizeChoice === 'itemize' || (itemizeChoice === 'auto' && nyItemizedResult.total > nyStandardDeduction);
+  const nyDeductionUsed = itemizeChoice === 'standard' ? nyStandardDeduction : (nyItemized ? nyItemizedResult.total : nyStandardDeduction);
 
   // NYC residents only: NY State tax plus the NYC resident local surcharge always apply.
-  const stateTaxable = Math.max(0, g - incomeTaxDeduction - cafeteria125Total - constants.nyState.standardDeduction[status]);
+  const stateTaxable = Math.max(0, g - incomeTaxDeduction - cafeteria125Total - nyDeductionUsed);
   const stateTax = applyBrackets(stateTaxable, constants.nyState.brackets[status]);
   const localTax = applyBrackets(stateTaxable, constants.nycLocal.brackets[status]);
+
+  // Federal side: SALT includes the NY state income tax just computed above
+  // (pre-filled from the tool's own state-tax calculation, not a separate
+  // user input) plus property tax, capped and phased out by MAGI.
+  const federalItemizedResult = calculateFederalItemized(inputs, approxAGI, stateTax, constants);
+  const federalStandardDeduction = constants.federal.standardDeduction[status];
+  const fedItemized = itemizeChoice === 'itemize' || (itemizeChoice === 'auto' && federalItemizedResult.total > federalStandardDeduction);
+  const fedDeductionUsed = itemizeChoice === 'standard' ? federalStandardDeduction : (fedItemized ? federalItemizedResult.total : federalStandardDeduction);
+
+  // OBBBA above-the-line charitable deduction — only when NOT itemizing federally.
+  const nonItemizerCharitableDeduction = fedItemized
+    ? 0
+    : Math.min(Math.max(0, inputs.charitableContributionsAnnual ?? 0), constants.federal.nonItemizerCharitableCap[status]);
+
+  const w4Step4bAmount = Math.max(0, fedDeductionUsed - federalStandardDeduction);
+
+  // ---- Income tax ----
+  const fedTaxable = Math.max(0, g - incomeTaxDeduction - cafeteria125Total - fedDeductionUsed - nonItemizerCharitableDeduction);
+  const federalTax = applyBrackets(fedTaxable, constants.federal.brackets[status]);
 
   // ---- Mandatory NY post-tax payroll deductions (not user-entered) ----
   const nySDI = constants.ny.sdiAnnualCap;
@@ -275,6 +422,16 @@ export function computeBreakdown(gross: number, inputs: RequiredSalaryInputs, co
     postTaxTotal,
     netTakeHome,
     employerMatchDollars,
+    fedItemized,
+    nyItemized,
+    federalItemizedTotal: federalItemizedResult.total,
+    nyItemizedTotal: nyItemizedResult.total,
+    fedDeductionUsed,
+    nyDeductionUsed,
+    saltEligibleBeforeCap: federalItemizedResult.saltEligibleBeforeCap,
+    saltCapApplied: federalItemizedResult.saltCapApplied,
+    nonItemizerCharitableDeduction,
+    w4Step4bAmount,
   };
 }
 

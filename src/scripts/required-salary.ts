@@ -9,7 +9,7 @@ import {
   getCommuterCap,
   getDependentCareFsaCap,
 } from '../lib/salaryCalc';
-import type { RequiredSalaryInputs, HsaCoverage } from '../lib/salaryCalc';
+import type { RequiredSalaryInputs, HsaCoverage, ItemizeChoice } from '../lib/salaryCalc';
 import { TAX_CONSTANTS_2026 } from '../lib/salaryTaxConstants2026';
 import type { FilingStatus } from '../lib/salaryTaxConstants2026';
 
@@ -69,6 +69,12 @@ interface FormInputs {
   lifeInsuranceMonthly: number;
   disabilityInsuranceMonthly: number;
   unionDuesMonthly: number;
+
+  itemizeChoice: ItemizeChoice;
+  mortgageInterestAnnual: number;
+  propertyTaxAnnual: number;
+  charitableContributionsAnnual: number;
+  medicalExpensesAnnual: number;
 }
 
 /** Keys of FormInputs whose value is always a plain number — used by the
@@ -105,6 +111,15 @@ const DEFAULTS: FormInputs = {
   lifeInsuranceMonthly: 0,
   disabilityInsuranceMonthly: 0,
   unionDuesMonthly: 0,
+
+  // 'auto' by default — most users don't know in advance whether they clear
+  // the standard deduction, and letting the calculator decide is the single
+  // most useful thing it can do for them.
+  itemizeChoice: 'auto',
+  mortgageInterestAnnual: 0,
+  propertyTaxAnnual: 0,
+  charitableContributionsAnnual: 0,
+  medicalExpensesAnnual: 0,
 };
 
 const RETIREMENT_PLAN_LABELS: Record<RetirementPlanType, string> = {
@@ -232,6 +247,11 @@ function toCalcInputs(): RequiredSalaryInputs {
     lifeInsuranceMonthly: inputs.lifeInsuranceMonthly,
     disabilityInsuranceMonthly: inputs.disabilityInsuranceMonthly,
     unionDuesMonthly: inputs.unionDuesMonthly,
+    itemizeChoice: inputs.itemizeChoice,
+    mortgageInterestAnnual: inputs.mortgageInterestAnnual,
+    propertyTaxAnnual: inputs.propertyTaxAnnual,
+    charitableContributionsAnnual: inputs.charitableContributionsAnnual,
+    medicalExpensesAnnual: inputs.medicalExpensesAnnual,
   };
 }
 
@@ -264,6 +284,13 @@ function syncFields() {
     $input(f.valueId)!.disabled = useMax || extraDisabled;
     $input(f.maxId)!.disabled = extraDisabled;
   }
+
+  $select('rs-itemize-choice')!.value = inputs.itemizeChoice;
+  $input('rs-mortgage-interest')!.value = String(inputs.mortgageInterestAnnual);
+  $input('rs-property-tax')!.value = String(inputs.propertyTaxAnnual);
+  $input('rs-charitable')!.value = String(inputs.charitableContributionsAnnual);
+  $input('rs-medical-expenses')!.value = String(inputs.medicalExpensesAnnual);
+  $('rs-itemize-mfj-note')!.hidden = inputs.filingStatus !== 'marriedFilingJointly';
 
   $input('rs-health-premium')!.value = String(inputs.healthPremiumMonthly);
   $input('rs-dental-vision-premium')!.value = String(inputs.dentalVisionPremiumMonthly);
@@ -404,6 +431,51 @@ function render() {
     deductionsWarn.classList.remove('warn');
   }
 
+  // ---- Itemized vs. standard deduction ----
+  const fedStandardDeduction = CONSTANTS.federal.standardDeduction[inputs.filingStatus];
+  const nyStandardDeduction = CONSTANTS.nyState.standardDeduction[inputs.filingStatus];
+
+  setText('rs-itemize-fed-choice', breakdown.fedItemized ? 'Itemize' : 'Standard deduction');
+  setText('rs-itemize-fed-detail', `${fmtMoney(breakdown.federalItemizedTotal)} itemized vs. ${fmtMoney(fedStandardDeduction)} standard`);
+  setText('rs-itemize-ny-choice', breakdown.nyItemized ? 'Itemize' : 'Standard deduction');
+  setText('rs-itemize-ny-detail', `${fmtMoney(breakdown.nyItemizedTotal)} itemized vs. ${fmtMoney(nyStandardDeduction)} standard`);
+
+  // "Close call" messaging — only worth a special callout when itemizing
+  // barely (or almost) beats the standard deduction; a landslide either way
+  // doesn't need it.
+  const CLOSE_CALL_THRESHOLD = 1000;
+  const fedDiff = breakdown.federalItemizedTotal - fedStandardDeduction;
+  const nyDiff = breakdown.nyItemizedTotal - nyStandardDeduction;
+  const closeCallNotes: string[] = [];
+  if (Math.abs(fedDiff) < CLOSE_CALL_THRESHOLD && (breakdown.federalItemizedTotal > 0 || breakdown.nyItemizedTotal > 0)) {
+    closeCallNotes.push(fedDiff >= 0
+      ? `Federal: itemizing only gets you ${fmtMoney(fedDiff)} more than the standard deduction — probably not worth the extra recordkeeping.`
+      : `Federal: itemizing falls ${fmtMoney(-fedDiff)} short of the standard deduction — close, but not quite there.`);
+  }
+  if (Math.abs(nyDiff) < CLOSE_CALL_THRESHOLD && (breakdown.federalItemizedTotal > 0 || breakdown.nyItemizedTotal > 0)) {
+    closeCallNotes.push(nyDiff >= 0
+      ? `NY: itemizing only gets you ${fmtMoney(nyDiff)} more than the standard deduction — probably not worth the extra recordkeeping.`
+      : `NY: itemizing falls ${fmtMoney(-nyDiff)} short of the standard deduction — close, but not quite there.`);
+  }
+  const closeCallEl = $('rs-itemize-close-call')!;
+  if (closeCallNotes.length) {
+    closeCallEl.textContent = closeCallNotes.join(' ');
+    closeCallEl.hidden = false;
+  } else {
+    closeCallEl.hidden = true;
+  }
+
+  // W-4 Step 4(b) — the most actionable output of this section: without it,
+  // an itemizer's paychecks are over-withheld relative to actual liability
+  // all year, with the difference coming back as a refund next spring.
+  const w4Card = $('rs-w4-card')!;
+  if (breakdown.w4Step4bAmount > 0) {
+    setText('rs-w4-amount', fmtMoney(breakdown.w4Step4bAmount));
+    w4Card.hidden = false;
+  } else {
+    w4Card.hidden = true;
+  }
+
   // Sensitivity table — reuses requiredAnnual (already solved above) for the
   // deltaPct===0 row instead of asking computeSensitivityTable to re-solve it.
   const sensitivityRows = computeSensitivityTable(inputs.monthlyExpenses, inputs.monthlySavingsGoal, calcInputs, CONSTANTS, undefined, requiredAnnual);
@@ -441,6 +513,14 @@ function render() {
   assumptions.push(['NY Paid Family Leave', `${(CONSTANTS.ny.pflRate * 100).toFixed(3)}% of gross, capped at ${fmtMoney(CONSTANTS.ny.pflAnnualCap)}/yr`]);
   assumptions.push(['NY State Disability Insurance', fmtMoney(CONSTANTS.ny.sdiAnnualCap) + '/yr (fixed statutory cap)']);
   assumptions.push(['Social Security wage base', fmtMoney(CONSTANTS.fica.socialSecurityWageBase)]);
+  assumptions.push(['Federal deduction used', `${breakdown.fedItemized ? 'Itemized' : 'Standard'} (${fmtMoney(breakdown.fedDeductionUsed)})`]);
+  assumptions.push(['NY deduction used', `${breakdown.nyItemized ? 'Itemized' : 'Standard'} (${fmtMoney(breakdown.nyDeductionUsed)})`]);
+  if (breakdown.federalItemizedTotal > 0 || breakdown.nyItemizedTotal > 0) {
+    assumptions.push(['Federal SALT deduction (state/local tax paid + property tax)', `${fmtMoney(breakdown.saltEligibleBeforeCap)}${breakdown.saltCapApplied ? ` (capped at ${fmtMoney(CONSTANTS.federal.salt.cap)})` : ''}`]);
+  }
+  if (breakdown.nonItemizerCharitableDeduction > 0) {
+    assumptions.push(['Above-the-line charitable deduction (non-itemizer)', fmtMoney(breakdown.nonItemizerCharitableDeduction)]);
+  }
 
   const list = $('rs-assumptions-list')!;
   list.innerHTML = assumptions.map(([k, v]) => `<li><span>${k}</span><span>${v}</span></li>`).join('');
@@ -473,6 +553,7 @@ function attachFieldListeners() {
   bindNumberField('rs-savings-goal', 'monthlySavingsGoal', { min: 0 });
   $select('rs-filing-status')!.addEventListener('change', () => {
     inputs.filingStatus = $select('rs-filing-status')!.value as FilingStatus;
+    syncFields();
     persist();
     render();
   });
@@ -482,6 +563,16 @@ function attachFieldListeners() {
     persist();
     render();
   });
+  $select('rs-itemize-choice')!.addEventListener('change', () => {
+    inputs.itemizeChoice = $select('rs-itemize-choice')!.value as ItemizeChoice;
+    persist();
+    render();
+  });
+  bindNumberField('rs-mortgage-interest', 'mortgageInterestAnnual', { min: 0 });
+  bindNumberField('rs-property-tax', 'propertyTaxAnnual', { min: 0 });
+  bindNumberField('rs-charitable', 'charitableContributionsAnnual', { min: 0 });
+  bindNumberField('rs-medical-expenses', 'medicalExpensesAnnual', { min: 0 });
+
   bindNumberField('rs-401k-pct', 'k401PercentOfGross', { min: 0, max: 100 });
   $select('rs-401k-type')!.addEventListener('change', () => {
     inputs.k401IsTraditional = $select('rs-401k-type')!.value === 'traditional';

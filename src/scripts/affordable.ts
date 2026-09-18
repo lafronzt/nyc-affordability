@@ -135,13 +135,13 @@ function updateResults() {
     if (tgt.eligible) {
       trEl.className        = 'target-result ok';
       trIcon.textContent    = '✅';
-      trTitle.textContent   = 'You qualify for ' + inp.targetBand + '% AMI listings';
+      trTitle.textContent   = 'You meet the income limit for ' + inp.targetBand + '% AMI listings';
       trSub.textContent     =
         'Your income (' + fmt$(inp.income) + ') is at or below the ' +
         inp.targetBand + '% AMI limit of ' + fmt$(tgt.limit) +
         ' for a ' + inp.hhSize + '-person household. ' +
         'Affordable rent for a ' + unitLabel + ' at this band: ' +
-        fmt$(tgt.affordableRent) + '/mo.';
+        fmt$(tgt.affordableRent) + '/mo. Income limit only — see note below for other requirements.';
     } else {
       const gap = inp.income - tgt.limit;
       const overMin = inp.income < tgt.minIncome;
