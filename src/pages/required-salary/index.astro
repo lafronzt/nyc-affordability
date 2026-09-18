@@ -411,10 +411,15 @@ details.section-card[open] summary::after { content: '\25B4'; }
 
 /* Compact "Max" toggle chip embedded at the end of an input-wrap, replacing a
    separate "Use max" checkbox field so a capped money field is one grid cell,
-   not two. */
-.max-chip {
+   not two. Scoped as ".input-wrap .max-chip" (not just ".max-chip") because
+   it's a <label> nested inside .field — the plain ".field label" rule above
+   has higher specificity and would otherwise win, forcing this back to
+   display: block with a stray margin-bottom and making the chip render
+   shorter than the input box next to it. */
+.input-wrap .max-chip {
   display: flex; align-items: center; gap: 0; padding: 0 10px; cursor: pointer;
   background: var(--g50); border-left: 1px solid var(--g200); flex-shrink: 0;
+  margin-bottom: 0;
 }
 .max-chip input {
   position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
