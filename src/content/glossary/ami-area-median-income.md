@@ -32,4 +32,6 @@ Source: HUD FY2026 Income Limits, New York HMFA.
 
 ## Worked example
 
-A 2-person household earning $70,000/year: $70,000 ÷ $110,850 = 63.1% AMI — they'd qualify for listings at the 70% AMI band or higher (bands are typically set in round numbers like 60%, 70%, 80%, so a household usually applies at the nearest band at or above its actual percentage). See the [full AMI guide](/guides/nyc-ami-housing-connect-explained/) for how a band converts into an actual affordable rent, or run your own household size and income through the [Affordable Housing Finder](/affordable/).
+A 2-person household earning $70,000/year: $70,000 ÷ $110,850 = 63.1% AMI — they'd meet the income limit for listings at the 70% AMI band or higher (bands are typically set in round numbers like 60%, 70%, 80%, so a household usually applies at the nearest band at or above its actual percentage). See the [full AMI guide](/guides/nyc-ami-housing-connect-explained/) for how a band converts into an actual affordable rent, or run your own household size and income through the [Affordable Housing Finder](/affordable/).
+
+AMI tables are republished annually and income is only one part of HPD's eligibility review — treat this as a planning estimate, not a guarantee, and confirm current limits with NYC HPD or Housing Connect before applying.

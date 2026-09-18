@@ -76,3 +76,7 @@ HPD's standard methodology sets affordable rent at **30% of gross income at each
 | 130% | $144,105 | $3,603 |
 
 Actual advertised rents on individual Housing Connect listings can vary slightly from this formula, but this is the methodology HPD uses to set them, and it's a reliable way to estimate what a given band will cost before you apply.
+
+## Before you apply
+
+AMI figures and income limits are republished by HUD every fiscal year, and HPD's own eligibility review checks more than income — household size, assets, and documentation all factor in. Treat the numbers on this page as planning estimates, not a guarantee of eligibility, and confirm current limits and your specific eligibility with NYC HPD or on [Housing Connect](https://housingconnect.nyc.gov) before applying to any listing.
