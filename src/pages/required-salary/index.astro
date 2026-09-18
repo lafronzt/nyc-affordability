@@ -270,9 +270,9 @@ const jsonLd = {
     <div class="table-wrap">
       <table aria-label="Salary breakdown">
         <colgroup>
-          <col style="width: 280px">
-          <col style="width: 100px">
-          <col style="width: 100px">
+          <col>
+          <col style="width: min(110px, 26vw)">
+          <col style="width: min(110px, 26vw)">
         </colgroup>
         <thead><tr><th>Line item</th><th>Annual</th><th>Monthly</th></tr></thead>
         <tbody id="rs-breakdown-body"></tbody>
@@ -288,9 +288,9 @@ const jsonLd = {
     <div class="table-wrap">
       <table aria-label="Required salary sensitivity to savings goal">
         <colgroup>
-          <col style="width: 140px">
-          <col style="width: 150px">
-          <col style="width: 180px">
+          <col>
+          <col style="width: min(130px, 30vw)">
+          <col style="width: min(150px, 34vw)">
         </colgroup>
         <thead><tr><th>Savings goal</th><th>Monthly savings</th><th>Required annual salary</th></tr></thead>
         <tbody id="rs-sensitivity-body">
@@ -452,24 +452,17 @@ details.section-card[open] summary::after { content: '\25B4'; }
 .headline-value { font-size: clamp(34px, 6vw, 56px); font-weight: 850; letter-spacing: -1.5px; font-variant-numeric: tabular-nums; line-height: 1; }
 .headline-sub { font-size: 14px; color: rgba(255,255,255,.75); margin-top: 10px; }
 
-/* These two tables are much narrower than the 1300px page. Shrinking the
-   *card* itself to the table's width (a previous version of this fix) kept
-   every other section-card on the page full-width, so these two read as
-   stray narrow islands next to a large empty field, and it forced the
-   explanatory sentence below each table to wrap tightly for no reason.
-   Keeping the card full-width and centering its (still narrow) table and
-   paragraph instead puts the leftover space evenly on both sides, which
-   reads as "this content is intentionally compact" rather than "broken". */
 .table-wrap { overflow-x: auto; }
-.section-card:has(.table-wrap) table { margin: 0 auto; }
-.section-card:has(.table-wrap) .prose-body p { max-width: 65ch; margin-left: auto; margin-right: auto; }
-/* table-layout: fixed + an explicit <colgroup> (not percentages of a 100%-wide
-   table, and not table-layout: auto) so column widths are set once, up front,
-   from the colgroup alone — deterministic regardless of how short the header
-   text is or how JS mutates tbody after the initial paint. width: auto lets
-   the table's total width be just the sum of the three <col> widths instead
-   of stretching to fill the card. */
-table { width: auto; table-layout: fixed; border-collapse: collapse; font-size: 13px; }
+/* table-layout: fixed with an explicit <colgroup> so column widths are set
+   once, up front, deterministic regardless of how short the header text is
+   or how JS mutates tbody after the initial paint. The two number columns
+   get a fixed width sized to their content (dollar amounts); the colgroup's
+   first <col> is left unspecified so it — not the card around it — absorbs
+   the rest of the table's 100% width. Shrinking or centering the table
+   instead (previous versions of this fix) either left the surrounding card
+   with a dead gap, or read as a stray narrow island next to a large empty
+   field; a plain full-width table with padded cells is just a normal table. */
+table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; }
 th { text-align: left; font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; padding: 12px 16px; border-bottom: 1px solid var(--g100); background: var(--g50); }
 th:not(:first-child), td:not(:first-child) { text-align: right; }
 td { padding: 10px 16px; border-bottom: 1px solid var(--g100); color: var(--g800); font-weight: 600; font-variant-numeric: tabular-nums; }
