@@ -12,6 +12,7 @@ sources:
 relatedGuides:
   - coop-board-approval-process
   - pmi-on-nyc-condos-explained
+  - how-much-salary-do-you-need-to-live-in-nyc
 relatedTerms:
   - debt-to-income-ratio-dti
   - post-closing-liquidity

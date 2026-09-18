@@ -112,6 +112,11 @@ const jsonLd = {
       <div class="persona-title">See what my income gets me</div>
       <div class="persona-q">"What does $150k actually afford in NYC?"</div>
     </a>
+    <a class="persona-card" href="/required-salary/">
+      <div class="persona-icon">🎯</div>
+      <div class="persona-title">Work backwards from take-home</div>
+      <div class="persona-q">"What salary do I need to take home $6,000/month?"</div>
+    </a>
   </div>
 </section>
 
@@ -250,6 +255,27 @@ const jsonLd = {
       </div>
     </a>
 
+    <!-- Required Salary — 7th card in a 6-column/span-2 grid, so it would otherwise
+         land alone at the far left of a mostly-empty row; center it instead. Revisit
+         this override (and the matching rule below) once an 8th calculator ships and
+         the trailing row is full again. -->
+    <a class="calc-card calc-card--centered-last" href="/required-salary/">
+      <div class="card-banner salary">
+        <div class="card-icon">💼</div>
+        <div class="card-banner-title">Required Salary<br>Calculator</div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Work backwards from a monthly expenses and savings target to the gross salary you'd need, after federal, NY State, NYC, and FICA tax plus 401(k)/HSA elections.</p>
+        <ul class="card-features">
+          <li>Federal + NY State + NYC tax stacking</li>
+          <li>Traditional vs Roth 401(k), employer match</li>
+          <li>HSA self-only/family limits &amp; catch-up</li>
+          <li>Sensitivity to your savings goal</li>
+        </ul>
+        <span class="card-cta cta-salary">Open Required Salary Calculator →</span>
+      </div>
+    </a>
+
   </div>
 </section>
 
@@ -380,6 +406,7 @@ const jsonLd = {
   gap: 24px;
 }
 .calc-card { grid-column: span 2; }
+.calc-card--centered-last { grid-column: 3 / span 2; }
 
 .calc-card {
   background: #fff;
@@ -412,6 +439,7 @@ const jsonLd = {
 .card-banner.affordable { background: linear-gradient(135deg, #1e1b4b, #111840); }
 .card-banner.sell       { background: linear-gradient(135deg, #0f766e, #042f2e); }
 .card-banner.compare    { background: linear-gradient(135deg, #78350f, #0f2a54); }
+.card-banner.salary     { background: linear-gradient(135deg, #92400e, #451a03); }
 
 .card-icon {
   font-size: 32px;
@@ -490,6 +518,7 @@ const jsonLd = {
 .cta-affordable { background: #1e1b4b; color: #e0e7ff; }
 .cta-sell       { background: #0f766e; color: #ffffff; }
 .cta-compare    { background: #78350f; color: #e2e8f0; }
+.cta-salary     { background: #92400e; color: #fff7ed; }
 
 .features {
   background: #fff;

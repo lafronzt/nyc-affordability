@@ -11,6 +11,8 @@ sources:
     url: "https://propertyclub.nyc/article/40x-rent-rule-nyc"
   - label: "StreetEasy — How Much Rent Can I Afford in NYC?"
     url: "https://streeteasy.com/blog/how-much-rent-can-i-afford-in-nyc/"
+relatedGuides:
+  - how-much-salary-do-you-need-to-live-in-nyc
 relatedTerms:
   - nyc-40x-rule
   - guarantor

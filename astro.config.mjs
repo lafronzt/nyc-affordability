@@ -15,9 +15,11 @@ const SITEMAP_PAGE_META = {
   '/compare/':    { changefreq: 'monthly', priority: 0.8, lastmod: '2026-05-03' },
   '/reality-check/': { changefreq: 'monthly', priority: 0.8, lastmod: '2026-08-13' },
   '/sell/':       { changefreq: 'monthly', priority: 0.9, lastmod: '2026-08-11' },
+  '/required-salary/': { changefreq: 'monthly', priority: 0.8, lastmod: '2026-09-17' },
   '/guides/':     { changefreq: 'weekly',  priority: 0.8, lastmod: '2026-08-04' },
   '/glossary/':   { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-08-12' },
   '/income/':     { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-12' },
+  '/salary/':     { changefreq: 'monthly', priority: 0.7, lastmod: '2026-09-17' },
   '/buy/':        { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-12' },
   '/rent/prices/': { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-14' },
   '/neighborhoods/':      { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-08-13' },
@@ -33,6 +35,7 @@ const DEFAULT_PAGE_META = { changefreq: 'monthly', priority: 0.7 };
 // since that list grows every time an amount/price is added.
 const ENUMERATED_ROUTE_META = [
   { pattern: /^\/income\/\d+\/$/, meta: { changefreq: 'monthly', priority: 0.6 } },
+  { pattern: /^\/salary\/\d+\/$/, meta: { changefreq: 'monthly', priority: 0.6 } },
   { pattern: /^\/buy\/\d+\/$/,    meta: { changefreq: 'monthly', priority: 0.6 } },
   { pattern: /^\/rent\/\d+\/$/,   meta: { changefreq: 'monthly', priority: 0.6 } },
   { pattern: /^\/glossary\/[^/]+\/$/, meta: { changefreq: 'yearly', priority: 0.5 } },

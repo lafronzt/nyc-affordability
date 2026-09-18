@@ -1,0 +1,229 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import Footer from '../../../components/Footer.astro';
+import AdSlot from '../../../components/AdSlot.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import RelatedBudgets from '../../../components/RelatedBudgets.astro';
+import MiniCalcWidget from '../../../components/MiniCalcWidget.astro';
+import type { FooterColumn } from '../../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../../lib/footerLinks';
+import { AD_IN_ARTICLE } from '../../../lib/adSlots';
+import { buildBreadcrumbJsonLd } from '../../../lib/breadcrumbs';
+import { fmtMoney, fmtPercent } from '../../../lib/format';
+import { computeBreakdown, SALARY_LANDING_PAGE_BASELINE } from '../../../lib/salaryCalc';
+import { TAX_CONSTANTS_2026 } from '../../../lib/salaryTaxConstants2026';
+import type { FilingStatus } from '../../../lib/salaryTaxConstants2026';
+import { INCOME_AMOUNTS as AMOUNTS } from '../../../data/priceGrids';
+import '../../../styles/salaryIncomeLanding.css';
+
+/* ============================================================
+   $[amount] Salary After Taxes in NYC — forward direction of the
+   Required Salary Calculator's math (gross -> net, not net -> gross).
+   Reuses computeBreakdown() from ../../../lib/salaryCalc directly —
+   no solving needed, since gross is already known here. Baseline
+   scenario only (no 401(k)/HSA elections); /required-salary/ is where
+   a visitor personalizes with their own contributions.
+   ============================================================ */
+
+export function getStaticPaths() {
+  return AMOUNTS.map((amount) => ({
+    params: { amount: String(amount) },
+    props: { amount },
+  }));
+}
+
+const { amount } = Astro.props;
+const BASELINE = SALARY_LANDING_PAGE_BASELINE;
+
+const breakdown = computeBreakdown(amount, BASELINE, TAX_CONSTANTS_2026);
+const effectiveRate = amount > 0 ? ((amount - breakdown.netTakeHome) / amount) * 100 : 0;
+
+const FILING_STATUSES: { status: FilingStatus; label: string }[] = [
+  { status: 'single', label: 'Single' },
+  { status: 'marriedFilingJointly', label: 'Married Filing Jointly' },
+  { status: 'headOfHousehold', label: 'Head of Household' },
+];
+const byFilingStatus = FILING_STATUSES.map(({ status, label }) => {
+  const b = computeBreakdown(amount, { ...BASELINE, filingStatus: status }, TAX_CONSTANTS_2026);
+  return { label, net: b.netTakeHome, rate: amount > 0 ? ((amount - b.netTakeHome) / amount) * 100 : 0 };
+});
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const canonicalPath = `/salary/${amount}/`;
+const amountLabel = fmtMoney(amount);
+const pageTitle = `${amountLabel} Salary After Taxes in NYC | NYC Affordability`;
+const metaDescription = `What ${amountLabel}/year actually nets you in NYC take-home pay after federal, NY State, and NYC resident tax plus FICA — full breakdown for a single filer with no pre-tax elections.`;
+
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: `${amountLabel} Salary After Taxes in NYC`,
+  description: metaDescription,
+  url: `${SITE_ORIGIN}${canonicalPath}`,
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
+};
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Salary After Taxes', path: '/salary/' },
+  { name: amountLabel, path: canonicalPath },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+
+const otherAmounts = AMOUNTS.filter((a) => a !== amount);
+
+const relatedItems = [
+  { label: `${amountLabel}/yr housing`, sublabel: 'See max rent, co-op, and condo price at this income', href: `/income/${amount}/` },
+  { label: 'Know your target take-home?', sublabel: 'Work backwards to the salary you need instead', href: '/required-salary/' },
+];
+
+const shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.netTakeHome)}/year (${fmtMoney(breakdown.netTakeHome / 12)}/mo) take-home after federal, NY State, NYC, and FICA tax — a ${fmtPercent(effectiveRate)} effective rate.`;
+---
+<BaseLayout
+  variant="site"
+  ads
+  pageTitle={pageTitle}
+  metaDescription={metaDescription}
+  canonicalPath={canonicalPath}
+  ogTitle={`${amountLabel} Salary After Taxes in NYC`}
+  ogDescription={metaDescription}
+  ogImage="/images/general-og.png"
+  ogImageAlt={`${amountLabel} salary after taxes in NYC — take-home pay breakdown.`}
+  twitterTitle={`${amountLabel} After Taxes in NYC`}
+  twitterDescription={metaDescription}
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Salary After Taxes</div>
+  <h2>{amountLabel} Salary After Taxes in NYC</h2>
+  <p>Here's what {amountLabel}/year actually nets you working in New York City, after federal, NY State, and NYC resident tax plus FICA — calculated using the same tax engine as our Required Salary Calculator, not a rule of thumb.</p>
+</div>
+
+<div class="page">
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <div class="calc-note card">
+    <p><strong>Baseline scenario: single filer, no 401(k) or HSA.</strong> This is the cleanest comparison point — every dollar of pre-tax contribution changes the number. Filing jointly, contributing to a 401(k) or HSA, or living outside NYC will all change your actual take-home. See the filing-status comparison below, or open the <a href="/required-salary/">Required Salary Calculator</a> to model your own elections.</p>
+  </div>
+
+  <div class="result-grid">
+    <div class="result-card">
+      <div class="result-label">Net take-home</div>
+      <div class="result-value"><span id="result-salary-net" aria-live="polite">{fmtMoney(breakdown.netTakeHome)}</span></div>
+      <div class="result-binding">per year</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Monthly take-home</div>
+      <div class="result-value"><span id="result-salary-monthly" aria-live="polite">{fmtMoney(breakdown.netTakeHome / 12)}</span></div>
+      <div class="result-binding">per month</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Effective tax rate</div>
+      <div class="result-value"><span id="result-salary-rate" aria-live="polite">{fmtPercent(effectiveRate)}</span></div>
+      <div class="result-binding">of gross, all taxes combined</div>
+      <a class="result-link" href="/required-salary/">Personalize with 401(k)/HSA &rarr;</a>
+    </div>
+  </div>
+
+  <MiniCalcWidget mode="salary" defaultValue={amount} />
+
+  <div class="card">
+    <h3>Where it goes</h3>
+    <table>
+      <thead><tr><th></th><th>Annual</th><th>Monthly</th></tr></thead>
+      <tbody>
+        <tr><td>Gross salary</td><td>{fmtMoney(breakdown.gross)}</td><td>{fmtMoney(breakdown.gross / 12)}</td></tr>
+        <tr><td>Federal income tax</td><td>-{fmtMoney(breakdown.federalTax)}</td><td>-{fmtMoney(breakdown.federalTax / 12)}</td></tr>
+        <tr><td>NY State income tax</td><td>-{fmtMoney(breakdown.stateTax)}</td><td>-{fmtMoney(breakdown.stateTax / 12)}</td></tr>
+        <tr><td>NYC resident tax</td><td>-{fmtMoney(breakdown.localTax)}</td><td>-{fmtMoney(breakdown.localTax / 12)}</td></tr>
+        <tr><td>FICA (Social Security + Medicare)</td><td>-{fmtMoney(breakdown.fica)}</td><td>-{fmtMoney(breakdown.fica / 12)}</td></tr>
+        <tr><td>NY Paid Family Leave (PFL)</td><td>-{fmtMoney(breakdown.nyPFL)}</td><td>-{fmtMoney(breakdown.nyPFL / 12)}</td></tr>
+        <tr><td>NY State Disability Insurance (SDI)</td><td>-{fmtMoney(breakdown.nySDI)}</td><td>-{fmtMoney(breakdown.nySDI / 12)}</td></tr>
+        <tr class="total-row"><td>Net take-home</td><td>{fmtMoney(breakdown.netTakeHome)}</td><td>{fmtMoney(breakdown.netTakeHome / 12)}</td></tr>
+      </tbody>
+    </table>
+    <p class="custom-note">NY SDI and PFL are mandatory payroll deductions for every NY W-2 employee — self-employed/1099 filers don't have this line.</p>
+  </div>
+
+  <div class="card">
+    <h3>Does filing status change this?</h3>
+    <p>Same {amountLabel} gross salary, same baseline (no 401(k)/HSA) — filing status alone moves the standard deduction and bracket widths.</p>
+    <table>
+      <thead><tr><th>Filing status</th><th>Net take-home</th><th>Effective rate</th></tr></thead>
+      <tbody>
+        {byFilingStatus.map((row) => (
+          <tr>
+            <td>{row.label}</td>
+            <td>{fmtMoney(row.net)}/yr</td>
+            <td>{fmtPercent(row.rate)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
+  </div>
+
+  <div class="share-row">
+    <button class="btn-share" id="salary-share" data-share-title={`${amountLabel} salary after taxes in NYC`} data-share-text={shareText} data-share-url={`https://www.nyc-affordability.com${canonicalPath}`} type="button">Share this result</button>
+  </div>
+
+  <RelatedBudgets
+    heading="This salary, from a different angle"
+    items={relatedItems}
+  />
+
+  <div class="card">
+    <h3>See a different salary</h3>
+    <div class="chip-row">
+      {otherAmounts.map((a) => (
+        <a class="chip" href={`/salary/${a}/`}>{fmtMoney(a)}</a>
+      ))}
+    </div>
+    <p class="custom-note">Have 401(k), HSA, or an employer match to factor in? <a href="/required-salary/">Open the Required Salary Calculator</a> for your exact take-home.</p>
+  </div>
+
+  <div class="cta-box">
+    <h3>Want to work backwards instead?</h3>
+    <p>If you know what you need to take home each month and want the gross salary that gets you there — including your own 401(k), HSA, and filing status — use the reverse calculator.</p>
+    <a class="cta-button" href="/required-salary/">Open Required Salary Calculator &rarr;</a>
+  </div>
+
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="Estimate only, not tax advice. Assumes 2026 federal, New York State, and NYC resident tax brackets, a single job with no other income, and no other pre-tax deductions like health insurance premiums, FSA, or commuter benefits. Consult a tax professional for guidance specific to your situation."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<script>
+  import { wireShareButton } from '../../../lib/share';
+  wireShareButton('salary-share', (btn) => ({
+    title: btn.dataset.shareTitle ?? '',
+    text: btn.dataset.shareText ?? '',
+    url: btn.dataset.shareUrl ?? window.location.href,
+  }));
+</script>
+
+<style>
+/* Shared hero/card/result-grid/table/cta-box rules live in
+   salaryIncomeLanding.css (imported above) — this page's one deviation from
+   income/[amount]'s otherwise-identical table style is right-aligning the
+   numeric columns, since every column here is a dollar figure or percentage. */
+th:not(:first-child), td:not(:first-child) { text-align: right; }
+</style>

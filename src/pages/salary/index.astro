@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../lib/footerLinks';
+import { AD_MULTIPLEX_HORIZONTAL } from '../../lib/adSlots';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+import { fmtMoney, fmtPercent } from '../../lib/format';
+import { computeBreakdown, SALARY_LANDING_PAGE_BASELINE } from '../../lib/salaryCalc';
+import { TAX_CONSTANTS_2026 } from '../../lib/salaryTaxConstants2026';
+import { INCOME_AMOUNTS as AMOUNTS } from '../../data/priceGrids';
+import '../../styles/salaryIncomeLanding.css';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const BASELINE = SALARY_LANDING_PAGE_BASELINE;
+
+const rows = AMOUNTS.map((amount) => {
+  const b = computeBreakdown(amount, BASELINE, TAX_CONSTANTS_2026);
+  const rate = amount > 0 ? ((amount - b.netTakeHome) / amount) * 100 : 0;
+  return { amount, net: b.netTakeHome, rate };
+});
+
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Salary After Taxes', path: '/salary/' },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Salary After Taxes in NYC',
+  url: `${SITE_ORIGIN}/salary/`,
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
+};
+---
+<BaseLayout
+  variant="site"
+  ads
+  pageTitle="Salary After Taxes in NYC | Take-Home Pay by Income | NYC Affordability"
+  metaDescription="See NYC take-home pay and effective tax rate by salary level — $50k to $500k/year — after federal, NY State, and NYC resident tax plus FICA."
+  canonicalPath="/salary/"
+  ogTitle="Salary After Taxes in NYC"
+  ogDescription="NYC take-home pay and effective tax rate by salary level, after federal, NY State, and NYC resident tax plus FICA."
+  ogImage="/images/general-og.png"
+  ogImageAlt="Salary after taxes in NYC by income level."
+  twitterTitle="Salary After Taxes in NYC"
+  twitterDescription="NYC take-home pay by salary level, after federal, state, city, and FICA tax."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Salary After Taxes</div>
+  <h2>What does your salary net you in NYC?</h2>
+  <p>Pick a salary to see the full take-home breakdown — federal, NY State, NYC resident tax, and FICA — calculated using the same engine as the Required Salary Calculator.</p>
+</div>
+
+<div class="page">
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <p class="calc-caveat">Figures assume a single filer with no 401(k) or HSA contributions — the cleanest baseline for comparison. See a page's "Details" link for the full breakdown and a by-filing-status comparison, or use the <a href="/required-salary/">Required Salary Calculator</a> to model your own elections.</p>
+
+  <div class="card">
+    <table>
+      <thead><tr><th>Gross salary</th><th>Net take-home</th><th>Effective rate</th><th></th></tr></thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr>
+            <td>{fmtMoney(r.amount)}</td>
+            <td>{fmtMoney(r.net)}/yr</td>
+            <td>{fmtPercent(r.rate)}</td>
+            <td><a href={`/salary/${r.amount}/`}>Details &rarr;</a></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_MULTIPLEX_HORIZONTAL} format="multiplex" maxWidth="100%" sidePadding="0" />
+  </div>
+
+  <div class="cta-box">
+    <h3>Know your target take-home instead?</h3>
+    <p>Work backwards from what you need to take home each month — including your own 401(k), HSA, and filing status — to the gross salary that gets you there.</p>
+    <a class="cta-button" href="/required-salary/">Open Required Salary Calculator &rarr;</a>
+  </div>
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="Estimate only, not tax advice. Assumes 2026 federal, New York State, and NYC resident tax brackets, a single job with no other income, and no other pre-tax deductions like health insurance premiums, FSA, or commuter benefits. Consult a tax professional for guidance specific to your situation."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<style>
+/* Shared hero/card/table/cta-box rules live in salaryIncomeLanding.css
+   (imported above) — this block is only for what's unique to this page. */
+table { min-width: 480px; }
+</style>

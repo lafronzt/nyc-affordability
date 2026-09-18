@@ -16,7 +16,8 @@ export const CALC_AFFORDABLE: FooterLink = { label: 'NYC Affordable Housing Calc
 export const CALC_COMPARE: FooterLink = { label: 'Compare All Options', href: '/compare/' };
 export const CALC_NET_PROCEEDS: FooterLink = { label: 'NYC Sale Net Proceeds Calculator', href: '/sell/' };
 export const CALC_REALITY_CHECK: FooterLink = { label: 'NYC Housing Reality Check', href: '/reality-check/' };
-export const ALL_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_NET_PROCEEDS];
+export const CALC_REQUIRED_SALARY: FooterLink = { label: 'Required Salary Calculator', href: '/required-salary/' };
+export const ALL_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_NET_PROCEEDS, CALC_REQUIRED_SALARY];
 export const HUB_LINK: FooterLink = { label: 'NYC Affordability Hub', href: '/' };
 
 /** All calculators except the current page, plus the hub link, in canonical order. */
@@ -68,6 +69,7 @@ export const BUY_INDEX_LINK: FooterLink = { label: 'What It Takes to Buy by Pric
 export const RENT_PRICES_INDEX_LINK: FooterLink = { label: 'What It Takes to Rent by Price', href: '/rent/prices/' };
 export const NEIGHBORHOODS_INDEX_LINK: FooterLink = { label: 'NYC Neighborhood Affordability', href: '/neighborhoods/' };
 export const AFFORDABILITY_INDEX_LINK: FooterLink = { label: 'NYC Affordability Index', href: '/affordability-index/' };
+export const SALARY_INDEX_LINK: FooterLink = { label: 'Salary After Taxes in NYC', href: '/salary/' };
 
 /** Index-only links for the enumerated-parameter page types (income/buy) plus the
     glossary — individual /income/[amount]/ or /buy/[price]/ pages aren't each
@@ -80,6 +82,7 @@ export const EXPLORE_LINKS: FooterLink[] = [
   RENT_PRICES_INDEX_LINK,
   NEIGHBORHOODS_INDEX_LINK,
   AFFORDABILITY_INDEX_LINK,
+  SALARY_INDEX_LINK,
 ];
 
 export const ABOUT_LINK: FooterLink = { label: 'About This Project', href: '/about/' };
