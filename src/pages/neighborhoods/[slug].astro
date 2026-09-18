@@ -91,7 +91,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   ogTitle={data.ogTitle ?? `Can I afford ${data.name}?`}
   ogDescription={data.ogDescription ?? data.metaDescription}
   ogImage={data.ogImage}
-  ogImageAlt={data.ogImageAlt ?? data.name}
+  ogImageAlt={data.ogImageAlt ?? (data.ogImage === '/images/neighborhoods-og.png' ? 'Where can you afford to live? Explore NYC neighborhood housing costs.' : data.name)}
   twitterTitle={data.twitterTitle ?? `Can I afford ${data.name}?`}
   twitterDescription={data.twitterDescription ?? data.metaDescription}
   jsonLd={[jsonLd, breadcrumbJsonLd]}
