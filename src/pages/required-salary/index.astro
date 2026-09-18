@@ -453,21 +453,6 @@ details.section-card[open] summary::after { content: '\25B4'; }
 .headline-sub { font-size: 14px; color: rgba(255,255,255,.75); margin-top: 10px; }
 
 .table-wrap { overflow-x: auto; }
-/* table-layout: fixed with an explicit <colgroup> so column widths are set
-   once, up front, deterministic regardless of how short the header text is
-   or how JS mutates tbody after the initial paint. The two number columns
-   get a fixed width sized to their content (dollar amounts); the colgroup's
-   first <col> is left unspecified so it — not the card around it — absorbs
-   the rest of the table's 100% width. Shrinking or centering the table
-   instead (previous versions of this fix) either left the surrounding card
-   with a dead gap, or read as a stray narrow island next to a large empty
-   field; a plain full-width table with padded cells is just a normal table. */
-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; }
-th { text-align: left; font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; padding: 12px 16px; border-bottom: 1px solid var(--g100); background: var(--g50); }
-th:not(:first-child), td:not(:first-child) { text-align: right; }
-td { padding: 10px 16px; border-bottom: 1px solid var(--g100); color: var(--g800); font-weight: 600; font-variant-numeric: tabular-nums; }
-tbody tr:last-child td { border-bottom: none; }
-.row-total td { font-weight: 800; background: var(--g50); }
 
 .assumptions-list { list-style: none; padding: 0 18px 16px; font-size: 13px; color: var(--g700); line-height: 2; }
 .assumptions-list li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--g100); padding: 4px 0; }
@@ -502,4 +487,22 @@ tbody tr:last-child td { border-bottom: none; }
   .page { padding: 0 14px 44px; margin-top: 14px; }
   .hero { padding: 22px 18px 18px; }
 }
+</style>
+
+<!-- required-salary.ts fills rs-breakdown-body/rs-sensitivity-body with
+     document.createElement('tr')/innerHTML at runtime, so those <tr>/<td>
+     elements never get Astro's scoped data-astro-cid attribute — a scoped
+     rule like "td { padding: ... }" above silently never matched them, and
+     they fell through to the site-wide "* { padding: 0 }" reset instead
+     (text sitting flush on the cell edge, rows with no vertical padding).
+     is:global + a .table-wrap ancestor selector fixes the cid mismatch
+     while staying scoped to this page's two result tables, since
+     .table-wrap isn't used anywhere else in the codebase. -->
+<style is:global>
+  .table-wrap table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; }
+  .table-wrap th { text-align: left; font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; padding: 12px 16px; border-bottom: 1px solid var(--g100); background: var(--g50); }
+  .table-wrap th:not(:first-child), .table-wrap td:not(:first-child) { text-align: right; }
+  .table-wrap td { padding: 10px 16px; border-bottom: 1px solid var(--g100); color: var(--g800); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .table-wrap tbody tr:last-child td { border-bottom: none; }
+  .table-wrap .row-total td { font-weight: 800; background: var(--g50); }
 </style>
