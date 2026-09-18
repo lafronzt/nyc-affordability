@@ -444,6 +444,12 @@ details.section-card[open] summary::after { content: '\25B4'; }
 .headline-value { font-size: clamp(34px, 6vw, 56px); font-weight: 850; letter-spacing: -1.5px; font-variant-numeric: tabular-nums; line-height: 1; }
 .headline-sub { font-size: 14px; color: rgba(255,255,255,.75); margin-top: 10px; }
 
+/* These two tables are much narrower than the 1300px page, so a table
+   width:auto (hugging its own colgroup) left the *card* stretched to the
+   full page width around it — a large dead white gap to the right of the
+   table. :has() scopes the card itself to the table's width instead,
+   which is safe because only these two section-cards contain a table. */
+.section-card:has(.table-wrap) { width: fit-content; max-width: 100%; }
 .table-wrap { overflow-x: auto; }
 /* table-layout: fixed + an explicit <colgroup> (not percentages of a 100%-wide
    table, and not table-layout: auto) so column widths are set once, up front,
