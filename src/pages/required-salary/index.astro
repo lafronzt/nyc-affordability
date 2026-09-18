@@ -96,6 +96,43 @@ const jsonLd = {
   </section>
 
   <section class="section-card">
+    <div class="section-title">Itemized vs. Standard Deduction</div>
+    <div class="editor-body">
+      <div class="field field-narrow">
+        <label for="rs-itemize-choice">Itemize or standard deduction?</label>
+        <div class="input-wrap"><select id="rs-itemize-choice">
+          <option value="auto">Let the calculator pick the better one</option>
+          <option value="standard">Always use the standard deduction</option>
+          <option value="itemize">Always itemize</option>
+        </select></div>
+      </div>
+      <p class="editor-note">Itemizing doesn't add a new payroll line item — it <strong>replaces</strong> the standard deduction in the tax math, on both your federal and NY returns (independently — it's normal to itemize on one and take the standard deduction on the other). Leave everything below at $0 if none of it applies to you; renters usually do.</p>
+
+      <div class="editor-grid cols-2">
+        <div class="field">
+          <label for="rs-mortgage-interest">Mortgage interest paid</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-mortgage-interest" min="0" step="500"><span>/yr</span></div>
+        </div>
+        <div class="field">
+          <label for="rs-property-tax">Local property tax paid</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-property-tax" min="0" step="250"><span>/yr</span></div>
+        </div>
+        <div class="field">
+          <label for="rs-charitable">Charitable contributions</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-charitable" min="0" step="100"><span>/yr</span></div>
+        </div>
+        <div class="field">
+          <label for="rs-medical-expenses">Unreimbursed medical/dental expenses</label>
+          <div class="input-wrap"><span>$</span><input type="number" id="rs-medical-expenses" min="0" step="250"><span>/yr</span></div>
+        </div>
+      </div>
+      <p class="editor-note">Cash and non-cash charitable giving combined. Only the amount above 7.5% of your income counts for medical expenses — we do that math for you. Mortgage interest is deductible on acquisition debt up to $750,000 (or $1M if the loan originated before 12/16/2017).</p>
+      <p class="editor-note">If you own a co-op, your mortgage interest and property tax figures come from your share of the building's underlying mortgage and taxes — check your co-op's annual shareholder tax letter or ask your managing agent.</p>
+      <p class="editor-note" id="rs-itemize-mfj-note" hidden>Married Filing Jointly: if either spouse itemizes, both must — you can't have one spouse itemize and the other take the standard deduction.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
     <div class="section-title">Pre-tax contributions</div>
     <div class="editor-body">
       <div class="subsection-label">Retirement</div>
@@ -263,6 +300,31 @@ const jsonLd = {
     <div class="headline-eyebrow">You need a gross salary of</div>
     <div class="headline-value" id="rs-required-annual" aria-live="polite">&mdash;</div>
     <div class="headline-sub"><span id="rs-required-monthly" aria-live="polite">&mdash;</span> / month, before taxes</div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-title">Itemized vs. Standard Deduction — your result</div>
+    <div class="editor-body">
+      <div class="itemize-result-grid">
+        <div class="itemize-result">
+          <div class="itemize-result-label">Federal return</div>
+          <div class="itemize-result-choice" id="rs-itemize-fed-choice">&mdash;</div>
+          <div class="itemize-result-detail" id="rs-itemize-fed-detail"></div>
+        </div>
+        <div class="itemize-result">
+          <div class="itemize-result-label">NY State return</div>
+          <div class="itemize-result-choice" id="rs-itemize-ny-choice">&mdash;</div>
+          <div class="itemize-result-detail" id="rs-itemize-ny-detail"></div>
+        </div>
+      </div>
+      <p class="editor-note" id="rs-itemize-close-call" hidden aria-live="polite"></p>
+
+      <div class="w4-card" id="rs-w4-card" hidden aria-live="polite">
+        <div class="w4-eyebrow">Tell your employer on Form W-4, Step 4(b)</div>
+        <div class="w4-amount" id="rs-w4-amount">&mdash;</div>
+        <p class="w4-note">Since you're set up to itemize federally, enter this amount on Step 4(b) of your W-4 with your employer. Without it, your employer withholds as if you're taking the standard deduction — your annual numbers above are still right, but your actual paychecks will run smaller than this tool predicts, with the difference coming back as a refund the following spring instead of showing up in your take-home pay.</p>
+      </div>
+    </div>
   </section>
 
   <section class="section-card">
@@ -443,6 +505,23 @@ details.section-card[open] summary::after { content: '\25B4'; }
   background: var(--blue-lt); color: var(--blue); font-size: 10px; font-weight: 800; text-transform: none; letter-spacing: 0;
 }
 .section-summary-hint { margin-left: 8px; font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--g400); }
+
+.itemize-result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 4px; }
+.itemize-result { border: 1px solid var(--g200); border-radius: 8px; padding: 14px 16px; background: var(--g50); }
+.itemize-result-label { font-size: 11px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
+.itemize-result-choice { font-size: 20px; font-weight: 800; color: var(--g900); letter-spacing: -0.3px; }
+.itemize-result-detail { font-size: 12px; color: var(--g500); margin-top: 4px; }
+
+.w4-card {
+  margin-top: 14px; border: 1px solid var(--blue-lt); border-radius: 8px; background: var(--blue-xlt); padding: 16px 18px;
+}
+.w4-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--blue); margin-bottom: 6px; }
+.w4-amount { font-size: 28px; font-weight: 850; color: var(--g900); letter-spacing: -0.5px; font-variant-numeric: tabular-nums; margin-bottom: 8px; }
+.w4-note { font-size: 12px; color: var(--g600); line-height: 1.6; }
+
+@media (max-width: 560px) {
+  .itemize-result-grid { grid-template-columns: 1fr; }
+}
 
 .headline-card {
   background: var(--navy); border-radius: var(--r); overflow: hidden; color: #f0f9ff;
