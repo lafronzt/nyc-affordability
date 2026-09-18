@@ -413,14 +413,20 @@ details.section-card[open] summary::after { content: '\25B4'; }
    one border made the two look like a single control while behaving as two,
    and a <label> nested inside .field also fought the page's ".field label"
    rule for its own display/sizing. Kept as one grid cell (not two) by
-   wrapping both in .input-with-max instead of a second editor-grid column. */
+   wrapping both in .input-with-max instead of a second editor-grid column.
+   Scoped as ".input-with-max .max-btn" (not just ".max-btn") for the same
+   specificity reason as .input-wrap .max-chip before it: ".field label" (a
+   class + a type selector) otherwise outranks a single-class ".max-btn" and
+   wins, forcing this label back to display: block with a stray
+   margin-bottom — which is exactly why it rendered short and off-center. */
 .input-with-max { display: flex; align-items: stretch; gap: 8px; }
 .input-with-max .input-wrap { flex: 1; min-width: 0; }
-.max-btn {
+.input-with-max .max-btn {
   display: flex; align-items: center; gap: 6px; padding: 0 14px; cursor: pointer; flex-shrink: 0;
   border: 1px solid var(--g300); border-radius: 5px; background: var(--g50);
   font-size: 11px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .4px;
   transition: background .15s, border-color .15s, color .15s;
+  margin-bottom: 0;
 }
 .max-btn input {
   position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
@@ -446,21 +452,17 @@ details.section-card[open] summary::after { content: '\25B4'; }
 .headline-value { font-size: clamp(34px, 6vw, 56px); font-weight: 850; letter-spacing: -1.5px; font-variant-numeric: tabular-nums; line-height: 1; }
 .headline-sub { font-size: 14px; color: rgba(255,255,255,.75); margin-top: 10px; }
 
-/* These two tables are much narrower than the 1300px page, so a table
-   width:auto (hugging its own colgroup) left the *card* stretched to the
-   full page width around it — a large dead white gap to the right of the
-   table. :has() scopes the card itself to the table's width instead,
-   which is safe because only these two section-cards contain a table.
-   That only works if every other child agrees to be that narrow too: the
-   explanatory sentence below each table is long enough to fit on one line,
-   and an unconstrained line of text is exactly as wide as fit-content's
-   shrink-to-fit measurement wants to be, so it — not the table — ends up
-   setting the card's width back to (nearly) a full line of prose. Capping
-   its width forces it to wrap, so the table (the widest remaining child)
-   is what determines the card's width again. */
-.section-card:has(.table-wrap) { width: fit-content; max-width: 100%; }
-.section-card:has(.table-wrap) .prose-body p { max-width: 46ch; }
+/* These two tables are much narrower than the 1300px page. Shrinking the
+   *card* itself to the table's width (a previous version of this fix) kept
+   every other section-card on the page full-width, so these two read as
+   stray narrow islands next to a large empty field, and it forced the
+   explanatory sentence below each table to wrap tightly for no reason.
+   Keeping the card full-width and centering its (still narrow) table and
+   paragraph instead puts the leftover space evenly on both sides, which
+   reads as "this content is intentionally compact" rather than "broken". */
 .table-wrap { overflow-x: auto; }
+.section-card:has(.table-wrap) table { margin: 0 auto; }
+.section-card:has(.table-wrap) .prose-body p { max-width: 65ch; margin-left: auto; margin-right: auto; }
 /* table-layout: fixed + an explicit <colgroup> (not percentages of a 100%-wide
    table, and not table-layout: auto) so column widths are set once, up front,
    from the colgroup alone — deterministic regardless of how short the header
