@@ -155,9 +155,9 @@ const jsonLd = {
         </div>
         <div class="field">
           <label for="rs-hsa-amount">HSA contribution</label>
-          <div class="input-wrap input-wrap-maxable">
-            <span>$</span><input type="number" id="rs-hsa-amount" min="0" step="100">
-            <label class="max-chip" for="rs-hsa-max" title="Set to your coverage's IRS max">
+          <div class="input-with-max">
+            <div class="input-wrap"><span>$</span><input type="number" id="rs-hsa-amount" min="0" step="100"></div>
+            <label class="max-btn" for="rs-hsa-max" title="Set to your coverage's IRS max">
               <input type="checkbox" id="rs-hsa-max"><span>Max</span>
             </label>
           </div>
@@ -194,9 +194,9 @@ const jsonLd = {
       <div class="editor-grid cols-2">
         <div class="field">
           <label for="rs-commuter-transit">Transit</label>
-          <div class="input-wrap input-wrap-maxable">
-            <span>$</span><input type="number" id="rs-commuter-transit" min="0" step="10"><span>/mo</span>
-            <label class="max-chip" for="rs-commuter-transit-max" title={`Set to the IRS max of ${transitCapMonthly}/mo`}>
+          <div class="input-with-max">
+            <div class="input-wrap"><span>$</span><input type="number" id="rs-commuter-transit" min="0" step="10"><span>/mo</span></div>
+            <label class="max-btn" for="rs-commuter-transit-max" title={`Set to the IRS max of ${transitCapMonthly}/mo`}>
               <input type="checkbox" id="rs-commuter-transit-max"><span>Max</span>
             </label>
           </div>
@@ -204,9 +204,9 @@ const jsonLd = {
         </div>
         <div class="field">
           <label for="rs-commuter-parking">Parking</label>
-          <div class="input-wrap input-wrap-maxable">
-            <span>$</span><input type="number" id="rs-commuter-parking" min="0" step="10"><span>/mo</span>
-            <label class="max-chip" for="rs-commuter-parking-max" title={`Set to the IRS max of ${parkingCapMonthly}/mo`}>
+          <div class="input-with-max">
+            <div class="input-wrap"><span>$</span><input type="number" id="rs-commuter-parking" min="0" step="10"><span>/mo</span></div>
+            <label class="max-btn" for="rs-commuter-parking-max" title={`Set to the IRS max of ${parkingCapMonthly}/mo`}>
               <input type="checkbox" id="rs-commuter-parking-max"><span>Max</span>
             </label>
           </div>
@@ -218,9 +218,9 @@ const jsonLd = {
       <div class="editor-grid cols-2">
         <div class="field">
           <label for="rs-healthcare-fsa">Healthcare FSA</label>
-          <div class="input-wrap input-wrap-maxable">
-            <span>$</span><input type="number" id="rs-healthcare-fsa" min="0" step="50"><span>/yr</span>
-            <label class="max-chip" for="rs-healthcare-fsa-max" title={`Set to the IRS max of ${healthcareFsaCapAnnual}/yr`}>
+          <div class="input-with-max">
+            <div class="input-wrap"><span>$</span><input type="number" id="rs-healthcare-fsa" min="0" step="50"><span>/yr</span></div>
+            <label class="max-btn" for="rs-healthcare-fsa-max" title={`Set to the IRS max of ${healthcareFsaCapAnnual}/yr`}>
               <input type="checkbox" id="rs-healthcare-fsa-max"><span>Max</span>
             </label>
           </div>
@@ -228,9 +228,9 @@ const jsonLd = {
         </div>
         <div class="field">
           <label for="rs-dependent-care-fsa">Dependent Care FSA</label>
-          <div class="input-wrap input-wrap-maxable">
-            <span>$</span><input type="number" id="rs-dependent-care-fsa" min="0" step="50"><span>/yr</span>
-            <label class="max-chip" for="rs-dependent-care-fsa-max" title={`Set to the IRS max of ${dependentCareFsaCapAnnual}/yr`}>
+          <div class="input-with-max">
+            <div class="input-wrap"><span>$</span><input type="number" id="rs-dependent-care-fsa" min="0" step="50"><span>/yr</span></div>
+            <label class="max-btn" for="rs-dependent-care-fsa-max" title={`Set to the IRS max of ${dependentCareFsaCapAnnual}/yr`}>
               <input type="checkbox" id="rs-dependent-care-fsa-max"><span>Max</span>
             </label>
           </div>
@@ -270,9 +270,9 @@ const jsonLd = {
     <div class="table-wrap">
       <table aria-label="Salary breakdown">
         <colgroup>
-          <col style="width: 280px">
-          <col style="width: 100px">
-          <col style="width: 100px">
+          <col>
+          <col style="width: min(110px, 26vw)">
+          <col style="width: min(110px, 26vw)">
         </colgroup>
         <thead><tr><th>Line item</th><th>Annual</th><th>Monthly</th></tr></thead>
         <tbody id="rs-breakdown-body"></tbody>
@@ -288,9 +288,9 @@ const jsonLd = {
     <div class="table-wrap">
       <table aria-label="Required salary sensitivity to savings goal">
         <colgroup>
-          <col style="width: 140px">
-          <col style="width: 150px">
-          <col style="width: 180px">
+          <col>
+          <col style="width: min(130px, 30vw)">
+          <col style="width: min(150px, 34vw)">
         </colgroup>
         <thead><tr><th>Savings goal</th><th>Monthly savings</th><th>Required annual salary</th></tr></thead>
         <tbody id="rs-sensitivity-body">
@@ -404,28 +404,36 @@ details.section-card[open] summary::after { content: '\25B4'; }
   font-size: 13px; font-weight: 600; display: flex; align-items: center; white-space: nowrap;
 }
 .input-wrap span:last-child { border-right: 0; border-left: 1px solid var(--g200); }
-.input-wrap:has(.max-chip) span:last-of-type { border-right: 0; }
 .input-wrap input, .input-wrap select {
   border: 0; outline: 0; padding: 8px 9px; min-width: 0; width: 100%; font: inherit; color: var(--g900); background: #fff;
 }
 
-/* Compact "Max" toggle chip embedded at the end of an input-wrap, replacing a
-   separate "Use max" checkbox field so a capped money field is one grid cell,
-   not two. */
-.max-chip {
-  display: flex; align-items: center; gap: 0; padding: 0 10px; cursor: pointer;
-  background: var(--g50); border-left: 1px solid var(--g200); flex-shrink: 0;
+/* A capped money field pairs its input-wrap with a separate "Max" button
+   rather than embedding the toggle inside the input's own border — sharing
+   one border made the two look like a single control while behaving as two,
+   and a <label> nested inside .field also fought the page's ".field label"
+   rule for its own display/sizing. Kept as one grid cell (not two) by
+   wrapping both in .input-with-max instead of a second editor-grid column.
+   Scoped as ".input-with-max .max-btn" (not just ".max-btn") for the same
+   specificity reason as .input-wrap .max-chip before it: ".field label" (a
+   class + a type selector) otherwise outranks a single-class ".max-btn" and
+   wins, forcing this label back to display: block with a stray
+   margin-bottom — which is exactly why it rendered short and off-center. */
+.input-with-max { display: flex; align-items: stretch; gap: 8px; }
+.input-with-max .input-wrap { flex: 1; min-width: 0; }
+.input-with-max .max-btn {
+  display: flex; align-items: center; gap: 6px; padding: 0 14px; cursor: pointer; flex-shrink: 0;
+  border: 1px solid var(--g300); border-radius: 5px; background: var(--g50);
+  font-size: 11px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .4px;
+  transition: background .15s, border-color .15s, color .15s;
+  margin-bottom: 0;
 }
-.max-chip input {
+.max-btn input {
   position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
 }
-.max-chip span {
-  font-size: 11px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .4px;
-}
-.max-chip input:checked + span { color: var(--blue); }
-.max-chip:has(input:checked) { background: var(--blue-xlt); }
-.max-chip:hover { background: var(--g100); }
-.max-chip:has(input:checked):hover { background: var(--blue-lt); }
+.max-btn:has(input:checked) { background: var(--blue-xlt); border-color: var(--blue-lt); color: var(--blue); }
+.max-btn:hover { background: var(--g100); }
+.max-btn:has(input:checked):hover { background: var(--blue-lt); }
 
 .editor-note { font-size: 12px; color: var(--g500); line-height: 1.6; margin-bottom: 8px; }
 .editor-note.warn { color: #b45309; background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.3); padding: 8px 10px; border-radius: 5px; }
@@ -445,18 +453,6 @@ details.section-card[open] summary::after { content: '\25B4'; }
 .headline-sub { font-size: 14px; color: rgba(255,255,255,.75); margin-top: 10px; }
 
 .table-wrap { overflow-x: auto; }
-/* table-layout: fixed + an explicit <colgroup> (not percentages of a 100%-wide
-   table, and not table-layout: auto) so column widths are set once, up front,
-   from the colgroup alone — deterministic regardless of how short the header
-   text is or how JS mutates tbody after the initial paint. width: auto lets
-   the table's total width be just the sum of the three <col> widths instead
-   of stretching to fill the card. */
-table { width: auto; table-layout: fixed; border-collapse: collapse; font-size: 13px; }
-th { text-align: left; font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; padding: 12px 16px; border-bottom: 1px solid var(--g100); background: var(--g50); }
-th:not(:first-child), td:not(:first-child) { text-align: right; }
-td { padding: 10px 16px; border-bottom: 1px solid var(--g100); color: var(--g800); font-weight: 600; font-variant-numeric: tabular-nums; }
-tbody tr:last-child td { border-bottom: none; }
-.row-total td { font-weight: 800; background: var(--g50); }
 
 .assumptions-list { list-style: none; padding: 0 18px 16px; font-size: 13px; color: var(--g700); line-height: 2; }
 .assumptions-list li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--g100); padding: 4px 0; }
@@ -491,4 +487,22 @@ tbody tr:last-child td { border-bottom: none; }
   .page { padding: 0 14px 44px; margin-top: 14px; }
   .hero { padding: 22px 18px 18px; }
 }
+</style>
+
+<!-- required-salary.ts fills rs-breakdown-body/rs-sensitivity-body with
+     document.createElement('tr')/innerHTML at runtime, so those <tr>/<td>
+     elements never get Astro's scoped data-astro-cid attribute — a scoped
+     rule like "td { padding: ... }" above silently never matched them, and
+     they fell through to the site-wide "* { padding: 0 }" reset instead
+     (text sitting flush on the cell edge, rows with no vertical padding).
+     is:global + a .table-wrap ancestor selector fixes the cid mismatch
+     while staying scoped to this page's two result tables, since
+     .table-wrap isn't used anywhere else in the codebase. -->
+<style is:global>
+  .table-wrap table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; }
+  .table-wrap th { text-align: left; font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; padding: 12px 16px; border-bottom: 1px solid var(--g100); background: var(--g50); }
+  .table-wrap th:not(:first-child), .table-wrap td:not(:first-child) { text-align: right; }
+  .table-wrap td { padding: 10px 16px; border-bottom: 1px solid var(--g100); color: var(--g800); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .table-wrap tbody tr:last-child td { border-bottom: none; }
+  .table-wrap .row-total td { font-weight: 800; background: var(--g50); }
 </style>
