@@ -77,7 +77,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   ogTitle={data.ogTitle ?? data.title}
   ogDescription={data.ogDescription ?? data.metaDescription}
   ogImage={data.ogImage}
-  ogImageAlt={data.ogImageAlt ?? data.title}
+  ogImageAlt={data.ogImageAlt ?? (data.ogImage === '/images/guides-og.png' ? 'NYC housing, explained. Clear guides for renting and buying.' : data.title)}
   twitterTitle={data.twitterTitle ?? data.title}
   twitterDescription={data.twitterDescription ?? data.metaDescription}
   jsonLd={[jsonLd, breadcrumbJsonLd]}
