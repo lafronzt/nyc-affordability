@@ -98,6 +98,7 @@ const jsonLd = {
   <section class="section-card">
     <div class="section-title">Itemized vs. Standard Deduction</div>
     <div class="editor-body">
+      <p class="editor-note warn">Not tax advice. Whether itemizing actually helps you depends on your full tax picture — including things this tool doesn't fully model, like your mortgage's acquisition-debt limit or unusual income situations. Talk to a tax professional before changing your W-4 or your tax strategy based on this estimate.</p>
       <div class="field field-narrow">
         <label for="rs-itemize-choice">Itemize or standard deduction?</label>
         <div class="input-wrap"><select id="rs-itemize-choice">
@@ -323,6 +324,7 @@ const jsonLd = {
         <div class="w4-eyebrow">Tell your employer on Form W-4, Step 4(b)</div>
         <div class="w4-amount" id="rs-w4-amount">&mdash;</div>
         <p class="w4-note">Since you're set up to itemize federally, enter this amount on Step 4(b) of your W-4 with your employer. Without it, your employer withholds as if you're taking the standard deduction — your annual numbers above are still right, but your actual paychecks will run smaller than this tool predicts, with the difference coming back as a refund the following spring instead of showing up in your take-home pay.</p>
+        <p class="w4-disclaimer">Not tax advice, and not a guarantee of accuracy — this figure is a simplified planning estimate, not a substitute for a tax professional. Confirm it (and the rest of your W-4) with one before you submit anything to your employer. See our <a href="/terms/">Terms of Service</a> for the full no-warranty and liability terms.</p>
       </div>
     </div>
   </section>
@@ -410,7 +412,7 @@ const jsonLd = {
 
 <Footer
   variant="app"
-  disclaimer="Estimate only, not tax advice. Assumes 2026 federal, New York State, and NYC resident tax brackets and contribution limits. Health insurance, FSA, commuter benefit, and other paycheck deduction figures are only as accurate as what you enter, and NY SDI/PFL are modeled as flat statutory amounts, not your employer's exact payroll calculation. Consult a tax professional for guidance specific to your situation."
+  disclaimer="Estimate only, not tax advice, provided as-is with no warranty of accuracy. Assumes 2026 federal, New York State, and NYC resident tax brackets and contribution limits. Health insurance, FSA, commuter benefit, and other paycheck deduction figures are only as accurate as what you enter, and NY SDI/PFL are modeled as flat statutory amounts, not your employer's exact payroll calculation. The itemized-vs-standard deduction comparison and its Form W-4 Step 4(b) figure are simplified estimates — they don't check your mortgage against the acquisition-debt limit or account for every AGI-based phaseout, and shouldn't be used to file a return or fill out payroll paperwork without review. Consult a tax professional for guidance specific to your situation."
   columns={footerColumns}
 />
 </BaseLayout>
@@ -518,6 +520,8 @@ details.section-card[open] summary::after { content: '\25B4'; }
 .w4-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--blue); margin-bottom: 6px; }
 .w4-amount { font-size: 28px; font-weight: 850; color: var(--g900); letter-spacing: -0.5px; font-variant-numeric: tabular-nums; margin-bottom: 8px; }
 .w4-note { font-size: 12px; color: var(--g600); line-height: 1.6; }
+.w4-disclaimer { font-size: 11px; font-weight: 650; color: #b45309; line-height: 1.6; margin-top: 10px; padding-top: 9px; border-top: 1px dashed rgba(180,83,9,.35); }
+.w4-disclaimer a { color: inherit; text-decoration: underline; }
 
 @media (max-width: 560px) {
   .itemize-result-grid { grid-template-columns: 1fr; }
