@@ -13,6 +13,7 @@ sources:
     url: "https://streeteasy.com/blog/how-much-rent-can-i-afford-in-nyc/"
 relatedGuides:
   - how-much-salary-do-you-need-to-live-in-nyc
+  - nyc-rental-guarantor-companies-explained
 relatedTerms:
   - nyc-40x-rule
   - guarantor
@@ -51,7 +52,7 @@ Adding a guarantor doesn't change your own qualifying income requirement — it 
 
 ## If you don't clear the multiplier
 
-Falling short of 40x doesn't automatically disqualify you — it just means the landlord needs a different form of assurance. Common paths: adding a qualified guarantor, paying several months of rent upfront, or using a paid guarantor/insurance service that effectively substitutes a fee for the income gap. Which of these a given landlord will accept (and on what terms) varies by building and isn't standardized the way the 40x figure itself is, so it's worth asking directly rather than assuming a workaround will be accepted.
+Falling short of 40x doesn't automatically disqualify you — it just means the landlord needs a different form of assurance. Common paths: adding a qualified guarantor, paying several months of rent upfront, or using a paid guarantor/insurance service that effectively substitutes a fee for the income gap (see our [guarantor companies guide](/guides/nyc-rental-guarantor-companies-explained/) for typical fees and approval thresholds). Which of these a given landlord will accept (and on what terms) varies by building and isn't standardized the way the 40x figure itself is, so it's worth asking directly rather than assuming a workaround will be accepted.
 
 The same 40x-style minimum-income screen shows up outside market-rate rentals, too — NYC's Housing Connect affordable housing lottery commonly applies it on top of the AMI income ceiling. See our [AMI & Housing Connect guide](/guides/nyc-ami-housing-connect-explained/) for how that combination works.
 

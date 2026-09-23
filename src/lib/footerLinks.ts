@@ -40,6 +40,11 @@ export const GUIDE_SECURITY_DEPOSIT: FooterLink = { label: 'Security Deposits & 
 export const GUIDE_SELLER_CLOSING_COSTS: FooterLink = { label: 'NYC Seller Closing Costs Explained', href: '/guides/nyc-seller-closing-costs-explained/' };
 export const GUIDE_RENT_STABILIZATION: FooterLink = { label: 'NYC Rent Stabilization Explained', href: '/guides/nyc-rent-stabilization-explained/' };
 export const GUIDE_485X: FooterLink = { label: '485-x Tax Abatement for Condo Buyers', href: '/guides/485-x-tax-abatement-condo-buyers/' };
+export const GUIDE_SALARY_NEEDED: FooterLink = { label: 'Salary Needed to Live in NYC', href: '/guides/how-much-salary-do-you-need-to-live-in-nyc/' };
+export const GUIDE_PIED_A_TERRE: FooterLink = { label: 'NYC Pied-à-Terre Tax Explained', href: '/guides/nyc-pied-a-terre-tax-explained/' };
+export const GUIDE_MORTGAGE_RATES: FooterLink = { label: 'How Mortgage Rates Affect Affordability', href: '/guides/how-mortgage-rates-affect-nyc-affordability/' };
+export const GUIDE_CEMA: FooterLink = { label: 'CEMA: Cutting Mortgage Recording Tax', href: '/guides/nyc-cema-mortgage-recording-tax-savings/' };
+export const GUIDE_GUARANTOR_COMPANIES: FooterLink = { label: 'NYC Guarantor Companies Explained', href: '/guides/nyc-rental-guarantor-companies-explained/' };
 export const ALL_GUIDES: FooterLink[] = [
   GUIDE_MANSION_TAX,
   GUIDE_COOP_RESERVE,
@@ -56,6 +61,11 @@ export const ALL_GUIDES: FooterLink[] = [
   GUIDE_SELLER_CLOSING_COSTS,
   GUIDE_RENT_STABILIZATION,
   GUIDE_485X,
+  GUIDE_SALARY_NEEDED,
+  GUIDE_PIED_A_TERRE,
+  GUIDE_MORTGAGE_RATES,
+  GUIDE_CEMA,
+  GUIDE_GUARANTOR_COMPANIES,
 ];
 
 /** Standalone Guides entry for the primary navbar (a different surface than the

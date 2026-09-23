@@ -16,6 +16,7 @@ relatedTerms:
 relatedGuides:
   - coop-board-reserve-requirements
   - coop-vs-condo-nyc-costs
+  - how-mortgage-rates-affect-nyc-affordability
 draft: false
 ---
 

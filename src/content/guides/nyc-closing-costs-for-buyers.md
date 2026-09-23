@@ -15,6 +15,7 @@ relatedGuides:
   - nyc-mansion-tax-explained
   - coop-vs-condo-nyc-costs
   - nyc-seller-closing-costs-explained
+  - nyc-cema-mortgage-recording-tax-savings
 relatedTerms:
   - mortgage-recording-tax
   - mansion-tax
@@ -31,7 +32,7 @@ Most U.S. markets charge buyers an origination fee, an appraisal, title insuranc
 
 ## The line items, in order of size
 
-**Mortgage recording tax (condos only, financed purchases).** The single largest line item on most financed condo closings: roughly **1.80%** of the loan amount on loans under $500,000, and **1.925%** on loans of $500,000 or more. It's collected by the NYC Department of Finance / City Register at the time the mortgage is recorded. Co-ops are exempt — a co-op purchase is a share purchase, not a real-property transaction, so there's no mortgage to record against the property itself. See our [full mortgage recording tax breakdown](/guides/coop-vs-condo-nyc-costs/) for how this single line item drives most of the cost gap between condos and co-ops.
+**Mortgage recording tax (condos only, financed purchases).** The single largest line item on most financed condo closings: roughly **1.80%** of the loan amount on loans under $500,000, and **1.925%** on loans of $500,000 or more. It's collected by the NYC Department of Finance / City Register at the time the mortgage is recorded. Co-ops are exempt — a co-op purchase is a share purchase, not a real-property transaction, so there's no mortgage to record against the property itself. See our [full mortgage recording tax breakdown](/guides/coop-vs-condo-nyc-costs/) for how this single line item drives most of the cost gap between condos and co-ops. On a refinance, or a purchase where the seller's mortgage can be assigned to you, a [CEMA](/guides/nyc-cema-mortgage-recording-tax-savings/) can limit the tax to new money only.
 
 **Mansion tax (both condos and co-ops, purchases ≥ $1,000,000).** A buyer-paid state tax that starts at 1.00% of the full purchase price at $1,000,000 and steps up to 3.90% above $25,000,000 — applied to the entire price, not just the amount above the threshold. See our [dedicated mansion tax guide](/guides/nyc-mansion-tax-explained/) for the complete tier table and why crossing a bracket line by $1 can cost thousands.
 
@@ -63,4 +64,4 @@ Sponsor (new-development) condos routinely push buyer closing costs to the highe
 
 ## What isn't included above
 
-Move-in fees, storage/parking transfer fees, and any post-closing renovation deposits are building-specific and layered on top of the closing costs above — check with the managing agent before budgeting a final number. If the unit won't be your primary residence, also ask about NYC's annual pied-à-terre tax (effective July 1, 2026) — it's a recurring carrying cost rather than a closing cost, covered in our [mansion tax guide](/guides/nyc-mansion-tax-explained/). As with every figure on this site, verify final numbers with your closing attorney; rates and fee schedules are reviewed periodically but can change. See our [full sourcing methodology](/about/) for where every default used across these calculators comes from.
+Move-in fees, storage/parking transfer fees, and any post-closing renovation deposits are building-specific and layered on top of the closing costs above — check with the managing agent before budgeting a final number. If the unit won't be your primary residence, also ask about NYC's annual pied-à-terre tax (effective July 1, 2026) — it's a recurring carrying cost rather than a closing cost, covered in our [pied-à-terre tax guide](/guides/nyc-pied-a-terre-tax-explained/). As with every figure on this site, verify final numbers with your closing attorney; rates and fee schedules are reviewed periodically but can change. See our [full sourcing methodology](/about/) for where every default used across these calculators comes from.

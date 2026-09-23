@@ -19,6 +19,7 @@ relatedGuides:
   - nyc-closing-costs-for-buyers
   - coop-vs-condo-nyc-costs
   - nyc-seller-closing-costs-explained
+  - nyc-pied-a-terre-tax-explained
 relatedTerms:
   - mansion-tax
 cta:
@@ -78,4 +79,4 @@ The mansion tax is a closing cost, not an income requirement, but it does eat in
 
 ## Not the same thing: the 2026 pied-à-terre tax
 
-The same state budget created a separate, newer tax that's easy to confuse with the mansion tax: an **annual pied-à-terre surcharge** on high-value NYC homes that aren't anyone's primary residence, effective July 1, 2026. Unlike the mansion tax, it's not a one-time closing cost — it's billed every year alongside property tax (the first bills arrive in January 2027), and it doesn't apply at all if the owner lives in the unit as a primary residence. For condos and co-ops, the first phase applies to units the Department of Finance values at $1 million or more, at 4% to 6.5% of that DOF value — which, for co-ops and condos, typically runs far below the actual sale price. Starting July 1, 2028, condo and co-op valuation moves to a comparable-sales method, with a $5 million threshold and lower rates. If you're buying a second home or an investment unit rather than a primary residence, ask your attorney whether it applies before you budget carrying costs.
+The same state budget created a separate, newer tax that's easy to confuse with the mansion tax: an **annual pied-à-terre surcharge** on high-value NYC homes that aren't anyone's primary residence, effective July 1, 2026. Unlike the mansion tax, it's not a one-time closing cost — it's billed every year alongside property tax (the first bills arrive in January 2027), and it doesn't apply at all if the owner lives in the unit as a primary residence. For condos and co-ops, the first phase applies to units the Department of Finance values at $1 million or more, at 4% to 6.5% of that DOF value — which, for co-ops and condos, typically runs far below the actual sale price. Starting July 1, 2028, condo and co-op valuation moves to a comparable-sales method, with a $5 million threshold and lower rates. If you're buying a second home or an investment unit rather than a primary residence, ask your attorney whether it applies before you budget carrying costs — see our [pied-à-terre tax guide](/guides/nyc-pied-a-terre-tax-explained/) for the full rate table and a worked example.

@@ -15,6 +15,7 @@ relatedGuides:
   - coop-board-approval-process
   - pmi-on-nyc-condos-explained
   - how-much-salary-do-you-need-to-live-in-nyc
+  - how-mortgage-rates-affect-nyc-affordability
 relatedTerms:
   - debt-to-income-ratio-dti
   - post-closing-liquidity

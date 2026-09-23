@@ -2,7 +2,7 @@
 term: "Mortgage Recording Tax (MRT)"
 shortDefinition: "A NYC/NYS tax on financed real property purchases — about 1.80% of the loan under $500,000, 1.925% at or above — that applies to condos but not co-ops."
 metaDescription: "NYC/NYS Mortgage Recording Tax is a borrower-paid tax on the loan amount for financed condo and home purchases — 1.80% under $500K, 1.925% at or above. Co-ops are exempt."
-updated: "2026-08-12"
+updated: "2026-09-23"
 category: "taxes"
 sources:
   - label: "NYC Department of Finance — Recording Property-Related Documents (Mortgage Recording Tax)"
@@ -14,6 +14,7 @@ relatedTerms:
 relatedGuides:
   - nyc-closing-costs-for-buyers
   - coop-vs-condo-nyc-costs
+  - nyc-cema-mortgage-recording-tax-savings
 draft: false
 ---
 
@@ -23,4 +24,4 @@ A borrower-paid tax on the *loan amount* (not the purchase price) for financed r
 
 ## Worked example
 
-A condo buyer financing a $600,000 loan (above the $500,000 threshold) owes $600,000 × 1.925% = $11,550 in mortgage recording tax at closing — paid in cash, not financed into the mortgage. A buyer paying all-cash pays no MRT at all, since there's no loan to record. See [co-op vs condo costs](/guides/coop-vs-condo-nyc-costs/) for how this factors into the two structures' total cost comparison, or see it calculated automatically on the [Condo Calculator](/condo/).
+A condo buyer financing a $600,000 loan (above the $500,000 threshold) owes $600,000 × 1.925% = $11,550 in mortgage recording tax at closing — paid in cash, not financed into the mortgage. A buyer paying all-cash pays no MRT at all, since there's no loan to record. On a refinance, a [CEMA](/guides/nyc-cema-mortgage-recording-tax-savings/) can limit the tax to new money borrowed above the existing balance. See [co-op vs condo costs](/guides/coop-vs-condo-nyc-costs/) for how this factors into the two structures' total cost comparison, or see it calculated automatically on the [Condo Calculator](/condo/).
