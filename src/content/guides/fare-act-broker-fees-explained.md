@@ -1,8 +1,8 @@
 ---
 title: "FARE Act: Who Pays Broker Fees in NYC Now"
 metaDescription: "The FARE Act (effective June 11, 2025) shifted NYC broker fees from tenant-paid to whoever hires the broker. See the rule, a worked move-in cost example, and the law's current legal status."
-intro: "Since June 11, 2025, NYC tenants no longer pay a broker fee just because the landlord happened to use a broker to list the apartment — the FARE Act made whoever hires the broker responsible for paying them. Here's exactly what changed, what a tenant can still be charged, and where the law stands after a year of legal challenges."
-updated: "2026-08-04"
+intro: "Since June 11, 2025, NYC tenants no longer pay a broker fee just because the landlord happened to use a broker to list the apartment — the FARE Act made whoever hires the broker responsible for paying them. Here's exactly what changed, what a tenant can still be charged, and where the law stands after the Second Circuit's July 2026 ruling."
+updated: "2026-09-23"
 category: "renting"
 sources:
   - label: "NYC Department of Consumer and Worker Protection — FARE Act FAQ"
@@ -11,6 +11,8 @@ sources:
     url: "https://www.nysenate.gov/legislation/laws/RPP/227-G"
   - label: "The Real Deal — Appeals Court Rejects REBNY's FARE Act Appeal (July 2026)"
     url: "https://therealdeal.com/new-york/2026/07/14/appeals-court-rejects-rebnys-fare-act-appeal/"
+  - label: "Crain's New York Business — Court rejects REBNY's FARE Act appeal (July 13, 2026)"
+    url: "https://www.crainsnewyork.com/politics-policy/cny-rebny-fare-act-broker-fee-20260713/"
 relatedGuides:
   - nyc-security-deposit-move-in-costs
   - nyc-40x-rent-rule
@@ -69,4 +71,6 @@ That's a **$6,300 reduction — 47% less cash needed at signing** — for the id
 
 ## Where the law stands now
 
-The Real Estate Board of New York (REBNY) sued to block the FARE Act on First Amendment and constitutional grounds shortly after it passed. A federal district judge dismissed the case in June 2025, and as of July 2026 the Second Circuit Court of Appeals rejected REBNY's appeal as well. The law has remained in full effect throughout — NYC's Department of Consumer and Worker Protection has continued issuing violations and fee refunds to tenants during the litigation, and nothing in the current appellate posture changes that. Barring a further appeal, the rule described above is the settled law, not a temporary arrangement.
+The Real Estate Board of New York (REBNY) sued to block the FARE Act in federal court shortly after it passed, arguing it violated the First Amendment, was preempted by state law, and impaired existing listing contracts. The district court dismissed the First Amendment and preemption claims and refused to pause the law, and in July 2026 the Second Circuit Court of Appeals affirmed both rulings. One narrower claim — that the law unconstitutionally impairs tenant-pays listing agreements signed before it took effect — is still pending in the lower court, and REBNY has said it will "explore pathways to continue our legal challenge."
+
+None of that changes the rule for a tenant today. The law has been in full effect since June 11, 2025, and NYC's Department of Consumer and Worker Protection has continued issuing violations and fee refunds throughout the litigation. With the core constitutional challenges now rejected on appeal, the rule described above is very unlikely to change through this lawsuit — though it's worth checking [DCWP's FARE Act page](https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page) if you see news of a further appeal.

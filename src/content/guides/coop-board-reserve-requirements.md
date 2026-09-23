@@ -2,7 +2,7 @@
 title: "How Much Reserve Does a NYC Co-op Board Require?"
 metaDescription: "NYC co-op boards typically require 12 months of post-closing liquid reserves — 24+ at conservative buildings. See how the math works, what counts as liquid, and a worked example."
 intro: "A NYC co-op board doesn't just check that you can afford the down payment — it wants proof you could keep paying maintenance and your mortgage for months after closing if your income stopped. That's the post-closing reserve requirement, and it catches more buyers off guard than the down payment itself."
-updated: "2026-08-04"
+updated: "2026-09-23"
 category: "coop"
 sources:
   - label: "Aaron and Geoff at Compass — Decoding 2026 NYC Co-op Board Liquidity Rules"
@@ -60,16 +60,16 @@ Everything on the left has to clear everything on the right. Falling short on re
 
 ## Worked example
 
-Take a $600,000 co-op, 20% down, a 30-year mortgage at 6.25%, and $1,200/month maintenance:
+Take a $600,000 co-op, 20% down, a 30-year mortgage at 6.95% (the Freddie Mac 30-year average as of September 17, 2026), and $1,200/month maintenance:
 
 - Down payment: $600,000 × 20% = $120,000
 - Loan amount: $480,000
-- Monthly mortgage P&I: **$2,955**
-- Monthly carrying cost (P&I + maintenance): $2,955 + $1,200 = **$4,155**
+- Monthly mortgage P&I: **$3,177**
+- Monthly carrying cost (P&I + maintenance): $3,177 + $1,200 = **$4,377**
 
-At a 12-month reserve requirement: $4,155 × 12 = **$49,865** in liquid reserves, on top of the $120,000 down payment — **$169,865** in total liquid cash needed before closing costs.
+At a 12-month reserve requirement: $4,377 × 12 = **$52,528** in liquid reserves, on top of the $120,000 down payment — **$172,528** in total liquid cash needed before closing costs.
 
-At a 24-month requirement, the reserve alone doubles to **$99,731**, pushing total liquid cash to roughly **$219,731**.
+At a 24-month requirement, the reserve alone doubles to **$105,056**, pushing total liquid cash to roughly **$225,056**. Because the reserve is measured in months of payments, higher mortgage rates raise it too — the same purchase at April 2026's ~6.25% needed about $2,700 less at 12 months.
 
 That's the part buyers underestimate: at a conservative building, the reserve requirement can be nearly as large as the down payment itself — and unlike the down payment, it has to still be sitting in your accounts *after* you've already paid to close.
 

@@ -14,6 +14,7 @@ relatedTerms:
 relatedGuides:
   - nyc-mansion-tax-explained
   - nyc-closing-costs-for-buyers
+  - nyc-pied-a-terre-tax-explained
 draft: false
 ---
 

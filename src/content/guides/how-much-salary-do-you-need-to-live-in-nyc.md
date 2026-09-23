@@ -2,7 +2,7 @@
 title: "How Much Salary Do You Need to Live in NYC?"
 metaDescription: "There are two different answers to \"how much salary do I need to live in NYC\": the income a landlord requires to qualify you, and the income it actually takes to cover your budget after tax. See both, with the math."
 intro: "\"How much do I need to make to live in NYC\" sounds like one question with one answer. It isn't. A landlord's income requirement and your actual take-home needs are two different calculations that can point to very different numbers — and mixing them up is why the same salary can feel like both \"barely qualifying\" and \"more than enough,\" depending on which number you're looking at."
-updated: "2026-09-17"
+updated: "2026-09-23"
 category: "income"
 sources:
   - label: "Brick Underground — NYC landlords want tenants who earn 40x the monthly rent"
@@ -11,6 +11,8 @@ sources:
     url: "https://www.irs.gov/taxtopics/tc751"
   - label: "NYS Dept. of Taxation and Finance — Frequently Asked Questions about Filing Requirements, Residency, and Telecommuting"
     url: "https://www.tax.ny.gov/pit/file/nonresident-faqs.htm"
+  - label: "NYS Dept. of Taxation and Finance — NYS-50-T-NYS (1/26), New York State Withholding Tax Tables and Methods (2026 rate reductions)"
+    url: "https://www.tax.ny.gov/pdf/publications/withholding/nys50_t_nys.pdf"
 relatedGuides:
   - nyc-40x-rent-rule
   - income-needed-to-buy-nyc-apartment
@@ -43,17 +45,17 @@ Most NYC landlords use some version of the [40x rent rule](/guides/nyc-40x-rent-
 
 Say your real numbers for that same $3,000/month apartment look like this: $1,200/month for everything else (food, transit, subscriptions, the rest of life) and a $300/month savings goal. That's $4,500/month, or $54,000/year, that actually needs to land in your bank account *after* tax.
 
-Working backwards through federal, NY State, NYC resident tax, and FICA for a single filer with no 401(k) or HSA, hitting that $54,000/year take-home target takes a gross salary of about **$72,375/year** ($6,031/month) — using this site's own [Required Salary Calculator](/required-salary/) math.
+Working backwards through federal, NY State, NYC resident tax, and FICA for a single filer with no 401(k) or HSA, hitting that $54,000/year take-home target takes a gross salary of about **$72,836/year** ($6,070/month) — using this site's own [Required Salary Calculator](/required-salary/) math, with 2026 tax rates (including NY State's 0.1-point rate cut for tax year 2026) and NY's mandatory Paid Family Leave and disability deductions.
 
 ## The two numbers, side by side
 
 | Question | Answer |
 | --- | --- |
 | Income to qualify for the apartment (40x rule) | $120,000/year |
-| Income to actually cover that budget after tax | ~$72,375/year |
-| What $120,000/year actually nets after tax | ~$82,882/year ($6,907/month) |
+| Income to actually cover that budget after tax | ~$72,836/year |
+| What $120,000/year actually nets after tax | ~$82,551/year ($6,879/month) |
 
-The landlord's number is nearly **$50,000/year higher** than what it actually takes to cover the stated budget — because the 40x rule isn't trying to answer "can this person cover $4,500/month," it's building in a large cushion against risk, rent increases, and every other draw on income a landlord can't see. If you qualify at 40x, you're very likely to also comfortably clear your actual budget; the reverse isn't guaranteed, which is why it's worth checking both numbers, not just the one a landlord asks for.
+The landlord's number is about **$47,000/year higher** than what it actually takes to cover the stated budget — because the 40x rule isn't trying to answer "can this person cover $4,500/month," it's building in a large cushion against risk, rent increases, and every other draw on income a landlord can't see. If you qualify at 40x, you're very likely to also comfortably clear your actual budget; the reverse isn't guaranteed, which is why it's worth checking both numbers, not just the one a landlord asks for.
 
 ## Why NYC's number is higher than almost anywhere else
 

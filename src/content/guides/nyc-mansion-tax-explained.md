@@ -2,7 +2,7 @@
 title: "NYC Mansion Tax Explained: 2026 Tiers and the $1 Cliff"
 metaDescription: "The NYC mansion tax runs from 1% to 3.9% of the purchase price on residential sales of $1,000,000 or more. See the current tier table, how the $1,000,000 cliff works, and a worked example."
 intro: "New York's mansion tax is a buyer-paid tax that starts at 1% of the full purchase price once a residential sale hits $1,000,000 — and because it's a whole-price bracket, not a marginal one, crossing a threshold by even a dollar raises the entire bill, not just the amount above it."
-updated: "2026-08-04"
+updated: "2026-09-23"
 category: "buying"
 sources:
   - label: "NYS Dept. of Taxation and Finance — TSB-M-19(1)R, Summary of Amendments to the Real Estate Transfer Tax"
@@ -11,10 +11,15 @@ sources:
     url: "https://www.tax.ny.gov/pdf/publications/real_estate/pub577.pdf"
   - label: "NYS Dept. of Taxation and Finance — Real Estate Transfer Tax overview"
     url: "https://www.tax.ny.gov/bus/transfer/rptidx.htm"
+  - label: "Katten Muchin Rosenman LLP — New York City Enacts Annual 'Pied-à-Terre Tax' on Second Homes (2026)"
+    url: "https://katten.com/new-york-city-enacts-annual-pied-a-terre-tax-on-second-homes"
+  - label: "Greenberg Traurig LLP — NYC DOF Finalizes Rules and Sends Notices Implementing the New Pied-à-Terre Tax (August 2026)"
+    url: "https://www.gtlaw.com/en/insights/2026/8/nyc-dof-finalizes-rules-and-begins-exemption-review-process-for-pedterre-tax"
 relatedGuides:
   - nyc-closing-costs-for-buyers
   - coop-vs-condo-nyc-costs
   - nyc-seller-closing-costs-explained
+  - nyc-pied-a-terre-tax-explained
 relatedTerms:
   - mansion-tax
 cta:
@@ -46,7 +51,7 @@ The buyer pays it, due at closing alongside the transfer tax return. If the buye
 | $20,000,000 to $24,999,999 | 3.75% |
 | $25,000,000 and up | 3.90% |
 
-These rates took effect July 1, 2019 and haven't changed since. The $1,000,000 floor itself dates back to 1989 and has never been adjusted for inflation.
+These rates took effect July 1, 2019 and haven't changed since — the FY2027 state budget (signed May 2026) left them untouched, and a proposed additional 1% tax on all-cash purchases of $1 million or more was dropped before passage. The $1,000,000 floor itself dates back to 1989 and has never been adjusted for inflation.
 
 ## Why it's a cliff, not a slope
 
@@ -71,3 +76,7 @@ One dollar of purchase price — $2,000,000 versus $1,999,999 — is the differe
 The same math scales up. A $9,999,999 purchase owes 2.25% — $224,999.98, call it $225,000. Add $1 to hit $10,000,000 and the rate jumps to 3.25%, so the tax becomes $325,000. That's an extra $100,000 in mansion tax for a single dollar of price, which is why contracts near the $10 million line get negotiated with real care.
 
 The mansion tax is a closing cost, not an income requirement, but it does eat into the cash side of a purchase — see our [income-needed-to-buy guide](/guides/income-needed-to-buy-nyc-apartment/) for how the cash and income constraints interact on a real purchase.
+
+## Not the same thing: the 2026 pied-à-terre tax
+
+The same state budget created a separate, newer tax that's easy to confuse with the mansion tax: an **annual pied-à-terre surcharge** on high-value NYC homes that aren't anyone's primary residence, effective July 1, 2026. Unlike the mansion tax, it's not a one-time closing cost — it's billed every year alongside property tax (the first bills arrive in January 2027), and it doesn't apply at all if the owner lives in the unit as a primary residence. For condos and co-ops, the first phase applies to units the Department of Finance values at $1 million or more, at 4% to 6.5% of that DOF value — which, for co-ops and condos, typically runs far below the actual sale price. Starting July 1, 2028, condo and co-op valuation moves to a comparable-sales method, with a $5 million threshold and lower rates. If you're buying a second home or an investment unit rather than a primary residence, ask your attorney whether it applies before you budget carrying costs — see our [pied-à-terre tax guide](/guides/nyc-pied-a-terre-tax-explained/) for the full rate table and a worked example.

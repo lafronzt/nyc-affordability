@@ -2,7 +2,7 @@
 title: "What Is AMI in NYC? Housing Connect Bands Explained"
 metaDescription: "AMI (Area Median Income) sets every income limit on NYC's Housing Connect affordable housing lottery. See the HUD FY2026 income table by household size and how bands from 30% to 130% AMI work."
 intro: "Every affordable apartment listed on NYC's Housing Connect lottery is tagged with an AMI band — 30%, 60%, 100%, whatever it is — and that single number determines both who's eligible and what the rent will be. Here's what AMI actually measures, the current income limits by household size, and how a band translates into a real rent."
-updated: "2026-08-05"
+updated: "2026-09-23"
 category: "affordable-housing"
 sources:
   - label: "HUD — FY2026 Income Limits Documentation System"
@@ -45,7 +45,7 @@ These are HUD's published FY2026 figures for the New York HMFA, the same ones NY
 
 **Your AMI% = (household income ÷ 100% AMI limit for your household size) × 100.**
 
-A 2-person household earning $70,000 has an AMI% of $70,000 ÷ $110,850 = **63.2%**. That number, not the raw income, is what determines eligibility.
+A 2-person household earning $70,000 has an AMI% of $70,000 ÷ $110,850 = **63.1%**. That number, not the raw income, is what determines eligibility.
 
 ## Income band classifications
 
@@ -61,7 +61,7 @@ Individual lottery listings are tagged to a specific percentage (30%, 40%, 50%, 
 
 ## Eligibility works as a ceiling, not a target
 
-To qualify for a given band, your household income must be **at or below** that band's income limit for your household size — not close to it, not above it. A 2-person household earning $70,000 (63.2% AMI) doesn't qualify for a 60% AMI listing, because $70,000 exceeds that band's $66,510 limit. The same household does qualify for 70% AMI and every band above it, up to whatever ceiling the specific building sets. Many listings also require a *minimum* income — commonly 40× the monthly rent — to confirm you can actually carry the rent once approved; see our [40x rent rule guide](/guides/nyc-40x-rent-rule/) for how that specific screen works.
+To qualify for a given band, your household income must be **at or below** that band's income limit for your household size — not close to it, not above it. A 2-person household earning $70,000 (63.1% AMI) doesn't qualify for a 60% AMI listing, because $70,000 exceeds that band's $66,510 limit. The same household does qualify for 70% AMI and every band above it, up to whatever ceiling the specific building sets. Many listings also require a *minimum* income — commonly 40× the monthly rent — to confirm you can actually carry the rent once approved; see our [40x rent rule guide](/guides/nyc-40x-rent-rule/) for how that specific screen works.
 
 ## How the rent itself is set
 

@@ -138,6 +138,16 @@ test('applyBrackets taxes each bracket at its own marginal rate', () => {
   assert.equal(applyBrackets(50000, brackets), 1000 + 6000 + 10000 * 0.30);
 });
 
+// Tax year 2026 carries the first step of NY's middle-class rate cut (FY2026
+// budget, Ch. 59 L. 2025 Part A): the bottom five rates each drop 0.1 point.
+test('NY State 2026 single brackets reflect the 0.1-point middle-class rate cut', () => {
+  const brackets = TAX_CONSTANTS_2026.nyState.brackets.single;
+  assert.deepEqual(brackets.slice(0, 5).map((b) => b.rate), [0.039, 0.044, 0.0515, 0.054, 0.059]);
+  // 3.9% of 8,500 + 4.4% of 3,200 + 5.15% of 2,200 + 5.4% of 66,750
+  const expected = 8500 * 0.039 + 3200 * 0.044 + 2200 * 0.0515 + 66750 * 0.054;
+  assert.ok(Math.abs(applyBrackets(80650, brackets) - expected) < 0.01);
+});
+
 test('solveRequiredSalary inverts computeBreakdown.netTakeHome', () => {
   const inputs: RequiredSalaryInputs = {
     filingStatus: 'marriedFilingJointly',

@@ -232,7 +232,7 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
       <div class="card-body" id="card-body-2">
         <div class="form-row">
           <label class="lbl" for="annual-income">Annual Gross Income
-            <small>$150K is the minimum needed at 28% DTI to qualify for the city-wide median co-op (~$506K, Q1 2025 — StreetEasy/Baruch CUNY). Typical buyers targeting Manhattan pay considerably more.</small>
+            <small>At the default 6.95% rate and 28% DTI, the city-wide median co-op (~$506K, Q1 2025 — StreetEasy/Baruch CUNY) takes roughly $166K of income to qualify. Typical buyers targeting Manhattan pay considerably more.</small>
           </label>
           <div class="iw w140"><span class="px">$</span><input type="number" id="annual-income" value="150000" min="0" step="1000"></div>
         </div>
@@ -255,9 +255,9 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
       <div class="card-body" id="card-body-3">
         <div class="form-row">
           <label class="lbl" for="mtg-rate">Annual Mortgage Rate
-            <small>30-yr fixed consensus as of Apr 2026 — Freddie Mac (6.23%), Bankrate (6.40%). Co-ops require conventional financing; FHA loans are not permitted.</small>
+            <small>30-yr fixed consensus as of Sep 2026 — Freddie Mac PMMS (6.95%, Sep 17), Bankrate (6.97%). Co-ops require conventional financing; FHA loans are not permitted.</small>
           </label>
-          <div class="iw w120"><input type="number" id="mtg-rate" value="6.25" min="0" max="30" step="0.05" style="text-align:right"><span class="sx">%</span></div>
+          <div class="iw w120"><input type="number" id="mtg-rate" value="6.95" min="0" max="30" step="0.05" style="text-align:right"><span class="sx">%</span></div>
         </div>
         <div class="form-row">
           <label class="lbl" for="loan-term">Loan Term</label>
