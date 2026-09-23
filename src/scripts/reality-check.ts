@@ -38,8 +38,8 @@ const DEFAULTS: Inputs = { annualIncome: 150000, otherDebts: 0, liquidSavings: 1
 
 const ASMP = {
   rent: { incomeMult: 40, rentersInsurance: 15, reserveMonths: 2 },
-  coop: { mortgageRate: 6.25, dpPct: 20, maint: 1200, maxDTIPct: 28, reserveMo: 12 },
-  condo: { mortgageRate: 6.30, dpPct: 20, commonCharges: 1000, propTaxes: 1250, hoInsurance: 75, maxDtiPct: 43 },
+  coop: { mortgageRate: 6.95, dpPct: 20, maint: 1200, maxDTIPct: 28, reserveMo: 12 },
+  condo: { mortgageRate: 6.95, dpPct: 20, commonCharges: 1000, propTaxes: 1250, hoInsurance: 75, maxDtiPct: 43 },
 };
 
 /* ── DOM helpers ── */

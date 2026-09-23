@@ -2,7 +2,7 @@
 title: "NYC Closing Costs for Buyers: The Full Breakdown"
 metaDescription: "NYC buyer closing costs typically run 2%-4% of price for a financed resale condo and 3%-7%+ for new development — see every line item, from mortgage recording tax to title insurance to attorney fees."
 intro: "Buyers moving to New York from almost anywhere else in the country are caught off guard by closing costs here — not because any single fee is unusual, but because NYC stacks a mortgage recording tax, title insurance, and (above $1M) a mansion tax on top of the attorney and lender fees every market charges. Here's every line item, in the order it actually shows up on a closing statement."
-updated: "2026-08-11"
+updated: "2026-09-23"
 category: "buying"
 sources:
   - label: "NYC Department of Finance — Recording Property-Related Documents (Mortgage Recording Tax)"
@@ -63,4 +63,4 @@ Sponsor (new-development) condos routinely push buyer closing costs to the highe
 
 ## What isn't included above
 
-Move-in fees, storage/parking transfer fees, and any post-closing renovation deposits are building-specific and layered on top of the closing costs above — check with the managing agent before budgeting a final number. As with every figure on this site, verify final numbers with your closing attorney; rates and fee schedules are reviewed periodically but can change. See our [full sourcing methodology](/about/) for where every default used across these calculators comes from.
+Move-in fees, storage/parking transfer fees, and any post-closing renovation deposits are building-specific and layered on top of the closing costs above — check with the managing agent before budgeting a final number. If the unit won't be your primary residence, also ask about NYC's annual pied-à-terre tax (effective July 1, 2026) — it's a recurring carrying cost rather than a closing cost, covered in our [mansion tax guide](/guides/nyc-mansion-tax-explained/). As with every figure on this site, verify final numbers with your closing attorney; rates and fee schedules are reviewed periodically but can change. See our [full sourcing methodology](/about/) for where every default used across these calculators comes from.

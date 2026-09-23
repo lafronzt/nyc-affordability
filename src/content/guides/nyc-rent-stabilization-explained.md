@@ -1,10 +1,12 @@
 ---
 title: "NYC Rent Stabilization Explained: What Tenants Should Know"
-metaDescription: "Rent stabilization caps how much a NYC landlord can raise your rent and gives you renewal and succession rights a market-rate lease doesn't. See how to check if you're covered and the current increase caps."
+metaDescription: "Rent stabilization caps how much a NYC landlord can raise your rent and gives you renewal and succession rights a market-rate lease doesn't. See how to check if you're covered and the 2026-27 rent freeze."
 intro: "Roughly one million NYC apartments are rent-stabilized, but plenty of tenants living in one don't realize it — or don't know what it actually changes. Here's how stabilization works, how to check if your unit is covered, and the current legal caps on renewal increases."
-updated: "2026-09-13"
+updated: "2026-09-23"
 category: "renting"
 sources:
+  - label: "NYC Rent Guidelines Board — 2026-27 Apartment/Loft Order #58 (adopted June 25, 2026)"
+    url: "https://rentguidelinesboard.cityofnewyork.us/2026-27-apartment-loft-order-58/"
   - label: "NYC Rent Guidelines Board — 2025-26 Apartment/Loft Order #57"
     url: "https://rentguidelinesboard.cityofnewyork.us/2025-26-apartment-loft-order-57/"
   - label: "NYC311 — Rent Increases"
@@ -31,14 +33,16 @@ A rent-stabilized apartment isn't rent-controlled (a much smaller, older categor
 
 ## How much your rent can actually go up
 
-The NYC Rent Guidelines Board (RGB) votes once a year on the maximum percentage increase landlords can apply at lease renewal, and that vote applies uniformly to every stabilized unit citywide — an individual landlord can't set a higher number no matter what the local market is doing. For leases commencing October 1, 2025 through September 30, 2026, the current order (RGB Order #57) caps increases at:
+The NYC Rent Guidelines Board (RGB) votes once a year on the maximum percentage increase landlords can apply at lease renewal, and that vote applies uniformly to every stabilized unit citywide — an individual landlord can't set a higher number no matter what the local market is doing.
 
-| Renewal term | Maximum increase |
-| --- | --- |
-| 1-year lease | 3% |
-| 2-year lease | 4.5% |
+On June 25, 2026, the board voted 7-1 to adopt **Order #58, a full rent freeze**: for leases commencing October 1, 2026 through September 30, 2027, the maximum increase is **0% on both one-year and two-year renewals**. It's the first time the board has frozen both lease terms at once — past freezes (in 2015, 2016, and 2020) applied to one-year leases only. The previous order still governs leases that commenced before October 1, 2026:
 
-These are ceilings, not automatic increases — a landlord can renew at the same rent or lower, and often does in a slow market, but legally cannot exceed the board's cap for that renewal period. The RGB revisits these numbers annually, so the cap for your next renewal cycle may differ from the one above; check the [Rent Guidelines Board's current order](https://rentguidelinesboard.cityofnewyork.us/rent-guidelines/) before assuming last year's number still applies.
+| Lease commencing | 1-year lease | 2-year lease |
+| --- | --- | --- |
+| Oct 1, 2026 – Sep 30, 2027 (Order #58) | 0% | 0% |
+| Oct 1, 2025 – Sep 30, 2026 (Order #57) | 3% | 4.5% |
+
+What matters is the date your renewal lease *commences*, not when you sign it — a renewal starting September 1, 2026 still falls under Order #57's caps. These are ceilings, not automatic increases — a landlord can renew at the same rent or lower, but legally cannot exceed the board's cap for that renewal period. The RGB revisits these numbers every year, so check the [Rent Guidelines Board's current order](https://rentguidelinesboard.cityofnewyork.us/rent-guidelines/) before assuming the freeze carries into your next cycle.
 
 ## How to check if your apartment is actually stabilized
 
@@ -50,4 +54,4 @@ Rent stabilization also carries rights beyond the renewal cap: a stabilized tena
 
 ## What this doesn't mean
 
-Stabilization doesn't freeze your rent, doesn't cap it based on your income, and doesn't guarantee it's below market rate — some long-vacant, heavily renovated stabilized units have legal rents that are close to or even above comparable market-rate apartments nearby, especially after years of compounding legal increases. It's a process protection and a increase cap, not an income-based subsidy — for the latter, see how [AMI-based affordable housing](/guides/nyc-ami-housing-connect-explained/) works instead.
+Stabilization doesn't freeze your rent, doesn't cap it based on your income, and doesn't guarantee it's below market rate — some long-vacant, heavily renovated stabilized units have legal rents that are close to or even above comparable market-rate apartments nearby, especially after years of compounding legal increases. It's a process protection and an increase cap, not an income-based subsidy — for the latter, see how [AMI-based affordable housing](/guides/nyc-ami-housing-connect-explained/) works instead.

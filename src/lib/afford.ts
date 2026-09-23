@@ -39,7 +39,7 @@ export const DEFAULT_ASSUMPTIONS = {
   rentIncomeMultiplier: 40,
 
   // Co-op — src/pages/coop/index.astro
-  coopMortgageRatePct: 6.25,   // line 258: Freddie Mac (6.23%) / Bankrate (6.40%) consensus, Apr 2026
+  coopMortgageRatePct: 6.95,   // line 258: Freddie Mac (6.95%) / Bankrate (6.97%) consensus, Sep 2026
   coopLoanTermYears: 30,
   coopDownPaymentPct: 20,      // line 268: minimum for most buildings (Skybriz, Prevu 2025)
   coopMaxDtiPct: 28,           // line 287: long-standing NYC board standard (Prevu, YRE 2025)
@@ -49,7 +49,7 @@ export const DEFAULT_ASSUMPTIONS = {
   coopVariableClosingPct: 0.5, // line 338: covers loan origination fees; mansion tax is separate
 
   // Condo — src/pages/condo/index.astro
-  condoMortgageRatePct: 6.30,  // line 137: Freddie Mac PMMS, Apr 30 2026, 30-yr FRM conventional/conforming/20% down
+  condoMortgageRatePct: 6.95,  // line 137: Freddie Mac PMMS, Sep 17 2026, 30-yr FRM conventional/conforming/20% down
   condoLoanTermYears: 30,
   condoDownPaymentPct: 20,     // line 149
   condoMaxDtiPct: 43,          // line 162: CFPB/Fannie Mae qualified-mortgage back-end DTI limit

@@ -23,6 +23,14 @@
    - NY State brackets + standard deduction: NYS Dept. of Taxation and
      Finance 2026 rate schedules (aggregated via ustax.tools / nerdwallet
      NY State tax summaries, cross-checked for internal consistency).
+     The bottom five rates reflect the middle-class cut enacted in the
+     FY2026 state budget (Chapter 59 of the Laws of 2025, Part A): each
+     drops 0.1 point for tax year 2026 (4% -> 3.9%, 4.5% -> 4.4%,
+     5.25% -> 5.15%, 5.5% -> 5.4%, 6% -> 5.9%), with a second 0.1-point
+     cut scheduled for 2027. Bracket thresholds are unchanged. See NYS
+     publication NYS-50-T-NYS (1/26),
+     https://www.tax.ny.gov/pdf/publications/withholding/nys50_t_nys.pdf
+     (verified 2026-09-23).
    - NYC resident surcharge brackets: NYC's 4-bracket resident schedule
      (3.078% / 3.762% / 3.819% / 3.876%) — fixed dollar thresholds, not
      inflation-indexed; unchanged for many tax years per NY IT-201
@@ -183,33 +191,33 @@ export const TAX_CONSTANTS_2026: TaxYearConstants = {
     },
     brackets: {
       single: [
-        { upTo: 8500, rate: 0.04 },
-        { upTo: 11700, rate: 0.045 },
-        { upTo: 13900, rate: 0.0525 },
-        { upTo: 80650, rate: 0.055 },
-        { upTo: 215400, rate: 0.06 },
+        { upTo: 8500, rate: 0.039 },
+        { upTo: 11700, rate: 0.044 },
+        { upTo: 13900, rate: 0.0515 },
+        { upTo: 80650, rate: 0.054 },
+        { upTo: 215400, rate: 0.059 },
         { upTo: 2155350, rate: 0.0685 },
         { upTo: 5000000, rate: 0.0965 },
         { upTo: 25000000, rate: 0.103 },
         { upTo: Infinity, rate: 0.109 },
       ],
       marriedFilingJointly: [
-        { upTo: 17150, rate: 0.04 },
-        { upTo: 23600, rate: 0.045 },
-        { upTo: 27900, rate: 0.0525 },
-        { upTo: 161550, rate: 0.055 },
-        { upTo: 323200, rate: 0.06 },
+        { upTo: 17150, rate: 0.039 },
+        { upTo: 23600, rate: 0.044 },
+        { upTo: 27900, rate: 0.0515 },
+        { upTo: 161550, rate: 0.054 },
+        { upTo: 323200, rate: 0.059 },
         { upTo: 2155350, rate: 0.0685 },
         { upTo: 5000000, rate: 0.0965 },
         { upTo: 25000000, rate: 0.103 },
         { upTo: Infinity, rate: 0.109 },
       ],
       headOfHousehold: [
-        { upTo: 12800, rate: 0.04 },
-        { upTo: 17650, rate: 0.045 },
-        { upTo: 20900, rate: 0.0525 },
-        { upTo: 107650, rate: 0.055 },
-        { upTo: 269300, rate: 0.06 },
+        { upTo: 12800, rate: 0.039 },
+        { upTo: 17650, rate: 0.044 },
+        { upTo: 20900, rate: 0.0515 },
+        { upTo: 107650, rate: 0.054 },
+        { upTo: 269300, rate: 0.059 },
         { upTo: 2155350, rate: 0.0685 },
         { upTo: 5000000, rate: 0.0965 },
         { upTo: 25000000, rate: 0.103 },

@@ -2,7 +2,7 @@
 title: "NYC's 40x Rent Rule Explained"
 metaDescription: "Most NYC landlords require annual income of 40x the monthly rent to qualify. See exactly how the math works, why 40x specifically, and what a guarantor needs to earn instead."
 intro: "Ask a NYC landlord what income you need to qualify for an apartment, and the answer is almost always some multiple of the monthly rent — 40x is standard. It's not a law, it's not written into any lease, and it's not universal, but it screens more applicants out of NYC apartments than credit score ever does."
-updated: "2026-08-04"
+updated: "2026-09-23"
 category: "renting"
 sources:
   - label: "Brick Underground — NYC landlords want tenants who earn 40x the monthly rent"
@@ -41,7 +41,7 @@ That also explains the variation you'll see building to building:
 | 40x | 30.0% | $140,000 |
 | 45x | 26.7% | $157,500 |
 
-A building using 36x is applying a stricter debt-to-income standard than one using 45x, even though both look like a simple "times rent" rule on the surface.
+A building using 45x is applying a stricter rent-to-income standard than one using 36x — it lets less of your income go to rent — even though both look like a simple "times rent" rule on the surface.
 
 ## Guarantors: 80x, not 40x
 

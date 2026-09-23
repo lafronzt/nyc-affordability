@@ -2,7 +2,7 @@
 term: "FARE Act"
 shortDefinition: "NYC law (effective June 11, 2025) making whoever hires a broker responsible for paying that broker's fee — usually the landlord, not the tenant."
 metaDescription: "The FARE Act shifted NYC broker fees to whoever hires the broker, effective June 11, 2025. See what it changed for tenants and its current legal status."
-updated: "2026-08-12"
+updated: "2026-09-23"
 category: "renting"
 sources:
   - label: "NYC Department of Consumer and Worker Protection — FARE Act FAQ"
@@ -17,7 +17,7 @@ relatedGuides:
 draft: false
 ---
 
-Before June 11, 2025, NYC tenants routinely paid a broker fee — often 12-15% of annual rent — even when the landlord was the one who hired the broker to list the apartment. The FARE Act (Fairness in Apartment Rental Expenses) ended that: whoever hires the broker now pays them. A landlord-hired broker's fee is a landlord cost; a tenant can still choose to hire their own broker and pay that broker directly.
+Before June 11, 2025, NYC tenants routinely paid a broker fee — often 12-15% of annual rent — even when the landlord was the one who hired the broker to list the apartment. The FARE Act (Fairness in Apartment Rental Expenses) ended that: whoever hires the broker now pays them. A landlord-hired broker's fee is a landlord cost; a tenant can still choose to hire their own broker and pay that broker directly. The real estate industry's constitutional challenge has so far failed: in July 2026 the Second Circuit upheld the dismissal of REBNY's First Amendment and preemption claims, leaving only a narrower claim about pre-existing listing contracts pending, and the law remains fully in effect.
 
 ## Worked example
 

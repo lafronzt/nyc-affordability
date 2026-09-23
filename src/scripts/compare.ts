@@ -302,8 +302,8 @@ function bsearchMaxPrice(testFn: (p: number) => boolean, hi: number): number {
 
 const ASMP = {
   rent: { incomeMult: 40, rentersInsurance: 15, reserveMonths: 2 } as RentAssumptions,
-  coop: { mortgageRate: 6.25, dpPct: 20, maint: 1200, maxDTIPct: 28, reserveMo: 12 } as CoopAssumptions,
-  condo: { mortgageRate: 6.30, dpPct: 20, commonCharges: 1000, propTaxes: 1250, hoInsurance: 75, maxDtiPct: 43 } as CondoAssumptions,
+  coop: { mortgageRate: 6.95, dpPct: 20, maint: 1200, maxDTIPct: 28, reserveMo: 12 } as CoopAssumptions,
+  condo: { mortgageRate: 6.95, dpPct: 20, commonCharges: 1000, propTaxes: 1250, hoInsurance: 75, maxDtiPct: 43 } as CondoAssumptions,
 };
 
 /* ── "What if...?" scenario sliders — purely ephemeral display-time deltas,
