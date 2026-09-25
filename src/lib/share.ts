@@ -51,7 +51,7 @@ export function wireShareButton(
     const { title, text, url } = buildPayload(btn);
     const result = await shareResult(title, text, url);
     if (result.method === 'share' && result.ok) return; // native share sheet handled it
-    btn.textContent = result.ok ? 'Copied to clipboard!' : 'Could not share — copy manually';
+    btn.textContent = result.ok ? 'Copied to clipboard!' : 'Could not share. Copy manually';
     setTimeout(() => { btn.textContent = defaultLabel; }, 2500);
   });
 }

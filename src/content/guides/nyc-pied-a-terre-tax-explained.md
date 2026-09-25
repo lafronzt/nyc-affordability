@@ -5,13 +5,13 @@ intro: "New York's FY2027 budget created the city's first pied-à-terre tax: a y
 updated: "2026-09-23"
 category: "buying"
 sources:
-  - label: "Katten Muchin Rosenman LLP — New York City Enacts Annual 'Pied-à-Terre Tax' on Second Homes (2026)"
+  - label: "Katten Muchin Rosenman LLP: New York City Enacts Annual 'Pied-à-Terre Tax' on Second Homes (2026)"
     url: "https://katten.com/new-york-city-enacts-annual-pied-a-terre-tax-on-second-homes"
-  - label: "Day Pitney — New York Enacts New Pied-à-Terre Tax on Certain High-Value New York City Residences (2026)"
+  - label: "Day Pitney: New York Enacts New Pied-à-Terre Tax on Certain High-Value New York City Residences (2026)"
     url: "https://www.daypitney.com/new-york-enacts-new-pied-a-terre-tax-on-certain-high-value-new-york-city-residences"
-  - label: "Greenberg Traurig LLP — NYC DOF Finalizes Rules and Sends Notices Implementing the New Pied-à-Terre Tax (August 2026)"
+  - label: "Greenberg Traurig LLP: NYC DOF Finalizes Rules and Sends Notices Implementing the New Pied-à-Terre Tax (August 2026)"
     url: "https://www.gtlaw.com/en/insights/2026/8/nyc-dof-finalizes-rules-and-begins-exemption-review-process-for-pedterre-tax"
-  - label: "Office of the NYC Comptroller — The Pied-à-Terre Tax and Its Potential Revenues"
+  - label: "Office of the NYC Comptroller: The Pied-à-Terre Tax and Its Potential Revenues"
     url: "https://comptroller.nyc.gov/reports/the-pied-a-terre-tax-and-its-potential-revenues/"
 relatedGuides:
   - nyc-mansion-tax-explained
@@ -23,7 +23,7 @@ relatedTerms:
   - common-charges
 cta:
   heading: "Model the carrying cost before you buy a second home"
-  body: "The condo calculator lets you set the monthly property tax line directly — add the pied-à-terre surcharge to it (annual amount ÷ 12) to see what a non-primary unit really costs to carry."
+  body: "The condo calculator lets you set the monthly property tax line directly. Add the pied-à-terre surcharge to it (annual amount ÷ 12) to see what a non-primary unit really costs to carry."
   label: "Open the Condo Affordability Calculator"
   href: "/condo/"
 ---

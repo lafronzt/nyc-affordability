@@ -59,7 +59,7 @@ const footerColumns: FooterColumn[] = [
 const canonicalPath = `/salary/${amount}/`;
 const amountLabel = fmtMoney(amount);
 const pageTitle = `${amountLabel} Salary After Taxes in NYC | NYC Affordability`;
-const metaDescription = `What ${amountLabel}/year actually nets you in NYC take-home pay after federal, NY State, and NYC resident tax plus FICA — full breakdown for a single filer with no pre-tax elections.`;
+const metaDescription = `What ${amountLabel}/year actually nets you in NYC take-home pay after federal, NY State, and NYC resident tax plus FICA: full breakdown for a single filer with no pre-tax elections.`;
 
 const SITE_ORIGIN = 'https://www.nyc-affordability.com';
 const jsonLd = {
@@ -84,7 +84,7 @@ const relatedItems = [
   { label: 'Know your target take-home?', sublabel: 'Work backwards to the salary you need instead', href: '/required-salary/' },
 ];
 
-const shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.netTakeHome)}/year (${fmtMoney(breakdown.netTakeHome / 12)}/mo) take-home after federal, NY State, NYC, and FICA tax — a ${fmtPercent(effectiveRate)} effective rate.`;
+const shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.netTakeHome)}/year (${fmtMoney(breakdown.netTakeHome / 12)}/mo) take-home after federal, NY State, NYC, and FICA tax, a ${fmtPercent(effectiveRate)} effective rate.`;
 ---
 <BaseLayout
   variant="site"
@@ -106,14 +106,14 @@ const shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.ne
 <div class="hero">
   <div class="hero-eyebrow">Salary After Taxes</div>
   <h2>{amountLabel} Salary After Taxes in NYC</h2>
-  <p>Here's what {amountLabel}/year actually nets you working in New York City, after federal, NY State, and NYC resident tax plus FICA — calculated using the same tax engine as our Required Salary Calculator, not a rule of thumb.</p>
+  <p>Here's what {amountLabel}/year actually nets you working in New York City, after federal, NY State, and NYC resident tax plus FICA, calculated using the same tax engine as our Required Salary Calculator, not a rule of thumb.</p>
 </div>
 
 <div class="page">
   <Breadcrumbs items={breadcrumbItems} />
 
   <div class="calc-note card">
-    <p><strong>Baseline scenario: single filer, no 401(k) or HSA.</strong> This is the cleanest comparison point — every dollar of pre-tax contribution changes the number. Filing jointly, contributing to a 401(k) or HSA, or living outside NYC will all change your actual take-home. See the filing-status comparison below, or open the <a href="/required-salary/">Required Salary Calculator</a> to model your own elections.</p>
+    <p><strong>Baseline scenario: single filer, no 401(k) or HSA.</strong> This is the cleanest comparison point: every dollar of pre-tax contribution changes the number. Filing jointly, contributing to a 401(k) or HSA, or living outside NYC will all change your actual take-home. See the filing-status comparison below, or open the <a href="/required-salary/">Required Salary Calculator</a> to model your own elections.</p>
   </div>
 
   <div class="result-grid">
@@ -152,12 +152,12 @@ const shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.ne
         <tr class="total-row"><td>Net take-home</td><td>{fmtMoney(breakdown.netTakeHome)}</td><td>{fmtMoney(breakdown.netTakeHome / 12)}</td></tr>
       </tbody>
     </table>
-    <p class="custom-note">NY SDI and PFL are mandatory payroll deductions for every NY W-2 employee — self-employed/1099 filers don't have this line.</p>
+    <p class="custom-note">NY SDI and PFL are mandatory payroll deductions for every NY W-2 employee; self-employed/1099 filers don't have this line.</p>
   </div>
 
   <div class="card">
     <h3>Does filing status change this?</h3>
-    <p>Same {amountLabel} gross salary, same baseline (no 401(k)/HSA) — filing status alone moves the standard deduction and bracket widths.</p>
+    <p>Same {amountLabel} gross salary, same baseline (no 401(k)/HSA): filing status alone moves the standard deduction and bracket widths.</p>
     <table>
       <thead><tr><th>Filing status</th><th>Net take-home</th><th>Effective rate</th></tr></thead>
       <tbody>
@@ -197,7 +197,7 @@ const shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.ne
 
   <div class="cta-box">
     <h3>Want to work backwards instead?</h3>
-    <p>If you know what you need to take home each month and want the gross salary that gets you there — including your own 401(k), HSA, and filing status — use the reverse calculator.</p>
+    <p>If you know what you need to take home each month and want the gross salary that gets you there (including your own 401(k), HSA, and filing status), use the reverse calculator.</p>
     <a class="cta-button" href="/required-salary/">Open Required Salary Calculator &rarr;</a>
   </div>
 

@@ -1,19 +1,19 @@
 ---
 title: "NYC Mansion Tax Explained: 2026 Tiers and the $1 Cliff"
 metaDescription: "The NYC mansion tax runs from 1% to 3.9% of the purchase price on residential sales of $1,000,000 or more. See the current tier table, how the $1,000,000 cliff works, and a worked example."
-intro: "New York's mansion tax is a buyer-paid tax that starts at 1% of the full purchase price once a residential sale hits $1,000,000 — and because it's a whole-price bracket, not a marginal one, crossing a threshold by even a dollar raises the entire bill, not just the amount above it."
+intro: "New York's mansion tax is a buyer-paid tax that starts at 1% of the full purchase price once a residential sale hits $1,000,000, and because it's a whole-price bracket, not a marginal one, crossing a threshold by even a dollar raises the entire bill, not just the amount above it."
 updated: "2026-09-23"
 category: "buying"
 sources:
-  - label: "NYS Dept. of Taxation and Finance — TSB-M-19(1)R, Summary of Amendments to the Real Estate Transfer Tax"
+  - label: "NYS Dept. of Taxation and Finance: TSB-M-19(1)R, Summary of Amendments to the Real Estate Transfer Tax"
     url: "https://www.tax.ny.gov/pdf/memos/real_estate/m19-1r.pdf"
-  - label: "NYS Dept. of Taxation and Finance — Publication 577, FAQs Regarding the Additional Tax (Mansion Tax)"
+  - label: "NYS Dept. of Taxation and Finance: Publication 577, FAQs Regarding the Additional Tax (Mansion Tax)"
     url: "https://www.tax.ny.gov/pdf/publications/real_estate/pub577.pdf"
-  - label: "NYS Dept. of Taxation and Finance — Real Estate Transfer Tax overview"
+  - label: "NYS Dept. of Taxation and Finance: Real Estate Transfer Tax overview"
     url: "https://www.tax.ny.gov/bus/transfer/rptidx.htm"
-  - label: "Katten Muchin Rosenman LLP — New York City Enacts Annual 'Pied-à-Terre Tax' on Second Homes (2026)"
+  - label: "Katten Muchin Rosenman LLP: New York City Enacts Annual 'Pied-à-Terre Tax' on Second Homes (2026)"
     url: "https://katten.com/new-york-city-enacts-annual-pied-a-terre-tax-on-second-homes"
-  - label: "Greenberg Traurig LLP — NYC DOF Finalizes Rules and Sends Notices Implementing the New Pied-à-Terre Tax (August 2026)"
+  - label: "Greenberg Traurig LLP: NYC DOF Finalizes Rules and Sends Notices Implementing the New Pied-à-Terre Tax (August 2026)"
     url: "https://www.gtlaw.com/en/insights/2026/8/nyc-dof-finalizes-rules-and-begins-exemption-review-process-for-pedterre-tax"
 relatedGuides:
   - nyc-closing-costs-for-buyers
@@ -31,11 +31,11 @@ cta:
 
 ## What it actually is
 
-The "mansion tax" is a buyer-paid tax on residential real estate sales of $1,000,000 or more in New York City (and any other NY city over 1 million people, which in practice means NYC only). The name is misleading — it applies to a $1,000,000 studio the same way it applies to a $1,000,000 townhouse. It covers co-ops, condos, and 1-3 family homes — and applies identically to co-ops and condos, unlike most of the other costs that differ between them (see our [co-op vs condo cost guide](/guides/coop-vs-condo-nyc-costs/) for where those differences actually show up).
+The "mansion tax" is a buyer-paid tax on residential real estate sales of $1,000,000 or more in New York City (and any other NY city over 1 million people, which in practice means NYC only). The name is misleading: it applies to a $1,000,000 studio the same way it applies to a $1,000,000 townhouse. It covers co-ops, condos, and 1-3 family homes, and applies identically to co-ops and condos, unlike most of the other costs that differ between them (see our [co-op vs condo cost guide](/guides/coop-vs-condo-nyc-costs/) for where those differences actually show up).
 
-Technically it's two stacked state taxes: a flat 1% "additional tax" under Tax Law Section 1402-a that applies statewide starting at $1,000,000, plus a NYC-only "supplemental tax" under Section 1402-b that layers on top starting at $2,000,000. In practice, buyers and brokers just talk about the combined rate — the table below — as "the mansion tax," and that's the number that shows up on your closing statement.
+Technically it's two stacked state taxes: a flat 1% "additional tax" under Tax Law Section 1402-a that applies statewide starting at $1,000,000, plus a NYC-only "supplemental tax" under Section 1402-b that layers on top starting at $2,000,000. In practice, buyers and brokers just talk about the combined rate (the table below) as "the mansion tax," and that's the number that shows up on your closing statement.
 
-The buyer pays it, due at closing alongside the transfer tax return. If the buyer doesn't pay and isn't exempt, the seller becomes liable. It's separate from — and stacks on top of — the NYC and NYS transfer taxes the seller typically pays, so on a high-end deal, transfer-related taxes alone can run 5%+ of price between both sides of the table.
+The buyer pays it, due at closing alongside the transfer tax return. If the buyer doesn't pay and isn't exempt, the seller becomes liable. It's separate from, and stacks on top of, the NYC and NYS transfer taxes the seller typically pays, so on a high-end deal, transfer-related taxes alone can run 5%+ of price between both sides of the table.
 
 ## The current tier table
 
@@ -51,15 +51,15 @@ The buyer pays it, due at closing alongside the transfer tax return. If the buye
 | $20,000,000 to $24,999,999 | 3.75% |
 | $25,000,000 and up | 3.90% |
 
-These rates took effect July 1, 2019 and haven't changed since — the FY2027 state budget (signed May 2026) left them untouched, and a proposed additional 1% tax on all-cash purchases of $1 million or more was dropped before passage. The $1,000,000 floor itself dates back to 1989 and has never been adjusted for inflation.
+These rates took effect July 1, 2019 and haven't changed since; the FY2027 state budget (signed May 2026) left them untouched, and a proposed additional 1% tax on all-cash purchases of $1 million or more was dropped before passage. The $1,000,000 floor itself dates back to 1989 and has never been adjusted for inflation.
 
 ## Why it's a cliff, not a slope
 
 This is the part that catches buyers off guard: the mansion tax applies its bracket rate to the entire purchase price, not just the portion above the threshold. It doesn't work like income tax, where only the dollars inside a bracket get the higher rate. Cross a line by $1, and the whole transaction reprices at the new rate.
 
-That makes the boundaries themselves expensive. At $999,999, the tax is $0. At $1,000,000 — one dollar more — the tax is $10,000. The same jump happens at every tier line: going from $2,999,999 to $3,000,000 costs roughly $7,500 more in tax for $1 more in price, because the entire $3,000,000 gets taxed at 1.50% instead of just the sliver above $2,999,999.
+That makes the boundaries themselves expensive. At $999,999, the tax is $0. At $1,000,000 (one dollar more) the tax is $10,000. The same jump happens at every tier line: going from $2,999,999 to $3,000,000 costs roughly $7,500 more in tax for $1 more in price, because the entire $3,000,000 gets taxed at 1.50% instead of just the sliver above $2,999,999.
 
-This is also why round-number list prices cluster just under bracket lines — $999,000, $2,995,000, $4,995,000 — and why some contracts carve out furniture, fixtures, or other personal property into a separate bill of sale, reducing the consideration attributed to the real property itself. That's a legitimate, documented practice, not a loophole; it only works if the personal property has genuine fair value and its own bill of sale.
+This is also why round-number list prices cluster just under bracket lines ($999,000, $2,995,000, $4,995,000) and why some contracts carve out furniture, fixtures, or other personal property into a separate bill of sale, reducing the consideration attributed to the real property itself. That's a legitimate, documented practice, not a loophole; it only works if the personal property has genuine fair value and its own bill of sale.
 
 ## Worked example
 
@@ -71,12 +71,12 @@ Now drop the price by a single dollar, to $1,999,999. That falls back into the $
 
 Mansion tax = $1,999,999 x 1.00% = $19,999.99 (roughly $20,000)
 
-One dollar of purchase price — $2,000,000 versus $1,999,999 — is the difference between owing $25,000 and owing $20,000: a $5,000 swing in tax over $1 of price. That $5,000 has nothing to do with the property. It's entirely the effect of which side of the line the contract price lands on.
+One dollar of purchase price ($2,000,000 versus $1,999,999) is the difference between owing $25,000 and owing $20,000: a $5,000 swing in tax over $1 of price. That $5,000 has nothing to do with the property. It's entirely the effect of which side of the line the contract price lands on.
 
-The same math scales up. A $9,999,999 purchase owes 2.25% — $224,999.98, call it $225,000. Add $1 to hit $10,000,000 and the rate jumps to 3.25%, so the tax becomes $325,000. That's an extra $100,000 in mansion tax for a single dollar of price, which is why contracts near the $10 million line get negotiated with real care.
+The same math scales up. A $9,999,999 purchase owes 2.25%: $224,999.98, call it $225,000. Add $1 to hit $10,000,000 and the rate jumps to 3.25%, so the tax becomes $325,000. That's an extra $100,000 in mansion tax for a single dollar of price, which is why contracts near the $10 million line get negotiated with real care.
 
-The mansion tax is a closing cost, not an income requirement, but it does eat into the cash side of a purchase — see our [income-needed-to-buy guide](/guides/income-needed-to-buy-nyc-apartment/) for how the cash and income constraints interact on a real purchase.
+The mansion tax is a closing cost, not an income requirement, but it does eat into the cash side of a purchase. See our [income-needed-to-buy guide](/guides/income-needed-to-buy-nyc-apartment/) for how the cash and income constraints interact on a real purchase.
 
 ## Not the same thing: the 2026 pied-à-terre tax
 
-The same state budget created a separate, newer tax that's easy to confuse with the mansion tax: an **annual pied-à-terre surcharge** on high-value NYC homes that aren't anyone's primary residence, effective July 1, 2026. Unlike the mansion tax, it's not a one-time closing cost — it's billed every year alongside property tax (the first bills arrive in January 2027), and it doesn't apply at all if the owner lives in the unit as a primary residence. For condos and co-ops, the first phase applies to units the Department of Finance values at $1 million or more, at 4% to 6.5% of that DOF value — which, for co-ops and condos, typically runs far below the actual sale price. Starting July 1, 2028, condo and co-op valuation moves to a comparable-sales method, with a $5 million threshold and lower rates. If you're buying a second home or an investment unit rather than a primary residence, ask your attorney whether it applies before you budget carrying costs — see our [pied-à-terre tax guide](/guides/nyc-pied-a-terre-tax-explained/) for the full rate table and a worked example.
+The same state budget created a separate, newer tax that's easy to confuse with the mansion tax: an **annual pied-à-terre surcharge** on high-value NYC homes that aren't anyone's primary residence, effective July 1, 2026. Unlike the mansion tax, it's not a one-time closing cost; it's billed every year alongside property tax (the first bills arrive in January 2027), and it doesn't apply at all if the owner lives in the unit as a primary residence. For condos and co-ops, the first phase applies to units the Department of Finance values at $1 million or more, at 4% to 6.5% of that DOF value, which, for co-ops and condos, typically runs far below the actual sale price. Starting July 1, 2028, condo and co-op valuation moves to a comparable-sales method, with a $5 million threshold and lower rates. If you're buying a second home or an investment unit rather than a primary residence, ask your attorney whether it applies before you budget carrying costs. See our [pied-à-terre tax guide](/guides/nyc-pied-a-terre-tax-explained/) for the full rate table and a worked example.

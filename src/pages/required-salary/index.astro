@@ -45,7 +45,7 @@ const jsonLd = {
   ogTitle="Required Salary Calculator"
   ogDescription="Enter your target take-home pay and see the gross salary you need to hit it, after taxes and pre-tax contributions."
   ogImage="/images/salary-og.png"
-  ogImageAlt="NYC Required Salary Calculator — reverse-engineer the gross salary you need."
+  ogImageAlt="NYC Required Salary Calculator: reverse-engineer the gross salary you need."
   twitterTitle="Required Salary Calculator"
   twitterDescription="What gross salary do you need to take home a target amount, after taxes and 401(k)/HSA?"
   jsonLd={jsonLd}
@@ -76,7 +76,7 @@ const jsonLd = {
           <div class="input-wrap"><span>$</span><input type="number" id="rs-savings-goal" min="0" step="50"></div>
         </div>
       </div>
-      <p class="editor-note">We add these together and multiply by 12 to get the annual take-home you need — that's the number every tax and contribution calculation below solves backwards from.</p>
+      <p class="editor-note">We add these together and multiply by 12 to get the annual take-home you need. That's the number every tax and contribution calculation below solves backwards from.</p>
     </div>
   </section>
 
@@ -91,14 +91,14 @@ const jsonLd = {
           <option value="headOfHousehold">Head of Household</option>
         </select></div>
       </div>
-      <p class="editor-note">This calculator is built for NYC residents — federal, NY State, and the NYC resident local surcharge are always applied.</p>
+      <p class="editor-note">This calculator is built for NYC residents: federal, NY State, and the NYC resident local surcharge are always applied.</p>
     </div>
   </section>
 
   <section class="section-card">
     <div class="section-title">Itemized vs. Standard Deduction</div>
     <div class="editor-body">
-      <p class="editor-note warn">Not tax advice. Whether itemizing actually helps you depends on your full tax picture — including things this tool doesn't fully model, like your mortgage's acquisition-debt limit or unusual income situations. Talk to a tax professional before changing your W-4 or your tax strategy based on this estimate.</p>
+      <p class="editor-note warn">Not tax advice. Whether itemizing actually helps you depends on your full tax picture, including things this tool doesn't fully model, like your mortgage's acquisition-debt limit or unusual income situations. Talk to a tax professional before changing your W-4 or your tax strategy based on this estimate.</p>
       <div class="field field-narrow">
         <label for="rs-itemize-choice">Itemize or standard deduction?</label>
         <div class="input-wrap"><select id="rs-itemize-choice">
@@ -107,7 +107,7 @@ const jsonLd = {
           <option value="itemize">Always itemize</option>
         </select></div>
       </div>
-      <p class="editor-note">Itemizing doesn't add a new payroll line item — it <strong>replaces</strong> the standard deduction in the tax math, on both your federal and NY returns (independently — it's normal to itemize on one and take the standard deduction on the other). Leave everything below at $0 if none of it applies to you; renters usually do.</p>
+      <p class="editor-note">Itemizing doesn't add a new payroll line item; it <strong>replaces</strong> the standard deduction in the tax math, on both your federal and NY returns (independently; it's normal to itemize on one and take the standard deduction on the other). Leave everything below at $0 if none of it applies to you; renters usually do.</p>
 
       <div class="editor-grid cols-2">
         <div class="field">
@@ -127,9 +127,9 @@ const jsonLd = {
           <div class="input-wrap"><span>$</span><input type="number" id="rs-medical-expenses" min="0" step="250"><span>/yr</span></div>
         </div>
       </div>
-      <p class="editor-note">Cash and non-cash charitable giving combined. Only the amount above 7.5% of your income counts for medical expenses — we do that math for you. Mortgage interest is deductible on acquisition debt up to $750,000 (or $1M if the loan originated before 12/16/2017).</p>
-      <p class="editor-note">If you own a co-op, your mortgage interest and property tax figures come from your share of the building's underlying mortgage and taxes — check your co-op's annual shareholder tax letter or ask your managing agent.</p>
-      <p class="editor-note" id="rs-itemize-mfj-note" hidden>Married Filing Jointly: if either spouse itemizes, both must — you can't have one spouse itemize and the other take the standard deduction.</p>
+      <p class="editor-note">Cash and non-cash charitable giving combined. Only the amount above 7.5% of your income counts for medical expenses; we do that math for you. Mortgage interest is deductible on acquisition debt up to $750,000 (or $1M if the loan originated before 12/16/2017).</p>
+      <p class="editor-note">If you own a co-op, your mortgage interest and property tax figures come from your share of the building's underlying mortgage and taxes. Check your co-op's annual shareholder tax letter or ask your managing agent.</p>
+      <p class="editor-note" id="rs-itemize-mfj-note" hidden>Married Filing Jointly: if either spouse itemizes, both must; you can't have one spouse itemize and the other take the standard deduction.</p>
     </div>
   </section>
 
@@ -179,7 +179,7 @@ const jsonLd = {
           <div class="input-wrap"><span>$</span><input type="number" id="rs-match-cap" min="0" step="500" placeholder="No cap"></div>
         </div>
       </div>
-      <p class="editor-note">The match is money on top of your paycheck — it does not reduce the salary you need.</p>
+      <p class="editor-note">The match is money on top of your paycheck; it does not reduce the salary you need.</p>
 
       <div class="subsection-label">HSA</div>
       <div class="editor-grid cols-2">
@@ -213,7 +213,7 @@ const jsonLd = {
       <span class="section-summary-hint">click to expand</span>
     </summary>
     <div class="editor-body">
-      <p class="editor-note">Most people only need health insurance and maybe a commuter benefit — the rest are here if they apply to you. Anything left at $0 is ignored.</p>
+      <p class="editor-note">Most people only need health insurance and maybe a commuter benefit; the rest are here if they apply to you. Anything left at $0 is ignored.</p>
 
       <div class="subsection-label"><span class="subsection-icon" aria-hidden="true">🏥</span> Health &amp; insurance</div>
       <div class="editor-grid cols-2">
@@ -226,9 +226,9 @@ const jsonLd = {
           <div class="input-wrap"><span>$</span><input type="number" id="rs-dental-vision-premium" min="0" step="5"><span>/mo</span></div>
         </div>
       </div>
-      <p class="editor-note">Pre-tax (Section 125) for most employer plans — reduces income tax and FICA, same as an HSA.</p>
+      <p class="editor-note">Pre-tax (Section 125) for most employer plans. Reduces income tax and FICA, same as an HSA.</p>
 
-      <div class="subsection-label"><span class="subsection-icon" aria-hidden="true">🚇</span> Commuter benefits <span class="subsection-hint">(two separate buckets — maxing out both is allowed)</span></div>
+      <div class="subsection-label"><span class="subsection-icon" aria-hidden="true">🚇</span> Commuter benefits <span class="subsection-hint">(two separate buckets; maxing out both is allowed)</span></div>
       <div class="editor-grid cols-2">
         <div class="field">
           <label for="rs-commuter-transit">Transit</label>
@@ -275,7 +275,7 @@ const jsonLd = {
           <p class="field-hint">up to {dependentCareFsaCapAnnual}/yr &middot; independent of HSA/Healthcare FSA</p>
         </div>
       </div>
-      <p class="editor-note" id="rs-healthcare-fsa-hsa-note" hidden>You can't have both a Healthcare FSA and an HSA — since HSA enrollment is set above, Healthcare FSA is disabled.</p>
+      <p class="editor-note" id="rs-healthcare-fsa-hsa-note" hidden>You can't have both a Healthcare FSA and an HSA. Since HSA enrollment is set above, Healthcare FSA is disabled.</p>
       <p class="editor-note" id="rs-deductions-warn" hidden aria-live="polite"></p>
 
       <div class="subsection-label"><span class="subsection-icon" aria-hidden="true">🛡️</span> Post-tax deductions <span class="subsection-hint">(no tax benefit)</span></div>
@@ -293,7 +293,7 @@ const jsonLd = {
           <div class="input-wrap"><span>$</span><input type="number" id="rs-union-dues" min="0" step="5"><span>/mo</span></div>
         </div>
       </div>
-      <p class="editor-note">Disability insurance is deliberately post-tax here — pre-tax premiums would make any paid-out benefit taxable, so most people pay these post-tax on purpose.</p>
+      <p class="editor-note">Disability insurance is deliberately post-tax here: pre-tax premiums would make any paid-out benefit taxable, so most people pay these post-tax on purpose.</p>
     </div>
   </details>
 
@@ -304,7 +304,7 @@ const jsonLd = {
   </section>
 
   <section class="section-card">
-    <div class="section-title">Itemized vs. Standard Deduction — your result</div>
+    <div class="section-title">Itemized vs. Standard Deduction: your result</div>
     <div class="editor-body">
       <div class="itemize-result-grid">
         <div class="itemize-result">
@@ -323,8 +323,8 @@ const jsonLd = {
       <div class="w4-card" id="rs-w4-card" hidden aria-live="polite">
         <div class="w4-eyebrow">Tell your employer on Form W-4, Step 4(b)</div>
         <div class="w4-amount" id="rs-w4-amount">&mdash;</div>
-        <p class="w4-note">Since you're set up to itemize federally, enter this amount on Step 4(b) of your W-4 with your employer. Without it, your employer withholds as if you're taking the standard deduction — your annual numbers above are still right, but your actual paychecks will run smaller than this tool predicts, with the difference coming back as a refund the following spring instead of showing up in your take-home pay.</p>
-        <p class="w4-disclaimer">Not tax advice, and not a guarantee of accuracy — this figure is a simplified planning estimate, not a substitute for a tax professional. Confirm it (and the rest of your W-4) with one before you submit anything to your employer. See our <a href="/terms/">Terms of Service</a> for the full no-warranty and liability terms.</p>
+        <p class="w4-note">Since you're set up to itemize federally, enter this amount on Step 4(b) of your W-4 with your employer. Without it, your employer withholds as if you're taking the standard deduction. Your annual numbers above are still right, but your actual paychecks will run smaller than this tool predicts, with the difference coming back as a refund the following spring instead of showing up in your take-home pay.</p>
+        <p class="w4-disclaimer">Not tax advice, and not a guarantee of accuracy; this figure is a simplified planning estimate, not a substitute for a tax professional. Confirm it (and the rest of your W-4) with one before you submit anything to your employer. See our <a href="/terms/">Terms of Service</a> for the full no-warranty and liability terms.</p>
       </div>
     </div>
   </section>
@@ -343,7 +343,7 @@ const jsonLd = {
       </table>
     </div>
     <div class="prose-body">
-      <p>NY State Disability Insurance and Paid Family Leave are mandatory payroll deductions for every NY W-2 employee — self-employed/1099 filers don't have this line.</p>
+      <p>NY State Disability Insurance and Paid Family Leave are mandatory payroll deductions for every NY W-2 employee; self-employed/1099 filers don't have this line.</p>
     </div>
   </section>
 
@@ -362,7 +362,7 @@ const jsonLd = {
       </table>
     </div>
     <div class="prose-body">
-      <p>This shows how much more gross salary you'd need if you pushed your monthly savings goal up (or down) by 5% and 10% — everything else about your tax situation and contributions held constant.</p>
+      <p>This shows how much more gross salary you'd need if you pushed your monthly savings goal up (or down) by 5% and 10%, with everything else about your tax situation and contributions held constant.</p>
     </div>
   </section>
 
@@ -380,8 +380,8 @@ const jsonLd = {
   <section class="section-card">
     <div class="section-title">How this works</div>
     <div class="prose-body">
-      <p>We take your monthly expenses plus savings goal, multiply by 12, and binary-search for the gross salary whose net take-home lands on that number — after federal, NY State, and NYC resident tax brackets, the Social Security wage base cap, the Additional Medicare surtax, and your 401(k)/HSA elections. Traditional 401(k) contributions reduce taxable income; Roth contributions don't. HSA contributions are exempt from both income tax and FICA, regardless of 401(k) type.</p>
-      <p>This is a planning estimate, not a paycheck. Health insurance, commuter benefits, FSAs, life/disability insurance, union dues, and NY's mandatory SDI/PFL are all modeled in "Other paycheck deductions" above if you enter them — leave them at $0 if they don't apply. It otherwise assumes a single job with no other income.</p>
+      <p>We take your monthly expenses plus savings goal, multiply by 12, and binary-search for the gross salary whose net take-home lands on that number, after federal, NY State, and NYC resident tax brackets, the Social Security wage base cap, the Additional Medicare surtax, and your 401(k)/HSA elections. Traditional 401(k) contributions reduce taxable income; Roth contributions don't. HSA contributions are exempt from both income tax and FICA, regardless of 401(k) type.</p>
+      <p>This is a planning estimate, not a paycheck. Health insurance, commuter benefits, FSAs, life/disability insurance, union dues, and NY's mandatory SDI/PFL are all modeled in "Other paycheck deductions" above if you enter them; leave them at $0 if they don't apply. It otherwise assumes a single job with no other income.</p>
     </div>
   </section>
 
@@ -412,7 +412,7 @@ const jsonLd = {
 
 <Footer
   variant="app"
-  disclaimer="Estimate only, not tax advice, provided as-is with no warranty of accuracy. Assumes 2026 federal, New York State, and NYC resident tax brackets and contribution limits. Health insurance, FSA, commuter benefit, and other paycheck deduction figures are only as accurate as what you enter, and NY SDI/PFL are modeled as flat statutory amounts, not your employer's exact payroll calculation. The itemized-vs-standard deduction comparison and its Form W-4 Step 4(b) figure are simplified estimates — they don't check your mortgage against the acquisition-debt limit or account for every AGI-based phaseout, and shouldn't be used to file a return or fill out payroll paperwork without review. Consult a tax professional for guidance specific to your situation."
+  disclaimer="Estimate only, not tax advice, provided as-is with no warranty of accuracy. Assumes 2026 federal, New York State, and NYC resident tax brackets and contribution limits. Health insurance, FSA, commuter benefit, and other paycheck deduction figures are only as accurate as what you enter, and NY SDI/PFL are modeled as flat statutory amounts, not your employer's exact payroll calculation. The itemized-vs-standard deduction comparison and its Form W-4 Step 4(b) figure are simplified estimates; they don't check your mortgage against the acquisition-debt limit or account for every AGI-based phaseout, and shouldn't be used to file a return or fill out payroll paperwork without review. Consult a tax professional for guidance specific to your situation."
   columns={footerColumns}
 />
 </BaseLayout>

@@ -122,7 +122,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
       <div class="stat-asof">As of {data.medianSalePriceAsOf}</div>
     </div>
   </div>
-  <p class="data-note">Cited figures — see Sources below. These are market data points, not calculated by this site.</p>
+  <p class="data-note">Cited figures; see Sources below. These are market data points, not calculated by this site.</p>
 
   <div class="card guide-body">
     <Content />
@@ -130,7 +130,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
   <div class="card calc-card">
     <h3>What it takes to live here</h3>
-    <p class="calc-disclaimer">The figures below are <strong>calculated</strong> — not cited market data — by running {data.name}'s median rent and sale price through this site's calculator assumptions (40× rent rule, co-op/condo DTI limits). They assume no other monthly debts and don't check against real savings. Open the linked calculator to run your own numbers.</p>
+    <p class="calc-disclaimer">The figures below are <strong>calculated</strong> (not cited market data) by running {data.name}'s median rent and sale price through this site's calculator assumptions (40× rent rule, co-op/condo DTI limits). They assume no other monthly debts and don't check against real savings. Open the linked calculator to run your own numbers.</p>
     <table>
       <tbody>
         <tr>
@@ -160,7 +160,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
         <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a></li>
       ))}
     </ul>
-    <p class="sources-note">Market data changes constantly — verify current figures against the source above before relying on them for a real decision.</p>
+    <p class="sources-note">Market data changes constantly. Verify current figures against the source above before relying on them for a real decision.</p>
   </div>
 
   {relatedTerms.length > 0 && (

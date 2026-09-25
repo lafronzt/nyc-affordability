@@ -660,7 +660,7 @@ function updateResults(r: CalcResult) {
   setPill('pill-dti', 'pd-dti', r.dtiOk,
     r.dtiOk
       ? fmtPct(r.dtiActual) + ' (max ' + fmtPct(r.dtiMax) + ')'
-      : fmtPct(r.dtiActual) + ' — OVER max ' + fmtPct(r.dtiMax));
+      : fmtPct(r.dtiActual) + ': OVER max ' + fmtPct(r.dtiMax));
 
   setPill('pill-res', 'pd-res', r.resOk,
     r.resOk
@@ -767,7 +767,7 @@ function computeOptimizer(inp: Inputs): any {
   if (c.A <= 0) {
     return { ok: false, reason: 'A_NEG', c,
       title: 'Income insufficient for this maintenance level',
-      detail: 'Maintenance plus existing debts already exceed your DTI budget. There is no down payment that lets you qualify — increase income, reduce DTI limit, or pick a building with lower maintenance.' };
+      detail: 'Maintenance plus existing debts already exceed your DTI budget. There is no down payment that lets you qualify. Increase income, reduce DTI limit, or pick a building with lower maintenance.' };
   }
   if ((c.resMo > 0 && c.B <= 0) || c.dpCCNum <= 0) {
     return { ok: false, reason: 'B_NEG', c,
@@ -1248,19 +1248,19 @@ function renderOptimizerView(inp: Inputs) {
   if (opt.clampedAt === 'max') {
     expl.classList.add('warn');
     expl.innerHTML = 'The math wants <strong>' + (opt.dpUnclamped * 100).toFixed(1) +
-      '%</strong> down, which exceeds 80%. Clamped to 80% — at this level you should consult a mortgage broker, since most NYC co-op lenders cap loans at this LTV.';
+      '%</strong> down, which exceeds 80%. Clamped to 80%. At this level you should consult a mortgage broker, since most NYC co-op lenders cap loans at this LTV.';
   } else if (opt.clampedAt === 'min' || opt.baseBind === 'cash') {
-    expl.innerHTML = '<strong>Cash-limited.</strong> Your cash runs out before income does. Putting more down would just shrink your reserves — it does not unlock a higher price. Your maximum is the standard calculation: <strong>' + fmt$(opt.pStandard) + '</strong> at ' + (c.minDp * 100).toFixed(1) + '% down.';
+    expl.innerHTML = '<strong>Cash-limited.</strong> Your cash runs out before income does. Putting more down would just shrink your reserves; it does not unlock a higher price. Your maximum is the standard calculation: <strong>' + fmt$(opt.pStandard) + '</strong> at ' + (c.minDp * 100).toFixed(1) + '% down.';
   } else if (opt.baseBind === 'both' || opt.gain < 1000) {
     expl.classList.add('ok');
-    expl.innerHTML = '<strong>Already optimal.</strong> Both constraints bind simultaneously at ' + (c.minDp * 100).toFixed(1) + '% down. You are already at the ceiling — no down-payment adjustment buys more price.';
+    expl.innerHTML = '<strong>Already optimal.</strong> Both constraints bind simultaneously at ' + (c.minDp * 100).toFixed(1) + '% down. You are already at the ceiling; no down-payment adjustment buys more price.';
   } else {
     // DTI-limited with surplus — the interesting case
     const unusedCash = Math.max(0, basicDeal.surplus);
     expl.innerHTML = '<strong>DTI-limited with surplus cash.</strong> At ' + (c.minDp * 100).toFixed(1) +
       '% down your income caps you at <strong>' + fmt$(opt.pStandard) + '</strong>, but you have <strong>' + fmt$(unusedCash) +
       '</strong> in unused cash sitting on the table. Putting <strong>' + (opt.dpOptimal * 100).toFixed(1) +
-      '% down</strong> shrinks the loan enough to qualify for <strong>' + fmt$(opt.pMaxTrue) + '</strong> — your true ceiling.';
+      '% down</strong> shrinks the loan enough to qualify for <strong>' + fmt$(opt.pMaxTrue) + '</strong>, your true ceiling.';
   }
 
   // Sensitivity
@@ -1569,8 +1569,8 @@ function renderCashLever(r: any, c: any) {
     big.textContent = fmt$(r.cashGap);
     big.className = 'aft-lever-big neg';
     sub.innerHTML = r.incomeOk
-      ? 'Add this much in liquid assets and you qualify at ' + (c.minDp * 100).toFixed(0) + '% down — DTI is already fine.'
-      : 'Cash alone won\'t solve it — income is also short. You\'d need both.';
+      ? 'Add this much in liquid assets and you qualify at ' + (c.minDp * 100).toFixed(0) + '% down. DTI is already fine.'
+      : 'Cash alone won\'t solve it; income is also short. You\'d need both.';
     extra.style.display = '';
     // Months-to-save
     const rate = parseFloat(($input('aft-savings-rate') as HTMLInputElement).value) || 0;
@@ -1601,7 +1601,7 @@ function renderIncomeLever(r: any) {
     big.textContent = '+' + fmt$(r.incomeGap) + '/yr';
     big.className = 'aft-lever-big neg';
     sub.innerHTML = r.cashOk
-      ? 'You\'d need this much more annual income — your assets already cover the cash side.'
+      ? 'You\'d need this much more annual income. Your assets already cover the cash side.'
       : 'Income is short and so is cash. Both need to move (or use the dp lever).';
   }
 }
@@ -1638,7 +1638,7 @@ function renderDpLever(r: any, c: any) {
     badge.textContent = 'CASH ONLY';
     badge.className = 'badge warn';
     sub.innerHTML = 'DTI is already satisfied at <strong>' + (c.minDp * 100).toFixed(1) +
-      '%</strong> down — only cash is short. See Lever 1 above. The cash ceiling is at <strong>' +
+      '%</strong> down; only cash is short. See Lever 1 above. The cash ceiling is at <strong>' +
       (Math.min(r.dpForCash, HARD) * 100).toFixed(1) + '%</strong> down.';
     zone.hidden = true;
     mkDti.hidden = true;
@@ -1652,19 +1652,19 @@ function renderDpLever(r: any, c: any) {
 
     if (!dtiFinite) {
       sub.innerHTML = 'Income can\'t cover the carrying costs at <strong>' + fmt$(r.target) +
-        '</strong> at any down payment — even 100% cash purchase fails the DTI test on maintenance + debts. Try Lever 4 (lower maintenance) or boost income.';
+        '</strong> at any down payment. Even a 100% cash purchase fails the DTI test on maintenance + debts. Try Lever 4 (lower maintenance) or boost income.';
     } else if (!cashFinite) {
       sub.innerHTML = 'After fixed closing costs and the maintenance reserve, no cash budget remains for a down payment at <strong>' +
         fmt$(r.target) + '</strong>. Add liquid assets, reduce reserve months, or lower closing costs before any dp lever can help.';
     } else if (r.dpForCashCapped < c.minDp) {
       sub.innerHTML = 'Your cash only covers up to <strong>' + (Math.max(0, r.dpForCash) * 100).toFixed(1) +
-        '%</strong> down at <strong>' + fmt$(r.target) + '</strong> — below the board minimum of <strong>' +
+        '%</strong> down at <strong>' + fmt$(r.target) + '</strong>, below the board minimum of <strong>' +
         (c.minDp * 100).toFixed(1) + '%</strong>. Add cash (Lever 1) or aim lower.';
     } else {
-      sub.innerHTML = 'No down payment resolves this — you need more cash, more income, or both. ' +
+      sub.innerHTML = 'No down payment resolves this. You need more cash, more income, or both. ' +
         'DTI floor: <strong>' + (r.dpForDti * 100).toFixed(1) + '%</strong> · ' +
         'Cash ceiling: <strong>' + (Math.max(0, Math.min(r.dpForCash, HARD)) * 100).toFixed(1) + '%</strong>. ' +
-        'The DTI floor sits above the cash ceiling — that gap is your combined shortfall.';
+        'The DTI floor sits above the cash ceiling; that gap is your combined shortfall.';
     }
 
     // Range bar: only draw the no-fly zone when both ceilings are finite AND
@@ -1709,7 +1709,7 @@ function renderMaintLever(r: any, c: any) {
     big.textContent = fmt$(r.maxMaintenance) + '/mo';
     big.className = 'aft-lever-big ok';
     sub.innerHTML = '✓ Your maintenance estimate (<strong>' + fmt$(c.maintMo) +
-      '/mo</strong>) fits — the ceiling at this price is <strong>' + fmt$(r.maxMaintenance) +
+      '/mo</strong>) fits. The ceiling at this price is <strong>' + fmt$(r.maxMaintenance) +
       '/mo</strong> (' + bindLabel + ').';
   } else {
     badge.textContent = 'TOO HIGH';
@@ -1768,10 +1768,10 @@ function renderRateLever(r: any) {
   const txt = $('lev-rate-text')!;
   if (r.rateNeeded === null) {
     txt.innerHTML = '⚠ Even at <strong>' + r.rateFloor.toFixed(2) +
-      '%</strong>, this price doesn\'t pencil out at your current income and assets — rate alone can\'t close the gap. Use the cash, income, or maintenance levers.';
+      '%</strong>, this price doesn\'t pencil out at your current income and assets; rate alone can\'t close the gap. Use the cash, income, or maintenance levers.';
   } else if (r.rateNeeded >= r.currentRate - 1e-6) {
     txt.innerHTML = '✓ This price <strong>works at current rates</strong> (' + r.currentRate.toFixed(2) +
-      '%) — the down-payment lever (Lever 3) gets you there. No rate change needed.';
+      '%): the down-payment lever (Lever 3) gets you there. No rate change needed.';
   } else {
     txt.innerHTML = 'Rates would need to drop to <strong>' + r.rateNeeded.toFixed(2) +
       '%</strong> for this price to work at your current income and assets ' +
