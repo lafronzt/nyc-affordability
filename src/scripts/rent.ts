@@ -539,7 +539,7 @@ function renderAffordTargetView(inp: Inputs, calc: CalcResult) {
   ($('aft-analysis') as HTMLElement).hidden = false;
   $('aft-success')!.className = 'aft-negative';
   $('aft-ok-icon')!.textContent = '❌';
-  $('aft-success-title')!.textContent = 'Not yet — here\'s what to do';
+  $('aft-success-title')!.textContent = 'Not yet. Here\'s what to do';
   $('aft-success-sub')!.textContent = `Gap: ${fmt(gap)}/mo. See levers below.`;
 
   // Income lever

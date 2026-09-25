@@ -5,9 +5,9 @@ metaDescription: "A Housing Choice Voucher (Section 8) caps NYC tenant rent at a
 updated: "2026-09-23"
 category: "affordable-housing"
 sources:
-  - label: "NYCHA — About Section 8"
+  - label: "NYCHA: About Section 8"
     url: "https://www.nyc.gov/site/nycha/section-8/about-section-8.page"
-  - label: "NYCHA — Voucher Payment Standards and Utility Allowance Schedule"
+  - label: "NYCHA: Voucher Payment Standards and Utility Allowance Schedule"
     url: "https://www.nyc.gov/site/nycha/section-8/voucher-payment-standards-vps-utility-allowance-schedule.page"
 relatedTerms:
   - ami-area-median-income
@@ -16,10 +16,10 @@ relatedGuides:
 draft: false
 ---
 
-The Housing Choice Voucher program, commonly called Section 8, is a federal rent subsidy that NYCHA administers for roughly 110,000 households citywide — the largest such program in the country. A voucher holder finds their own apartment on the private market from a participating landlord; NYCHA then pays the landlord directly for the portion of rent above what the tenant is expected to contribute, generally around 30% of the household's adjusted monthly income.
+The Housing Choice Voucher program, commonly called Section 8, is a federal rent subsidy that NYCHA administers for roughly 110,000 households citywide, the largest such program in the country. A voucher holder finds their own apartment on the private market from a participating landlord; NYCHA then pays the landlord directly for the portion of rent above what the tenant is expected to contribute, generally around 30% of the household's adjusted monthly income.
 
-NYCHA caps its own contribution at a "payment standard" that varies by unit size and is reset each July. The schedule effective July 1, 2025 ranged from $2,646 for a studio up to $6,579 for an 8-bedroom unit ($2,762 for a 1-bedroom, $3,058 for a 2-bedroom). Effective July 1, 2026, NYCHA discontinued its higher Exception Payment Standard ZIP codes, so the standard schedule now applies in every ZIP code for new rentals and transfers — check NYCHA's current schedule for the July 2026 amounts before relying on a specific figure. As of 2026, NYCHA has paused issuing new vouchers from its general waitlist while it transitions Emergency Housing Voucher households onto the standard program.
+NYCHA caps its own contribution at a "payment standard" that varies by unit size and is reset each July. The schedule effective July 1, 2025 ranged from $2,646 for a studio up to $6,579 for an 8-bedroom unit ($2,762 for a 1-bedroom, $3,058 for a 2-bedroom). Effective July 1, 2026, NYCHA discontinued its higher Exception Payment Standard ZIP codes, so the standard schedule now applies in every ZIP code for new rentals and transfers. Check NYCHA's current schedule for the July 2026 amounts before relying on a specific figure. As of 2026, NYCHA has paused issuing new vouchers from its general waitlist while it transitions Emergency Housing Voucher households onto the standard program.
 
 ## Worked example
 
-A household with $1,000/month in adjusted income renting a 1-bedroom pays roughly 30% — about $300/month — toward rent. If the actual rent is $2,762 (the July 2025 payment standard for a 1-bedroom), NYCHA pays the landlord the remaining $2,462/month directly. The math changes with unit size, location, and the household's specific income calculation — see the [NYC AMI & Housing Connect guide](/guides/nyc-ami-housing-connect-explained/) for how this compares to income-restricted lottery housing.
+A household with $1,000/month in adjusted income renting a 1-bedroom pays roughly 30% (about $300/month) toward rent. If the actual rent is $2,762 (the July 2025 payment standard for a 1-bedroom), NYCHA pays the landlord the remaining $2,462/month directly. The math changes with unit size, location, and the household's specific income calculation. See the [NYC AMI & Housing Connect guide](/guides/nyc-ami-housing-connect-explained/) for how this compares to income-restricted lottery housing.

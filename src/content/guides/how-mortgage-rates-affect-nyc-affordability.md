@@ -5,13 +5,13 @@ intro: "Mortgage rates don't just change your monthly payment. Through a lender'
 updated: "2026-09-23"
 category: "buying"
 sources:
-  - label: "Freddie Mac — Primary Mortgage Market Survey (PMMS)"
+  - label: "Freddie Mac: Primary Mortgage Market Survey (PMMS)"
     url: "https://www.freddiemac.com/pmms"
-  - label: "Freddie Mac — Mortgage Rates Average 6.95% (September 17, 2026)"
+  - label: "Freddie Mac: Mortgage Rates Average 6.95% (September 17, 2026)"
     url: "https://www.globenewswire.com/news-release/2026/09/17/3364253/0/en/mortgage-rates-average-6-95.html"
-  - label: "Bankrate — Compare Today's 30-Year Mortgage Rates"
+  - label: "Bankrate: Compare Today's 30-Year Mortgage Rates"
     url: "https://www.bankrate.com/mortgages/30-year-mortgage-rates/"
-  - label: "Consumer Financial Protection Bureau — What Is a Debt-to-Income Ratio?"
+  - label: "Consumer Financial Protection Bureau: What Is a Debt-to-Income Ratio?"
     url: "https://www.consumerfinance.gov/ask-cfpb/what-is-a-debt-to-income-ratio-en-1791/"
 relatedGuides:
   - income-needed-to-buy-nyc-apartment

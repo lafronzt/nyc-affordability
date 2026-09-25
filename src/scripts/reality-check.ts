@@ -169,13 +169,13 @@ function calcCondo(base: Base) {
 }
 
 const BINDING_EXPLANATIONS: Record<string, string> = {
-  'DTI / Income': 'Your income is the limit — your savings comfortably cover the rest.',
-  'Cash / Reserves': 'Your reserves are the limit — your income would support more.',
+  'DTI / Income': 'Your income is the limit; your savings comfortably cover the rest.',
+  'Cash / Reserves': 'Your reserves are the limit; your income would support more.',
   'DP / Closing Costs': 'Your available cash for down payment and closing costs is the limit.',
-  'Cash / Move-In': 'Your move-in cash is the limit — your income would support more.',
+  'Cash / Move-In': 'Your move-in cash is the limit; your income would support more.',
 };
 function bindingExplanation(binding: string): string {
-  return BINDING_EXPLANATIONS[binding] ?? 'Landlord income screening is the limit — your savings comfortably cover move-in.';
+  return BINDING_EXPLANATIONS[binding] ?? 'Landlord income screening is the limit; your savings comfortably cover move-in.';
 }
 
 /* ── AMI eligibility ── */

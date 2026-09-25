@@ -5,13 +5,13 @@ intro: "NYC landlords want 40x the monthly rent in income, and a personal guaran
 updated: "2026-09-23"
 category: "renting"
 sources:
-  - label: "Insurent — Rental Guarantor Service: Renter Information"
+  - label: "Insurent: Rental Guarantor Service: Renter Information"
     url: "https://www.insurent.com/renters/"
-  - label: "6sqft — Everything you need to know about using a guarantor in NYC"
+  - label: "6sqft: Everything you need to know about using a guarantor in NYC"
     url: "https://www.6sqft.com/everything-you-need-to-know-about-using-a-guarantor-in-nyc/"
-  - label: "NYC Department of Consumer and Worker Protection — FARE Act FAQ (fee disclosure rules)"
+  - label: "NYC Department of Consumer and Worker Protection: FARE Act FAQ (fee disclosure rules)"
     url: "https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page"
-  - label: "New York State Senate — RPL §227-g (security deposit cap, HSTPA 2019)"
+  - label: "New York State Senate: RPL §227-g (security deposit cap, HSTPA 2019)"
     url: "https://www.nysenate.gov/legislation/laws/RPP/227-G"
 relatedGuides:
   - nyc-40x-rent-rule

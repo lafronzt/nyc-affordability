@@ -61,7 +61,7 @@ const faqSchema = {
       name: 'How does this calculator determine my maximum co-op purchase price?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: "This calculator finds the lower of two maximum prices. Cash / Reserves: your assets are split into two pools — accounts marked 'Closing?' cover the down payment and closing costs, while all accounts (weighted by Reserve %) count toward the post-close reserve cushion. DTI / Income: your total monthly housing payment (mortgage P&I + maintenance + other debts) must stay within the board's debt-to-income ratio limit on your gross monthly income. Whichever constraint produces the lower max price is your binding limit.",
+        text: "This calculator finds the lower of two maximum prices. Cash / Reserves: your assets are split into two pools: accounts marked 'Closing?' cover the down payment and closing costs, while all accounts (weighted by Reserve %) count toward the post-close reserve cushion. DTI / Income: your total monthly housing payment (mortgage P&I + maintenance + other debts) must stay within the board's debt-to-income ratio limit on your gross monthly income. Whichever constraint produces the lower max price is your binding limit.",
       },
     },
     {
@@ -69,7 +69,7 @@ const faqSchema = {
       name: "What's the difference between the Closing? checkbox and Reserve % for each account?",
       acceptedAnswer: {
         '@type': 'Answer',
-        text: "Closing? is checked for any account you can fully liquidate and wire on closing day (cash, HYSA, brokerage you plan to sell) — the full balance then counts toward the down payment and closing costs. Reserve % is the fraction of the balance your board credits toward post-closing reserves. Boards typically credit 100% for cash and HYSA, 70-80% for brokerage (a market-volatility haircut), and 0% for retirement accounts (401k, IRA, Roth IRA).",
+        text: "Closing? is checked for any account you can fully liquidate and wire on closing day (cash, HYSA, brokerage you plan to sell); the full balance then counts toward the down payment and closing costs. Reserve % is the fraction of the balance your board credits toward post-closing reserves. Boards typically credit 100% for cash and HYSA, 70-80% for brokerage (a market-volatility haircut), and 0% for retirement accounts (401k, IRA, Roth IRA).",
       },
     },
     {
@@ -161,7 +161,7 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
   metaDescription="Free NYC housing affordability calculator for co-op apartments. Estimate how much home you can afford from income, assets, mansion tax, DTI, costs, and reserves."
   canonicalPath="/coop/"
   ogTitle="NYC Co-op Affordability Finder | Calculate Your Max Purchase Price"
-  ogDescription="Free NYC housing affordability calculator for co-op apartments. Find your max purchase price from your financial profile — covering down payment, closing costs, DTI, and reserves."
+  ogDescription="Free NYC housing affordability calculator for co-op apartments. Find your max purchase price from your financial profile, covering down payment, closing costs, DTI, and reserves."
   ogImage="/images/coop-og.png"
   ogImageAlt="Can you afford a NYC co-op? NYC Co-op Affordability Calculator from NYC Affordability."
   twitterTitle="NYC Co-op Affordability Finder"
@@ -201,11 +201,11 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
         <div class="pool-callout">
           <div class="pool-row">
             <span class="pool-dot green"></span>
-            <span><strong>Closing Cash</strong> (Closing? = ✓) — wired at closing to cover the down payment + closing costs. Check any account you can fully liquidate on closing day.</span>
+            <span><strong>Closing Cash</strong> (Closing? = ✓): wired at closing to cover the down payment + closing costs. Check any account you can fully liquidate on closing day.</span>
           </div>
           <div class="pool-row">
             <span class="pool-dot blue"></span>
-            <span><strong>Reserve Value</strong> (balance × Reserve %) — counts toward the board's post-close cushion. Boards typically apply a 70–80% haircut on brokerage and exclude retirement accounts — set Reserve % to 0% for accounts your board ignores.</span>
+            <span><strong>Reserve Value</strong> (balance × Reserve %): counts toward the board's post-close cushion. Boards typically apply a 70–80% haircut on brokerage and exclude retirement accounts. Set Reserve % to 0% for accounts your board ignores.</span>
           </div>
         </div>
 
@@ -232,7 +232,7 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
       <div class="card-body" id="card-body-2">
         <div class="form-row">
           <label class="lbl" for="annual-income">Annual Gross Income
-            <small>At the default 6.95% rate and 28% DTI, the city-wide median co-op (~$506K, Q1 2025 — StreetEasy/Baruch CUNY) takes roughly $166K of income to qualify. Typical buyers targeting Manhattan pay considerably more.</small>
+            <small>At the default 6.95% rate and 28% DTI, the city-wide median co-op (~$506K, Q1 2025, StreetEasy/Baruch CUNY) takes roughly $166K of income to qualify. Typical buyers targeting Manhattan pay considerably more.</small>
           </label>
           <div class="iw w140"><span class="px">$</span><input type="number" id="annual-income" value="150000" min="0" step="1000"></div>
         </div>
@@ -255,7 +255,7 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
       <div class="card-body" id="card-body-3">
         <div class="form-row">
           <label class="lbl" for="mtg-rate">Annual Mortgage Rate
-            <small>30-yr fixed consensus as of Sep 2026 — Freddie Mac PMMS (6.95%, Sep 17), Bankrate (6.97%). Co-ops require conventional financing; FHA loans are not permitted.</small>
+            <small>30-yr fixed consensus as of Sep 2026: Freddie Mac PMMS (6.95%, Sep 17), Bankrate (6.97%). Co-ops require conventional financing; FHA loans are not permitted.</small>
           </label>
           <div class="iw w120"><input type="number" id="mtg-rate" value="6.95" min="0" max="30" step="0.05" style="text-align:right"><span class="sx">%</span></div>
         </div>
@@ -265,7 +265,7 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
         </div>
         <div class="form-row">
           <label class="lbl" for="dp-pct">Down Payment
-            <small>20% is the minimum for most buildings; mid-range Manhattan boards often require 25%; luxury/conservative buildings may require 30–50% — Skybriz, Prevu (2025).</small>
+            <small>20% is the minimum for most buildings; mid-range Manhattan boards often require 25%; luxury/conservative buildings may require 30–50% (Skybriz, Prevu, 2025).</small>
           </label>
           <div class="iw w120"><input type="number" id="dp-pct" value="20" min="0" max="100" step="1" style="text-align:right"><span class="sx">%</span></div>
         </div>
@@ -278,19 +278,19 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
       <div class="card-body" id="card-body-4">
         <div class="form-row">
           <label class="lbl" for="reserve-mo">Post-Close Reserve
-            <small>12 months is the most common standard for typical buildings; conservative/luxury boards require 24+. Only liquid assets count (cash, HYSA, brokerage) — retirement accounts are generally excluded — Prevu, Aaron &amp; Geoff Compass (2026).</small>
+            <small>12 months is the most common standard for typical buildings; conservative/luxury boards require 24+. Only liquid assets count (cash, HYSA, brokerage); retirement accounts are generally excluded (Prevu, Aaron &amp; Geoff Compass, 2026).</small>
           </label>
           <div class="iw w120"><input type="number" id="reserve-mo" value="12" min="0" max="120" step="1" style="text-align:right"><span class="sx">mo</span></div>
         </div>
         <div class="form-row">
           <label class="lbl" for="max-dti">Max DTI Allowed by Board
-            <small>28% is the long-standing NYC standard. Outer-borough buildings may allow up to 30–35%; Park/Fifth Ave luxury buildings may cap at 20–25% — Prevu, YRE (2025).</small>
+            <small>28% is the long-standing NYC standard. Outer-borough buildings may allow up to 30–35%; Park/Fifth Ave luxury buildings may cap at 20–25% (Prevu, YRE, 2025).</small>
           </label>
           <div class="iw w120"><input type="number" id="max-dti" value="28" min="0" max="100" step="0.5" style="text-align:right"><span class="sx">%</span></div>
         </div>
         <div class="form-row">
           <label class="lbl" for="monthly-maint">Projected Monthly Maintenance
-            <small>Includes building's underlying mortgage + property tax share (typically 30–50% is tax-deductible). City-wide medians: Queens ~$750, Brooklyn ~$900, Manhattan ~$1,500–$1,800. $1,200 is a mid-range city-wide estimate — Elliman/Miller Samuel Q4 2024.</small>
+            <small>Includes building's underlying mortgage + property tax share (typically 30–50% is tax-deductible). City-wide medians: Queens ~$750, Brooklyn ~$900, Manhattan ~$1,500–$1,800. $1,200 is a mid-range city-wide estimate (Elliman/Miller Samuel, Q4 2024).</small>
           </label>
           <div class="iw w140"><span class="px">$</span><input type="number" id="monthly-maint" value="1200" min="0" step="50"></div>
         </div>
@@ -304,7 +304,7 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
         <div class="sub-title">Fixed Costs</div>
         <div class="fc-list">
           <div class="fc-row">
-            <label for="fc-atty">Attorney Fees <em style="font-style:normal;color:var(--g400);font-size:12px;">(NYC range: $2,500–$5,000 in 2025 — Prevu, Brick Underground)</em></label>
+            <label for="fc-atty">Attorney Fees <em style="font-style:normal;color:var(--g400);font-size:12px;">(NYC range: $2,500–$5,000 in 2025, per Prevu and Brick Underground)</em></label>
             <div class="iw w140"><span class="px">$</span><input type="number" id="fc-atty" value="4000" min="0" step="100"></div>
           </div>
           <div class="fc-row">
@@ -333,7 +333,7 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
           <div class="sub-title">Variable Costs</div>
           <div class="form-row" style="margin-bottom:0">
             <label class="lbl" for="var-pct">Combined Variable Rate
-              <small>0.5% default covers loan origination fees. Mansion tax is calculated automatically below. Add 1–3% if your building charges a buyer-side flip tax — check the proprietary lease.</small>
+              <small>0.5% default covers loan origination fees. Mansion tax is calculated automatically below. Add 1–3% if your building charges a buyer-side flip tax; check the proprietary lease.</small>
             </label>
             <div class="iw w120"><input type="number" id="var-pct" value="0.5" min="0" max="20" step="0.1" style="text-align:right"><span class="sx">%</span></div>
           </div>
@@ -449,7 +449,7 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
             <span class="sr-val" id="s-mtg">—</span>
           </div>
           <div class="snap-row indent pmi-row" id="pmi-snap-row" style="display:none">
-            <span class="sr-lbl">PMI <span class="sr-note">(auto — dp &lt; 20%)</span></span>
+            <span class="sr-lbl">PMI <span class="sr-note">(auto: dp &lt; 20%)</span></span>
             <span class="sr-val" id="s-pmi">—</span>
           </div>
           <div class="snap-row">
@@ -727,17 +727,17 @@ const jsonLd = [webAppSchema, faqSchema, howToSchema];
       <h3>Two constraints, one limit</h3>
       <p>This calculator finds the lower of two maximum prices:</p>
       <ul>
-        <li><strong>Cash / Reserves:</strong> Your assets are split into two pools. Only accounts with <em>Closing?</em> checked can cover the down payment and closing costs — these are wired at closing. All accounts (weighted by Reserve %) count toward the post-close reserve cushion — most boards require 12 months of carrying costs (maintenance + mortgage), though conservative buildings ask for 24+. Both pools must be sufficient for a deal to work. See our <a href="/guides/coop-board-reserve-requirements/">guide to co-op board reserve requirements</a> for the full math.</li>
+        <li><strong>Cash / Reserves:</strong> Your assets are split into two pools. Only accounts with <em>Closing?</em> checked can cover the down payment and closing costs; these are wired at closing. All accounts (weighted by Reserve %) count toward the post-close reserve cushion. Most boards require 12 months of carrying costs (maintenance + mortgage), though conservative buildings ask for 24+. Both pools must be sufficient for a deal to work. See our <a href="/guides/coop-board-reserve-requirements/">guide to co-op board reserve requirements</a> for the full math.</li>
         <li><strong>DTI / Income:</strong> Your total monthly housing payment (mortgage P+I + maintenance + other debts) must stay within the board's debt-to-income ratio limit on your gross monthly income. Most NYC boards use 25–30% DTI.</li>
       </ul>
-      <p>Whichever constraint produces the <em>lower</em> max price is your binding limit — you can't spend more than both allow simultaneously.</p>
+      <p>Whichever constraint produces the <em>lower</em> max price is your binding limit; you can't spend more than both allow simultaneously.</p>
       <h3>Closing? checkbox vs. Reserve %</h3>
-      <p>Each account has two independent settings. <strong>Closing?</strong> — check this for any account you can fully liquidate and wire on closing day (cash, HYSA, brokerage you plan to sell). The full balance then counts toward the down payment and closing costs. <strong>Reserve %</strong> — the fraction of the balance your board credits toward post-closing reserves. Boards typically credit 100% for cash and HYSA, 70–80% for brokerage (market-volatility haircut), and 0% for retirement accounts (401k, IRA, Roth IRA), which appear on Schedule D of the REBNY financial statement rather than as liquid reserves. You can check Closing? on a brokerage account while setting its Reserve % to 80% — meaning you'd wire the full amount at closing but only 80% counts toward your post-close cushion in the board's eyes.</p>
-      <h3>PMI — automatic when down payment is under 20%</h3>
-      <p>Private mortgage insurance (PMI) is required on conventional co-op share loans with less than 20% down. It protects the lender — not you — and is added to your monthly payment. The calculator applies PMI automatically based on your down payment percentage using typical rates for a borrower with good credit (~720–740 FICO): roughly 0.52%/yr at 15–20% down, 0.70% at 10–15%, 0.95% at 5–10%, and 1.20% below 5%. PMI is factored into your DTI and reserve calculations. <strong>Note:</strong> many NYC co-op boards require 20–25% or more down — if your building's minimum already clears 20%, PMI won't apply. Under the Homeowners Protection Act, lenders must cancel PMI automatically once your loan reaches 78% of the original purchase price; you can request cancellation at 80% LTV. See our <a href="/guides/pmi-on-nyc-condos-explained/">full PMI guide</a> for the rate tiers and a worked example.</p>
+      <p>Each account has two independent settings. <strong>Closing?</strong>: check this for any account you can fully liquidate and wire on closing day (cash, HYSA, brokerage you plan to sell). The full balance then counts toward the down payment and closing costs. <strong>Reserve %</strong>: the fraction of the balance your board credits toward post-closing reserves. Boards typically credit 100% for cash and HYSA, 70–80% for brokerage (market-volatility haircut), and 0% for retirement accounts (401k, IRA, Roth IRA), which appear on Schedule D of the REBNY financial statement rather than as liquid reserves. You can check Closing? on a brokerage account while setting its Reserve % to 80%, meaning you'd wire the full amount at closing but only 80% counts toward your post-close cushion in the board's eyes.</p>
+      <h3>PMI: automatic when down payment is under 20%</h3>
+      <p>Private mortgage insurance (PMI) is required on conventional co-op share loans with less than 20% down. It protects the lender (not you) and is added to your monthly payment. The calculator applies PMI automatically based on your down payment percentage using typical rates for a borrower with good credit (~720–740 FICO): roughly 0.52%/yr at 15–20% down, 0.70% at 10–15%, 0.95% at 5–10%, and 1.20% below 5%. PMI is factored into your DTI and reserve calculations. <strong>Note:</strong> many NYC co-op boards require 20–25% or more down; if your building's minimum already clears 20%, PMI won't apply. Under the Homeowners Protection Act, lenders must cancel PMI automatically once your loan reaches 78% of the original purchase price; you can request cancellation at 80% LTV. See our <a href="/guides/pmi-on-nyc-condos-explained/">full PMI guide</a> for the rate tiers and a worked example.</p>
       <h3>Mansion tax is tiered</h3>
-      <p>New York's <a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">mansion tax</a> applies to co-op purchases just as it does to condos — you're buying shares in a corporation, but the tax follows the consideration paid. It starts at 1% on purchases of $1M–$2M and steps up to 3.9% above $25M. The tax is <strong>not marginal</strong>: crossing a tier raises the entire bill, so $999,999 owes $0 while $1,000,001 owes ~$10,000. The calculator applies this automatically and shows it as a separate line in the closing cost waterfall. The variable rate field covers loan origination fees and any buyer-side flip tax only — do not add mansion tax there. Flip tax (typically 1–3% of sale price) is usually paid by the seller, but some buildings charge the buyer — check the proprietary lease. See our <a href="/guides/nyc-mansion-tax-explained/">full mansion tax breakdown</a> for the complete tier table and the cliff math, and our <a href="/guides/coop-flip-tax-nyc-explained/">flip tax guide</a> for how that separate, seller-side fee works.</p>
-      <h3>This is an estimate — verify everything</h3>
+      <p>New York's <a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">mansion tax</a> applies to co-op purchases just as it does to condos. You're buying shares in a corporation, but the tax follows the consideration paid. It starts at 1% on purchases of $1M–$2M and steps up to 3.9% above $25M. The tax is <strong>not marginal</strong>: crossing a tier raises the entire bill, so $999,999 owes $0 while $1,000,001 owes ~$10,000. The calculator applies this automatically and shows it as a separate line in the closing cost waterfall. The variable rate field covers loan origination fees and any buyer-side flip tax only; do not add mansion tax there. Flip tax (typically 1–3% of sale price) is usually paid by the seller, but some buildings charge the buyer. Check the proprietary lease. See our <a href="/guides/nyc-mansion-tax-explained/">full mansion tax breakdown</a> for the complete tier table and the cliff math, and our <a href="/guides/coop-flip-tax-nyc-explained/">flip tax guide</a> for how that separate, seller-side fee works.</p>
+      <h3>This is an estimate: verify everything</h3>
       <p>Co-op board requirements vary significantly. Your building may have stricter DTI limits, different reserve requirements, or an unusual flip tax structure. Always confirm numbers with a <a href="https://www.nmlsconsumeraccess.org/" target="_blank" rel="noopener noreferrer">licensed mortgage broker</a> (for rate locks and DTI qualification) and a <a href="https://www.nycbar.org/lawyer-referral-service" target="_blank" rel="noopener noreferrer">real estate attorney</a> (for closing costs and the proprietary lease). See our <a href="/guides/coop-board-approval-process/">guide to the board approval process</a> for what the package and interview actually involve. Weighing a condo instead? See <a href="/guides/coop-vs-condo-nyc-costs/">co-op vs condo: what actually costs more</a>. See our <a href="/about/">full sourcing methodology</a> for where every default in this calculator comes from.</p>
     </div>
   </div>

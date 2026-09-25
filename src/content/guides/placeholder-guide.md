@@ -1,6 +1,6 @@
 ---
-title: "Placeholder Guide — Scaffold Test"
-metaDescription: "Placeholder guide used to verify the /guides/ template scaffold. Not real content — replace before publishing."
+title: "Placeholder Guide: Scaffold Test"
+metaDescription: "Placeholder guide used to verify the /guides/ template scaffold. Not real content; replace before publishing."
 intro: "This is placeholder intro copy that stands in for a real guide's opening paragraph, so the template's spacing and typography can be checked before any actual content is written."
 updated: "2026-08-04"
 category: "buying"
@@ -19,7 +19,7 @@ cta:
 
 ## First body section heading
 
-Placeholder body copy for the first section. This is where the real guide's explanation would go — a paragraph or two of prose under a section heading, same as the rest of the guide.
+Placeholder body copy for the first section. This is where the real guide's explanation would go: a paragraph or two of prose under a section heading, same as the rest of the guide.
 
 ## Second body section heading
 

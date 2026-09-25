@@ -5,9 +5,9 @@ metaDescription: "New York's mansion tax is a buyer-paid tax starting at 1% on r
 updated: "2026-08-12"
 category: "taxes"
 sources:
-  - label: "NYS Dept. of Taxation and Finance — TSB-M-19(1)R, Summary of Amendments to the Real Estate Transfer Tax"
+  - label: "NYS Dept. of Taxation and Finance: TSB-M-19(1)R, Summary of Amendments to the Real Estate Transfer Tax"
     url: "https://www.tax.ny.gov/pdf/memos/real_estate/m19-1r.pdf"
-  - label: "NYS Dept. of Taxation and Finance — Real Estate Transfer Tax overview"
+  - label: "NYS Dept. of Taxation and Finance: Real Estate Transfer Tax overview"
     url: "https://www.tax.ny.gov/bus/transfer/rptidx.htm"
 relatedTerms:
   - mortgage-recording-tax
@@ -18,7 +18,7 @@ relatedGuides:
 draft: false
 ---
 
-A buyer-paid New York State tax on residential sales — co-ops, condos, and 1-3 family homes — of $1,000,000 or more. It's a full-price bracket tax, not a marginal one: crossing a tier line by even $1 raises the tax on the *entire* purchase price, not just the amount above the threshold, which is why round-number list prices tend to cluster just under bracket lines ($999,000, $2,995,000).
+A buyer-paid New York State tax on residential sales (co-ops, condos, and 1-3 family homes) of $1,000,000 or more. It's a full-price bracket tax, not a marginal one: crossing a tier line by even $1 raises the tax on the *entire* purchase price, not just the amount above the threshold, which is why round-number list prices tend to cluster just under bracket lines ($999,000, $2,995,000).
 
 | Purchase price | Rate |
 | --- | ---: |
@@ -30,4 +30,4 @@ A buyer-paid New York State tax on residential sales — co-ops, condos, and 1-3
 
 ## Worked example
 
-A $2,000,000 condo owes $2,000,000 × 1.25% = $25,000 in mansion tax. Drop the price by $1, to $1,999,999, and it falls back into the 1.00% bracket: $1,999,999 × 1.00% ≈ $20,000 — a $5,000 swing from a single dollar of price. See the [full mansion tax guide](/guides/nyc-mansion-tax-explained/) for the complete tier table, or see it factored into your max purchase price automatically on the [Condo Calculator](/condo/).
+A $2,000,000 condo owes $2,000,000 × 1.25% = $25,000 in mansion tax. Drop the price by $1, to $1,999,999, and it falls back into the 1.00% bracket: $1,999,999 × 1.00% ≈ $20,000, a $5,000 swing from a single dollar of price. See the [full mansion tax guide](/guides/nyc-mansion-tax-explained/) for the complete tier table, or see it factored into your max purchase price automatically on the [Condo Calculator](/condo/).

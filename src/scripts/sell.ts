@@ -175,7 +175,7 @@ function render() {
   const warnEl = $('hero-warn');
   if (warnEl) {
     if (w.netProceeds < 0) {
-      warnEl.textContent = 'Estimated proceeds are negative — you would need to bring cash to closing to cover the shortfall.';
+      warnEl.textContent = 'Estimated proceeds are negative; you would need to bring cash to closing to cover the shortfall.';
       warnEl.style.display = 'block';
     } else {
       warnEl.style.display = 'none';

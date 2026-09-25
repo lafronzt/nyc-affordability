@@ -53,7 +53,7 @@ export function wireMiniCalc() {
       if (shareBtn) {
         const amountLabel = fmtMoney(value);
         shareBtn.dataset.shareTitle = `${amountLabel} salary after taxes in NYC`;
-        shareBtn.dataset.shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.netTakeHome)}/year (${fmtMoney(breakdown.netTakeHome / 12)}/mo) take-home after federal, NY State, NYC, and FICA tax — a ${fmtPercent(effectiveRate)} effective rate.`;
+        shareBtn.dataset.shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.netTakeHome)}/year (${fmtMoney(breakdown.netTakeHome / 12)}/mo) take-home after federal, NY State, NYC, and FICA tax, a ${fmtPercent(effectiveRate)} effective rate.`;
       }
     }
   });

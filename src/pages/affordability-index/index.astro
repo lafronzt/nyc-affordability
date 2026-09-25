@@ -82,35 +82,35 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 <div class="hero">
   <div class="hero-eyebrow">Affordability Index</div>
   <h2>Is NYC getting more or less affordable?</h2>
-  <p>A tracked snapshot of citywide housing costs — not a single "as of today" number, but each figure labeled with exactly when and where it came from.</p>
+  <p>A tracked snapshot of citywide housing costs. Not a single "as of today" number, but each figure labeled with exactly when and where it came from.</p>
 </div>
 
 <div class="page">
   <Breadcrumbs items={breadcrumbItems} />
 
   <div class="card process-note">
-    <p><strong>How this actually gets updated:</strong> this site has no backend or scheduled job — "updated monthly" here means a real editorial process, not an automatic one. Someone checks the latest reports and edits this page's data file by hand. Below is exactly one snapshot so far ({latest.publishedMonth}); history builds up as future updates are added. We won't claim a monthly cadence has happened until it actually has.</p>
+    <p><strong>How this actually gets updated:</strong> this site has no backend or scheduled job, so "updated monthly" here means a real editorial process, not an automatic one. Someone checks the latest reports and edits this page's data file by hand. Below is exactly one snapshot so far ({latest.publishedMonth}); history builds up as future updates are added. We won't claim a monthly cadence has happened until it actually has.</p>
   </div>
 
   <div class="stat-grid">
     <div class="stat-card">
       <div class="stat-label">Citywide median rent</div>
       <div class="stat-value">{fmtMoney(latest.medianRent.value)}<span class="stat-unit">/mo</span></div>
-      <div class="stat-asof">As of {latest.medianRent.asOf} — <a href={latest.medianRent.url} target="_blank" rel="noopener noreferrer">{latest.medianRent.source}</a></div>
+      <div class="stat-asof">As of {latest.medianRent.asOf} · <a href={latest.medianRent.url} target="_blank" rel="noopener noreferrer">{latest.medianRent.source}</a></div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Citywide median co-op price</div>
       <div class="stat-value">{fmtMoney(latest.medianCoopPrice.value)}</div>
-      <div class="stat-asof">As of {latest.medianCoopPrice.asOf} — <a href={latest.medianCoopPrice.url} target="_blank" rel="noopener noreferrer">{latest.medianCoopPrice.source}</a></div>
+      <div class="stat-asof">As of {latest.medianCoopPrice.asOf} · <a href={latest.medianCoopPrice.url} target="_blank" rel="noopener noreferrer">{latest.medianCoopPrice.source}</a></div>
     </div>
     <div class="stat-card stat-card--pending">
       <div class="stat-label">Citywide median condo price</div>
       <div class="stat-value stat-value--pending">Not yet tracked</div>
-      <div class="stat-asof">A stable, citywide (not Manhattan-only) source hasn't been confirmed yet — see below.</div>
+      <div class="stat-asof">A stable, citywide (not Manhattan-only) source hasn't been confirmed yet; see below.</div>
     </div>
   </div>
 
-  <p class="mismatch-note">Note the rent and co-op figures above are from different periods ({latest.medianRent.asOf} vs. {latest.medianCoopPrice.asOf}) — each is the most recent figure we could verify against a stable, dated source at the time this was built. We'd rather show you the real gap than paper over it with a single invented "as of" date.</p>
+  <p class="mismatch-note">Note the rent and co-op figures above are from different periods ({latest.medianRent.asOf} vs. {latest.medianCoopPrice.asOf}); each is the most recent figure we could verify against a stable, dated source at the time this was built. We'd rather show you the real gap than paper over it with a single invented "as of" date.</p>
 
   <div class="card">
     <h3>Rent trend</h3>
@@ -119,7 +119,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
         <path d={sparklinePath} fill="none" stroke="var(--blue)" stroke-width="2.5" />
       </svg>
     ) : (
-      <p>Only one data point exists so far — a trend needs at least two. Check back after the next update, or see the <a href="/guides/nyc-40x-rent-rule/">40x rent rule guide</a> for what today's median means in practice.</p>
+      <p>Only one data point exists so far, and a trend needs at least two. Check back after the next update, or see the <a href="/guides/nyc-40x-rent-rule/">40x rent rule guide</a> for what today's median means in practice.</p>
     )}
   </div>
 
@@ -129,7 +129,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
   <div class="card">
     <h3>What this means for you</h3>
-    <p>These are citywide medians — your actual number depends heavily on borough, neighborhood, and unit size (see <a href="/neighborhoods/">neighborhood pages</a> for more specific figures where available). Run the citywide median through your own numbers on the <a href="/rent/">Rent Calculator</a> or <a href="/coop/">Co-op Calculator</a>, or get a quick read on where you stand with the <a href="/reality-check/">Housing Reality Check</a>.</p>
+    <p>These are citywide medians; your actual number depends heavily on borough, neighborhood, and unit size (see <a href="/neighborhoods/">neighborhood pages</a> for more specific figures where available). Run the citywide median through your own numbers on the <a href="/rent/">Rent Calculator</a> or <a href="/coop/">Co-op Calculator</a>, or get a quick read on where you stand with the <a href="/reality-check/">Housing Reality Check</a>.</p>
   </div>
 
 </div>
@@ -137,7 +137,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 <Footer
   variant="site"
-  disclaimer="Index figures are sourced market data, cited above, and are not calculated by this site. This page is updated as a manual editorial process, not automatically — see the note above for what that means. For informational purposes only; not financial, legal, or investment advice."
+  disclaimer="Index figures are sourced market data, cited above, and are not calculated by this site. This page is updated as a manual editorial process, not automatically. See the note above for what that means. For informational purposes only; not financial, legal, or investment advice."
   columns={footerColumns}
 />
 </BaseLayout>

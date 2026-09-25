@@ -109,7 +109,7 @@ function updateResults() {
 
   $('hero-band-pill-wrap')!.innerHTML =
     '<span class="hero-band-pill ' + r.bandClass.code + '">' +
-    r.bandClass.short + ' — ' + r.bandClass.name + '</span>';
+    r.bandClass.short + ' (' + r.bandClass.name + ')' + '</span>';
 
   const meterPct    = Math.min(r.amiPct, 165);
   const rawPct      = meterPct / 165 * 100;
@@ -141,7 +141,7 @@ function updateResults() {
         inp.targetBand + '% AMI limit of ' + fmt$(tgt.limit) +
         ' for a ' + inp.hhSize + '-person household. ' +
         'Affordable rent for a ' + unitLabel + ' at this band: ' +
-        fmt$(tgt.affordableRent) + '/mo. Income limit only — see note below for other requirements.';
+        fmt$(tgt.affordableRent) + '/mo. Income limit only; see note below for other requirements.';
     } else {
       const gap = inp.income - tgt.limit;
       const overMin = inp.income < tgt.minIncome;
@@ -159,7 +159,7 @@ function updateResults() {
           inp.targetBand + '% AMI limit of ' + fmt$(tgt.limit) +
           ' by ' + fmt$(gap) + '. ' +
           'Affordable rent for a ' + UNIT_LABELS[inp.unitSize] + ' at this band: ' + fmt$(tgt.affordableRent) + '/mo. ' +
-          'You may qualify for a higher band — see the list below.';
+          'You may qualify for a higher band. See the list below.';
     }
   }
 

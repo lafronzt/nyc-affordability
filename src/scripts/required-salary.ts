@@ -369,8 +369,8 @@ function render() {
   addBreakdownRow(tbody, 'HSA contribution', -breakdown.hsaContribution);
   addBreakdownRow(tbody, 'Health insurance premium', -breakdown.healthPremium, { skipIfZero: true });
   addBreakdownRow(tbody, 'Dental / vision premium', -breakdown.dentalVisionPremium, { skipIfZero: true });
-  addBreakdownRow(tbody, 'Commuter benefit — transit', -breakdown.commuterTransit, { skipIfZero: true });
-  addBreakdownRow(tbody, 'Commuter benefit — parking', -breakdown.commuterParking, { skipIfZero: true });
+  addBreakdownRow(tbody, 'Commuter benefit: transit', -breakdown.commuterTransit, { skipIfZero: true });
+  addBreakdownRow(tbody, 'Commuter benefit: parking', -breakdown.commuterParking, { skipIfZero: true });
   addBreakdownRow(tbody, 'Healthcare FSA', -breakdown.healthcareFsa, { skipIfZero: true });
   addBreakdownRow(tbody, 'Dependent Care FSA', -breakdown.dependentCareFsa, { skipIfZero: true });
   addBreakdownRow(tbody, 'Federal income tax', -breakdown.federalTax);
@@ -389,7 +389,7 @@ function render() {
   // Clamp warnings
   const k401Warn = $('rs-401k-warn')!;
   if (breakdown.k401Clamped) {
-    k401Warn.textContent = `Your ${planLabel} % would exceed the ${inputs.age50Plus ? 'age 50+ ' : ''}annual dollar cap of ${fmtMoney(getK401Cap(inputs.age50Plus, CONSTANTS))} at this salary — contribution capped at that dollar amount instead.`;
+    k401Warn.textContent = `Your ${planLabel} % would exceed the ${inputs.age50Plus ? 'age 50+ ' : ''}annual dollar cap of ${fmtMoney(getK401Cap(inputs.age50Plus, CONSTANTS))} at this salary, so the contribution is capped at that dollar amount instead.`;
     k401Warn.hidden = false;
     k401Warn.classList.add('warn');
   } else {
@@ -449,13 +449,13 @@ function render() {
   const closeCallNotes: string[] = [];
   if (Math.abs(fedDiff) < CLOSE_CALL_THRESHOLD && (breakdown.federalItemizedTotal > 0 || breakdown.nyItemizedTotal > 0)) {
     closeCallNotes.push(fedDiff >= 0
-      ? `Federal: itemizing only gets you ${fmtMoney(fedDiff)} more than the standard deduction — probably not worth the extra recordkeeping.`
-      : `Federal: itemizing falls ${fmtMoney(-fedDiff)} short of the standard deduction — close, but not quite there.`);
+      ? `Federal: itemizing only gets you ${fmtMoney(fedDiff)} more than the standard deduction, probably not worth the extra recordkeeping.`
+      : `Federal: itemizing falls ${fmtMoney(-fedDiff)} short of the standard deduction: close, but not quite there.`);
   }
   if (Math.abs(nyDiff) < CLOSE_CALL_THRESHOLD && (breakdown.federalItemizedTotal > 0 || breakdown.nyItemizedTotal > 0)) {
     closeCallNotes.push(nyDiff >= 0
-      ? `NY: itemizing only gets you ${fmtMoney(nyDiff)} more than the standard deduction — probably not worth the extra recordkeeping.`
-      : `NY: itemizing falls ${fmtMoney(-nyDiff)} short of the standard deduction — close, but not quite there.`);
+      ? `NY: itemizing only gets you ${fmtMoney(nyDiff)} more than the standard deduction, probably not worth the extra recordkeeping.`
+      : `NY: itemizing falls ${fmtMoney(-nyDiff)} short of the standard deduction: close, but not quite there.`);
   }
   const closeCallEl = $('rs-itemize-close-call')!;
   if (closeCallNotes.length) {
@@ -500,7 +500,7 @@ function render() {
     `${planLabel} annual cap used`,
     retirementCapApplies
       ? fmtMoney(getK401Cap(inputs.age50Plus, CONSTANTS)) + (inputs.age50Plus ? ' (incl. 50+ catch-up)' : '')
-      : 'No 402(g) cap — mandatory pension contributions are not elective deferrals',
+      : 'No 402(g) cap: mandatory pension contributions are not elective deferrals',
   ]);
   if (inputs.employerMatchPercentOfGross > 0) {
     assumptions.push(['Employer match (informational)', `${inputs.employerMatchPercentOfGross}% of gross${inputs.employerMatchCapDollars != null ? `, capped at ${fmtMoney(inputs.employerMatchCapDollars)}` : ''} = ${fmtMoney(breakdown.employerMatchDollars)}`]);

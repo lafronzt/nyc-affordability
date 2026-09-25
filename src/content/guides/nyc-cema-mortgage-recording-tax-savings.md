@@ -5,11 +5,11 @@ intro: "Mortgage recording tax is usually the single biggest line item on a fina
 updated: "2026-09-23"
 category: "buying"
 sources:
-  - label: "NYC Department of Finance — Recording Property-Related Documents (Mortgage Recording Tax)"
+  - label: "NYC Department of Finance: Recording Property-Related Documents (Mortgage Recording Tax)"
     url: "https://www.nyc.gov/site/finance/property/property-recording-property-related-documents.page"
-  - label: "Brick Underground — What is a CEMA loan, and how can it reduce my mortgage recording tax?"
+  - label: "Brick Underground: What is a CEMA loan, and how can it reduce my mortgage recording tax?"
     url: "https://www.brickunderground.com/buy/bricktionary-whats-a-cema"
-  - label: "Rocket Mortgage — CEMA mortgage in New York: How it works and saves money"
+  - label: "Rocket Mortgage: CEMA mortgage in New York: How it works and saves money"
     url: "https://www.rocketmortgage.com/learn/cema"
 relatedGuides:
   - nyc-closing-costs-for-buyers
@@ -39,7 +39,7 @@ A **Consolidation, Extension and Modification Agreement** doesn't extinguish the
 2. Any new borrowing is recorded as a separate "gap" mortgage for just the additional amount.
 3. The old mortgage and the gap mortgage are **consolidated** into one loan, with the new rate and term, by the CEMA document itself.
 
-Because MRT was already paid on the existing mortgage when it was first recorded, only the gap mortgage — the **new money** — is taxed.
+Because MRT was already paid on the existing mortgage when it was first recorded, only the gap mortgage (the **new money**) is taxed.
 
 ## Refinance CEMA vs. purchase CEMA
 

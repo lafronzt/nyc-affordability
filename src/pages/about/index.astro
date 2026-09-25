@@ -50,7 +50,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 <div class="hero">
   <div class="hero-eyebrow">About This Project</div>
   <h2>Built because NYC housing math<br>doesn't fit generic calculators.</h2>
-  <p>NYC Affordability is a free, open-source set of tools that model how buying and renting actually work in New York City — board reserves, mansion tax cliffs, mortgage recording tax, FARE Act broker rules, and HPD's AMI framework — instead of the national rules of thumb most calculators fall back on.</p>
+  <p>NYC Affordability is a free, open-source set of tools that model how buying and renting actually work in New York City (board reserves, mansion tax cliffs, mortgage recording tax, FARE Act broker rules, and HPD's AMI framework) instead of the national rules of thumb most calculators fall back on.</p>
   <span class="updated">Last updated: August 2, 2026</span>
 </div>
 
@@ -60,8 +60,8 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
   <div class="card">
     <h3>Why this exists</h3>
-    <p>Most rent-affordability and mortgage calculators are built around generic national assumptions: a flat debt-to-income ceiling, a simple down payment percentage, maybe a property tax estimate. NYC housing doesn't work that way. A co-op board can require 12–24 months of post-closing reserves on top of the down payment. A condo purchase over $1,000,000 crosses a mansion tax cliff that adds tens of thousands of dollars at a single dollar boundary. Renters are protected — and priced — differently since the FARE Act changed who pays broker fees. Affordable housing eligibility runs on HUD's Area Median Income bands, not a simple income cutoff.</p>
-    <p>We built a set of tools that model these mechanics directly, so the numbers reflect how a co-op board, a condo lender, a landlord, or HPD's Housing Connect lottery actually evaluates an applicant — not a generic estimate.</p>
+    <p>Most rent-affordability and mortgage calculators are built around generic national assumptions: a flat debt-to-income ceiling, a simple down payment percentage, maybe a property tax estimate. NYC housing doesn't work that way. A co-op board can require 12–24 months of post-closing reserves on top of the down payment. A condo purchase over $1,000,000 crosses a mansion tax cliff that adds tens of thousands of dollars at a single dollar boundary. Renters are protected, and priced, differently since the FARE Act changed who pays broker fees. Affordable housing eligibility runs on HUD's Area Median Income bands, not a simple income cutoff.</p>
+    <p>We built a set of tools that model these mechanics directly, so the numbers reflect how a co-op board, a condo lender, a landlord, or HPD's Housing Connect lottery actually evaluates an applicant, not a generic estimate.</p>
   </div>
 
   <div class="card">
@@ -81,28 +81,28 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
   <div class="card">
     <h3>Methodology &amp; sourcing</h3>
-    <p>Every default value in these calculators — mortgage rates, board DTI limits, reserve requirements, closing cost percentages, median rents, AMI income limits — is pulled from a named, checkable source rather than invented. The sources used across the site include:</p>
+    <p>Every default value in these calculators (mortgage rates, board DTI limits, reserve requirements, closing cost percentages, median rents, AMI income limits) is pulled from a named, checkable source rather than invented. The sources used across the site include:</p>
     <ul>
-      <li><a href="https://www.freddiemac.com/pmms" target="_blank" rel="noopener noreferrer">Freddie Mac Primary Mortgage Market Survey (PMMS)</a> — current conventional mortgage rates</li>
-      <li><a href="https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page" target="_blank" rel="noopener noreferrer">NYC Department of Finance / ACRIS</a> — mortgage recording tax, transfer tax, and real property records</li>
-      <li><a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">New York State Department of Taxation and Finance</a> — mansion tax tiers</li>
-      <li><a href="https://www.huduser.gov/portal/datasets/il.html" target="_blank" rel="noopener noreferrer">HUD Income Limits</a> — Area Median Income (AMI) figures used for affordable housing eligibility</li>
-      <li><a href="https://www.nyc.gov/site/hpd/renters/affordable-housing.page" target="_blank" rel="noopener noreferrer">NYC Housing Preservation &amp; Development (HPD)</a> — affordable rent methodology and Housing Connect band structure</li>
-      <li><a href="https://streeteasy.com" target="_blank" rel="noopener noreferrer">StreetEasy Market Reports</a> — median asking rent used as a default reference point</li>
-      <li><a href="https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page" target="_blank" rel="noopener noreferrer">NYC Department of Consumer and Worker Protection (DCWP)</a> — FARE Act broker-fee guidance</li>
-      <li><a href="https://ag.ny.gov/publications/residential-tenants-rights-guide" target="_blank" rel="noopener noreferrer">New York State Attorney General</a> — tenant rights and security deposit law</li>
+      <li><a href="https://www.freddiemac.com/pmms" target="_blank" rel="noopener noreferrer">Freddie Mac Primary Mortgage Market Survey (PMMS)</a>: current conventional mortgage rates</li>
+      <li><a href="https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page" target="_blank" rel="noopener noreferrer">NYC Department of Finance / ACRIS</a>: mortgage recording tax, transfer tax, and real property records</li>
+      <li><a href="https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf" target="_blank" rel="noopener noreferrer">New York State Department of Taxation and Finance</a>: mansion tax tiers</li>
+      <li><a href="https://www.huduser.gov/portal/datasets/il.html" target="_blank" rel="noopener noreferrer">HUD Income Limits</a>: Area Median Income (AMI) figures used for affordable housing eligibility</li>
+      <li><a href="https://www.nyc.gov/site/hpd/renters/affordable-housing.page" target="_blank" rel="noopener noreferrer">NYC Housing Preservation &amp; Development (HPD)</a>: affordable rent methodology and Housing Connect band structure</li>
+      <li><a href="https://streeteasy.com" target="_blank" rel="noopener noreferrer">StreetEasy Market Reports</a>: median asking rent used as a default reference point</li>
+      <li><a href="https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page" target="_blank" rel="noopener noreferrer">NYC Department of Consumer and Worker Protection (DCWP)</a>: FARE Act broker-fee guidance</li>
+      <li><a href="https://ag.ny.gov/publications/residential-tenants-rights-guide" target="_blank" rel="noopener noreferrer">New York State Attorney General</a>: tenant rights and security deposit law</li>
     </ul>
-    <p>Every calculator links its individual sources inline in its own "How this works" section, and each default is editable — the sourced value is a starting point, not a constraint. Defaults are reviewed and refreshed periodically as rates, tax tiers, and income limits change; each page's footer or "How this works" panel notes the date a given figure was last checked.</p>
+    <p>Every calculator links its individual sources inline in its own "How this works" section, and each default is editable; the sourced value is a starting point, not a constraint. Defaults are reviewed and refreshed periodically as rates, tax tiers, and income limits change; each page's footer or "How this works" panel notes the date a given figure was last checked.</p>
   </div>
 
   <div class="card">
     <h3>How the math works, at a high level</h3>
-    <p>Every calculator on this site — rent, co-op, and condo — reduces the same question to two competing constraints, then takes whichever one is lower:</p>
+    <p>Every calculator on this site (rent, co-op, and condo) reduces the same question to two competing constraints, then takes whichever one is lower:</p>
     <ol>
-      <li><strong>Cash / reserves:</strong> what your liquid assets can actually cover — move-in costs and a security deposit for rent, or a down payment plus closing costs plus a post-close reserve cushion for a purchase.</li>
+      <li><strong>Cash / reserves:</strong> what your liquid assets can actually cover: move-in costs and a security deposit for rent, or a down payment plus closing costs plus a post-close reserve cushion for a purchase.</li>
       <li><strong>DTI / income:</strong> what a landlord, co-op board, or mortgage lender will approve based on your monthly housing cost relative to your gross income.</li>
     </ol>
-    <p>Whichever constraint produces the lower number is your real ceiling — you can't spend more than either allows. The <a href="/compare/">comparison dashboard</a> shows this "binding constraint" side by side across all three housing types, since which one binds (and by how much) varies a lot between renting, buying a co-op, and buying a condo.</p>
+    <p>Whichever constraint produces the lower number is your real ceiling; you can't spend more than either allows. The <a href="/compare/">comparison dashboard</a> shows this "binding constraint" side by side across all three housing types, since which one binds (and by how much) varies a lot between renting, buying a co-op, and buying a condo.</p>
   </div>
 
   <div class="card">

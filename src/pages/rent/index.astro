@@ -46,7 +46,7 @@ const jsonLd = {
   metaDescription="Free NYC housing affordability calculator for apartment rentals. Estimate how much rent you can afford from income, assets, the 40× rule, and move-in cash."
   canonicalPath="/rent/"
   ogTitle="NYC Rent Affordability Finder | Calculate Your Max Affordable Rent"
-  ogDescription="Free NYC housing affordability calculator for apartment rentals. Find your max affordable monthly rent from your financial profile — covering income screening and move-in cash."
+  ogDescription="Free NYC housing affordability calculator for apartment rentals. Find your max affordable monthly rent from your financial profile, covering income screening and move-in cash."
   ogImage="/images/rent-og.png"
   ogImageAlt="Can you afford NYC rent? NYC Rent Affordability Calculator from NYC Affordability."
   twitterTitle="NYC Rent Affordability Finder"
@@ -142,7 +142,7 @@ const jsonLd = {
           I have / plan to use a guarantor <small>(co-signer)</small>
         </label>
         <div class="form-row" id="guarantor-row" hidden>
-          <label class="lbl" for="guarantor-mult">Guarantor income multiplier<small>NYC guarantors typically need 80× monthly rent — the Afford Target tab will show the exact income your guarantor must earn</small></label>
+          <label class="lbl" for="guarantor-mult">Guarantor income multiplier<small>NYC guarantors typically need 80× monthly rent; the Afford Target tab will show the exact income your guarantor must earn</small></label>
           <div class="iw"><input type="number" id="guarantor-mult" class="w60" min="20" max="120" step="1" value="80"><span class="sx">×</span></div>
         </div>
       </div>
@@ -292,7 +292,7 @@ const jsonLd = {
 
           <!-- Move-in signing costs -->
           <div class="snap-block">
-            <div class="snap-title">At Signing — Move-In Costs</div>
+            <div class="snap-title">At Signing: Move-In Costs</div>
             <div class="snap-row"><span class="sr-lbl">First month's rent</span><span class="sr-val" id="s-first-month">—</span></div>
             <div class="snap-row"><span class="sr-lbl">Security deposit</span><span class="sr-val" id="s-sec-deposit">—</span></div>
             <div class="snap-row"><span class="sr-lbl">Broker fee</span><span class="sr-val" id="s-broker-fee">—</span></div>
@@ -544,7 +544,7 @@ const jsonLd = {
     <h3>Two Constraints, One Result</h3>
     <p>Your maximum affordable rent is the lower of two limits:</p>
     <ul>
-      <li><strong>Income constraint:</strong> Most NYC landlords require annual income ≥ 40× monthly rent (the "40× rule"). Some also screen by DTI — your total rent-to-income ratio. See our <a href="/guides/nyc-40x-rent-rule/">guide to the 40x rent rule</a> for how the multiplier math works and what guarantors need.</li>
+      <li><strong>Income constraint:</strong> Most NYC landlords require annual income ≥ 40× monthly rent (the "40× rule"). Some also screen by DTI: your total rent-to-income ratio. See our <a href="/guides/nyc-40x-rent-rule/">guide to the 40x rent rule</a> for how the multiplier math works and what guarantors need.</li>
       <li><strong>Cash constraint:</strong> You must cover first month + security deposit + broker fee + other move-in costs from liquidity-weighted assets, and still maintain a reserve buffer.</li>
     </ul>
     <h3>Security Deposit Law</h3>
@@ -552,9 +552,9 @@ const jsonLd = {
     <h3>FARE Act &amp; Broker Fees</h3>
     <p>The FARE Act (effective June 11, 2025) prohibits landlord/listing agents from passing their broker fee to tenants. If the landlord hired the listing broker, you owe nothing. You may still choose to hire and pay your own tenant's broker. Select "No broker fee" unless you engage a tenant's broker yourself. See our <a href="/guides/fare-act-broker-fees-explained/">FARE Act guide</a> for the full rule, a worked move-in cost example, and the law's current legal status.</p>
     <h3>Reserve Buffer</h3>
-    <p>The calculator keeps N months of total housing costs (rent + insurance + debts) in savings after paying all move-in costs. This is a personal finance cushion — landlords don't require it, but it's good practice.</p>
+    <p>The calculator keeps N months of total housing costs (rent + insurance + debts) in savings after paying all move-in costs. This is a personal finance cushion; landlords don't require it, but it's good practice.</p>
     <h3>Guarantor</h3>
-    <p>A guarantor (co-signer) vouches for your rent obligations. NYC landlords typically require the guarantor's annual income to be ≥ 80× the monthly rent. Enabling the guarantor option does not change your own max rent — it surfaces a lever in the <strong>Afford Target</strong> tab showing exactly how much annual income the guarantor must demonstrate to qualify at any rent you enter.</p>
+    <p>A guarantor (co-signer) vouches for your rent obligations. NYC landlords typically require the guarantor's annual income to be ≥ 80× the monthly rent. Enabling the guarantor option does not change your own max rent; it surfaces a lever in the <strong>Afford Target</strong> tab showing exactly how much annual income the guarantor must demonstrate to qualify at any rent you enter.</p>
   </div>
 
   <button class="info-btn" id="assump-btn" aria-expanded="false" aria-controls="assump-body" type="button">
@@ -583,7 +583,7 @@ const jsonLd = {
 
 <Footer
   variant="app"
-  disclaimer="Median rent figures: StreetEasy Market Reports, March 2026. Calculator results are estimates — individual landlord requirements vary. Not financial or legal advice."
+  disclaimer="Median rent figures: StreetEasy Market Reports, March 2026. Calculator results are estimates; individual landlord requirements vary. Not financial or legal advice."
   columns={footerColumns}
 />
 </BaseLayout>
