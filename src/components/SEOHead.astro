@@ -30,6 +30,25 @@ const {
 const SITE_ORIGIN = 'https://www.nyc-affordability.com';
 const canonicalUrl = `${SITE_ORIGIN}${canonicalPath}`;
 const ogImageUrl = `${SITE_ORIGIN}${ogImage}`;
+
+// Google's Image metadata report flags the share images (they carry embedded
+// IPTC/C2PA metadata) when creator and licensing fields are missing.
+const ogImageJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageObject',
+  contentUrl: ogImageUrl,
+  description: ogImageAlt,
+  creator: {
+    '@type': 'Organization',
+    name: 'NYC Affordability',
+    url: `${SITE_ORIGIN}/`,
+  },
+  creditText: 'NYC Affordability',
+  copyrightNotice: 'NYC Affordability',
+  license: `${SITE_ORIGIN}/terms/`,
+  acquireLicensePage: `${SITE_ORIGIN}/contact/`,
+};
+const structuredData = [...(Array.isArray(jsonLd) ? jsonLd : [jsonLd]), ogImageJsonLd];
 ---
 <title>{pageTitle}</title>
 <meta name="description" content={metaDescription} />
@@ -58,4 +77,4 @@ const ogImageUrl = `${SITE_ORIGIN}${ogImage}`;
 <meta name="twitter:image:alt" content={ogImageAlt} />
 
 <!-- JSON-LD structured data -->
-<script type="application/ld+json" set:html={JSON.stringify(jsonLd, null, 2)} />
+<script type="application/ld+json" set:html={JSON.stringify(structuredData, null, 2)} />
