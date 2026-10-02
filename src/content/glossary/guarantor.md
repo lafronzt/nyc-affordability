@@ -14,6 +14,8 @@ relatedTerms:
 relatedGuides:
   - nyc-40x-rent-rule
   - nyc-rental-guarantor-companies-explained
+relatedCalculators:
+  - "/rent/"
 draft: false
 ---
 

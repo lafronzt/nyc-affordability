@@ -11,6 +11,9 @@ relatedTerms:
   - post-closing-liquidity
 relatedGuides:
   - nyc-closing-costs-for-buyers
+relatedCalculators:
+  - "/condo/"
+  - "/coop/"
 draft: false
 ---
 

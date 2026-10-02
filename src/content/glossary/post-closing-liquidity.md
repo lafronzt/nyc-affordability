@@ -14,6 +14,8 @@ relatedTerms:
   - board-package
 relatedGuides:
   - coop-board-reserve-requirements
+relatedCalculators:
+  - "/coop/"
 draft: false
 ---
 

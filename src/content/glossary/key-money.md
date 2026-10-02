@@ -12,6 +12,8 @@ relatedTerms:
   - guarantor
 relatedGuides:
   - fare-act-broker-fees-explained
+relatedCalculators:
+  - "/rent/"
 draft: false
 ---
 

@@ -15,6 +15,8 @@ relatedTerms:
 relatedGuides:
   - coop-vs-condo-nyc-costs
   - coop-board-reserve-requirements
+relatedCalculators:
+  - "/coop/"
 draft: false
 ---
 

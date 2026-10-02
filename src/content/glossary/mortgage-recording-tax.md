@@ -15,6 +15,8 @@ relatedGuides:
   - nyc-closing-costs-for-buyers
   - coop-vs-condo-nyc-costs
   - nyc-cema-mortgage-recording-tax-savings
+relatedCalculators:
+  - "/condo/"
 draft: false
 ---
 

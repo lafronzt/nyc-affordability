@@ -16,6 +16,9 @@ relatedTerms:
 relatedGuides:
   - coop-flip-tax-nyc-explained
   - coop-vs-condo-nyc-costs
+relatedCalculators:
+  - "/sell/"
+  - "/coop/"
 draft: false
 ---
 

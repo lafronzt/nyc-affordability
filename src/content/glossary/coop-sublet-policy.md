@@ -12,6 +12,8 @@ relatedTerms:
   - board-package
 relatedGuides:
   - coop-board-approval-process
+relatedCalculators:
+  - "/coop/"
 draft: false
 ---
 

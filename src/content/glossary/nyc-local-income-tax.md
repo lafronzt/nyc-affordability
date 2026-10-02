@@ -14,6 +14,8 @@ relatedTerms:
   - take-home-pay
 relatedGuides:
   - how-much-salary-do-you-need-to-live-in-nyc
+relatedCalculators:
+  - "/required-salary/"
 draft: false
 ---
 

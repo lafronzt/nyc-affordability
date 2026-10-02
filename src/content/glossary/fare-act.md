@@ -14,6 +14,8 @@ relatedTerms:
 relatedGuides:
   - fare-act-broker-fees-explained
   - nyc-security-deposit-move-in-costs
+relatedCalculators:
+  - "/rent/"
 draft: false
 ---
 

@@ -5,13 +5,10 @@
    (select New York, NY HUD Metro FMR Area). Also cited in
    src/content/guides/nyc-ami-housing-connect-explained.md.
    ============================================================
-   This is the one shared data table in the codebase (as opposed to
-   formula logic, which is deliberately duplicated per script/page — see
-   src/lib/afford.ts's header). It's centralized here because both the
-   client-side affordable-housing calculator (src/scripts/affordable.ts)
-   and the build-time salary/price pages need the same literal numbers,
-   and a data table has no "which version is authoritative" ambiguity
-   the way duplicated formula code can.
+   Shared by the client-side affordable-housing calculator
+   (src/scripts/affordable.ts), the Reality Check, and the build-time
+   pages, so every page uses the same HUD figures. Its source and update
+   date are listed on /methodology/sources/ (src/data/sourceTables.ts).
    ============================================================ */
 export const AMI_BASE: Record<number, number> = {
   1: 97000,
