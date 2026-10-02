@@ -258,7 +258,7 @@ const jsonLd = {
 .big-label { font-size: 12px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; }
 .big-value { font-size: 40px; font-weight: 850; letter-spacing: -1.2px; color: var(--g900); font-variant-numeric: tabular-nums; margin: 4px 0 8px; }
 .headline { font-size: 14.5px; color: var(--g700); line-height: 1.6; margin-bottom: 14px; }
-.headline strong { color: var(--g900); }
+.headline :global(strong) { color: var(--g900); }
 .ceilings { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin: 0; }
 .ceilings div { background: var(--g50); border: 1px solid var(--g100); border-radius: 6px; padding: 9px 11px; }
 .ceilings dt { font-size: 11px; color: var(--g500); font-weight: 650; }
@@ -271,7 +271,7 @@ const jsonLd = {
 .table-wrap { overflow-x: auto; }
 .levers { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .levers th { text-align: left; font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; padding: 11px 14px; border-bottom: 1px solid var(--g100); background: var(--g50); }
-.levers td { padding: 12px 14px; border-bottom: 1px solid var(--g100); color: var(--g800); vertical-align: top; }
+.levers :global(td) { padding: 12px 14px; border-bottom: 1px solid var(--g100); color: var(--g800); vertical-align: top; }
 .levers :global(.num) { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .levers :global(.rank) { font-weight: 800; color: var(--g500); width: 28px; }
 .levers :global(.lever-label) { font-weight: 700; color: var(--g900); }
@@ -282,7 +282,7 @@ const jsonLd = {
 .no-help { padding: 12px 18px 14px; border-top: 1px solid var(--g100); }
 .no-help summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--g700); min-height: 28px; }
 .no-help ul { margin: 8px 0 0; padding-left: 18px; }
-.no-help li { font-size: 13px; color: var(--g600); line-height: 1.6; margin-bottom: 4px; }
+.no-help :global(li) { font-size: 13px; color: var(--g600); line-height: 1.6; margin-bottom: 4px; }
 
 .actions { display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
 .share-personal { font-size: 12.5px; color: var(--g600); display: inline-flex; align-items: center; gap: 6px; min-height: 32px; }
