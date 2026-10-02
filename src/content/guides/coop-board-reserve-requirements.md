@@ -58,6 +58,8 @@ The formula boards implicitly apply:
 
 Everything on the left has to clear everything on the right. Falling short on reserves kills an approval just as surely as falling short on the down payment. Boards reject strong-income buyers over this constantly.
 
+<!-- Editors: the figures in this section are recomputed from the calculator engine by test/guideExamples.test.ts. If you change a default (rate, maintenance, DTI) or this example, `npm test` lists every number to update. -->
+
 ## Worked example
 
 Take a $600,000 co-op, 20% down, a 30-year mortgage at 6.95% (the Freddie Mac 30-year average as of September 17, 2026), and $1,200/month maintenance:

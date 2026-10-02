@@ -38,6 +38,8 @@ The mortgage rate decides how big a loan that fixed monthly budget buys. When ra
 
 Freddie Mac's weekly survey put the 30-year fixed average at **6.95% on September 17, 2026**, up from 6.71% at the start of the month and about 6.3% in late April. Bankrate's separate lender survey showed a similar jump, to its highest level since February 2025. This site's calculators now default to 6.95%. Your own quoted rate will differ with credit score, loan size (jumbo loans price differently), points, and property type.
 
+<!-- Editors: the figures in this section are recomputed from the calculator engine by test/guideExamples.test.ts. If you change a default (rate, maintenance, DTI) or this example, `npm test` lists every number to update. -->
+
 ## What each rate buys: the same income at different rates
 
 The table uses this site's default assumptions: 20% down, a 30-year fixed loan, $1,200/month co-op maintenance, and $2,325/month in condo common charges, property tax, and insurance. It shows the maximum price the DTI ceiling allows on a **$150,000** household income:

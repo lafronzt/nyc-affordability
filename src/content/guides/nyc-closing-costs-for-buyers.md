@@ -46,6 +46,8 @@ Most U.S. markets charge buyers an origination fee, an appraisal, title insuranc
 
 **Co-op-specific fees.** Co-ops add board application and processing fees (commonly **$500-$2,000**), a move-in deposit (often refundable, building-specific), and sometimes a lease/recognition agreement fee, none of which exist on the condo side, but which are generally much smaller than the mortgage recording tax and title insurance a condo buyer pays instead.
 
+<!-- Editors: the figures in this section are recomputed from the calculator engine by test/guideExamples.test.ts. If you change a default (rate, maintenance, DTI) or this example, `npm test` lists every number to update. -->
+
 ## Worked example: $1,200,000 resale condo, 20% down
 
 | Line item | Amount |
@@ -66,4 +68,4 @@ Sponsor (new-development) condos routinely push buyer closing costs to the highe
 
 ## What isn't included above
 
-Move-in fees, storage/parking transfer fees, and any post-closing renovation deposits are building-specific and layered on top of the closing costs above. Check with the managing agent before budgeting a final number. If the unit won't be your primary residence, also ask about NYC's annual pied-à-terre tax (effective July 1, 2026); it's a recurring carrying cost rather than a closing cost, covered in our [pied-à-terre tax guide](/guides/nyc-pied-a-terre-tax-explained/). As with every figure on this site, verify final numbers with your closing attorney; rates and fee schedules are reviewed periodically but can change. See our [full sourcing methodology](/about/) for where every default used across these calculators comes from.
+Move-in fees, storage/parking transfer fees, and any post-closing renovation deposits are building-specific and layered on top of the closing costs above. Check with the managing agent before budgeting a final number. If the unit won't be your primary residence, also ask about NYC's annual pied-à-terre tax (effective July 1, 2026); it's a recurring carrying cost rather than a closing cost, covered in our [pied-à-terre tax guide](/guides/nyc-pied-a-terre-tax-explained/). As with every figure on this site, verify final numbers with your closing attorney; rates and fee schedules are reviewed periodically but can change. See our [sources & data status page](/methodology/sources/) for where every default used across these calculators comes from.

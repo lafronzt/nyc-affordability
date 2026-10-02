@@ -86,7 +86,7 @@ Existing URLs are unchanged.
 | **1b (done)** | Extract pure co-op/condo/rent engines with golden fixtures; `compare.ts` + `reality-check.ts` import them (fixes the PMI drift) | `src/lib/engines/*`, `src/scripts/{coop,condo,rent,compare,reality-check}.ts`, tests | L | High |
 | **1c (done; breadcrumbs on calculators deferred, see change-log)** | Nav/footer parity (Explore on calculator + legal pages; Reality Check card on the homepage grid); `/explore/` directory; BreadcrumbList on calculators | `lib/footerLinks.ts`, 10 page files, `NavLinks`, new `explore` page | S–M | Medium |
 | **1d (done)** | `/methodology/` + `/methodology/sources/` page rendered from the registry; content relationship metadata (`parentHub`, `relatedCalculators`, `relatedPrograms`) in collection schemas | `content.config.ts`, new page | M | Medium–High |
-| 1e | Guide prose that hard-codes calculated numbers (6.95% examples in 6 guides) → MDX components or a build-time check that flags drift | guides, a test | M | Medium |
+| **1e (done: build-time check, not MDX)** | Guide prose that hard-codes calculated numbers (6.95% examples in 6 guides) → MDX components or a build-time check that flags drift | guides, a test | M | Medium |
 
 ### Phase 2: Flagship tools
 Order: optimizer → savings planner → rent vs buy → rate/maintenance sensitivity → cost to move. Each tool is built on 1b's engines, with URL query state for non-sensitive fields only, print CSS, `aria-live` results, tests, a "How this works" section, and sources. Effort L each (rate sensitivity M).
