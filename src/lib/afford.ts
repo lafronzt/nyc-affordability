@@ -1,25 +1,17 @@
-import { calcPmiRate, calcPmiMonthly, calcMansionTax, calcMortgageRecordingTax } from './calc.ts';
+import { calculateCoop } from './engines/coop.ts';
+import { calculateCondo } from './engines/condo.ts';
+import { coopInputsFromDefaults, condoInputsFromDefaults } from './engines/defaults.ts';
 import { ASSUMPTIONS } from '../data/assumptions.ts';
 
 /* ============================================================
-   Build-time affordability math for salary/price landing pages
-   (/income/[amount]/, /buy/[price]/, homepage scenario table).
+   Build-time affordability math for the landing pages
+   (/income/[amount]/, /buy/[price]/, /rent/[price]/, neighborhoods,
+   homepage scenario table, and the MiniCalcWidget).
    ============================================================
-   Mirrors — does NOT import — the pure calculate()/priceAtDp() logic in
-   src/scripts/{rent,coop,condo,affordable}.ts, the same way compare.ts
-   mirrors those same formulas for its own dashboard (see compare.ts's own
-   header comment for that precedent). Kept as a separate DOM-free module
-   because those scripts are compiled as client bundles that read inputs
-   via document.getElementById(), which doesn't exist at Astro build time
-   (Node, getStaticPaths()). If a calculator's formula changes, this file
-   must be updated to match — there is no automated sync.
-
-   NOTE: this intentionally does NOT mirror coop.ts's/condo.ts's full
-   computeOptimizer()/computeAffordTarget() lever-search machinery (rate
-   search, dp sensitivity, cash x income grid) — that's UI-optimizer logic
-   built for an interactive slider page, with no static-content use case.
-   Only the direct price<->income<->cash inversions needed for landing
-   pages are reproduced here.
+   A thin layer over the shared engines in ./engines/, the same code the
+   /coop/, /condo/ and /rent/ calculators run, fed with the sourced defaults
+   from src/data/assumptions.ts. There is no second copy of the formulas to
+   keep in sync: change an engine and these pages follow.
 
    NOTE on the cash/reserve constraint: unlike the live calculators, these
    functions have no real account data to weigh against a cash ceiling —
@@ -74,15 +66,6 @@ export const DEFAULT_ASSUMPTIONS = {
   // Affordable housing / AMI — see src/lib/amiTable.ts for the HUD table itself.
 } as const;
 
-const PMAX = 20000000;
-
-function pmtFactor(annualRatePct: number, termYears: number): number {
-  const rm = annualRatePct / 100 / 12;
-  const nMo = termYears * 12;
-  if (nMo <= 0) return 0;
-  return rm === 0 ? 1 / nMo : rm / (1 - Math.pow(1 + rm, -nMo));
-}
-
 // ---- Rent: income -> max affordable rent (40x rule only; no account/cash data on landing pages) ----
 export interface RentAffordInputs {
   annualIncome: number;
@@ -122,30 +105,19 @@ export interface PurchaseAffordResult {
 }
 export function maxAffordablePrice(inp: PurchaseAffordInputs): PurchaseAffordResult {
   const a = DEFAULT_ASSUMPTIONS;
-  const oDebts = inp.otherDebts ?? 0;
-  const moInc = inp.annualIncome / 12;
-
-  const isCoop = inp.propertyType === 'coop';
-  const dp = (isCoop ? a.coopDownPaymentPct : a.condoDownPaymentPct) / 100;
-  const dtiMax = (isCoop ? a.coopMaxDtiPct : a.condoMaxDtiPct) / 100;
-  const carrying = isCoop
+  const base = { annualIncome: inp.annualIncome, otherDebts: inp.otherDebts ?? 0 };
+  // No accounts: only the DTI ceiling is meaningful here (see header note).
+  const dtiMaxPrice = inp.propertyType === 'coop'
+    ? calculateCoop(coopInputsFromDefaults(base)).dtiMaxPrice
+    : calculateCondo(condoInputsFromDefaults(base)).dtiMaxPrice;
+  const carrying = inp.propertyType === 'coop'
     ? a.coopMaintenanceMo
     : a.condoCommonChargesMo + a.condoPropTaxesMo + a.condoHoInsuranceMo;
-  const K = pmtFactor(isCoop ? a.coopMortgageRatePct : a.condoMortgageRatePct, isCoop ? a.coopLoanTermYears : a.condoLoanTermYears);
-  const effK = K + calcPmiRate(dp) / 12;
-
-  const budgetForMtg = dtiMax * moInc - carrying - oDebts;
-  if (budgetForMtg <= 0 || effK <= 0) {
-    return { maxPrice: 0, binding: 'DTI / Income', monthlyCarrying: carrying };
-  }
-  const maxLoan = budgetForMtg / effK;
-  const maxPrice = Math.max(0, maxLoan / (1 - dp));
-  return { maxPrice, binding: 'DTI / Income', monthlyCarrying: carrying };
+  return { maxPrice: Math.max(0, dtiMaxPrice ?? 0), binding: 'DTI / Income', monthlyCarrying: carrying };
 }
 
-// ---- Co-op / condo: target price -> required income + estimated cash (direct inversion,
-// mirrors the at-target-price snapshot math in coop.ts calculate()/condo.ts calculate(),
-// not the full computeAffordTarget() lever search) ----
+// ---- Co-op / condo: target price -> required income + estimated cash (the engine's
+// snapshot at that price, inverted through the DTI limit) ----
 export interface RequiredIncomeInputs {
   targetPrice: number;
   propertyType: 'coop' | 'condo';
@@ -161,45 +133,31 @@ export interface RequiredIncomeResult {
   estimatedCashNeeded: number;
 }
 export function requiredIncomeForPrice(inp: RequiredIncomeInputs): RequiredIncomeResult {
-  const a = DEFAULT_ASSUMPTIONS;
-  const isCoop = inp.propertyType === 'coop';
   const price = Math.max(0, inp.targetPrice);
-  const dp = (isCoop ? a.coopDownPaymentPct : a.condoDownPaymentPct) / 100;
-  const dtiMax = (isCoop ? a.coopMaxDtiPct : a.condoMaxDtiPct) / 100;
-  const carrying = isCoop
-    ? a.coopMaintenanceMo
-    : a.condoCommonChargesMo + a.condoPropTaxesMo + a.condoHoInsuranceMo;
-  const K = pmtFactor(isCoop ? a.coopMortgageRatePct : a.condoMortgageRatePct, isCoop ? a.coopLoanTermYears : a.condoLoanTermYears);
-
-  const downPayment = price * dp;
-  const loanAmt = price - downPayment;
-  const monthlyPI = loanAmt * K;
-  const monthlyPmi = calcPmiMonthly(loanAmt, dp);
-  const monthlyTotal = monthlyPI + monthlyPmi + carrying;
-  const annualIncomeNeeded = dtiMax > 0 ? (monthlyTotal / dtiMax) * 12 : Infinity;
-
-  const mansionTax = calcMansionTax(price);
-  const fixedCC = isCoop ? a.coopFixedClosingCosts : a.condoFixedClosingCosts;
-  const variableCC = isCoop
-    ? price * (a.coopVariableClosingPct / 100)
-    : price * (a.condoTitlePricePct / 100) + loanAmt * (a.condoTitleLoanPct / 100);
-  const mortgageRecordingTax = isCoop ? 0 : calcMortgageRecordingTax(loanAmt); // coops are personal property, not subject to NYC/NYS MRT
-  const estimatedClosingCosts = fixedCC + variableCC + mortgageRecordingTax + mansionTax;
-
-  const reserveMonths = isCoop ? a.coopReserveMonths : 0; // condo reserves off by default, matches condo.ts state.reservesEnabled
-  const estimatedReserves = reserveMonths * (monthlyPI + monthlyPmi + carrying);
-
-  const estimatedCashNeeded = downPayment + estimatedClosingCosts + estimatedReserves;
-
+  if (inp.propertyType === 'coop') {
+    const r = calculateCoop(coopInputsFromDefaults({ targetOverride: price }));
+    return {
+      annualIncomeNeeded: r.dtiMax > 0 ? (r.moTotal / r.dtiMax) * 12 : Infinity,
+      monthlyPI: r.moMtg,
+      monthlyCarrying: r.maintMo,
+      mansionTax: r.mansion,
+      downPayment: r.downPmt,
+      estimatedClosingCosts: r.fixedCC + r.varCC + r.mansion, // co-ops: no mortgage recording tax
+      estimatedReserves: r.maintRes + r.mtgRes,
+      estimatedCashNeeded: r.totalCash,
+    };
+  }
+  // Condo reserves are off by default, same as the /condo/ calculator.
+  const r = calculateCondo(condoInputsFromDefaults({ targetOverride: price }));
   return {
-    annualIncomeNeeded,
-    monthlyPI,
-    monthlyCarrying: carrying,
-    mansionTax,
-    downPayment,
-    estimatedClosingCosts,
-    estimatedReserves,
-    estimatedCashNeeded,
+    annualIncomeNeeded: r.dtiMax > 0 ? (r.moTotal / r.dtiMax) * 12 : Infinity,
+    monthlyPI: r.moMtg,
+    monthlyCarrying: r.carrying,
+    mansionTax: r.cc.mansion,
+    downPayment: r.downPmt,
+    estimatedClosingCosts: r.cc.total,
+    estimatedReserves: r.resReq,
+    estimatedCashNeeded: r.totalCash,
   };
 }
 

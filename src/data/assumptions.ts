@@ -228,6 +228,18 @@ export const ASSUMPTIONS = asm({
     sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
     inputs: [{ page: 'condo', id: 'title-loan-pct' }],
   },
+  condoReserveMonths: {
+    value: 6, unit: 'months', label: 'Condo reserve buffer (when enabled)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Off by default: condos do not impose co-op-style board reserves, but lenders or buyers may want a buffer.',
+    inputs: [{ page: 'condo', id: 'reserve-mo' }],
+  },
+  condoWorkingCapitalMonths: {
+    value: 2, unit: 'months', label: 'Working capital contribution (months of common charges, when enabled)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Common in new development; off by default.',
+    inputs: [{ page: 'condo', id: 'wc-months' }],
+  },
 
   // ---- Rent ----
   rentIncomeMultiplier: {
@@ -240,6 +252,53 @@ export const ASSUMPTIONS = asm({
     value: 80, unit: 'x', label: 'Guarantor income requirement (x monthly rent)', basis: 'convention',
     sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
     inputs: [{ page: 'rent', id: 'guarantor-mult' }],
+  },
+  rentDtiPct: {
+    value: 35, unit: '%', label: 'Max rent-plus-debt to income (when DTI screening is on)', basis: 'convention',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: '30 to 35% is typical for buildings that screen on DTI. Off by default.',
+    inputs: [{ page: 'rent', id: 'dti-pct' }],
+  },
+  rentSecurityDepositMonths: {
+    value: 1, unit: 'months', label: 'Security deposit', basis: 'law',
+    sourceOrg: 'NYC HPD (Housing Stability and Tenant Protection Act of 2019)',
+    sourceUrl: 'https://www1.nyc.gov/site/hpd/renters/tenantrights.page',
+    effectiveDate: '2019-06-14', lastVerified: null,
+    notes: 'HSTPA caps security deposits at one month for most NYC rentals. The default is the cap.',
+    inputs: [{ page: 'rent', id: 'sec-deposit' }],
+  },
+  rentApplicationFee: {
+    value: 20, unit: 'USD', label: 'Application fee', basis: 'law',
+    sourceOrg: 'NYC HPD (Housing Stability and Tenant Protection Act of 2019)',
+    sourceUrl: 'https://www1.nyc.gov/site/hpd/renters/tenantrights.page',
+    effectiveDate: '2019-06-14', lastVerified: null,
+    notes: 'HSTPA caps background/credit check fees at $20. The default is the cap.',
+    inputs: [{ page: 'rent', id: 'app-fee' }],
+  },
+  rentBuildingFee: {
+    value: 500, unit: 'USD', label: 'Building / move-in admin fee', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Move-in deposit, key deposit, elevator reservation, etc.',
+    inputs: [{ page: 'rent', id: 'building-fee' }],
+  },
+  rentUtilitySetup: {
+    value: 250, unit: 'USD', label: 'Utility setup', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Con Ed deposit, internet install, etc.',
+    inputs: [{ page: 'rent', id: 'utility-setup' }],
+  },
+  rentersInsuranceMo: {
+    value: 15, unit: 'USD/mo', label: "Renter's insurance", basis: 'market-survey',
+    sourceOrg: 'ValuePenguin', sourceUrl: 'https://www.valuepenguin.com/renters-insurance/new-york',
+    effectiveDate: null, lastVerified: null,
+    notes: 'NYC average roughly $15 to $25/month.',
+    inputs: [{ page: 'rent', id: 'renters-insurance' }],
+  },
+  rentReserveMonths: {
+    value: 2, unit: 'months', label: 'Renter reserve buffer', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Months of rent + insurance + debts kept in savings after move-in.',
+    inputs: [{ page: 'rent', id: 'reserve-months' }],
   },
 });
 
