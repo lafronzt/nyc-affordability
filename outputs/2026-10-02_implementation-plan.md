@@ -102,6 +102,9 @@ Profile v2 (named scenarios, import/export JSON, reset), scenario A/B, `/plan/` 
 
 ## 6. Questions for you (need answers before the affected phase)
 
-1. **AdSense:** the code is disabled but still wired in. Remove it entirely, or keep it with ads excluded from all calculator/tool pages? (Phase 1c; it affects the CSP.)
+1. ~~**AdSense:**~~ **Decided 2026-10-02: keep it.** It stays wired in and disabled (`ADS_ENABLED = false`) so it can be switched back on later. Consequences for later phases:
+   - New pages and tools keep supporting the `ads` prop and the existing `AdSlot` placements. The AdSense CSP entries and `ads.txt` stay.
+   - Every page currently opts in (`ads` on all 28 page templates, all calculators included). If ads are re-enabled, the AdSense script will run on pages that hold financial inputs. It can't be sent anything by our code, but it does have DOM access. This is a known exception to the brief's "no third-party scripts that could read inputs" constraint, to revisit at enable time.
+   - `/privacy/` currently says "This site shows ads served by Google AdSense" while ads are off. It's accurate whenever ads are on. A small wording fix ("may show ads") could ride along with PR 1c if you want it.
 2. **Named reviewer:** is there a person (name + credential) to list as reviewer on tax and legal content, or should pages say "maintained by" only? (Phase 5)
 3. **Data license** for `/data/` downloads: CC BY 4.0 (my suggestion), or match the repo's MIT? (Phase 4)
