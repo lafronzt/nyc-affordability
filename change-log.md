@@ -2,6 +2,24 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-02: Phase 1e: guide worked examples checked against the engine
+
+**User-visible changes**
+- None to the guides' visible text: every quoted figure already matched the current engine. The closing-costs guide's "full sourcing methodology" link now points to `/methodology/sources/` instead of `/about/`.
+
+**Code**
+- `test/guideExamples.test.ts` recomputes every default-dependent figure quoted in four guides, using the same engine and registry the calculators use:
+  - *How mortgage rates affect affordability*: both rate tables, row by row (the bold row must be the current default rate), the meta description, the 6.3%→current deltas, and the rate and survey date.
+  - *Income needed to buy*: the $700K table, the ~$73,000 gap, the 6.3%→current effect, and the median co-op calibration (reads the cited median from the Affordability Index).
+  - *Co-op board reserves*: the $600K P&I, carrying cost, 12- and 24-month reserves and totals, and the 6.25%→current effect.
+  - *Closing costs for buyers*: the mortgage recording tax and mansion tax lines (the fee lines are the guide's own illustration and aren't checked).
+- Each test lists **every** stale figure in a guide at once, with the exact replacement text. Checked by simulating a rate change to 6.50%: all four guides failed with their full update lists.
+- Each checked section has an HTML comment pointing editors to the test (not visible on the page).
+
+**Validation**
+- `npm test`: 138/138. `npm run build`: clean.
+- Visible text of the three engine-dependent guides is identical to the Phase 1d build; the closing-costs guide differs only in the repointed link.
+
 ## 2026-10-02: Phase 1d: methodology, sources & data status, content cross-links
 
 **User-visible changes**

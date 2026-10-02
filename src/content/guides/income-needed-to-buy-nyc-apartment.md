@@ -43,6 +43,8 @@ The DTI ceiling is the variable that changes the most between purchase types, an
 
 That's not a small gap. A condo lender's standard ceiling is roughly 1.5x looser than a co-op board's standard ceiling, applied to the same monthly payment.
 
+<!-- Editors: the figures in this section are recomputed from the calculator engine by test/guideExamples.test.ts. If you change a default (rate, maintenance, DTI) or this example, `npm test` lists every number to update. -->
+
 ## Worked example: identical price, two different answers
 
 Take a $700,000 purchase, 20% down ($140,000), a $560,000 loan, and a $1,200/month carrying-cost assumption (maintenance for a co-op, or common charges plus property taxes for a condo):
