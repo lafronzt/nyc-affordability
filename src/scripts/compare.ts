@@ -1,18 +1,20 @@
 import { loadSharedProfile, saveSharedProfile, SHARED_KEY } from '../lib/sharedProfile';
 import { wireShareButton } from '../lib/share';
+import { calculateCoop } from '../lib/engines/coop';
+import { calculateCondo } from '../lib/engines/condo';
+import { calculateRent, rentSnapshot } from '../lib/engines/rent';
+import { coopInputsFromDefaults, condoInputsFromDefaults, rentInputsFromDefaults, defaultSharedAssumptions } from '../lib/engines/defaults';
 
 /* ============================================================
    NYC Housing Affordability Comparison Dashboard — TypeScript port
    ============================================================
-   NOTE: this page does not import ../lib/calc.ts. It re-derives comparable
-   rent / co-op / condo numbers purely from the shared profile plus each
-   calculator's own saved assumptions (read from their localStorage keys
-   below) — it never does its own tax/PMI lookups against another
-   calculator's live state. The mortgage-math helpers below (pmtFactor,
-   calcMortgageRecordingTax, calcMansionTax, bsearchMaxPrice) are page-local
-   duplicates of the same formulas the rent/co-op/condo calculators use —
-   this matches the original page's own self-contained implementation,
-   which never imported another page's script either.
+   Rent / co-op / condo numbers come from the same engines the calculators
+   run (../lib/engines/), fed with the shared profile plus each calculator's
+   saved assumptions (read from their localStorage keys below). Fields this
+   page doesn't expose (closing-cost line items, fees) use the sourced
+   defaults from src/data/assumptions.ts via ../lib/engines/defaults.ts.
+   An earlier version kept its own copy of the formulas, which skipped PMI,
+   so it overstated buying power below 20% down.
 
    NOTE on formatters: money()/monthly()/pct() are NOT reused from
    ../lib/format because their behavior differs in ways that matter for
@@ -255,56 +257,12 @@ function updateFromEditor(save = true) {
   render();
 }
 
-/* ── shared math helpers ── */
-function pmtFactor(ratePct: number, years: number): number {
-  const rm = ratePct / 100 / 12;
-  const n = years * 12;
-  if (n <= 0) return 0;
-  return rm === 0 ? 1 / n : rm / (1 - Math.pow(1 + rm, -n));
-}
-
+/* ── profile helpers ── */
 function weightedAssets(accounts: Account[]): number {
   return accounts.reduce((s, a) => s + a.balance * a.liquidity / 100, 0);
 }
 
-function closingAssets(accounts: Account[]): number {
-  return accounts.reduce((s, a) => s + (a.closing ? a.balance : 0), 0);
-}
-
-function calcMortgageRecordingTax(loanAmt: number): number {
-  if (loanAmt <= 0) return 0;
-  return loanAmt < 500000 ? loanAmt * 0.018 : loanAmt * 0.01925;
-}
-
-function calcMansionTax(price: number): number {
-  if (price < 1000000) return 0;
-  if (price < 2000000) return price * 0.0100;
-  if (price < 3000000) return price * 0.0125;
-  if (price < 5000000) return price * 0.0150;
-  if (price < 10000000) return price * 0.0225;
-  if (price < 15000000) return price * 0.0325;
-  if (price < 20000000) return price * 0.0350;
-  if (price < 25000000) return price * 0.0375;
-  return price * 0.039;
-}
-
-function bsearchMaxPrice(testFn: (p: number) => boolean, hi: number): number {
-  if (!testFn(0)) return 0;
-  if (testFn(hi)) return hi;
-  let lo = 0;
-  for (let i = 0; i < 80; i++) {
-    const mid = (lo + hi) / 2;
-    if (testFn(mid)) lo = mid; else hi = mid;
-    if (hi - lo < 1) break;
-  }
-  return lo;
-}
-
-const ASMP = {
-  rent: { incomeMult: 40, rentersInsurance: 15, reserveMonths: 2 } as RentAssumptions,
-  coop: { mortgageRate: 6.95, dpPct: 20, maint: 1200, maxDTIPct: 28, reserveMo: 12 } as CoopAssumptions,
-  condo: { mortgageRate: 6.95, dpPct: 20, commonCharges: 1000, propTaxes: 1250, hoInsurance: 75, maxDtiPct: 43 } as CondoAssumptions,
-};
+const ASMP: { rent: RentAssumptions; coop: CoopAssumptions; condo: CondoAssumptions } = defaultSharedAssumptions();
 
 /* ── "What if...?" scenario sliders — purely ephemeral display-time deltas,
    never written to profileState or ASMP and never persisted (even with Save
@@ -316,145 +274,61 @@ const ASMP = {
 const WHATIF = { salaryDelta: 0, savingsDelta: 0, rateDelta: 0 };
 
 function calcRent(base: BaseInputs): RentResult {
-  const inp = {
+  const inp = rentInputsFromDefaults({
     ...base,
     incomeMult: ASMP.rent.incomeMult,
-    dtiEnabled: false,
-    dtiPct: 35,
-    secDepositMonths: 1,
-    appFee: 20,
-    buildingFee: 500,
-    utilitySetup: 250,
-    petFee: 0,
-    brokerType: 'none',
-    brokerFeePct: 15,
-    brokerFeeMonths: 1,
-    brokerFlat: 3000,
     rentersInsurance: ASMP.rent.rentersInsurance,
     reserveMonths: ASMP.rent.reserveMonths,
+  });
+  const r = calculateRent(inp);
+  const snap = rentSnapshot(r.maxRent, inp, r);
+  return {
+    maxRent: r.maxRent,
+    cashRequired: snap.totalCashNeeded,
+    monthlyTotal: r.maxRent + inp.rentersInsurance, // housing cost only; debts count in DTI below
+    dti: snap.totalDTI / 100,
+    reserve: snap.reserveBuffer,
+    binding: r.binding,
   };
-  const assets = weightedAssets(inp.accounts);
-  const moInc = inp.annualIncome / 12;
-  const fixedMovein = inp.appFee + inp.buildingFee + inp.utilitySetup + inp.petFee;
-  const fixedReserve = inp.reserveMonths * (inp.rentersInsurance + inp.otherDebts);
-  const maxMovein = Math.max(0, (assets - fixedMovein) / (1 + inp.secDepositMonths));
-  const maxReserve = inp.reserveMonths > 0
-    ? Math.max(0, (assets - fixedReserve) / inp.reserveMonths)
-    : Infinity;
-  const cashMax = Math.min(maxMovein, maxReserve);
-  const incomeMax = inp.annualIncome / inp.incomeMult;
-  const maxRent = Math.min(cashMax, incomeMax);
-  const binding = cashMax <= incomeMax ? 'Cash / Move-In' : `Income (${inp.incomeMult}× rule)`;
-  const cashRequired = maxRent + (maxRent * inp.secDepositMonths) + fixedMovein + inp.reserveMonths * (maxRent + inp.rentersInsurance + inp.otherDebts);
-  const monthlyTotal = maxRent + inp.rentersInsurance;
-  const dti = moInc > 0 ? (monthlyTotal + inp.otherDebts) / moInc : 0;
-  const reserve = inp.reserveMonths * (maxRent + inp.rentersInsurance + inp.otherDebts);
-  return { maxRent, cashRequired, monthlyTotal, dti, reserve, binding };
 }
 
 function calcCoop(base: BaseInputs, rateOverride?: number): CoopResult {
-  const inp = {
+  const r = calculateCoop(coopInputsFromDefaults({
     ...base,
     mortgageRate: rateOverride ?? ASMP.coop.mortgageRate,
-    loanTerm: 30,
     dpPct: ASMP.coop.dpPct,
     reserveMo: ASMP.coop.reserveMo,
     maxDTIPct: ASMP.coop.maxDTIPct,
     maint: ASMP.coop.maint,
-    fcAtty: 4000,
-    fcBankAtty: 1500,
-    fcCoop: 750,
-    fcMoveIn: 1000,
-    fcOther: 800,
-    varPct: 0.5,
+  }));
+  return {
+    maxPrice: r.maxPrice,
+    cashRequired: r.totalCash,
+    monthlyTotal: r.moTotal,
+    dti: r.dtiActual,
+    reserve: r.maintRes + r.mtgRes,
+    binding: r.binding,
   };
-  const avail = weightedAssets(inp.accounts);
-  const totLiquid = closingAssets(inp.accounts);
-  const moInc = inp.annualIncome / 12;
-  const K = pmtFactor(inp.mortgageRate, inp.loanTerm);
-  const dp = inp.dpPct / 100;
-  const dtiMax = inp.maxDTIPct / 100;
-  const fixedCC = inp.fcAtty + inp.fcBankAtty + inp.fcCoop + inp.fcMoveIn + inp.fcOther;
-  const varFrac = inp.varPct / 100;
-  const ccAtP = (p: number) => p * varFrac + calcMansionTax(p);
-  const reserveMax = inp.reserveMo > 0
-    ? bsearchMaxPrice(p => p * dp + fixedCC + ccAtP(p) + inp.reserveMo * (inp.maint + p * (1 - dp) * K) <= avail, 50000000)
-    : Infinity;
-  const dpCCBudget = totLiquid - fixedCC;
-  const dpCCMax = dpCCBudget <= 0 ? 0 : bsearchMaxPrice(p => p * dp + ccAtP(p) <= dpCCBudget, 50000000);
-  const cashMax = Math.min(reserveMax, dpCCMax);
-  const maxMoMtg = dtiMax * moInc - inp.maint - inp.otherDebts;
-  const maxLoan = K > 0 ? Math.max(0, maxMoMtg) / K : Infinity;
-  const dtiMaxPrice = (1 - dp) > 0 ? Math.max(0, maxLoan / (1 - dp)) : Infinity;
-  const maxPrice = Math.min(cashMax, dtiMaxPrice);
-  const binding = cashMax <= dtiMaxPrice ? (dpCCMax <= reserveMax ? 'DP / Closing Costs' : 'Cash / Reserves') : 'DTI / Income';
-  const mansion = calcMansionTax(maxPrice);
-  const downPmt = maxPrice * dp;
-  const loanAmt = maxPrice * (1 - dp);
-  const moMtg = loanAmt * K;
-  const totalAtClose = downPmt + fixedCC + maxPrice * varFrac + mansion;
-  const reserve = inp.reserveMo * (moMtg + inp.maint);
-  const cashRequired = totalAtClose + reserve;
-  const monthlyTotal = moMtg + inp.maint;
-  const dti = moInc > 0 ? (monthlyTotal + inp.otherDebts) / moInc : 0;
-  return { maxPrice, cashRequired, monthlyTotal, dti, reserve, binding };
 }
 
 function calcCondo(base: BaseInputs, rateOverride?: number): CondoResult {
-  const inp = {
+  const r = calculateCondo(condoInputsFromDefaults({
     ...base,
     mortgageRate: rateOverride ?? ASMP.condo.mortgageRate,
-    loanTerm: 30,
     dpPct: ASMP.condo.dpPct,
-    reserveMo: 6,
-    reservesEnabled: false,
     maxDtiPct: ASMP.condo.maxDtiPct,
     commonCharges: ASMP.condo.commonCharges,
     propTaxes: ASMP.condo.propTaxes,
     hoInsurance: ASMP.condo.hoInsurance,
-    fcAtty: 5000,
-    fcLender: 3500,
-    fcAppraisal: 1000,
-    fcRecording: 750,
-    fcBuilding: 1500,
-    wcMonths: 2,
-    workingCapEnabled: false,
-    titlePricePct: 0.45,
-    titleLoanPct: 0.10,
+  }));
+  return {
+    maxPrice: r.maxPrice,
+    cashRequired: r.totalCash,
+    monthlyTotal: r.moTotal,
+    dti: r.dtiActual,
+    reserve: r.resReq,
+    binding: r.binding,
   };
-  const assets = weightedAssets(inp.accounts);
-  const moInc = inp.annualIncome / 12;
-  const K = pmtFactor(inp.mortgageRate, inp.loanTerm);
-  const dp = inp.dpPct / 100;
-  const dtiMax = inp.maxDtiPct / 100;
-  const carrying = inp.commonCharges + inp.propTaxes + inp.hoInsurance;
-  const resMo = inp.reservesEnabled ? inp.reserveMo : 0;
-  const A = dtiMax * moInc - carrying - inp.otherDebts;
-  const dtiDenom = (1 - dp) * K;
-  const pDti = dtiDenom > 0 && A > 0 ? A / dtiDenom : (A > 0 ? Infinity : 0);
-  const computeCC = (price: number) => {
-    const loan = price * (1 - dp);
-    const fixed = inp.fcAtty + inp.fcLender + inp.fcAppraisal + inp.fcRecording + inp.fcBuilding;
-    const title = price * inp.titlePricePct / 100 + loan * inp.titleLoanPct / 100;
-    return fixed + title + calcMortgageRecordingTax(loan) + calcMansionTax(price);
-  };
-  const pDpCC = bsearchMaxPrice(p => assets >= dp * p + computeCC(p), 20000000);
-  const pReserve = resMo > 0
-    ? bsearchMaxPrice(p => assets >= dp * p + computeCC(p) + resMo * (p * (1 - dp) * K + carrying), 20000000)
-    : Infinity;
-  const pCash = Math.min(pDpCC, pReserve);
-  const maxPrice = Math.max(0, Math.min(pCash, isFinite(pDti) ? pDti : pCash));
-  const binding = pCash <= (isFinite(pDti) ? pDti : Infinity)
-    ? (pDpCC <= pReserve ? 'DP / Closing Costs' : 'Cash / Reserves')
-    : 'DTI / Income';
-  const loanAmt = maxPrice * (1 - dp);
-  const moMtg = loanAmt * K;
-  const cc = computeCC(maxPrice);
-  const reserve = resMo * (moMtg + carrying);
-  const cashRequired = maxPrice * dp + cc + reserve;
-  const monthlyTotal = moMtg + carrying;
-  const dti = moInc > 0 ? (monthlyTotal + inp.otherDebts) / moInc : 0;
-  return { maxPrice, cashRequired, monthlyTotal, dti, reserve, binding };
 }
 
 function render() {

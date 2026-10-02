@@ -1,15 +1,17 @@
 import { loadSharedProfile, saveSharedProfile, SHARED_KEY } from '../lib/sharedProfile';
 import { amiPercent, getBandClass } from '../lib/amiTable';
 import { wireShareButton } from '../lib/share';
+import { calculateCoop } from '../lib/engines/coop';
+import { calculateCondo } from '../lib/engines/condo';
+import { calculateRent } from '../lib/engines/rent';
+import { coopInputsFromDefaults, condoInputsFromDefaults, rentInputsFromDefaults, defaultSharedAssumptions } from '../lib/engines/defaults';
 
 /* ============================================================
    NYC Housing Reality Check — TypeScript port
    ============================================================
-   A lighter sibling of compare.ts, not a replacement: same underlying
-   rent/co-op/condo math (mirrored here, not imported — see compare.ts's
-   own header for why formula duplication is this repo's convention), but
-   a single "liquid savings" number instead of compare.ts's full
-   multi-account editor. This page is meant as a fast triage tool, not the
+   A lighter sibling of compare.ts, not a replacement: the same shared
+   rent/co-op/condo engines (../lib/engines/), but a single "liquid
+   savings" number instead of compare.ts's full multi-account editor. This page is meant as a fast triage tool, not the
    power-user dashboard.
 
    Storage: annualIncome/otherDebts are read from and (when Save is on)
@@ -36,11 +38,7 @@ interface Inputs { annualIncome: number; otherDebts: number; liquidSavings: numb
 
 const DEFAULTS: Inputs = { annualIncome: 150000, otherDebts: 0, liquidSavings: 120000, householdSize: 2 };
 
-const ASMP = {
-  rent: { incomeMult: 40, rentersInsurance: 15, reserveMonths: 2 },
-  coop: { mortgageRate: 6.95, dpPct: 20, maint: 1200, maxDTIPct: 28, reserveMo: 12 },
-  condo: { mortgageRate: 6.95, dpPct: 20, commonCharges: 1000, propTaxes: 1250, hoInsurance: 75, maxDtiPct: 43 },
-};
+const ASMP = defaultSharedAssumptions();
 
 /* ── DOM helpers ── */
 function $(id: string) { return document.getElementById(id); }
@@ -51,65 +49,27 @@ function money(n: number): string { return isFinite(n) ? '$' + Math.round(n).toL
 function monthly(n: number): string { return isFinite(n) ? money(n) + '/mo' : '-'; }
 function setText(id: string, value: string) { const el = $(id); if (el) el.textContent = value; }
 
-/* ── shared math helpers (mirrors compare.ts / rent.ts / coop.ts / condo.ts) ── */
-function pmtFactor(ratePct: number, years: number): number {
-  const rm = ratePct / 100 / 12;
-  const n = years * 12;
-  if (n <= 0) return 0;
-  return rm === 0 ? 1 / n : rm / (1 - Math.pow(1 + rm, -n));
-}
-function calcMortgageRecordingTax(loanAmt: number): number {
-  if (loanAmt <= 0) return 0;
-  return loanAmt < 500000 ? loanAmt * 0.018 : loanAmt * 0.01925;
-}
-function calcMansionTax(price: number): number {
-  if (price < 1000000) return 0;
-  if (price < 2000000) return price * 0.0100;
-  if (price < 3000000) return price * 0.0125;
-  if (price < 5000000) return price * 0.0150;
-  if (price < 10000000) return price * 0.0225;
-  if (price < 15000000) return price * 0.0325;
-  if (price < 20000000) return price * 0.0350;
-  if (price < 25000000) return price * 0.0375;
-  return price * 0.039;
-}
-function bsearchMaxPrice(testFn: (p: number) => boolean, hi: number): number {
-  if (!testFn(0)) return 0;
-  if (testFn(hi)) return hi;
-  let lo = 0;
-  for (let i = 0; i < 80; i++) {
-    const mid = (lo + hi) / 2;
-    if (testFn(mid)) lo = mid; else hi = mid;
-    if (hi - lo < 1) break;
-  }
-  return lo;
-}
-
 function accountsFrom(savings: number): Account[] {
   return [{ name: 'Liquid savings', balance: Math.max(0, savings), liquidity: 100, closing: true }];
 }
 function weightedAssets(accounts: Account[]): number {
   return accounts.reduce((s, a) => s + a.balance * a.liquidity / 100, 0);
 }
-function closingAssets(accounts: Account[]): number {
-  return accounts.reduce((s, a) => s + (a.closing ? a.balance : 0), 0);
-}
 
 interface Base { annualIncome: number; otherDebts: number; accounts: Account[]; }
 
 function calcRent(base: Base) {
-  const incomeMult = ASMP.rent.incomeMult;
-  const rentersInsurance = ASMP.rent.rentersInsurance;
-  const reserveMonths = ASMP.rent.reserveMonths;
-  const assets = weightedAssets(base.accounts);
-  const fixedMovein = 20 + 500 + 250; // app fee + building fee + utility setup (no pet fee, no broker fee assumed)
-  const fixedReserve = reserveMonths * (rentersInsurance + base.otherDebts);
-  const maxMovein = Math.max(0, (assets - fixedMovein) / 2); // 1 month rent + 1 month security deposit
-  const maxReserve = reserveMonths > 0 ? Math.max(0, (assets - fixedReserve) / reserveMonths) : Infinity;
-  const cashMax = Math.min(maxMovein, maxReserve);
-  const incomeMax = base.annualIncome / incomeMult;
-  const maxRent = Math.min(cashMax, incomeMax);
-  const binding = cashMax <= incomeMax ? 'Cash / Move-In' : `Income (${incomeMult}× rule)`;
+  // Default move-in scenario: 1 month deposit, $20 application fee, building
+  // and utility setup fees, no broker fee (see rentInputsFromDefaults).
+  const r = calculateRent(rentInputsFromDefaults({
+    ...base,
+    incomeMult: ASMP.rent.incomeMult,
+    rentersInsurance: ASMP.rent.rentersInsurance,
+    reserveMonths: ASMP.rent.reserveMonths,
+  }));
+  const { maxRent, binding } = r;
+  const cashMax = r.maxRent_cash;
+  const incomeMax = r.maxRent_mult;
   let verdict: 'Comfortable' | 'Stretch' | 'Unlikely';
   if (maxRent <= 0) verdict = 'Unlikely';
   else if (binding !== 'Cash / Move-In') verdict = 'Comfortable';
@@ -122,50 +82,14 @@ function calcRent(base: Base) {
 
 function calcCoop(base: Base) {
   const { mortgageRate, dpPct, maint, maxDTIPct, reserveMo } = ASMP.coop;
-  const avail = weightedAssets(base.accounts);
-  const totLiquid = closingAssets(base.accounts);
-  const moInc = base.annualIncome / 12;
-  const K = pmtFactor(mortgageRate, 30);
-  const dp = dpPct / 100;
-  const dtiMax = maxDTIPct / 100;
-  const fixedCC = 4000 + 1500 + 750 + 1000 + 800;
-  const varFrac = 0.005;
-  const ccAtP = (p: number) => p * varFrac + calcMansionTax(p);
-  const reserveMax = reserveMo > 0
-    ? bsearchMaxPrice(p => p * dp + fixedCC + ccAtP(p) + reserveMo * (maint + p * (1 - dp) * K) <= avail, 50000000)
-    : Infinity;
-  const dpCCBudget = totLiquid - fixedCC;
-  const dpCCMax = dpCCBudget <= 0 ? 0 : bsearchMaxPrice(p => p * dp + ccAtP(p) <= dpCCBudget, 50000000);
-  const cashMax = Math.min(reserveMax, dpCCMax);
-  const maxMoMtg = dtiMax * moInc - maint - base.otherDebts;
-  const maxLoan = K > 0 ? Math.max(0, maxMoMtg) / K : Infinity;
-  const dtiMaxPrice = (1 - dp) > 0 ? Math.max(0, maxLoan / (1 - dp)) : Infinity;
-  const maxPrice = Math.min(cashMax, dtiMaxPrice);
-  const binding = cashMax <= dtiMaxPrice ? (dpCCMax <= reserveMax ? 'DP / Closing Costs' : 'Cash / Reserves') : 'DTI / Income';
-  return { maxPrice, binding };
+  const r = calculateCoop(coopInputsFromDefaults({ ...base, mortgageRate, dpPct, maint, maxDTIPct, reserveMo }));
+  return { maxPrice: r.maxPrice, binding: r.binding };
 }
 
 function calcCondo(base: Base) {
   const { mortgageRate, dpPct, commonCharges, propTaxes, hoInsurance, maxDtiPct } = ASMP.condo;
-  const assets = weightedAssets(base.accounts);
-  const moInc = base.annualIncome / 12;
-  const K = pmtFactor(mortgageRate, 30);
-  const dp = dpPct / 100;
-  const dtiMax = maxDtiPct / 100;
-  const carrying = commonCharges + propTaxes + hoInsurance;
-  const A = dtiMax * moInc - carrying - base.otherDebts;
-  const dtiDenom = (1 - dp) * K;
-  const pDti = dtiDenom > 0 && A > 0 ? A / dtiDenom : (A > 0 ? Infinity : 0);
-  const computeCC = (price: number) => {
-    const loan = price * (1 - dp);
-    const fixed = 5000 + 3500 + 1000 + 750 + 1500;
-    const title = price * 0.0045 + loan * 0.0010;
-    return fixed + title + calcMortgageRecordingTax(loan) + calcMansionTax(price);
-  };
-  const pDpCC = bsearchMaxPrice(p => assets >= dp * p + computeCC(p), 20000000);
-  const maxPrice = Math.max(0, Math.min(pDpCC, isFinite(pDti) ? pDti : pDpCC));
-  const binding = pDpCC <= (isFinite(pDti) ? pDti : Infinity) ? 'DP / Closing Costs' : 'DTI / Income';
-  return { maxPrice, binding };
+  const r = calculateCondo(condoInputsFromDefaults({ ...base, mortgageRate, dpPct, commonCharges, propTaxes, hoInsurance, maxDtiPct }));
+  return { maxPrice: r.maxPrice, binding: r.binding };
 }
 
 const BINDING_EXPLANATIONS: Record<string, string> = {

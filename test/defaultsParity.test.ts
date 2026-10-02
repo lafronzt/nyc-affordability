@@ -17,6 +17,14 @@ function inputDefaults(page: string): Map<string, string> {
     const value = tag.match(/\bvalue="([^"]*)"/)?.[1];
     if (id && value !== undefined) out.set(id, value);
   }
+  // <select>: the option marked `selected`, else the first option (browser default).
+  for (const [, attrs, body] of src.matchAll(/<select\b([^>]*)>([\s\S]*?)<\/select>/g)) {
+    const id = attrs.match(/\bid="([^"]+)"/)?.[1];
+    const options = [...body.matchAll(/<option\b([^>]*)>/g)].map((m) => m[1]);
+    const chosen = options.find((o) => /\bselected\b/.test(o)) ?? options[0];
+    const value = chosen?.match(/\bvalue="([^"]*)"/)?.[1];
+    if (id && value !== undefined) out.set(id, value);
+  }
   return out;
 }
 
