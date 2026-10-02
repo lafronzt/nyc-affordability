@@ -1,0 +1,246 @@
+/* ============================================================
+   Sourced default assumptions: single source of truth.
+   ============================================================
+   Every default the site's math starts from lives here, with where it came
+   from and when someone last checked it. src/lib/afford.ts (the build-time
+   engine behind the homepage table, /income/, /buy/, /rent/<n>/ and
+   neighborhood pages) reads its numbers from this file.
+
+   The interactive calculators still carry their defaults as <input value>
+   attributes in src/pages/{coop,condo,rent}/index.astro. Each entry's
+   `inputs` list names those fields, and test/defaultsParity.test.ts fails
+   if any of them disagree with the value here. Change a default here AND
+   in the page, or the test will tell you which one you missed.
+
+   HONESTY RULES (same as the rest of the site):
+   - `basis` says what kind of number this is. A market convention is not a
+     law, and an illustrative midpoint is not a measured median.
+   - `sourceUrl` is null when the calculators cite a source by name only.
+     Don't backfill a URL you haven't actually checked.
+   - `lastVerified` is the date someone last checked the figure against its
+     source, not the date this file was edited. Only the mortgage rate has a
+     recorded check date (PR #58, 2026-09-23); everything else starts as null
+     until someone re-verifies it.
+   ============================================================ */
+
+export type AssumptionBasis =
+  | 'law'            // statute or regulation (tax rates, legal limits)
+  | 'official-data'  // published government/GSE series (Freddie Mac PMMS, HUD)
+  | 'market-survey'  // broker/industry reports and surveys
+  | 'convention'     // widespread NYC practice with no single authority (40x rule)
+  | 'illustrative';  // a reasonable midpoint chosen by this site; edit it
+
+export interface Assumption {
+  value: number;
+  unit: '%' | 'USD' | 'USD/mo' | 'years' | 'months' | 'x';
+  label: string;
+  basis: AssumptionBasis;
+  sourceOrg: string | null;
+  sourceUrl: string | null;
+  /** When the figure applies (e.g. the PMMS survey week), if it has one. */
+  effectiveDate: string | null;
+  /** When someone last checked the figure against its source (YYYY-MM-DD).
+      null = carried over from the calculators without a recorded check date;
+      shown as "not yet re-verified", never back-filled with a guess. */
+  lastVerified: string | null;
+  notes?: string;
+  /** Calculator <input> fields that must default to this value. */
+  inputs?: { page: 'coop' | 'condo' | 'rent'; id: string }[];
+}
+
+const asm = <T extends Record<string, Assumption>>(t: T) => t;
+
+export const ASSUMPTIONS = asm({
+  // ---- Mortgage ----
+  mortgageRatePct: {
+    value: 6.95,
+    unit: '%',
+    label: '30-year fixed mortgage rate',
+    basis: 'official-data',
+    sourceOrg: 'Freddie Mac Primary Mortgage Market Survey',
+    sourceUrl: 'https://www.freddiemac.com/pmms',
+    effectiveDate: '2026-09-17',
+    lastVerified: '2026-09-23',
+    notes: 'Conventional, conforming, 20% down, excellent credit. Bankrate showed 6.97% the same week. Jumbo loans and lender overlays can differ materially.',
+    inputs: [{ page: 'coop', id: 'mtg-rate' }, { page: 'condo', id: 'mtg-rate' }],
+  },
+  loanTermYears: {
+    value: 30,
+    unit: 'years',
+    label: 'Loan term',
+    basis: 'convention',
+    sourceOrg: null,
+    sourceUrl: null,
+    effectiveDate: null,
+    lastVerified: null,
+    inputs: [{ page: 'coop', id: 'loan-term' }, { page: 'condo', id: 'loan-term' }],
+  },
+
+  // ---- Co-op ----
+  coopDownPaymentPct: {
+    value: 20,
+    unit: '%',
+    label: 'Co-op down payment',
+    basis: 'market-survey',
+    sourceOrg: 'Skybriz; Prevu (2025)',
+    sourceUrl: null,
+    effectiveDate: null,
+    lastVerified: null,
+    notes: 'Minimum for most buildings. Mid-range Manhattan boards often require 25%; luxury buildings 30 to 50%.',
+    inputs: [{ page: 'coop', id: 'dp-pct' }],
+  },
+  coopMaxDtiPct: {
+    value: 28,
+    unit: '%',
+    label: 'Co-op board max debt-to-income',
+    basis: 'convention',
+    sourceOrg: 'Prevu; YRE (2025)',
+    sourceUrl: null,
+    effectiveDate: null,
+    lastVerified: null,
+    notes: 'Long-standing NYC board standard. Outer-borough buildings may allow 30 to 35%; some Park/Fifth Ave buildings cap at 20 to 25%.',
+    inputs: [{ page: 'coop', id: 'max-dti' }],
+  },
+  coopReserveMonths: {
+    value: 12,
+    unit: 'months',
+    label: 'Co-op post-closing liquidity',
+    basis: 'convention',
+    sourceOrg: 'Prevu; Aaron & Geoff (Compass), 2026',
+    sourceUrl: null,
+    effectiveDate: null,
+    lastVerified: null,
+    notes: 'Months of mortgage + maintenance. Conservative/luxury boards require 24+. Retirement accounts are generally excluded.',
+    inputs: [{ page: 'coop', id: 'reserve-mo' }],
+  },
+  coopMaintenanceMo: {
+    value: 1200,
+    unit: 'USD/mo',
+    label: 'Co-op monthly maintenance',
+    basis: 'illustrative',
+    sourceOrg: 'Elliman / Miller Samuel (Q4 2024)',
+    sourceUrl: null,
+    effectiveDate: null,
+    lastVerified: null,
+    notes: 'Mid-range citywide estimate. Rough medians: Queens ~$750, Brooklyn ~$900, Manhattan ~$1,500 to $1,800.',
+    inputs: [{ page: 'coop', id: 'monthly-maint' }],
+  },
+  coopAttorneyFee: {
+    value: 4000, unit: 'USD', label: 'Buyer attorney (co-op)', basis: 'market-survey',
+    sourceOrg: 'Prevu; Brick Underground (2025)', sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'NYC range $2,500 to $5,000.',
+    inputs: [{ page: 'coop', id: 'fc-atty' }],
+  },
+  coopBankAttorneyFee: {
+    value: 1500, unit: 'USD', label: 'Bank attorney (co-op)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'coop', id: 'fc-bank-atty' }],
+  },
+  coopBoardFee: {
+    value: 750, unit: 'USD', label: 'Co-op application / board fee', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'coop', id: 'fc-coop' }],
+  },
+  coopMoveInDeposit: {
+    value: 1000, unit: 'USD', label: 'Move-in deposit (refundable)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Refundable, but it is still cash you need on closing day.',
+    inputs: [{ page: 'coop', id: 'fc-movein' }],
+  },
+  coopOtherFixedFees: {
+    value: 800, unit: 'USD', label: 'Other fixed costs (UCC filing, lien search, etc.)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'coop', id: 'fc-other' }],
+  },
+  coopVariableClosingPct: {
+    value: 0.5, unit: '%', label: 'Co-op variable closing costs (loan origination)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Excludes mansion tax (calculated separately) and any buyer-side flip tax.',
+    inputs: [{ page: 'coop', id: 'var-pct' }],
+  },
+
+  // ---- Condo ----
+  condoDownPaymentPct: {
+    value: 20, unit: '%', label: 'Condo down payment', basis: 'convention',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Conventional conforming baseline. Jumbo lenders often require 25 to 30%.',
+    inputs: [{ page: 'condo', id: 'dp-pct' }],
+  },
+  condoMaxDtiPct: {
+    value: 43, unit: '%', label: 'Lender max back-end debt-to-income', basis: 'official-data',
+    sourceOrg: 'CFPB / Fannie Mae (qualified mortgage guidance)',
+    sourceUrl: 'https://www.consumerfinance.gov/ask-cfpb/what-is-a-debt-to-income-ratio-en-1791/',
+    effectiveDate: null, lastVerified: null,
+    notes: 'Some lenders target 36%; compensating factors can allow higher.',
+    inputs: [{ page: 'condo', id: 'max-dti' }],
+  },
+  condoCommonChargesMo: {
+    value: 1000, unit: 'USD/mo', label: 'Condo common charges', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Manhattan full-service often $1,500 to $3,000+; Brooklyn/Queens boutique often $500 to $900.',
+    inputs: [{ page: 'condo', id: 'common-charges' }],
+  },
+  condoPropertyTaxMo: {
+    value: 1250, unit: 'USD/mo', label: 'Condo property tax', basis: 'market-survey',
+    sourceOrg: 'Habitat Magazine / NYC DOF 2025-26 tentative assessment roll', sourceUrl: null,
+    effectiveDate: null, lastVerified: null,
+    notes: 'Reported citywide average is ~$15,134/yr ($1,261/mo); the default rounds to $1,250. Abatements change this dramatically.',
+    inputs: [{ page: 'condo', id: 'prop-taxes' }],
+  },
+  condoInsuranceMo: {
+    value: 75, unit: 'USD/mo', label: 'HO-6 insurance', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'condo', id: 'ho-insurance' }],
+  },
+  condoAttorneyFee: {
+    value: 5000, unit: 'USD', label: 'Buyer attorney (condo)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'condo', id: 'fc-atty' }],
+  },
+  condoLenderFees: {
+    value: 3500, unit: 'USD', label: 'Lender fees', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'condo', id: 'fc-lender' }],
+  },
+  condoAppraisalFee: {
+    value: 1000, unit: 'USD', label: 'Appraisal', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'condo', id: 'fc-appraisal' }],
+  },
+  condoRecordingFees: {
+    value: 750, unit: 'USD', label: 'Recording fees', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'condo', id: 'fc-recording' }],
+  },
+  condoBuildingFees: {
+    value: 1500, unit: 'USD', label: 'Building / managing agent fees', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'condo', id: 'fc-building' }],
+  },
+  condoOwnerTitlePct: {
+    value: 0.45, unit: '%', label: "Owner's title insurance (% of price)", basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Mid-range NYC resale condo estimate; varies by insurer and endorsements.',
+    inputs: [{ page: 'condo', id: 'title-price-pct' }],
+  },
+  condoLenderTitlePct: {
+    value: 0.10, unit: '%', label: "Lender's title policy (% of loan)", basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'condo', id: 'title-loan-pct' }],
+  },
+
+  // ---- Rent ----
+  rentIncomeMultiplier: {
+    value: 40, unit: 'x', label: 'Landlord income requirement (x monthly rent)', basis: 'convention',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'NYC market convention, not a law. Some landlords use 35x or 45x.',
+    inputs: [{ page: 'rent', id: 'income-mult' }],
+  },
+  guarantorIncomeMultiplier: {
+    value: 80, unit: 'x', label: 'Guarantor income requirement (x monthly rent)', basis: 'convention',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'rent', id: 'guarantor-mult' }],
+  },
+});
+
+export type AssumptionId = keyof typeof ASSUMPTIONS;

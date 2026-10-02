@@ -1,4 +1,5 @@
-import { calcPmiRate, calcPmiMonthly, calcMansionTax, calcMortgageRecordingTax } from './calc';
+import { calcPmiRate, calcPmiMonthly, calcMansionTax, calcMortgageRecordingTax } from './calc.ts';
+import { ASSUMPTIONS } from '../data/assumptions.ts';
 
 /* ============================================================
    Build-time affordability math for salary/price landing pages
@@ -31,34 +32,42 @@ import { calcPmiRate, calcPmiMonthly, calcMansionTax, calcMortgageRecordingTax }
    ============================================================ */
 
 // ---- Sourced default assumptions ----
-// Each constant mirrors the <input value="..."> default on the corresponding
-// calculator page, with the same citation shown in that page's <small> note.
+// Values come from src/data/assumptions.ts, the single registry that also
+// records each default's source, basis, and verification date. The calculator
+// pages' <input value> defaults are checked against the same registry by
+// test/defaultsParity.test.ts, so this engine and the live calculators start
+// from identical numbers.
+const A = ASSUMPTIONS;
 export const DEFAULT_ASSUMPTIONS = {
-  // Rent — src/pages/rent/index.astro:129-130
-  // "Landlords typically require 40x monthly rent" (NYC market convention).
-  rentIncomeMultiplier: 40,
+  rentIncomeMultiplier: A.rentIncomeMultiplier.value,
 
-  // Co-op — src/pages/coop/index.astro
-  coopMortgageRatePct: 6.95,   // line 258: Freddie Mac (6.95%) / Bankrate (6.97%) consensus, Sep 2026
-  coopLoanTermYears: 30,
-  coopDownPaymentPct: 20,      // line 268: minimum for most buildings (Skybriz, Prevu 2025)
-  coopMaxDtiPct: 28,           // line 287: long-standing NYC board standard (Prevu, YRE 2025)
-  coopReserveMonths: 12,       // line 281: most common standard for typical buildings (Prevu, Compass 2026)
-  coopMaintenanceMo: 1200,     // line 293: mid-range city-wide estimate (Elliman/Miller Samuel Q4 2024)
-  coopFixedClosingCosts: 4000 + 1500 + 750, // fc-atty + fc-bank-atty + fc-coop defaults, coop/index.astro:308-316
-  coopVariableClosingPct: 0.5, // line 338: covers loan origination fees; mansion tax is separate
+  // Co-op
+  coopMortgageRatePct: A.mortgageRatePct.value,
+  coopLoanTermYears: A.loanTermYears.value,
+  coopDownPaymentPct: A.coopDownPaymentPct.value,
+  coopMaxDtiPct: A.coopMaxDtiPct.value,
+  coopReserveMonths: A.coopReserveMonths.value,
+  coopMaintenanceMo: A.coopMaintenanceMo.value,
+  // Same five fees as the /coop/ calculator's "Total Fixed" (coop.ts calculate()).
+  coopFixedClosingCosts:
+    A.coopAttorneyFee.value + A.coopBankAttorneyFee.value + A.coopBoardFee.value +
+    A.coopMoveInDeposit.value + A.coopOtherFixedFees.value,
+  coopVariableClosingPct: A.coopVariableClosingPct.value, // loan origination; mansion tax is separate
 
-  // Condo — src/pages/condo/index.astro
-  condoMortgageRatePct: 6.95,  // line 137: Freddie Mac PMMS, Sep 17 2026, 30-yr FRM conventional/conforming/20% down
-  condoLoanTermYears: 30,
-  condoDownPaymentPct: 20,     // line 149
-  condoMaxDtiPct: 43,          // line 162: CFPB/Fannie Mae qualified-mortgage back-end DTI limit
-  condoCommonChargesMo: 1000,  // line 170: illustrative citywide estimate (Manhattan often $1.5-3k+, Bklyn/Queens often $500-900)
-  condoPropTaxesMo: 1250,      // line 179 default
-  condoHoInsuranceMo: 75,      // line 186 default
-  condoFixedClosingCosts: 5000 + 3500 + 1000 + 750 + 1500, // fc-atty..fc-building defaults, condo/index.astro:216-232
-  condoTitlePricePct: 0.45,    // line 258: mid-range NYC resale condo estimate
-  condoTitleLoanPct: 0.10,     // line 266 default
+  // Condo
+  condoMortgageRatePct: A.mortgageRatePct.value,
+  condoLoanTermYears: A.loanTermYears.value,
+  condoDownPaymentPct: A.condoDownPaymentPct.value,
+  condoMaxDtiPct: A.condoMaxDtiPct.value,
+  condoCommonChargesMo: A.condoCommonChargesMo.value,
+  condoPropTaxesMo: A.condoPropertyTaxMo.value,
+  condoHoInsuranceMo: A.condoInsuranceMo.value,
+  // Same five fees as condo.ts computeCC() (working capital off by default).
+  condoFixedClosingCosts:
+    A.condoAttorneyFee.value + A.condoLenderFees.value + A.condoAppraisalFee.value +
+    A.condoRecordingFees.value + A.condoBuildingFees.value,
+  condoTitlePricePct: A.condoOwnerTitlePct.value,
+  condoTitleLoanPct: A.condoLenderTitlePct.value,
   // Condo reserves are off by default in the live calculator (state.reservesEnabled = false
   // in condo.ts) — no post-close liquidity requirement is assumed here either.
 
@@ -195,4 +204,4 @@ export function requiredIncomeForPrice(inp: RequiredIncomeInputs): RequiredIncom
 }
 
 // ---- Affordable housing: income + household size -> AMI % + band ----
-export { AMI_BASE, AMI_SOURCE_URL, getBandClass } from './amiTable';
+export { AMI_BASE, AMI_SOURCE_URL, getBandClass } from './amiTable.ts';
