@@ -4,11 +4,12 @@ import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import AppHeader from '../../components/AppHeader.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
-import { CALC_COMPARE, otherCalculators, ALL_GUIDES, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { CALC_COMPARE, otherCalculators, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: otherCalculators(CALC_COMPARE.href!) },
   { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
   STANDARD_ABOUT_COLUMN,
 ];
 

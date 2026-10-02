@@ -2,6 +2,24 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-02: Phase 1c: navigation and footer parity, /explore/ site directory
+
+**User-visible changes**
+- The footer's **Explore** column (glossary, income, buy, rent, neighborhoods, index, salary, site directory) now appears on the 10 pages that lacked it: `/coop/`, `/condo/`, `/rent/`, `/affordable/`, `/compare/`, `/sell/`, `/about/`, `/contact/`, `/privacy/`, and `/terms/`.
+- The homepage "choose your calculator" grid now includes **Reality Check**, listed first as the start-here tool, so it shows all 8 tools. The last row (Sell, Required Salary) is centered.
+- New **`/explore/`** site directory: every calculator, guide (by topic), glossary term, income/salary/buy/rent page, neighborhood (by borough), the Affordability Index, and the about/legal pages. It's generated from the same collections and numeric grids that create those pages, so new pages appear automatically. It's linked from every footer's Explore column and is in the XML sitemap with a `lastmod` taken from the newest content entry. It has no ads.
+
+**Not done (on purpose)**
+- BreadcrumbList on the calculators. Visible breadcrumbs and their JSON-LD were removed from the calculators in #32 when the global navbar went in. Adding the JSON-LD back without visible breadcrumbs would mark up content that isn't on the page. Bringing them back is a design call, not a hygiene fix.
+
+**Tests** (88 → 121)
+- `test/navParity.test.ts`: every page that renders a `<Footer>` includes the Explore column (checked by removing it from `/terms/`, which made the test fail); the Explore links include `/explore/`; the homepage grid has a card for every calculator; and the primary nav links every calculator.
+
+**Validation**
+- `npm test`: 121/121. `npm run build`: clean, 129 pages (sitemap 128 URLs, +1 for `/explore/`).
+- The calculator browser snapshot (24 scenarios) is identical to the Phase 1b build.
+- Screenshots: the homepage grid at 1280/900/390px and `/explore/` at 1280/390px, with no horizontal overflow at any width.
+
 ## 2026-10-02: Phase 1b: one shared engine for co-op, condo, and rent math
 
 **User-visible changes**

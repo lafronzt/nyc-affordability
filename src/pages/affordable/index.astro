@@ -4,7 +4,7 @@ import AppHeader from '../../components/AppHeader.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
-import { CALC_AFFORDABLE, otherCalculators, ALL_GUIDES, NYC_HPD_TENANT_RIGHTS_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { CALC_AFFORDABLE, otherCalculators, ALL_GUIDES, NYC_HPD_TENANT_RIGHTS_LINK, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'More Calculators', links: otherCalculators(CALC_AFFORDABLE.href!) },
@@ -24,6 +24,7 @@ const footerColumns: FooterColumn[] = [
       { label: 'NYS AG Tenant Guide', href: 'https://ag.ny.gov/publications/residential-tenants-rights-guide' },
     ],
   },
+  { heading: 'Explore', links: EXPLORE_LINKS },
   STANDARD_ABOUT_COLUMN,
 ];
 

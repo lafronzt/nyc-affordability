@@ -24,6 +24,8 @@ const SITEMAP_PAGE_META = {
   '/rent/prices/': { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-14' },
   '/neighborhoods/':      { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-08-13' },
   '/affordability-index/': { changefreq: 'weekly', priority: 0.6, lastmod: '2026-08-13' },
+  // No hand-set lastmod: it's derived from the newest content entry (see serialize()).
+  '/explore/':   { changefreq: 'weekly',  priority: 0.5 },
   '/about/':      { changefreq: 'yearly',  priority: 0.5, lastmod: '2026-08-02' },
   '/contact/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-11' },
   '/privacy/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-02' },
@@ -109,6 +111,9 @@ export default defineConfig({
           if (date) meta.lastmod = date;
         } else if (hub) {
           meta.lastmod = latest(meta.lastmod, ...COLLECTIONS[hub[1]].updated.values());
+        } else if (pathname === '/explore/') {
+          // The site directory lists every collection entry, so it changes when any of them does.
+          meta.lastmod = latest(...Object.values(COLLECTIONS).flatMap((c) => [...c.updated.values()]));
         }
         return { ...item, ...meta };
       },

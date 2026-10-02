@@ -1,0 +1,299 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import {
+  ALL_CALCULATORS,
+  ALL_GUIDES,
+  EXPLORE_LINKS,
+  STANDARD_ABOUT_COLUMN,
+  ABOUT_LINK,
+  CONTACT_LINK,
+  PRIVACY_LINK,
+  TERMS_LINK,
+} from '../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+import { fmtMoney } from '../../lib/format';
+import { INCOME_AMOUNTS, RENT_PRICES, BUY_PRICES } from '../../data/priceGrids';
+
+/* ============================================================
+   Site directory (HTML sitemap for humans)
+   ============================================================
+   Every list below is generated from the same content collections and
+   numeric grids that generate the pages themselves, so a new guide,
+   glossary term, neighborhood, or price page shows up here without anyone
+   remembering to add it. Drafts are excluded, matching the XML sitemap.
+   ============================================================ */
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const GUIDE_CATEGORY_LABELS: Record<string, string> = {
+  renting: 'Renting',
+  buying: 'Buying',
+  coop: 'Co-ops',
+  'affordable-housing': 'Affordable Housing',
+  income: 'Income & Salary',
+};
+const GUIDE_CATEGORY_ORDER = ['renting', 'buying', 'coop', 'affordable-housing', 'income'];
+
+const BOROUGH_LABELS: Record<string, string> = {
+  manhattan: 'Manhattan',
+  brooklyn: 'Brooklyn',
+  queens: 'Queens',
+  bronx: 'The Bronx',
+  'staten-island': 'Staten Island',
+};
+const BOROUGH_ORDER = ['manhattan', 'brooklyn', 'queens', 'bronx', 'staten-island'];
+
+const guides = (await getCollection('guides', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+const terms = (await getCollection('glossary', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.term.localeCompare(b.data.term));
+const hoods = (await getCollection('neighborhoods', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.name.localeCompare(b.data.name));
+
+const guideGroups = GUIDE_CATEGORY_ORDER
+  .map((cat) => ({ label: GUIDE_CATEGORY_LABELS[cat], guides: guides.filter((g) => g.data.category === cat) }))
+  .filter((g) => g.guides.length > 0);
+const hoodGroups = BOROUGH_ORDER
+  .map((b) => ({ label: BOROUGH_LABELS[b], hoods: hoods.filter((h) => h.data.borough === b) }))
+  .filter((g) => g.hoods.length > 0);
+
+const numericFamilies = [
+  {
+    title: 'What your income affords',
+    hub: { label: 'All incomes', href: '/income/' },
+    blurb: 'Max rent, co-op, and condo at a given salary.',
+    items: INCOME_AMOUNTS.map((n) => ({ label: fmtMoney(n), href: `/income/${n}/` })),
+  },
+  {
+    title: 'Salary after taxes',
+    hub: { label: 'All salaries', href: '/salary/' },
+    blurb: 'Federal, NY State, NYC, and FICA take-home by filing status.',
+    items: INCOME_AMOUNTS.map((n) => ({ label: fmtMoney(n), href: `/salary/${n}/` })),
+  },
+  {
+    title: 'What it takes to buy',
+    hub: { label: 'All prices', href: '/buy/' },
+    blurb: 'Income and cash needed for a co-op or condo at a given price.',
+    items: BUY_PRICES.map((n) => ({ label: fmtMoney(n), href: `/buy/${n}/` })),
+  },
+  {
+    title: 'What it takes to rent',
+    hub: { label: 'All rents', href: '/rent/prices/' },
+    blurb: 'Income and move-in cash needed at a given monthly rent.',
+    items: RENT_PRICES.map((n) => ({ label: `${fmtMoney(n)}/mo`, href: `/rent/${n}/` })),
+  },
+];
+
+const aboutLinks = [ABOUT_LINK, CONTACT_LINK, PRIVACY_LINK, TERMS_LINK];
+
+// Every page listed here (this directory itself excluded): home, each hub
+// (guides, glossary, numeric families, neighborhoods), their entries, the
+// Affordability Index, and the about/legal pages.
+const pageCount =
+  1 + ALL_CALCULATORS.length +
+  1 + guides.length +
+  1 + terms.length +
+  numericFamilies.reduce((s, f) => s + 1 + f.items.length, 0) +
+  1 + hoods.length +
+  1 + // Affordability Index
+  aboutLinks.length;
+
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Site Directory | NYC Affordability',
+  url: `${SITE_ORIGIN}/explore/`,
+  description: 'Every calculator, guide, glossary term, price and income page, and neighborhood on NYC Affordability, in one place.',
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
+};
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Site Directory', path: '/explore/' },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+---
+<BaseLayout
+  variant="site"
+  pageTitle="Site Directory: Every NYC Housing Calculator, Guide & Page | NYC Affordability"
+  metaDescription="Every calculator, guide, glossary term, income, salary, rent and purchase-price page, and neighborhood on NYC Affordability, in one place."
+  canonicalPath="/explore/"
+  ogTitle="NYC Affordability Site Directory"
+  ogDescription="Every calculator, guide, glossary term, and price page on NYC Affordability, in one place."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
+  twitterTitle="NYC Affordability Site Directory"
+  twitterDescription="Every calculator, guide, glossary term, and price page on NYC Affordability, in one place."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Site Directory</div>
+  <h2>Everything on the site, on one page</h2>
+  <p>All {pageCount} pages, grouped by what you're trying to figure out. If you'd rather start from your own numbers, the <a href="/reality-check/">Housing Reality Check</a> is the quickest way in.</p>
+</div>
+
+<div class="page">
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <nav class="jump card" aria-label="Jump to section">
+    <a href="#calculators">Calculators</a>
+    <a href="#guides">Guides</a>
+    <a href="#glossary">Glossary</a>
+    <a href="#by-the-numbers">By the numbers</a>
+    <a href="#neighborhoods">Neighborhoods</a>
+    <a href="#data">Data</a>
+    <a href="#about">About</a>
+  </nav>
+
+  <section class="card" id="calculators" aria-labelledby="h-calculators">
+    <h3 id="h-calculators">Calculators <span class="count">{ALL_CALCULATORS.length}</span></h3>
+    <p>All math runs in your browser; nothing you type is sent anywhere.</p>
+    <ul class="link-list two-col">
+      {ALL_CALCULATORS.map((c) => <li><a href={c.href}>{c.label}</a></li>)}
+    </ul>
+  </section>
+
+  <section class="card" id="guides" aria-labelledby="h-guides">
+    <h3 id="h-guides">Guides <span class="count">{guides.length}</span></h3>
+    <p>Sourced explainers on NYC's housing rules. <a href="/guides/">Browse all guides</a></p>
+    {guideGroups.map((group) => (
+      <div class="group">
+        <h4>{group.label}</h4>
+        <ul class="link-list two-col">
+          {group.guides.map((g) => <li><a href={`/guides/${g.id}/`}>{g.data.title}</a></li>)}
+        </ul>
+      </div>
+    ))}
+  </section>
+
+  <section class="card" id="glossary" aria-labelledby="h-glossary">
+    <h3 id="h-glossary">Glossary <span class="count">{terms.length}</span></h3>
+    <p>Plain-English definitions of NYC housing terms. <a href="/glossary/">Open the glossary</a></p>
+    <ul class="link-list three-col">
+      {terms.map((t) => <li><a href={`/glossary/${t.id}/`}>{t.data.term}</a></li>)}
+    </ul>
+  </section>
+
+  <section class="card" id="by-the-numbers" aria-labelledby="h-numbers">
+    <h3 id="h-numbers">By the numbers</h3>
+    <p>Pre-calculated pages at common values. Each one links to a calculator where you can enter your exact figure.</p>
+    {numericFamilies.map((f) => (
+      <div class="group">
+        <h4><a href={f.hub.href}>{f.title}</a> <span class="count">{f.items.length}</span></h4>
+        <p class="blurb">{f.blurb}</p>
+        <ul class="chips">
+          {f.items.map((i) => <li><a class="chip" href={i.href}>{i.label}</a></li>)}
+        </ul>
+      </div>
+    ))}
+  </section>
+
+  <section class="card" id="neighborhoods" aria-labelledby="h-hoods">
+    <h3 id="h-hoods">Neighborhoods <span class="count">{hoods.length}</span></h3>
+    <p>Cited median rent and sale price, plus the income each takes. <a href="/neighborhoods/">All neighborhoods</a></p>
+    {hoodGroups.map((group) => (
+      <div class="group">
+        <h4>{group.label}</h4>
+        <ul class="link-list three-col">
+          {group.hoods.map((h) => <li><a href={`/neighborhoods/${h.id}/`}>{h.data.name}</a></li>)}
+        </ul>
+      </div>
+    ))}
+  </section>
+
+  <section class="card" id="data" aria-labelledby="h-data">
+    <h3 id="h-data">Data</h3>
+    <ul class="link-list">
+      <li><a href="/affordability-index/">NYC Affordability Index</a>: citywide median rent and co-op price, each with its source and as-of date</li>
+    </ul>
+  </section>
+
+  <section class="card" id="about" aria-labelledby="h-about">
+    <h3 id="h-about">About this site</h3>
+    <ul class="link-list two-col">
+      {aboutLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+    </ul>
+  </section>
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="NYC Affordability is for informational purposes only and does not constitute financial, legal, tax, or mortgage advice. Calculated figures use default assumptions; sourced market figures are cited and dated on the page where they appear."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+.hero a { color: #f0f9ff; }
+
+.page { max-width: 900px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 30px; margin-bottom: 20px;
+  scroll-margin-top: calc(var(--header-h) + 12px);
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--g500); margin: 18px 0 8px; }
+.card h4 a { color: inherit; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.7; margin-bottom: 8px; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+.count {
+  display: inline-block; font-size: 11px; font-weight: 700; color: var(--g500);
+  background: var(--g50); border: 1px solid var(--border); border-radius: 999px;
+  padding: 1px 8px; margin-left: 6px; vertical-align: middle; letter-spacing: 0;
+}
+.blurb { font-size: 13px !important; margin-bottom: 8px !important; }
+
+.jump { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 20px; }
+.jump a {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: 999px; font-size: 13px; font-weight: 650;
+  color: var(--g700); background: var(--g50);
+}
+.jump a:hover { border-color: var(--blue-lt); background: var(--blue-lt); color: var(--blue); text-decoration: none; }
+
+.link-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px 24px; }
+.link-list.two-col { grid-template-columns: 1fr 1fr; }
+.link-list.three-col { grid-template-columns: repeat(3, 1fr); }
+.link-list li { font-size: 14px; line-height: 1.5; padding: 5px 0; color: var(--g600); }
+
+.chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; min-height: 32px; padding: 0 10px;
+  border: 1px solid var(--border); border-radius: 6px; background: var(--g50);
+  font-size: 13px; font-weight: 650; color: var(--g800) !important; font-variant-numeric: tabular-nums;
+}
+.chip:hover { border-color: var(--blue-lt); background: var(--blue-lt); color: var(--blue) !important; text-decoration: none !important; }
+
+@media (max-width: 720px) {
+  .link-list.three-col { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .card { padding: 22px 18px 24px; }
+  .link-list.two-col, .link-list.three-col { grid-template-columns: 1fr; }
+  .page { padding: 28px 16px 48px; }
+}
+</style>
