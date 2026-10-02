@@ -42,28 +42,48 @@ const ENUMERATED_ROUTE_META = [
   { pattern: /^\/neighborhoods\/[^/]+\/$/, meta: { changefreq: 'weekly', priority: 0.6 } },
 ];
 
-// @astrojs/sitemap's filter only gets the final URL, not frontmatter, so draft
-// guides/glossary entries (which render noindex but still get built as real
-// pages) need to be excluded by slug here. Read directly off the content
-// files rather than via `astro:content`, which isn't available this early in
-// config loading.
-function draftSlugsIn(dir) {
+// @astrojs/sitemap's filter/serialize only get the final URL, not frontmatter,
+// so the content collections' frontmatter is read directly off disk here
+// (`astro:content` isn't available this early in config loading). Two things
+// come out of it:
+//   - draft slugs, which render noindex but still get built as real pages and
+//     need to be excluded from the sitemap;
+//   - each published entry's own `updated` date, used as its <lastmod> so the
+//     sitemap reports when the content actually changed instead of omitting
+//     it (or inventing one).
+function readCollection(dir) {
   let files;
   try {
     files = readdirSync(dir);
   } catch (e) {
-    return new Set(); // collection directory doesn't exist yet (e.g. no content added so far)
+    return { drafts: new Set(), updated: new Map() }; // collection directory doesn't exist yet
   }
-  return new Set(
-    files
-      .filter((f) => f.endsWith('.md'))
-      .filter((f) => /^draft:\s*true\s*$/m.test(readFileSync(dir + f, 'utf-8')))
-      .map((f) => f.replace(/\.md$/, ''))
-  );
+  const drafts = new Set();
+  const updated = new Map();
+  for (const f of files.filter((f) => f.endsWith('.md'))) {
+    const slug = f.replace(/\.md$/, '');
+    const src = readFileSync(dir + f, 'utf-8');
+    if (/^draft:\s*true\s*$/m.test(src)) {
+      drafts.add(slug);
+      continue;
+    }
+    const date = src.match(/^updated:\s*["']?(\d{4}-\d{2}-\d{2})["']?\s*$/m)?.[1];
+    if (date) updated.set(slug, date);
+  }
+  return { drafts, updated };
 }
-const draftGuideSlugs = draftSlugsIn(fileURLToPath(new URL('./src/content/guides/', import.meta.url)));
-const draftGlossarySlugs = draftSlugsIn(fileURLToPath(new URL('./src/content/glossary/', import.meta.url)));
-const draftNeighborhoodSlugs = draftSlugsIn(fileURLToPath(new URL('./src/content/neighborhoods/', import.meta.url)));
+const COLLECTIONS = Object.fromEntries(
+  ['guides', 'glossary', 'neighborhoods'].map((name) => [
+    name,
+    readCollection(fileURLToPath(new URL(`./src/content/${name}/`, import.meta.url))),
+  ])
+);
+// A collection hub (/guides/ etc.) lists its entries, so it changes whenever
+// one is added or edited: its lastmod is the newest entry date, or the
+// hand-set SITEMAP_PAGE_META date if that's later.
+function latest(...dates) {
+  return dates.filter(Boolean).sort().at(-1);
+}
 
 export default defineConfig({
   site: 'https://www.nyc-affordability.com',
@@ -75,19 +95,21 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (url) => {
-        const pathname = new URL(url).pathname;
-        const guideSlug = pathname.match(/^\/guides\/([^/]+)\/$/)?.[1];
-        if (guideSlug !== undefined) return !draftGuideSlugs.has(guideSlug);
-        const glossarySlug = pathname.match(/^\/glossary\/([^/]+)\/$/)?.[1];
-        if (glossarySlug !== undefined) return !draftGlossarySlugs.has(glossarySlug);
-        const neighborhoodSlug = pathname.match(/^\/neighborhoods\/([^/]+)\/$/)?.[1];
-        if (neighborhoodSlug !== undefined) return !draftNeighborhoodSlugs.has(neighborhoodSlug);
-        return true;
+        const match = new URL(url).pathname.match(/^\/(guides|glossary|neighborhoods)\/([^/]+)\/$/);
+        return !match || !COLLECTIONS[match[1]].drafts.has(match[2]);
       },
       serialize(item) {
         const pathname = new URL(item.url).pathname;
         const enumerated = ENUMERATED_ROUTE_META.find((r) => r.pattern.test(pathname));
-        const meta = SITEMAP_PAGE_META[pathname] ?? enumerated?.meta ?? DEFAULT_PAGE_META;
+        const meta = { ...(SITEMAP_PAGE_META[pathname] ?? enumerated?.meta ?? DEFAULT_PAGE_META) };
+        const entry = pathname.match(/^\/(guides|glossary|neighborhoods)\/([^/]+)\/$/);
+        const hub = pathname.match(/^\/(guides|glossary|neighborhoods)\/$/);
+        if (entry) {
+          const date = COLLECTIONS[entry[1]].updated.get(entry[2]);
+          if (date) meta.lastmod = date;
+        } else if (hub) {
+          meta.lastmod = latest(meta.lastmod, ...COLLECTIONS[hub[1]].updated.values());
+        }
         return { ...item, ...meta };
       },
     }),

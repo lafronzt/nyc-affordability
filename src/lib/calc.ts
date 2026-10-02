@@ -80,9 +80,11 @@ export function calcNycRptt(price: number): number {
 
 /**
  * NYS Real Estate Transfer Tax — seller-paid, statewide.
- * Base: $2 per $500 of consideration (0.4%). NYC adds an additional 0.25% tax
- * on residential (1-3 family/condo/co-op) conveyances of $3,000,000 or more
- * (NY Tax Law §1402) — 0.65% combined at that tier, not 0.65% on top of the base.
+ * Base: $2 per $500 of consideration (0.4%). The state adds an "additional base
+ * tax" of $1.25 per $500 (0.25%) on NYC residential (1-3 family/condo/co-op)
+ * conveyances of $3,000,000 or more (NY Tax Law §1402(a)(2), eff. 2019-07-01).
+ * It is a NYS tax that applies only in NYC, not a city tax.
+ * 0.65% combined at that tier, not 0.65% on top of the base.
  * Source: NYS Dept. of Taxation and Finance. Verify with closing attorney.
  */
 export function calcNysTransferTax(price: number): number {
