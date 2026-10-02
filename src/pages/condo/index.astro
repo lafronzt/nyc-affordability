@@ -4,7 +4,7 @@ import AppHeader from '../../components/AppHeader.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
-import { CALC_CONDO, otherCalculators, ALL_GUIDES, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { CALC_CONDO, otherCalculators, ALL_GUIDES, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Guides', links: ALL_GUIDES },
@@ -30,6 +30,7 @@ const footerColumns: FooterColumn[] = [
     links: [{ label: 'NYC Bar Lawyer Referral', href: 'https://www.nycbar.org/lawyer-referral-service' }],
   },
   { heading: 'More NYC Calculators', links: otherCalculators(CALC_CONDO.href!) },
+  { heading: 'Explore', links: EXPLORE_LINKS },
   STANDARD_ABOUT_COLUMN,
 ];
 

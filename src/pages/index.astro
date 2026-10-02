@@ -147,6 +147,24 @@ const jsonLd = {
   <div class="calc-section-title">Or choose your calculator directly</div>
   <div class="calc-grid">
 
+    <!-- Reality Check: the quick "start here" triage tool, listed first -->
+    <a class="calc-card" href="/reality-check/">
+      <div class="card-banner reality">
+        <div class="card-icon">🧭</div>
+        <div class="card-banner-title">NYC Housing<br>Reality Check</div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Not sure where to start? Enter your income, debts, and savings once and see what's realistically within reach: rent, co-op, condo, and affordable housing, with what's holding each one back.</p>
+        <ul class="card-features">
+          <li>Rent, co-op &amp; condo maximums in one pass</li>
+          <li>The limiting factor for each, in plain English</li>
+          <li>AMI % and Housing Connect bands</li>
+          <li>Same math as the full calculators</li>
+        </ul>
+        <span class="card-cta cta-reality">Run a Reality Check →</span>
+      </div>
+    </a>
+
     <!-- Co-op -->
     <a class="calc-card" href="/coop/">
       <div class="card-banner coop">
@@ -237,8 +255,11 @@ const jsonLd = {
       </div>
     </a>
 
+    <!-- Sell + Required Salary are cards 7 and 8 of a 3-per-row grid, so the
+         last row holds two: center them (row3-left/right). Revisit if the card
+         count changes. -->
     <!-- Sale Net Proceeds -->
-    <a class="calc-card" href="/sell/">
+    <a class="calc-card calc-card--row3-left" href="/sell/">
       <div class="card-banner sell">
         <div class="card-icon">💰</div>
         <div class="card-banner-title">NYC Sale<br>Net Proceeds</div>
@@ -255,11 +276,8 @@ const jsonLd = {
       </div>
     </a>
 
-    <!-- Required Salary — 7th card in a 6-column/span-2 grid, so it would otherwise
-         land alone at the far left of a mostly-empty row; center it instead. Revisit
-         this override (and the matching rule below) once an 8th calculator ships and
-         the trailing row is full again. -->
-    <a class="calc-card calc-card--centered-last" href="/required-salary/">
+    <!-- Required Salary -->
+    <a class="calc-card calc-card--row3-right" href="/required-salary/">
       <div class="card-banner salary">
         <div class="card-icon">💼</div>
         <div class="card-banner-title">Required Salary<br>Calculator</div>
@@ -406,7 +424,8 @@ const jsonLd = {
   gap: 24px;
 }
 .calc-card { grid-column: span 2; }
-.calc-card--centered-last { grid-column: 3 / span 2; }
+.calc-card--row3-left  { grid-column: 2 / span 2; }
+.calc-card--row3-right { grid-column: 4 / span 2; }
 
 .calc-card {
   background: #fff;
@@ -440,6 +459,7 @@ const jsonLd = {
 .card-banner.sell       { background: linear-gradient(135deg, #0f766e, #042f2e); }
 .card-banner.compare    { background: linear-gradient(135deg, #78350f, #0f2a54); }
 .card-banner.salary     { background: linear-gradient(135deg, #92400e, #451a03); }
+.card-banner.reality    { background: linear-gradient(135deg, #334155, #0f172a); }
 
 .card-icon {
   font-size: 32px;
@@ -519,6 +539,7 @@ const jsonLd = {
 .cta-sell       { background: #0f766e; color: #ffffff; }
 .cta-compare    { background: #78350f; color: #e2e8f0; }
 .cta-salary     { background: #92400e; color: #fff7ed; }
+.cta-reality    { background: #334155; color: #f1f5f9; }
 
 .features {
   background: #fff;
@@ -541,8 +562,8 @@ const jsonLd = {
 @media (max-width: 1100px) {
   .calc-grid { grid-template-columns: repeat(2, 1fr); }
   .calc-card,
-  .calc-card--row2-left,
-  .calc-card--row2-right { grid-column: span 1; }
+  .calc-card--row3-left,
+  .calc-card--row3-right { grid-column: span 1; }
   .persona-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 820px) {

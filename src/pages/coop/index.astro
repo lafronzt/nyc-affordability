@@ -4,7 +4,7 @@ import AppHeader from '../../components/AppHeader.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
-import { CALC_COOP, otherCalculators, ALL_GUIDES, HPD_HOME_LINK, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { CALC_COOP, otherCalculators, ALL_GUIDES, HPD_HOME_LINK, CFPB_OWNING_HOME_LINK, MANSION_TAX_GUIDE_LINK, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Guides', links: ALL_GUIDES },
@@ -34,6 +34,7 @@ const footerColumns: FooterColumn[] = [
     ],
   },
   { heading: 'More NYC Calculators', links: otherCalculators(CALC_COOP.href!) },
+  { heading: 'Explore', links: EXPLORE_LINKS },
   STANDARD_ABOUT_COLUMN,
 ];
 
