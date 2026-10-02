@@ -13,6 +13,8 @@ relatedTerms:
   - guarantor
 relatedGuides:
   - nyc-40x-rent-rule
+relatedCalculators:
+  - "/rent/"
 draft: false
 ---
 

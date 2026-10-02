@@ -12,6 +12,8 @@ sources:
 relatedTerms: []
 relatedGuides:
   - nyc-closing-costs-for-buyers
+relatedCalculators:
+  - "/condo/"
 draft: false
 ---
 

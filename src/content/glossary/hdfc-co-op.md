@@ -15,6 +15,8 @@ relatedTerms:
 relatedGuides:
   - nyc-ami-housing-connect-explained
   - coop-flip-tax-nyc-explained
+relatedCalculators:
+  - "/affordable/"
 draft: false
 ---
 

@@ -12,6 +12,9 @@ sources:
 relatedTerms: []
 relatedGuides:
   - income-needed-to-buy-nyc-apartment
+  - 485-x-tax-abatement-condo-buyers
+relatedCalculators:
+  - "/condo/"
 draft: false
 ---
 

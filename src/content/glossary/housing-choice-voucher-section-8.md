@@ -13,6 +13,8 @@ relatedTerms:
   - ami-area-median-income
 relatedGuides:
   - nyc-ami-housing-connect-explained
+relatedCalculators:
+  - "/affordable/"
 draft: false
 ---
 

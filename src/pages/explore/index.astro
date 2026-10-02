@@ -11,6 +11,7 @@ import {
   EXPLORE_LINKS,
   STANDARD_ABOUT_COLUMN,
   ABOUT_LINK,
+  METHODOLOGY_LINK,
   CONTACT_LINK,
   PRIVACY_LINK,
   TERMS_LINK,
@@ -94,7 +95,7 @@ const numericFamilies = [
   },
 ];
 
-const aboutLinks = [ABOUT_LINK, CONTACT_LINK, PRIVACY_LINK, TERMS_LINK];
+const aboutLinks = [ABOUT_LINK, METHODOLOGY_LINK, { label: 'Sources & Data Status', href: '/methodology/sources/' }, CONTACT_LINK, PRIVACY_LINK, TERMS_LINK];
 
 // Every page listed here (this directory itself excluded): home, each hub
 // (guides, glossary, numeric families, neighborhoods), their entries, the

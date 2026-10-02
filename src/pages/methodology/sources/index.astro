@@ -1,0 +1,307 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import Footer from '../../../components/Footer.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../../lib/breadcrumbs';
+import { ASSUMPTIONS, type Assumption, type AssumptionBasis } from '../../../data/assumptions';
+import { SOURCE_TABLES } from '../../../data/sourceTables';
+import { AFFORDABILITY_INDEX } from '../../../data/affordabilityIndex';
+
+/* ============================================================
+   Sources & data status
+   ============================================================
+   Rendered straight from src/data/assumptions.ts and
+   src/data/sourceTables.ts, so this page can't drift from what the
+   calculators actually use. Where no verification date is recorded it
+   says so; it never fills one in.
+   ============================================================ */
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const BASIS_LABEL: Record<AssumptionBasis, string> = {
+  law: 'Law or regulation',
+  'official-data': 'Official data',
+  'market-survey': 'Market survey',
+  convention: 'Market convention',
+  illustrative: 'Our estimate',
+};
+const BASIS_HELP: Record<AssumptionBasis, string> = {
+  law: 'Set by statute or regulation. Changes only when the law does.',
+  'official-data': 'Published by a government agency or Freddie Mac.',
+  'market-survey': 'From broker or industry reports. Typical, not universal.',
+  convention: 'How NYC landlords, lenders, or boards usually operate. Not a law; yours may differ.',
+  illustrative: 'A reasonable midpoint we picked so the calculators have a starting value. Replace it with your real number.',
+};
+const BASIS_ORDER: AssumptionBasis[] = ['law', 'official-data', 'market-survey', 'convention', 'illustrative'];
+const BASIS_SUMMARY: Record<AssumptionBasis, string> = {
+  law: 'set by law',
+  'official-data': 'from official data',
+  'market-survey': 'from market surveys',
+  convention: 'market conventions',
+  illustrative: 'our own estimates',
+};
+
+const CALC_LABEL = Object.fromEntries(ALL_CALCULATORS.map((c) => [c.href, c.label]));
+const PAGE_LABEL: Record<string, string> = { coop: 'Co-op', condo: 'Condo', rent: 'Rent' };
+
+function groupOf(key: string): string {
+  if (key.startsWith('coop')) return 'Co-op purchase';
+  if (key.startsWith('condo')) return 'Condo purchase';
+  if (key.startsWith('rent') || key.startsWith('guarantor')) return 'Renting';
+  return 'Mortgage';
+}
+const GROUP_ORDER = ['Mortgage', 'Co-op purchase', 'Condo purchase', 'Renting'];
+
+function fmtValue(a: Assumption): string {
+  const n = a.value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  switch (a.unit) {
+    case '%': return `${n}%`;
+    case 'USD': return `$${n}`;
+    case 'USD/mo': return `$${n}/mo`;
+    case 'years': return `${n} years`;
+    case 'months': return `${n} month${a.value === 1 ? '' : 's'}`;
+    case 'x': return `${n}×`;
+  }
+}
+function fmtDate(d: string | null): string | null {
+  if (!d) return null;
+  return new Date(`${d}T00:00:00Z`).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
+}
+
+const entries = Object.entries(ASSUMPTIONS) as [string, Assumption][];
+const groups = GROUP_ORDER.map((g) => ({ title: g, rows: entries.filter(([k]) => groupOf(k) === g) })).filter((g) => g.rows.length);
+
+const total = entries.length;
+const byBasis = BASIS_ORDER.map((b) => ({ basis: b, count: entries.filter(([, a]) => a.basis === b).length }));
+const verifiedCount = entries.filter(([, a]) => a.lastVerified).length;
+const withUrlCount = entries.filter(([, a]) => a.sourceUrl).length;
+
+const latestIndex = AFFORDABILITY_INDEX[AFFORDABILITY_INDEX.length - 1];
+
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Sources & Data Status | NYC Affordability',
+  url: `${SITE_ORIGIN}/methodology/sources/`,
+  description: 'Every default value, tax table, and income limit NYC Affordability uses, with its source, what kind of number it is, and when it was last verified.',
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
+};
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Methodology', path: '/methodology/' },
+  { name: 'Sources & data status', path: '/methodology/sources/' },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+---
+<BaseLayout
+  variant="site"
+  pageTitle="Sources & Data Status: Every Default and Where It Comes From | NYC Affordability"
+  metaDescription="Every default value, tax table, and income limit NYC Affordability uses, with its source, what kind of number it is (law, data, convention, or our estimate), and when it was last verified."
+  canonicalPath="/methodology/sources/"
+  ogTitle="NYC Affordability: Sources & Data Status"
+  ogDescription="Every default, tax table, and income limit the calculators use, with its source and last-verified date."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
+  twitterTitle="NYC Affordability: Sources & Data Status"
+  twitterDescription="Every default, tax table, and income limit the calculators use, with its source and last-verified date."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Methodology</div>
+  <h2>Sources &amp; data status</h2>
+  <p>Every number the calculators start from, where it comes from, and when someone last checked it. Generated from the same files the math reads, so it can't quietly fall out of sync.</p>
+</div>
+
+<div class="page">
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <div class="card summary">
+    <h3>The honest summary</h3>
+    <p>
+      The calculators start from <strong>{total} editable defaults</strong>: {byBasis.filter((b) => b.count > 0).map((b, i, arr) => (
+        <>{b.count} {BASIS_SUMMARY[b.basis]}{i < arr.length - 2 ? ', ' : i === arr.length - 2 ? ', and ' : '.'}</>
+      ))} Only <strong>{withUrlCount}</strong> link to a specific source document, and only <strong>{verifiedCount}</strong> {verifiedCount === 1 ? 'has' : 'have'} a recorded re-verification date so far. The rest say "not yet re-verified" below rather than show a date we can't back up.
+    </p>
+    <p>Every default is editable on its calculator. If a value is marked <em>our estimate</em>, it's a placeholder for your real number, not a fact about your building or lender.</p>
+    <ul class="legend">
+      {BASIS_ORDER.map((b) => (
+        <li><span class={`badge badge--${b}`}>{BASIS_LABEL[b]}</span> {BASIS_HELP[b]}</li>
+      ))}
+    </ul>
+  </div>
+
+  {groups.map((g) => (
+    <section class="card" aria-labelledby={`h-${g.title.replace(/\W+/g, '-')}`}>
+      <h3 id={`h-${g.title.replace(/\W+/g, '-')}`}>{g.title} defaults</h3>
+      <div class="table-wrap">
+        <table class="src-table">
+          <thead>
+            <tr><th scope="col">Assumption</th><th scope="col">Default</th><th scope="col">Basis</th><th scope="col">Source</th><th scope="col">Last verified</th></tr>
+          </thead>
+          <tbody>
+            {g.rows.map(([, a]) => (
+              <tr>
+                <th scope="row">
+                  {a.label}
+                  {a.notes && <span class="note">{a.notes}</span>}
+                  {a.inputs && a.inputs.length > 0 && (
+                    <span class="used">Used on: {a.inputs.map((inp, i) => (
+                      <>{i > 0 && ', '}<a href={`/${inp.page}/`}>{PAGE_LABEL[inp.page]}</a></>
+                    ))}</span>
+                  )}
+                </th>
+                <td class="num" data-label="Default">{fmtValue(a)}</td>
+                <td data-label="Basis"><span class={`badge badge--${a.basis}`}>{BASIS_LABEL[a.basis]}</span></td>
+                <td data-label="Source">
+                  {a.sourceUrl
+                    ? <a href={a.sourceUrl} target="_blank" rel="noopener noreferrer">{a.sourceOrg ?? 'Source'} ↗</a>
+                    : a.sourceOrg
+                      ? <span>{a.sourceOrg} <span class="muted">(cited by name)</span></span>
+                      : <span class="muted">None: site estimate</span>}
+                  {a.effectiveDate && <span class="note">As of {fmtDate(a.effectiveDate)}</span>}
+                </td>
+                <td data-label="Last verified">{a.lastVerified ? fmtDate(a.lastVerified) : <span class="muted">Not yet re-verified</span>}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  ))}
+
+  <section class="card" aria-labelledby="h-tables">
+    <h3 id="h-tables">Tax tables, income limits, and rate tiers</h3>
+    <p>These are applied by the calculators rather than edited directly. Each is covered by automated tests that pin its thresholds.</p>
+    <div class="table-wrap">
+      <table class="src-table">
+        <thead>
+          <tr><th scope="col">Table</th><th scope="col">Basis</th><th scope="col">Source</th><th scope="col">Last verified</th></tr>
+        </thead>
+        <tbody>
+          {SOURCE_TABLES.map((t) => (
+            <tr>
+              <th scope="row">
+                {t.name}
+                <span class="note">{t.vintage}{t.notes ? `. ${t.notes}` : ''}</span>
+                <span class="used">Used on: {t.usedBy.map((p, i) => (
+                  <>{i > 0 && ', '}<a href={p}>{CALC_LABEL[p] ?? p}</a></>
+                ))}</span>
+              </th>
+              <td data-label="Basis"><span class={`badge badge--${t.basis}`}>{BASIS_LABEL[t.basis]}</span></td>
+              <td data-label="Source">
+                {t.sourceUrl
+                  ? <a href={t.sourceUrl} target="_blank" rel="noopener noreferrer">{t.sourceOrg} ↗</a>
+                  : <span>{t.sourceOrg} <span class="muted">(cited by name)</span></span>}
+              </td>
+              <td data-label="Last verified">{t.lastVerified ? fmtDate(t.lastVerified) : <span class="muted">Not yet re-verified</span>}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="h-market">
+    <h3 id="h-market">Market data</h3>
+    <p>Median rents and sale prices are cited, not calculated, and each keeps its own as-of date, because the best sources publish on different schedules.</p>
+    {latestIndex && (
+      <ul class="plain">
+        <li><strong>Citywide median rent:</strong> ${latestIndex.medianRent.value.toLocaleString('en-US')}/mo, {latestIndex.medianRent.asOf}, <a href={latestIndex.medianRent.url} target="_blank" rel="noopener noreferrer">{latestIndex.medianRent.source} ↗</a></li>
+        <li><strong>Citywide median co-op price:</strong> ${latestIndex.medianCoopPrice.value.toLocaleString('en-US')}, {latestIndex.medianCoopPrice.asOf}, <a href={latestIndex.medianCoopPrice.url} target="_blank" rel="noopener noreferrer">{latestIndex.medianCoopPrice.source} ↗</a></li>
+        <li><strong>Citywide median condo price:</strong> {latestIndex.medianCondoPrice
+          ? <>${latestIndex.medianCondoPrice.value.toLocaleString('en-US')}, {latestIndex.medianCondoPrice.asOf}</>
+          : <span class="muted">Not yet tracked. We haven't found a stable, dated citywide source.</span>}</li>
+      </ul>
+    )}
+    <p>Neighborhood figures are cited on each <a href="/neighborhoods/">neighborhood page</a>, with the broker zone they actually cover and their own dates. See the <a href="/affordability-index/">Affordability Index</a> for how the citywide snapshot is updated.</p>
+  </section>
+
+  <div class="card">
+    <h3>Spot something out of date?</h3>
+    <p>Tell us on the <a href="/contact/">contact page</a> or open an issue on <a href="https://github.com/lafronzt/nyc-affordability/issues" target="_blank" rel="noopener noreferrer">GitHub ↗</a>. Each value lives in <code>src/data/assumptions.ts</code> or <code>src/data/sourceTables.ts</code>, and a test fails if a calculator's default disagrees with it. See <a href="/methodology/">how the math works</a> for the rest.</p>
+  </div>
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="NYC Affordability is for informational purposes only and does not constitute financial, legal, tax, or mortgage advice. Defaults are starting points; verify any figure that matters to your decision with a licensed professional or the original source."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 680px; margin: 0 auto; line-height: 1.7; }
+
+.page { max-width: 1040px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 30px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.75; margin-bottom: 10px; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+.card code { font-size: 12.5px; background: var(--g50); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+
+.summary { background: var(--blue-xlt); border-color: var(--blue-lt); }
+.legend { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
+.legend li { font-size: 13px; color: var(--g700); line-height: 1.5; }
+.plain { padding-left: 18px; margin: 0 0 10px; }
+.plain li { font-size: 14px; color: var(--g700); line-height: 1.7; margin-bottom: 4px; }
+
+.badge {
+  display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .2px; white-space: nowrap;
+  border-radius: 999px; padding: 2px 9px; border: 1px solid transparent; margin-right: 4px;
+}
+/* Each badge carries its label text; color is a secondary cue only. */
+.badge--law            { background: #eef2ff; color: #3730a3; border-color: #c7d2fe; }
+.badge--official-data  { background: #ecfeff; color: #155e75; border-color: #a5f3fc; }
+.badge--market-survey  { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+.badge--convention     { background: #fefce8; color: #854d0e; border-color: #fde68a; }
+.badge--illustrative   { background: #f8fafc; color: #475569; border-color: #cbd5e1; border-style: dashed; }
+
+.table-wrap { overflow-x: auto; margin: 0 -4px; }
+.src-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.src-table th, .src-table td { text-align: left; vertical-align: top; padding: 10px 8px; border-bottom: 1px solid var(--border); color: var(--g700); }
+.src-table thead th { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--g500); font-weight: 700; border-bottom: 2px solid var(--border); }
+.src-table tbody th { font-weight: 650; color: var(--g900); min-width: 220px; }
+.src-table .num { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; color: var(--g900); }
+.note { display: block; font-weight: 400; font-size: 12.5px; color: var(--g500); line-height: 1.5; margin-top: 3px; }
+.used { display: block; font-weight: 400; font-size: 12px; color: var(--g500); margin-top: 3px; }
+.muted { color: var(--g500); font-style: italic; }
+
+@media (max-width: 720px) {
+  .page { padding: 28px 16px 48px; }
+  .card { padding: 22px 16px 24px; }
+  /* Stack table rows into cards on phones instead of scrolling sideways. */
+  .src-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .src-table, .src-table tbody, .src-table tr, .src-table th, .src-table td { display: block; width: 100%; }
+  .src-table tr { border-bottom: 1px solid var(--border); padding: 10px 0; }
+  .src-table th, .src-table td { border: 0; padding: 3px 0; }
+  .src-table tbody th { min-width: 0; }
+  .src-table td[data-label]::before {
+    content: attr(data-label) ': '; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .6px; color: var(--g500); margin-right: 4px;
+  }
+}
+</style>

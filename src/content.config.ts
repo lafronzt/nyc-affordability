@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { CALCULATOR_PATHS } from './lib/footerLinks';
 
 const guides = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/guides' }),
@@ -69,6 +70,9 @@ const glossary = defineCollection({
     category: z.enum(['renting', 'buying', 'coop', 'affordable-housing', 'taxes', 'general']),
     relatedTerms: z.array(z.string()).default([]),
     relatedGuides: z.array(z.string()).default([]),
+    // Calculator paths where this term actually gets computed, shown as a
+    // "Run the numbers" block. test/contentLinks.test.ts requires at least one.
+    relatedCalculators: z.array(z.enum(CALCULATOR_PATHS)).default([]),
     draft: z.boolean().default(false),
     sitemap: z
       .object({

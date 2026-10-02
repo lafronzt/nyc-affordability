@@ -30,6 +30,9 @@ const { data } = term;
 const { Content } = await render(term);
 
 const allTerms = await getCollection('glossary', ({ data }) => !data.draft);
+const relatedCalculators = data.relatedCalculators
+  .map((path) => ALL_CALCULATORS.find((c) => c.href === path))
+  .filter((c) => c !== undefined);
 const relatedTerms = data.relatedTerms
   .map((slug) => allTerms.find((t) => t.id === slug))
   .filter((t) => t !== undefined);
@@ -101,6 +104,17 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   <div style="margin-bottom:20px;">
     <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
   </div>
+
+  {relatedCalculators.length > 0 && (
+    <div class="card">
+      <h3>Run the numbers</h3>
+      <ul class="related-list">
+        {relatedCalculators.map((c) => (
+          <li><a href={c.href}>{c.label}</a></li>
+        ))}
+      </ul>
+    </div>
+  )}
 
   <div class="card">
     <h3>Sources</h3>

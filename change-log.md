@@ -2,6 +2,24 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-02: Phase 1d: methodology, sources & data status, content cross-links
+
+**User-visible changes**
+- New **`/methodology/`**: what's cited vs calculated; laws vs conventions vs our own estimates; the binding-constraint logic; one shared engine running in the browser; how defaults are reviewed and how stale data is shown; why a lender or board may disagree; and how to report an error.
+- New **`/methodology/sources/`**: generated from `src/data/assumptions.ts` and the new `src/data/sourceTables.ts`. It lists every default (value, basis, source, effective date, last verified, the calculators that use it), every tax table and income limit, and the cited market data. Its summary states the actual numbers: 35 defaults, 20 of them our own estimates, 5 with a source URL, and 1 with a recorded re-verification date. Elsewhere it says "Not yet re-verified" rather than show an unbacked date.
+- **About page:** corrected the claim that every default "is pulled from a named, checkable source rather than invented" (20 are our estimates) and the claim that each page notes when a figure was last checked. Both now point to the sources page.
+- The footer About column on every page gains **Methodology & Sources**. The five calculators' "full sourcing methodology" links now go to `/methodology/sources/` instead of `/about/`.
+- **Glossary pages** gain a "Run the numbers" block linking the calculators that compute each term (new `relatedCalculators` field, restricted to real calculator paths).
+- Related links: the 485-x and rent-stabilization glossary terms now link to their own guides; the closing-costs and board-approval guides now link the good-faith-deposit, certificate-of-occupancy, sponsor-unit, and sublet-policy terms. `updated` dates were not bumped, since the body text is unchanged.
+
+**Tests** (121 → 130)
+- `test/contentLinks.test.ts`: every related guide/term slug resolves to a published entry (checked by adding a bad slug, which made it fail); every published guide and term has at least one inbound related link; every glossary term names at least one calculator; every guide CTA points at a calculator; and `CALCULATOR_PATHS` matches `ALL_CALCULATORS`.
+
+**Validation**
+- `npm test`: 130/130. `npm run build`: clean, 131 pages (sitemap 130 URLs).
+- The calculator browser snapshot (24 scenarios) is identical to the Phase 1c build.
+- Screenshots: `/methodology/sources/` at 1280 and 390px (on phones the table rows stack into labeled cards), `/methodology/`, and a glossary page. No horizontal overflow and no page errors.
+
 ## 2026-10-02: Phase 1c: navigation and footer parity, /explore/ site directory
 
 **User-visible changes**

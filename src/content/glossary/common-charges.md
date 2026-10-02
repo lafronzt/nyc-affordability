@@ -11,6 +11,8 @@ relatedTerms:
   - maintenance-coop
 relatedGuides:
   - coop-vs-condo-nyc-costs
+relatedCalculators:
+  - "/condo/"
 draft: false
 ---
 

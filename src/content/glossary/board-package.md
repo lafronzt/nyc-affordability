@@ -14,6 +14,8 @@ relatedTerms:
   - debt-to-income-ratio-dti
 relatedGuides:
   - coop-board-approval-process
+relatedCalculators:
+  - "/coop/"
 draft: false
 ---
 

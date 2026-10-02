@@ -14,6 +14,8 @@ sources:
 relatedTerms:
   - mortgage-recording-tax
 relatedGuides: []
+relatedCalculators:
+  - "/condo/"
 draft: false
 ---
 

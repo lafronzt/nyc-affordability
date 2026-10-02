@@ -16,6 +16,9 @@ relatedTerms:
   - fare-act
 relatedGuides:
   - fare-act-broker-fees-explained
+  - nyc-rent-stabilization-explained
+relatedCalculators:
+  - "/rent/"
 draft: false
 ---
 
