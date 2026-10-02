@@ -16,6 +16,7 @@ relatedGuides:
   - coop-board-reserve-requirements
 relatedCalculators:
   - "/coop/"
+  - "/afford-more/"
 draft: false
 ---
 

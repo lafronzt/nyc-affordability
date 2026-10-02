@@ -255,11 +255,26 @@ const jsonLd = {
       </div>
     </a>
 
-    <!-- Sell + Required Salary are cards 7 and 8 of a 3-per-row grid, so the
-         last row holds two: center them (row3-left/right). Revisit if the card
-         count changes. -->
+    <!-- How Do I Afford More? -->
+    <a class="calc-card" href="/afford-more/">
+      <div class="card-banner levers">
+        <div class="card-icon">📈</div>
+        <div class="card-banner-title">How Do I<br>Afford More?</div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Save more, earn more, or pay down debt? See which change actually raises your co-op or condo budget, ranked, and what it would take to reach a target price.</p>
+        <ul class="card-features">
+          <li>Every common lever, ranked by dollars</li>
+          <li>Which limit you're hitting: income or cash</li>
+          <li>Gap to a target price, cash and income</li>
+          <li>Same engine as the full calculators</li>
+        </ul>
+        <span class="card-cta cta-levers">See Your Biggest Levers →</span>
+      </div>
+    </a>
+
     <!-- Sale Net Proceeds -->
-    <a class="calc-card calc-card--row3-left" href="/sell/">
+    <a class="calc-card" href="/sell/">
       <div class="card-banner sell">
         <div class="card-icon">💰</div>
         <div class="card-banner-title">NYC Sale<br>Net Proceeds</div>
@@ -277,7 +292,7 @@ const jsonLd = {
     </a>
 
     <!-- Required Salary -->
-    <a class="calc-card calc-card--row3-right" href="/required-salary/">
+    <a class="calc-card" href="/required-salary/">
       <div class="card-banner salary">
         <div class="card-icon">💼</div>
         <div class="card-banner-title">Required Salary<br>Calculator</div>
@@ -424,8 +439,6 @@ const jsonLd = {
   gap: 24px;
 }
 .calc-card { grid-column: span 2; }
-.calc-card--row3-left  { grid-column: 2 / span 2; }
-.calc-card--row3-right { grid-column: 4 / span 2; }
 
 .calc-card {
   background: #fff;
@@ -460,6 +473,7 @@ const jsonLd = {
 .card-banner.compare    { background: linear-gradient(135deg, #78350f, #0f2a54); }
 .card-banner.salary     { background: linear-gradient(135deg, #92400e, #451a03); }
 .card-banner.reality    { background: linear-gradient(135deg, #334155, #0f172a); }
+.card-banner.levers     { background: linear-gradient(135deg, #166534, #052e16); }
 
 .card-icon {
   font-size: 32px;
@@ -540,6 +554,7 @@ const jsonLd = {
 .cta-compare    { background: #78350f; color: #e2e8f0; }
 .cta-salary     { background: #92400e; color: #fff7ed; }
 .cta-reality    { background: #334155; color: #f1f5f9; }
+.cta-levers     { background: #166534; color: #f0fdf4; }
 
 .features {
   background: #fff;
@@ -561,9 +576,7 @@ const jsonLd = {
 
 @media (max-width: 1100px) {
   .calc-grid { grid-template-columns: repeat(2, 1fr); }
-  .calc-card,
-  .calc-card--row3-left,
-  .calc-card--row3-right { grid-column: span 1; }
+  .calc-card { grid-column: span 1; }
   .persona-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 820px) {

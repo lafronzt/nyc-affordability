@@ -17,14 +17,15 @@ export const CALC_COMPARE: FooterLink = { label: 'Compare All Options', href: '/
 export const CALC_NET_PROCEEDS: FooterLink = { label: 'NYC Sale Net Proceeds Calculator', href: '/sell/' };
 export const CALC_REALITY_CHECK: FooterLink = { label: 'NYC Housing Reality Check', href: '/reality-check/' };
 export const CALC_REQUIRED_SALARY: FooterLink = { label: 'Required Salary Calculator', href: '/required-salary/' };
-export const ALL_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_NET_PROCEEDS, CALC_REQUIRED_SALARY];
+export const CALC_AFFORD_MORE: FooterLink = { label: 'How Do I Afford More?', href: '/afford-more/' };
+export const ALL_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_AFFORD_MORE, CALC_NET_PROCEEDS, CALC_REQUIRED_SALARY];
 export const HUB_LINK: FooterLink = { label: 'NYC Affordability Hub', href: '/' };
 
 /** The calculator paths as a literal tuple, for content schemas (z.enum) that
     let an entry name the calculators it relates to. test/navParity.test.ts
     checks it matches ALL_CALCULATORS. */
 export const CALCULATOR_PATHS = [
-  '/reality-check/', '/coop/', '/condo/', '/rent/', '/affordable/', '/compare/', '/sell/', '/required-salary/',
+  '/reality-check/', '/coop/', '/condo/', '/rent/', '/affordable/', '/compare/', '/afford-more/', '/sell/', '/required-salary/',
 ] as const;
 
 /** All calculators except the current page, plus the hub link, in canonical order. */
