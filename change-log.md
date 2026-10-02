@@ -2,6 +2,34 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-02: Phase 2b: Down Payment Savings Planner (/savings-planner/)
+
+**User-visible changes**
+- New **`/savings-planner/`**: "How long until I can afford to buy?" Inputs are target price, savings, monthly contribution, yield, income, debts, an emergency fund to keep, and an optional "buy by" month, plus assumptions (income growth, price growth, rate, down payment, charges, DTI, board reserves). The page shows:
+  - **Your answer:** the buy date, or the honest reason there isn't one ("At $145,000, your income doesn't clear the 28% DTI limit for a $450,000 co-op…"), plus cash needed today, the gap, income needed, and what's in your accounts after closing.
+  - **Target date:** the monthly savings needed, and whether income would still block it.
+  - **Co-op vs. condo at the same price**, showing the cost of board reserves in months.
+  - **A chart** of savings vs. cash needed (legend, direct labels, crossing dots, hover/keyboard tooltip, text summary, yearly table view), using the dataviz reference palette (validated; the aqua contrast warning is covered by the labels and table).
+  - **A line-by-line breakdown** of the cash needed.
+- Income and price growth default to 0%, so the date doesn't count on raises or a flat market. The savings yield default (3%) is a registry entry labeled "our estimate".
+- Same privacy model as `/afford-more/`: savings and income go into a share link only if you tick the box; inputs are saved only with "Save inputs" on.
+- Linked from the homepage grid (10th card, centered), every footer, `/explore/`, the sitemap, `/afford-more/`, and the post-closing-liquidity and good-faith-deposit glossary terms. **Not added to the primary nav** (see below).
+
+**Nav policy**
+- A 12th nav item would squeeze calculator titles again. `PRIMARY_NAV_CALCULATORS` (in `footerLinks.ts`) now lists the tools that get a navbar slot, and `test/navParity.test.ts` checks the navbar against it. It also pins the current exceptions (`/savings-planner/`), so a new tool can't skip the nav without someone deciding it. A journey-based nav (brief item 23) is the real fix.
+
+**Code**
+- `src/lib/engines/savings.ts` (pure): `cashNeeded` (from the shared engine), `planSavings` (monthly projection; ready = cash **and** income), and `monthlyNeededFor` (closed-form annuity).
+- `src/scripts/savings-planner.ts`: rendering and the SVG chart.
+
+**Tests** (151 → 162)
+- `test/savings.test.ts`: the cash target equals the `/buy/` figures at the same price; co-op reserves ($52,528 at $600K, matching the reserves guide) vs. condo MRT; mansion tax at $1M; compound math against the closed form; exact zero-yield ready month; income as the blocker; co-op takes longer than condo; price growth pushes the date out and raises land on anniversaries; and `monthlyNeededFor` lands exactly on the target.
+
+**Validation**
+- `npm test`: 162/162. `npm run build`: clean.
+- Browser: default scenario (condo, ready Jul 2027 with $15,000 emergency fund), co-op switch ("Out of reach on current income"), target-date line, tooltip, table, share link without personal numbers, no `localStorage` writes with saving off, no page errors, no external requests, and no overflow at 1280 or 390px.
+- The calculator browser snapshot is identical to the end of Phase 1.
+
 ## 2026-10-02: Phase 2a: "How do I afford more?" (/afford-more/)
 
 **User-visible changes**

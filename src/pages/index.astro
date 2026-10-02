@@ -309,6 +309,24 @@ const jsonLd = {
       </div>
     </a>
 
+    <!-- Down Payment Savings Planner: 10th card, alone on the last row of a 3-per-row grid, so centered -->
+    <a class="calc-card calc-card--last-centered" href="/savings-planner/">
+      <div class="card-banner savings">
+        <div class="card-icon">🗓️</div>
+        <div class="card-banner-title">Down Payment<br>Savings Planner</div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">How long until you can actually buy? Every dollar of cash a NYC purchase takes (down payment, closing costs, mansion tax, board reserves) and when your savings get there.</p>
+        <ul class="card-features">
+          <li>Total cash needed, line by line</li>
+          <li>Projected buy date, and what's blocking it</li>
+          <li>Monthly savings to hit a target date</li>
+          <li>Co-op vs condo timeline side by side</li>
+        </ul>
+        <span class="card-cta cta-savings">Plan Your Purchase →</span>
+      </div>
+    </a>
+
   </div>
 </section>
 
@@ -439,6 +457,7 @@ const jsonLd = {
   gap: 24px;
 }
 .calc-card { grid-column: span 2; }
+.calc-card--last-centered { grid-column: 3 / span 2; }
 
 .calc-card {
   background: #fff;
@@ -474,6 +493,7 @@ const jsonLd = {
 .card-banner.salary     { background: linear-gradient(135deg, #92400e, #451a03); }
 .card-banner.reality    { background: linear-gradient(135deg, #334155, #0f172a); }
 .card-banner.levers     { background: linear-gradient(135deg, #166534, #052e16); }
+.card-banner.savings    { background: linear-gradient(135deg, #1e40af, #172554); }
 
 .card-icon {
   font-size: 32px;
@@ -555,6 +575,7 @@ const jsonLd = {
 .cta-salary     { background: #92400e; color: #fff7ed; }
 .cta-reality    { background: #334155; color: #f1f5f9; }
 .cta-levers     { background: #166534; color: #f0fdf4; }
+.cta-savings    { background: #1e40af; color: #eff6ff; }
 
 .features {
   background: #fff;
@@ -576,7 +597,8 @@ const jsonLd = {
 
 @media (max-width: 1100px) {
   .calc-grid { grid-template-columns: repeat(2, 1fr); }
-  .calc-card { grid-column: span 1; }
+  .calc-card,
+  .calc-card--last-centered { grid-column: span 1; }
   .persona-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 820px) {

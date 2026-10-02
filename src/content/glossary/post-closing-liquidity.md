@@ -17,6 +17,7 @@ relatedGuides:
 relatedCalculators:
   - "/coop/"
   - "/afford-more/"
+  - "/savings-planner/"
 draft: false
 ---
 
