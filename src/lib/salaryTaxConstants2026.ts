@@ -30,7 +30,11 @@
      cut scheduled for 2027. Bracket thresholds are unchanged. See NYS
      publication NYS-50-T-NYS (1/26),
      https://www.tax.ny.gov/pdf/publications/withholding/nys50_t_nys.pdf
-     (verified 2026-09-23).
+     (verified 2026-09-23). The 6.85% bracket's top differs by filing
+     status ($1,077,550 single, $1,616,450 head of household, $2,155,350
+     joint) per the IT-2105-I (2026) worksheets,
+     https://www.tax.ny.gov/pdf/current_forms/it/it2105i.pdf (checked
+     2026-10-03; single and HOH previously reused the joint figure).
    - NYC resident surcharge brackets: NYC's 4-bracket resident schedule
      (3.078% / 3.762% / 3.819% / 3.876%) — fixed dollar thresholds, not
      inflation-indexed; unchanged for many tax years per NY IT-201
@@ -196,7 +200,7 @@ export const TAX_CONSTANTS_2026: TaxYearConstants = {
         { upTo: 13900, rate: 0.0515 },
         { upTo: 80650, rate: 0.054 },
         { upTo: 215400, rate: 0.059 },
-        { upTo: 2155350, rate: 0.0685 },
+        { upTo: 1077550, rate: 0.0685 },
         { upTo: 5000000, rate: 0.0965 },
         { upTo: 25000000, rate: 0.103 },
         { upTo: Infinity, rate: 0.109 },
@@ -218,7 +222,7 @@ export const TAX_CONSTANTS_2026: TaxYearConstants = {
         { upTo: 20900, rate: 0.0515 },
         { upTo: 107650, rate: 0.054 },
         { upTo: 269300, rate: 0.059 },
-        { upTo: 2155350, rate: 0.0685 },
+        { upTo: 1616450, rate: 0.0685 },
         { upTo: 5000000, rate: 0.0965 },
         { upTo: 25000000, rate: 0.103 },
         { upTo: Infinity, rate: 0.109 },
