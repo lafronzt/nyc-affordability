@@ -2,7 +2,7 @@
 title: "NYC Seller Closing Costs Explained: What You Actually Net"
 metaDescription: "NYC sellers typically pay 7%-10% of price in closing costs: broker commission, NYC & NYS transfer tax, and (for co-ops) a flip tax. See every line item and what determines your net proceeds."
 intro: "Buyers get most of the attention in NYC closing-cost breakdowns, but sellers pay more of them. Between broker commission, two layers of transfer tax, and (for co-op sellers) a building-specific flip tax, it's common for 7%-10% of the sale price to disappear before a seller sees a dollar. Here's every line item, in the order it actually shows up on a closing statement."
-updated: "2026-10-02"
+updated: "2026-10-03"
 category: "buying"
 sources:
   - label: "NYC Department of Finance: Real Property Transfer Tax (RPTT)"
@@ -36,7 +36,7 @@ Most U.S. markets split closing costs roughly evenly between buyer and seller, w
 
 **NYC Real Property Transfer Tax (RPTT).** A city tax on nearly every sale: **1.00%** of the price up to $500,000, and **1.425%** above that. It applies to condos, co-ops, and 1-3 family homes alike, and is paid by the seller (the grantor) directly to the NYC Department of Finance at closing.
 
-**NYS Real Estate Transfer Tax.** A separate state tax layered on top of NYC RPTT: a flat **0.4%** of the price ($2 per $500 of consideration), plus a **0.25%** state "additional base tax" on residential sales in New York City of **$3,000,000 or more** (NY Tax Law §1402(a)(2), in effect since July 1, 2019), for **0.65% combined** at that tier. It's levied by the state but only applies to NYC conveyances, which is why it's often mislabeled as a city tax. Also seller-paid. See our [mansion tax guide](/guides/nyc-mansion-tax-explained/) for the buyer-paid tax this is often confused with; they apply to opposite sides of the same transaction.
+**NYS Real Estate Transfer Tax.** A separate state tax layered on top of NYC RPTT: a flat **0.4%** of the price ($2 per $500 of consideration), plus a **0.25%** state "additional base tax" on residential sales in New York City of **$3,000,000 or more** (NY Tax Law §1402(a)(2), in effect since July 1, 2019), for **0.65% combined** at that tier. The 0.4% base applies statewide; only the 0.25% additional tier is limited to NYC, which is part of why the whole thing is often mislabeled as a city tax. Also seller-paid. See our [mansion tax guide](/guides/nyc-mansion-tax-explained/) for the buyer-paid tax this is often confused with; they apply to opposite sides of the same transaction.
 
 **Co-op flip tax (co-ops only).** Not a government tax at all, but a fee set by the co-op corporation's own proprietary lease, charged when shares change hands. Rates typically run **1%-3% of the sale price** at market-rate buildings and can run far higher (**commonly around 30% of profit, and up to 70% of sale price**) at income-restricted HDFC co-ops. Every building sets its own rate and structure, and some charge none at all. See our [full flip tax guide](/guides/coop-flip-tax-nyc-explained/) for how it's typically calculated.
 
