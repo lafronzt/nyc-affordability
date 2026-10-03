@@ -6,3 +6,9 @@ export function nearest(value: number, options: readonly number[]): number {
     Math.abs(cur - value) < Math.abs(best - value) ? cur : best
   );
 }
+
+/** The /income/[amount]/ page for a salary: the same amount when it has one,
+ * otherwise the nearest (salary pages go lower than income pages). */
+export function incomePageFor(amount: number, incomeAmounts: readonly number[]): number {
+  return incomeAmounts.includes(amount) ? amount : nearest(amount, incomeAmounts);
+}

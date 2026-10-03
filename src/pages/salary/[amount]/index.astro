@@ -14,7 +14,10 @@ import { fmtMoney, fmtPercent } from '../../../lib/format';
 import { computeBreakdown, SALARY_LANDING_PAGE_BASELINE } from '../../../lib/salaryCalc';
 import { TAX_CONSTANTS_2026 } from '../../../lib/salaryTaxConstants2026';
 import type { FilingStatus } from '../../../lib/salaryTaxConstants2026';
-import { INCOME_AMOUNTS as AMOUNTS } from '../../../data/priceGrids';
+import { SALARY_AMOUNTS as AMOUNTS, INCOME_AMOUNTS, RENT_PRICES } from '../../../data/priceGrids';
+import { payPeriods } from '../../../lib/payPeriods';
+import { maxAffordableRent, maxAffordablePrice, DEFAULT_ASSUMPTIONS } from '../../../lib/afford';
+import { nearest, incomePageFor } from '../../../lib/relatedPages';
 import '../../../styles/salaryIncomeLanding.css';
 
 /* ============================================================
@@ -49,6 +52,23 @@ const byFilingStatus = FILING_STATUSES.map(({ status, label }) => {
   return { label, net: b.netTakeHome, rate: amount > 0 ? ((amount - b.netTakeHome) / amount) * 100 : 0 };
 });
 
+const periods = payPeriods(breakdown);
+
+// Housing against take-home: what the usual screening rules allow at this gross
+// salary, and what that leaves of the actual paycheck each month.
+const netMonthly = breakdown.netTakeHome / 12;
+const maxRent = maxAffordableRent({ annualIncome: amount }).maxRent;
+const coop = maxAffordablePrice({ annualIncome: amount, propertyType: 'coop' });
+const condo = maxAffordablePrice({ annualIncome: amount, propertyType: 'condo' });
+// At the DTI ceiling the full monthly housing cost equals the DTI limit times gross monthly income.
+const coopMonthly = (DEFAULT_ASSUMPTIONS.coopMaxDtiPct / 100) * (amount / 12);
+const condoMonthly = (DEFAULT_ASSUMPTIONS.condoMaxDtiPct / 100) * (amount / 12);
+const HOUSING = [
+  { label: `Rent at the ${DEFAULT_ASSUMPTIONS.rentIncomeMultiplier}× rule max`, detail: `${fmtMoney(maxRent)}/mo rent`, monthly: maxRent, href: `/rent/${nearest(maxRent, RENT_PRICES)}/` },
+  { label: 'Co-op at the board DTI max', detail: `${fmtMoney(coop.maxPrice)} co-op`, monthly: coopMonthly, href: '/coop/' },
+  { label: 'Condo at the lender DTI max', detail: `${fmtMoney(condo.maxPrice)} condo`, monthly: condoMonthly, href: '/condo/' },
+].map((h) => ({ ...h, share: netMonthly > 0 ? h.monthly / netMonthly : 0, left: netMonthly - h.monthly }));
+
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
   { heading: 'Guides', links: ALL_GUIDES },
@@ -59,7 +79,7 @@ const footerColumns: FooterColumn[] = [
 const canonicalPath = `/salary/${amount}/`;
 const amountLabel = fmtMoney(amount);
 const pageTitle = `${amountLabel} Salary After Taxes in NYC | NYC Affordability`;
-const metaDescription = `What ${amountLabel}/year actually nets you in NYC take-home pay after federal, NY State, and NYC resident tax plus FICA: full breakdown for a single filer with no pre-tax elections.`;
+const metaDescription = `What ${amountLabel}/year actually nets you in NYC after federal, NY State, and NYC tax plus FICA, per paycheck (weekly, biweekly, semimonthly, monthly), and how much of it rent or a co-op or condo would take.`;
 
 const SITE_ORIGIN = 'https://www.nyc-affordability.com';
 const jsonLd = {
@@ -78,9 +98,10 @@ const breadcrumbItems = [
 const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 const otherAmounts = AMOUNTS.filter((a) => a !== amount);
+const incomeAmount = incomePageFor(amount, INCOME_AMOUNTS);
 
 const relatedItems = [
-  { label: `${amountLabel}/yr housing`, sublabel: 'See max rent, co-op, and condo price at this income', href: `/income/${amount}/` },
+  { label: `${fmtMoney(incomeAmount)}/yr housing`, sublabel: 'See max rent, co-op, and condo price at this income', href: `/income/${incomeAmount}/` },
   { label: 'Know your target take-home?', sublabel: 'Work backwards to the salary you need instead', href: '/required-salary/' },
 ];
 
@@ -156,6 +177,34 @@ const shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.ne
   </div>
 
   <div class="card">
+    <h3>Per paycheck</h3>
+    <p>The same {amountLabel}, split by how often you're paid. "Twice a month" (24 checks) and "every two weeks" (26) are not the same: the biweekly check is smaller, but two months a year bring a third one.</p>
+    <table>
+      <thead><tr><th>Paid</th><th>Gross</th><th>Withheld</th><th>Take-home</th></tr></thead>
+      <tbody>
+        {periods.map((r) => (
+          <tr><td>{r.label} ({r.perYear}/yr)</td><td>{fmtMoney(r.gross)}</td><td>-{fmtMoney(r.withheld)}</td><td>{fmtMoney(r.net)}</td></tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="custom-note">Averages: actual withholding follows payroll tables and can vary check to check (bonuses, or the Social Security wage cap late in a high earner's year). "Withheld" is all income taxes, FICA, and NY PFL/SDI.</p>
+  </div>
+
+  <div class="card">
+    <h3>What housing takes out of this paycheck</h3>
+    <p>Landlords and lenders screen on <strong>gross</strong> income, but you pay rent out of <strong>take-home</strong>. Here's what the standard limits allow at {amountLabel} and how much of your {fmtMoney(netMonthly)}/mo take-home each one uses. All calculated, using this site's default assumptions.</p>
+    <table>
+      <thead><tr><th>At the limit</th><th>Monthly housing</th><th>Share of take-home</th><th>Left each month</th></tr></thead>
+      <tbody>
+        {HOUSING.map((h) => (
+          <tr><td><a href={h.href}>{h.label}</a><span class="sub">{h.detail}</span></td><td>{fmtMoney(h.monthly)}</td><td>{fmtPercent(h.share * 100)}</td><td>{fmtMoney(h.left)}</td></tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="custom-note">The {DEFAULT_ASSUMPTIONS.rentIncomeMultiplier}&times; rule works out to {fmtPercent(1200 / DEFAULT_ASSUMPTIONS.rentIncomeMultiplier)} of gross pay, which is a bigger slice of take-home. Co-op and condo figures are the full monthly cost at the DTI limit (mortgage, maintenance or common charges, and for condos tax and insurance), with no other debts and before checking your savings. "Left each month" is before every other bill. See <a href={`/income/${incomeAmount}/`}>what {fmtMoney(incomeAmount)} affords</a> or run the <a href="/reality-check/">Reality Check</a> with your own numbers.</p>
+  </div>
+
+  <div class="card">
     <h3>Does filing status change this?</h3>
     <p>Same {amountLabel} gross salary, same baseline (no 401(k)/HSA): filing status alone moves the standard deduction and bracket widths.</p>
     <table>
@@ -226,4 +275,5 @@ const shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.ne
    income/[amount]'s otherwise-identical table style is right-aligning the
    numeric columns, since every column here is a dollar figure or percentage. */
 th:not(:first-child), td:not(:first-child) { text-align: right; }
+.sub { display: block; font-size: 12px; color: var(--g500); font-weight: 400; margin-top: 2px; }
 </style>

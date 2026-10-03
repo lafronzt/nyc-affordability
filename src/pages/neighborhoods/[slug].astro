@@ -12,6 +12,7 @@ import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { fmtMoney } from '../../lib/format';
 import { requiredIncomeForRent, requiredIncomeForPrice } from '../../lib/afford';
 import { firstOf, firstRent, isAreaSpecific, isRent, type MarketFigure } from '../../lib/marketFigures';
+import { BOROUGH_HUBS } from '../../data/boroughs';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -193,7 +194,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
   <div class="card">
     <h3>See more neighborhoods</h3>
-    <p><a href="/neighborhoods/">Browse all neighborhoods &rarr;</a> or check your exact numbers on the <a href="/reality-check/">Housing Reality Check</a>.</p>
+    <p>{BOROUGH_HUBS.some((b) => b.slug === data.borough) && <><a href={`/${data.borough}/`}>{BOROUGH_LABELS[data.borough]} borough guide &rarr;</a> · </>}<a href="/neighborhoods/">Browse all neighborhoods &rarr;</a> or check your exact numbers on the <a href="/reality-check/">Housing Reality Check</a>.</p>
   </div>
 
 </div>

@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { BOROUGH_HUBS } from '../../data/boroughs';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import Footer from '../../components/Footer.astro';
@@ -18,7 +19,7 @@ import {
 } from '../../lib/footerLinks';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { fmtMoney } from '../../lib/format';
-import { INCOME_AMOUNTS, RENT_PRICES, BUY_PRICES } from '../../data/priceGrids';
+import { INCOME_AMOUNTS, SALARY_AMOUNTS, RENT_PRICES, BUY_PRICES } from '../../data/priceGrids';
 
 /* ============================================================
    Site directory (HTML sitemap for humans)
@@ -65,7 +66,7 @@ const guideGroups = GUIDE_CATEGORY_ORDER
   .map((cat) => ({ label: GUIDE_CATEGORY_LABELS[cat], guides: guides.filter((g) => g.data.category === cat) }))
   .filter((g) => g.guides.length > 0);
 const hoodGroups = BOROUGH_ORDER
-  .map((b) => ({ label: BOROUGH_LABELS[b], hoods: hoods.filter((h) => h.data.borough === b) }))
+  .map((b) => ({ label: BOROUGH_LABELS[b], hub: BOROUGH_HUBS.find((x) => x.slug === b), hoods: hoods.filter((h) => h.data.borough === b) }))
   .filter((g) => g.hoods.length > 0);
 
 const numericFamilies = [
@@ -79,7 +80,7 @@ const numericFamilies = [
     title: 'Salary after taxes',
     hub: { label: 'All salaries', href: '/salary/' },
     blurb: 'Federal, NY State, NYC, and FICA take-home by filing status.',
-    items: INCOME_AMOUNTS.map((n) => ({ label: fmtMoney(n), href: `/salary/${n}/` })),
+    items: SALARY_AMOUNTS.map((n) => ({ label: fmtMoney(n), href: `/salary/${n}/` })),
   },
   {
     title: 'What it takes to buy',
@@ -105,7 +106,7 @@ const pageCount =
   1 + guides.length +
   1 + terms.length +
   numericFamilies.reduce((s, f) => s + 1 + f.items.length, 0) +
-  1 + hoods.length +
+  1 + hoods.length + BOROUGH_HUBS.length +
   1 + // Affordability Index
   aboutLinks.length;
 
@@ -204,10 +205,10 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
   <section class="card" id="neighborhoods" aria-labelledby="h-hoods">
     <h3 id="h-hoods">Neighborhoods <span class="count">{hoods.length}</span></h3>
-    <p>Cited median rent and sale price, plus the income each takes. <a href="/neighborhoods/">All neighborhoods</a></p>
+    <p>Cited rent and sale prices, plus the income each takes. Borough names link to borough guides. <a href="/neighborhoods/">All neighborhoods</a></p>
     {hoodGroups.map((group) => (
       <div class="group">
-        <h4>{group.label}</h4>
+        <h4>{group.hub ? <a href={`/${group.hub.slug}/`}>{group.label}</a> : group.label}</h4>
         <ul class="link-list three-col">
           {group.hoods.map((h) => <li><a href={`/neighborhoods/${h.id}/`}>{h.data.name}</a></li>)}
         </ul>
