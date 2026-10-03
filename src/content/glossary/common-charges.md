@@ -14,6 +14,7 @@ relatedGuides:
 relatedCalculators:
   - "/condo/"
   - "/rent-vs-buy/"
+  - "/rate-sensitivity/"
 draft: false
 ---
 

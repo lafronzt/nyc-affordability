@@ -22,6 +22,7 @@ relatedCalculators:
   - "/condo/"
   - "/rent/"
   - "/afford-more/"
+  - "/rate-sensitivity/"
 draft: false
 ---
 

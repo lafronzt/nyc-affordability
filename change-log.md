@@ -2,6 +2,56 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Phase 2d: Rate & maintenance sensitivity (/rate-sensitivity/)
+
+**User-visible changes**
+- New **`/rate-sensitivity/`**, with two modes:
+  - **"What if rates move?"** shows your max co-op or condo price at every quarter-point rate from 3 points below today's default to 3 above.
+  - **Maintenance / common charges** does the same in $100 steps from $1,000 below your building's charges to $1,000 above.
+- **Two limits, shown separately:**
+  - Each point plots the **income limit** (DTI) and the **cash limit** (down payment and closing, plus board reserves for co-ops).
+  - Your max price is the lower of the two, drawn as a band under the lower line.
+  - The answer names which limit binds, what one step does to the max price, and where the other limit takes over (e.g. "Past 7.5%, income becomes the limit instead").
+  - When cash binds, the page says rates barely matter yet. For co-ops it explains why rates still move the cash limit: the board's reserve rule counts months of mortgage payments.
+- **Rate-point equivalent:** a tile converts **$100/month of maintenance into rate points** (about 0.55 points for the brief's co-op example, 0.40 for a condo).
+- **Optional target price:**
+  - monthly cost at the target, and how much one step changes it
+  - the highest rate (or charge level) at which the target is within reach
+  - when cash makes the target unreachable at any rate, a link to the savings planner
+- **Chart:** legend, direct labels, a dashed target line, a marker for "now", a hover/keyboard tooltip, a text summary, and a table view with the current row highlighted. A cash line far above the range is clipped and labeled "Cash ↑".
+- **Same privacy model as `/afford-more/`:**
+  - Income, savings, and debts go into a share link only if you tick the box.
+  - Inputs are saved only with "Save inputs" on.
+  - The page reads the shared profile but never writes it unless saving is on.
+- **Where it's linked:**
+  - the Buy nav menu ("What if rates move?")
+  - the homepage grid (card 12 completes the last row, so the centered-pair rule is gone)
+  - every footer, `/explore/`, and the sitemap
+  - `/afford-more/`
+  - the DTI, co-op maintenance, and common-charges glossary terms
+
+**Code**
+- `src/lib/engines/sensitivity.ts` (pure): `pointAt`/`sweep` rerun `evaluatePlan` (the shared co-op/condo engine) with one input changed. Also `rateRange`, `chargesRange`, `impactPerStep` (symmetric difference), `chargesInRatePoints`, and `highestReaching`. No new formulas.
+
+**Tests** (182 → 194; `test/sensitivity.test.ts`)
+- The current point equals `evaluatePlan`, and max = min(income, cash) across cash levels.
+- Higher rates and charges only lower the income limit.
+- Income needed at a target equals the `/buy/` figures.
+- +$100 of charges = +$100/month at the target, and one rate point equals the amortization difference.
+- Cash-bound condo: charges move the income limit but not the max price.
+- Co-op cash limit moves with the rate; the condo's doesn't.
+- Range construction, the rate-point equivalent, and `highestReaching`.
+
+**Validation**
+- `npm test`: 194/194. `npm run build`: clean.
+- Browser checks:
+  - Brief example (co-op, $145K, $110K cash): $326,014, cash-bound, flipping to income-bound past 7.5%.
+  - With $300K cash: income-bound, $34,143 per rate point.
+  - $450K target reachable at 4.25% or lower.
+  - Maintenance mode; condo common charges.
+  - Condo at $900K: cash makes it unreachable at any rate.
+  - No `localStorage` writes with saving off.
+  - No page errors; no overflow at 1280 or 390px.
 ## 2026-10-03: Fix: nav dropdowns blocked by the Content-Security-Policy
 
 **Problem**
