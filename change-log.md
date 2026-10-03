@@ -19,6 +19,73 @@ Multi-file changes, newest first. Each entry gives the user-visible effect and h
 **Validation**
 - `npm test`: 202/202. `npm run build`: clean, including `check-csp`.
 - Browser check on `/rent/3500/` at 1280 and 390px: tables render, no overflow, no errors under the production CSP, and the Cost to Move link matches.
+## 2026-10-03: Phase 3b: Five Brooklyn neighborhood pages
+
+**User-visible changes**
+- New pages at `/neighborhoods/<slug>/`: **Greenpoint, Park Slope, Brooklyn Heights, Fort Greene, Bedford-Stuyvesant**. `/neighborhoods/` now has a Brooklyn group with 10 neighborhoods in total. All five are in the sitemap.
+- **Rent figure:** each page's rent is Corcoran's **average rent on leases signed**, August 2026. It's neighborhood-specific except Fort Greene, which Corcoran combines with Clinton Hill.
+- **Sale figure:** the sale price is Corcoran's **2Q 2026 median sale price** (co-ops and condos, including new development) for the submarket containing the neighborhood. Each submarket's name and coverage is shown on its card.
+- **Page text:** each page explains:
+  - that the rent is an average, not a median, and is based on last asking prices
+  - what the sale submarket includes, for example that Bed-Stuy's figure excludes the townhouses that make up much of its housing
+  - why the two dates differ
+- **Calculated income:** the income-needed rows say "at the average" for these pages.
+
+**Sources (each figure checked against the PDF itself)**
+- Corcoran, Brooklyn Rental Market Report, August 2026: "Average Rent by Neighborhood" table. Greenpoint $5,643, Park Slope $5,809, Brooklyn Heights $7,076, Fort Greene / Clinton Hill $4,844, Bedford-Stuyvesant $4,269. The report's footnote says the figures are based on last asking prices for leases reported signed.
+- Corcoran, Brooklyn Market Report, 2Q 2026: submarket map page.
+  - Williamsburg & Greenpoint: $1.510M
+  - Brooklyn Heights, Cobble Hill, Dumbo & Downtown: $1.661M
+  - Park Slope & Gowanus: $1.543M
+  - Fort Greene, Clinton Hill & Prospect Heights: $1.100M
+  - Bedford-Stuyvesant, Crown Heights, Lefferts Gardens & Bushwick: $800K
+  - Each submarket's own page agrees ($1.51M, $1.66M, $1.54M, $1.10M, $800K).
+- Considered and not used: Elliman's January 2026 rental report gives only a borough-wide Brooklyn median ($3,814). Its 4Q 2025 Brooklyn sales report uses four broad submarkets. Corcoran's neighborhood breakdowns are finer and more recent.
+
+**Quality gate**
+- Every new page passes on its own neighborhood-level rent, except Fort Greene, which passes on its unique zone rent and its sale figure.
+
+**Validation**
+- `npm test`: 234/234. `npm run build`: clean, including `check-csp`.
+- Browser check:
+  - all five pages render with scope tags
+  - the index groups Manhattan, Brooklyn, and Queens
+  - no overflow at 390px
+  - no errors under the production CSP
+
+## 2026-10-03: Phase 3a: Neighborhood market-figure schema and quality gate
+
+**User-visible changes**
+- Each neighborhood stat card now says **what area the figure covers**:
+  - a green "Astoria only" tag for neighborhood-specific numbers
+  - an amber "Wider area: Northwest Queens (Elliman) (Astoria, Long Island City, Sunnyside, and Woodside combined)" tag for broker-zone numbers
+- Each card also links its source next to the period.
+- All numbers are unchanged. Every dollar figure on the five neighborhood pages and the index matches the previous build.
+- **Label correction:** the rent figures were labeled "Median asking rent". Checked against the cited Elliman January 2026 PDF, all five values match, but the report measures the **median rental price of new leases signed** (excluding renewals), not asking rents. The labels now read "Median rent on new leases".
+  - The metric is renamed `median-rent`.
+  - An `average-rent` metric is added for sources that publish averages (Corcoran's neighborhood rent tables), ahead of the Brooklyn pages.
+  - Page copy says "median" or "average" to match the figure.
+
+**Schema** (`src/content.config.ts`, `src/lib/marketFigures.ts`)
+- The flat `medianRent` / `medianRentLabel` / `medianRentAsOf` / `medianSalePrice…` fields are replaced by a `figures` list. Each figure records:
+  - `metric` and `value`
+  - `unitScope` (all, studio, 1br, …) and `propertyScope` (all, coop, condo, coop+condo)
+  - `geo` {kind: neighborhood / broker-zone / borough / city, name, definition}
+  - `period`, `label`, `source`, and `sourceUrl`
+- The schema requires at least one rent figure and one sale figure.
+- The five existing pages were migrated by script. Values, labels, periods, and sources were copied verbatim, with a round-trip check. The scope fields only restate what each label already said (for example, the BHS figures are resale one-bedrooms in a BHS zone).
+
+**Quality gate** (plan §5, Phase 3)
+- `test/neighborhoodFigures.test.ts` fails if a published neighborhood has fewer than 2 figures that no sibling page also shows.
+- A cited figure counts if no sibling cites the same figure. Calculated figures count only when derived from a unique cited one: 1 for a rent, 2 for a sale price (co-op and condo income).
+- Today, Astoria and LIC share their rent figure, so each passes on its own sale price. The Manhattan pages pass on distinct zone figures.
+- The test also checks that every figure's source appears in the page's Sources list, that its period includes a year, and that wider-area figures name their area.
+- `js-yaml` is now a declared devDependency. It was already installed as a transitive dependency; the test uses it to read frontmatter.
+
+**Validation**
+- `npm test`: 219/219. `npm run build`: clean.
+- Dollar figures on all six neighborhood pages are identical to main.
+- Browser: scope tags and source links render. No overflow at 390px. No errors under the production CSP.
 
 ## 2026-10-03: Phase 2e: Cost to move (/cost-to-move/)
 

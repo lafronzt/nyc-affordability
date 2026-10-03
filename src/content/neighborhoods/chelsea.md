@@ -4,12 +4,29 @@ borough: "manhattan"
 metaDescription: "Median rent and sale price for Chelsea, Manhattan (from a broader Downtown market zone), plus the income it takes to afford each, calculated from cited market data."
 intro: "A Manhattan neighborhood roughly from 14th to 34th Street, west of Fifth Avenue, known for the High Line, Chelsea Market, and a mix of prewar walk-ups, converted lofts, and newer condo towers along the West Side."
 updated: "2026-08-13"
-medianRent: 5135
-medianRentLabel: "Median asking rent, all unit sizes (Elliman \"Downtown\" rental zone)"
-medianRentAsOf: "January 2026"
-medianSalePrice: 880000
-medianSalePriceLabel: "Median resale 1-bedroom price (BHS \"Downtown 34th–14th St\" zone)"
-medianSalePriceAsOf: "Q2 2026"
+figures:
+  - metric: "median-rent"
+    value: 5135
+    unitScope: "all"
+    propertyScope: "all"
+    geo:
+      kind: "broker-zone"
+      name: "Downtown (Elliman)"
+    period: "January 2026"
+    label: "Median rent on new leases, all unit sizes (Elliman \"Downtown\" rental zone)"
+    source: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
+    sourceUrl: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"
+  - metric: "median-sale-price"
+    value: 880000
+    unitScope: "1br"
+    propertyScope: "coop+condo"
+    geo:
+      kind: "broker-zone"
+      name: "Downtown 34th–14th St (BHS)"
+    period: "Q2 2026"
+    label: "Median resale 1-bedroom price (BHS \"Downtown 34th–14th St\" zone)"
+    source: "Brown Harris Stevens: Manhattan Apartment Market Report, Q2 2026"
+    sourceUrl: "https://bhs-content.ion3.io/2026/07/Manhattan_2Q26_MR.pdf"
 sources:
   - label: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
     url: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"

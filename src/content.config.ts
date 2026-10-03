@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { CALCULATOR_PATHS } from './lib/footerLinks';
+import { METRICS, UNIT_SCOPES, PROPERTY_SCOPES, GEO_KINDS } from './lib/marketFigures';
 
 const guides = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/guides' }),
@@ -91,19 +92,30 @@ const neighborhoods = defineCollection({
     metaDescription: z.string(),
     intro: z.string(),
     updated: z.string(),
-    // Kept as separate number + label pairs rather than a fixed "1BR"/"studio" shape —
-    // what's actually available varies by neighborhood and source (some report an
-    // overall median, some break out by bedroom count), so the label makes explicit
-    // exactly what the number represents rather than implying false precision.
-    medianRent: z.number(),
-    medianRentLabel: z.string(),
-    // Rent and sale figures routinely come from different reports published on different
-    // schedules — a single shared "as of" date would hide that gap, so each metric carries
-    // its own (distinct from `updated`, which is when this page's content was last edited).
-    medianRentAsOf: z.string(),
-    medianSalePrice: z.number(),
-    medianSalePriceLabel: z.string(),
-    medianSalePriceAsOf: z.string(),
+    // One record per cited number (see src/lib/marketFigures.ts): what it measures,
+    // which unit sizes and property types, whether it covers this neighborhood alone
+    // or a broker zone it shares, the period the source states, and the source.
+    // Rent and sale figures come from different reports on different schedules,
+    // so each carries its own period (distinct from `updated`, which is when this
+    // page's content was last edited). The page shows the first rent and first
+    // sale figure; test/neighborhoodFigures.test.ts enforces the quality gate.
+    figures: z
+      .array(
+        z.object({
+          metric: z.enum(METRICS),
+          value: z.number().positive(),
+          unitScope: z.enum(UNIT_SCOPES),
+          propertyScope: z.enum(PROPERTY_SCOPES),
+          geo: z.object({ kind: z.enum(GEO_KINDS), name: z.string(), definition: z.string().optional() }),
+          period: z.string(),
+          label: z.string(),
+          source: z.string(),
+          sourceUrl: z.string().url(),
+        })
+      )
+      .refine((fs) => fs.some((f) => f.metric === 'median-rent' || f.metric === 'average-rent') && fs.some((f) => f.metric === 'median-sale-price'), {
+        message: 'needs at least one rent figure (median-rent or average-rent) and one median-sale-price figure',
+      }),
     // Per the citation policy for this collection: every figure must trace to a dated,
     // stable snapshot (a quarterly report PDF, a dated news article) — never a live/IDX
     // feed that changes after publication. See the fact-check workflow in the guides.
