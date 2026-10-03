@@ -53,15 +53,17 @@ const CALC_LABEL = Object.fromEntries(ALL_CALCULATORS.map((c) => [c.href, c.labe
 const PAGE_LABEL: Record<string, string> = { coop: 'Co-op', condo: 'Condo', rent: 'Rent', sell: 'Sell' };
 
 const PROJECTION_KEYS = new Set(['savingsYieldPct', 'rentGrowthPct', 'homeAppreciationPct', 'ownerCostGrowthPct', 'ownerUpkeepPct', 'investmentReturnPct']);
+const MOVING_KEYS = new Set(['moversCost', 'movingSupplies', 'guarantorCompanyFeePct']);
 function groupOf(key: string): string {
   if (PROJECTION_KEYS.has(key)) return 'Long-run projections';
+  if (MOVING_KEYS.has(key)) return 'Moving';
   if (key.startsWith('coop')) return 'Co-op purchase';
   if (key.startsWith('condo')) return 'Condo purchase';
   if (key.startsWith('sell')) return 'Selling';
   if (key.startsWith('rent') || key.startsWith('guarantor')) return 'Renting';
   return 'Mortgage';
 }
-const GROUP_ORDER = ['Mortgage', 'Co-op purchase', 'Condo purchase', 'Renting', 'Selling', 'Long-run projections'];
+const GROUP_ORDER = ['Mortgage', 'Co-op purchase', 'Condo purchase', 'Renting', 'Moving', 'Selling', 'Long-run projections'];
 
 function fmtValue(a: Assumption): string {
   const n = a.value.toLocaleString('en-US', { maximumFractionDigits: 2 });
