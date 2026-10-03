@@ -2,6 +2,29 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-02: Phase 2a: "How do I afford more?" (/afford-more/)
+
+**User-visible changes**
+- New **`/afford-more/`**. Enter income, monthly debts, cash, and investments (plus optional assumptions and a target price) for a co-op or condo. The page shows:
+  - the maximum price, and which limit binds, in a plain sentence ("Your income supports a $336,759 co-op, but your cash, once the board's 12-month reserve requirement is set aside, supports only $326,014.")
+  - every applicable lever ranked by the dollars it adds or removes, each with an explanation; levers with no effect are listed separately with the reason
+  - with a target price: the extra cash and extra income needed, computed independently, plus the debt-payoff equivalent when that's enough
+- Share link: assumptions only by default; income, savings, and debts are added only if the visitor ticks the box. Inputs are saved only with "Save inputs" on, and turning it off clears them. Print styles included. Results are announced to screen readers via `aria-live`.
+- Added to the primary nav ("Afford More"), every footer's calculator list, the homepage grid (9 cards, now three full rows), `/explore/`, the sitemap, and the DTI and post-closing-liquidity glossary terms. The Reality Check links to it.
+- Nav: "Affordable Housing" is shortened to "Affordable" (footer and page titles unchanged) and nav item padding drops from 10px to 8px, so calculator titles keep the same visible width at 1280px despite the extra item (measured 262→263px).
+
+**Code**
+- `src/lib/engines/levers.ts` (pure): `evaluatePlan` (the shared co-op/condo engine), `leversFor`, `rankLevers`, and `gapToTarget`. Each lever changes one input and reruns the same engine; no new formulas.
+- `src/scripts/afford-more.ts`: rendering, URL/saved/shared-profile input precedence, and the share link.
+
+**Tests** (138 → 151)
+- `test/levers.test.ts` uses the brief's scenario ($145K, $110K saved, $400/mo debt). It checks that the result equals a direct engine call; that the co-op is reserve-bound below the DTI ceiling; that income and debt levers do nothing while cash binds; that saving helps only until DTI binds; that a bigger down payment lowers a reserve-bound ceiling; that lower maintenance helps even when cash binds; that levers are ranked; that lever availability matches the situation (no reserves lever for condos, no sub-20% lever for co-ops); that PMI makes a smaller condo down payment backfire; and that target gaps close exactly ($1 less doesn't).
+
+**Validation**
+- `npm test`: 151/151. `npm run build`: clean.
+- Browser (Playwright): the default scenario shows $326,014 (matches the engine); the target gap, type switch, and share link (with and without personal numbers) work, and a reloaded link reproduces the scenario; `localStorage` stays empty with saving off; no page errors; **no requests to other origins**; no horizontal overflow at 1280 or 390px.
+- The calculator browser snapshot (24 scenarios) is identical to the end of Phase 1.
+
 ## 2026-10-02: Phase 1e: guide worked examples checked against the engine
 
 **User-visible changes**

@@ -7,6 +7,7 @@ import {
   CALC_RENT,
   CALC_AFFORDABLE,
   CALC_COMPARE,
+  CALC_AFFORD_MORE,
   CALC_NET_PROCEEDS,
   CALC_REQUIRED_SALARY,
   GUIDES_INDEX_LINK,
@@ -23,8 +24,9 @@ const NAV_ITEMS = [
   { label: 'Co-op', href: CALC_COOP.href! },
   { label: 'Condo', href: CALC_CONDO.href! },
   { label: 'Rent', href: CALC_RENT.href! },
-  { label: 'Affordable Housing', href: CALC_AFFORDABLE.href! },
+  { label: 'Affordable', href: CALC_AFFORDABLE.href! },
   { label: 'Compare', href: CALC_COMPARE.href! },
+  { label: 'Afford More', href: CALC_AFFORD_MORE.href! },
   { label: 'Sell', href: CALC_NET_PROCEEDS.href! },
   { label: 'Required Salary', href: CALC_REQUIRED_SALARY.href! },
   { label: GUIDES_INDEX_LINK.label, href: GUIDES_INDEX_LINK.href! },
@@ -140,7 +142,7 @@ const siteNavJsonLd = {
   display: flex;
   align-items: center;
   height: var(--nav-item-h, 40px);
-  padding: 0 10px;
+  padding: 0 8px;
   color: #8aabcf;
   text-decoration: none;
   font-size: 13px;

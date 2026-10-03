@@ -21,6 +21,7 @@ relatedCalculators:
   - "/coop/"
   - "/condo/"
   - "/rent/"
+  - "/afford-more/"
 draft: false
 ---
 
