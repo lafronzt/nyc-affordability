@@ -14,10 +14,10 @@ import { fmtMoney, fmtPercent } from '../../../lib/format';
 import { computeBreakdown, SALARY_LANDING_PAGE_BASELINE } from '../../../lib/salaryCalc';
 import { TAX_CONSTANTS_2026 } from '../../../lib/salaryTaxConstants2026';
 import type { FilingStatus } from '../../../lib/salaryTaxConstants2026';
-import { INCOME_AMOUNTS as AMOUNTS, RENT_PRICES } from '../../../data/priceGrids';
+import { SALARY_AMOUNTS as AMOUNTS, INCOME_AMOUNTS, RENT_PRICES } from '../../../data/priceGrids';
 import { payPeriods } from '../../../lib/payPeriods';
 import { maxAffordableRent, maxAffordablePrice, DEFAULT_ASSUMPTIONS } from '../../../lib/afford';
-import { nearest } from '../../../lib/relatedPages';
+import { nearest, incomePageFor } from '../../../lib/relatedPages';
 import '../../../styles/salaryIncomeLanding.css';
 
 /* ============================================================
@@ -98,9 +98,10 @@ const breadcrumbItems = [
 const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 const otherAmounts = AMOUNTS.filter((a) => a !== amount);
+const incomeAmount = incomePageFor(amount, INCOME_AMOUNTS);
 
 const relatedItems = [
-  { label: `${amountLabel}/yr housing`, sublabel: 'See max rent, co-op, and condo price at this income', href: `/income/${amount}/` },
+  { label: `${fmtMoney(incomeAmount)}/yr housing`, sublabel: 'See max rent, co-op, and condo price at this income', href: `/income/${incomeAmount}/` },
   { label: 'Know your target take-home?', sublabel: 'Work backwards to the salary you need instead', href: '/required-salary/' },
 ];
 
@@ -200,7 +201,7 @@ const shareText = `${amountLabel}/year in NYC nets about ${fmtMoney(breakdown.ne
         ))}
       </tbody>
     </table>
-    <p class="custom-note">The {DEFAULT_ASSUMPTIONS.rentIncomeMultiplier}&times; rule works out to {fmtPercent(1200 / DEFAULT_ASSUMPTIONS.rentIncomeMultiplier)} of gross pay, which is a bigger slice of take-home. Co-op and condo figures are the full monthly cost at the DTI limit (mortgage, maintenance or common charges, and for condos tax and insurance), with no other debts and before checking your savings. "Left each month" is before every other bill. See <a href={`/income/${amount}/`}>what {amountLabel} affords</a> or run the <a href="/reality-check/">Reality Check</a> with your own numbers.</p>
+    <p class="custom-note">The {DEFAULT_ASSUMPTIONS.rentIncomeMultiplier}&times; rule works out to {fmtPercent(1200 / DEFAULT_ASSUMPTIONS.rentIncomeMultiplier)} of gross pay, which is a bigger slice of take-home. Co-op and condo figures are the full monthly cost at the DTI limit (mortgage, maintenance or common charges, and for condos tax and insurance), with no other debts and before checking your savings. "Left each month" is before every other bill. See <a href={`/income/${incomeAmount}/`}>what {fmtMoney(incomeAmount)} affords</a> or run the <a href="/reality-check/">Reality Check</a> with your own numbers.</p>
   </div>
 
   <div class="card">
