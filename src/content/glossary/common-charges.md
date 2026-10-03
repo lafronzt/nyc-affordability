@@ -11,6 +11,7 @@ relatedTerms:
   - maintenance-coop
 relatedGuides:
   - coop-vs-condo-nyc-costs
+  - condo-common-charges-explained
 relatedCalculators:
   - "/condo/"
   - "/rent-vs-buy/"

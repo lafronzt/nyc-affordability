@@ -18,6 +18,8 @@ cta:
   body: "The affordable housing calculator takes your household size and income and shows your exact AMI percentage, which bands you qualify for, and the max rent at each one."
   label: "Open the Affordable Housing Finder"
   href: "/affordable/"
+relatedGuides:
+  - homefirst-down-payment-assistance
 ---
 
 ## What AMI actually measures

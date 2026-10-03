@@ -17,6 +17,7 @@ relatedTerms:
 relatedGuides:
   - fare-act-broker-fees-explained
   - nyc-rent-stabilization-explained
+  - good-cause-eviction-nyc-explained
 relatedCalculators:
   - "/rent/"
 draft: false

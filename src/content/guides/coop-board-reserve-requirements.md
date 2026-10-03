@@ -14,6 +14,7 @@ sources:
 relatedGuides:
   - coop-board-approval-process
   - coop-flip-tax-nyc-explained
+  - how-much-down-payment-nyc-apartment
 relatedTerms:
   - post-closing-liquidity
   - debt-to-income-ratio-dti

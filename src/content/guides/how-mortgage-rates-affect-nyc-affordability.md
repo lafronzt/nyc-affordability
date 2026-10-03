@@ -17,6 +17,7 @@ relatedGuides:
   - income-needed-to-buy-nyc-apartment
   - coop-board-reserve-requirements
   - pmi-on-nyc-condos-explained
+  - rent-vs-buy-nyc
 relatedTerms:
   - debt-to-income-ratio-dti
   - maintenance-coop

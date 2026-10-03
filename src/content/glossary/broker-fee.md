@@ -18,6 +18,7 @@ relatedTerms:
 relatedGuides:
   - fare-act-broker-fees-explained
   - nyc-security-deposit-move-in-costs
+  - how-much-does-it-cost-to-move-in-nyc
 relatedCalculators:
   - "/rent/"
   - "/cost-to-move/"

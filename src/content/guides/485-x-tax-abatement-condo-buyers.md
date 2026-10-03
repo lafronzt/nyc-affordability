@@ -12,6 +12,7 @@ sources:
 relatedGuides:
   - income-needed-to-buy-nyc-apartment
   - coop-vs-condo-nyc-costs
+  - nyc-coop-condo-property-tax-abatement
 relatedTerms:
   - 485-x-tax-abatement
 cta:

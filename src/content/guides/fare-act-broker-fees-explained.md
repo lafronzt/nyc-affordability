@@ -2,13 +2,13 @@
 title: "FARE Act: Who Pays Broker Fees in NYC Now"
 metaDescription: "The FARE Act (effective June 11, 2025) shifted NYC broker fees from tenant-paid to whoever hires the broker. See the rule, a worked move-in cost example, and the law's current legal status."
 intro: "Since June 11, 2025, NYC tenants no longer pay a broker fee just because the landlord happened to use a broker to list the apartment. The FARE Act made whoever hires the broker responsible for paying them. Here's exactly what changed, what a tenant can still be charged, and where the law stands after the Second Circuit's July 2026 ruling."
-updated: "2026-09-23"
+updated: "2026-10-03"
 category: "renting"
 sources:
   - label: "NYC Department of Consumer and Worker Protection: FARE Act FAQ"
     url: "https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page"
-  - label: "New York State Senate: RPL §227-g (security deposit cap, HSTPA 2019)"
-    url: "https://www.nysenate.gov/legislation/laws/RPP/227-G"
+  - label: "NY Legislature: S.6458 (HSTPA 2019), §25 adding General Obligations Law §7-108(1-a) (security deposit cap)"
+    url: "https://legislation.nysenate.gov/pdf/bills/2019/S6458"
   - label: "The Real Deal: Appeals Court Rejects REBNY's FARE Act Appeal (July 2026)"
     url: "https://therealdeal.com/new-york/2026/07/14/appeals-court-rejects-rebnys-fare-act-appeal/"
   - label: "Crain's New York Business: Court rejects REBNY's FARE Act appeal (July 13, 2026)"
@@ -16,6 +16,7 @@ sources:
 relatedGuides:
   - nyc-security-deposit-move-in-costs
   - nyc-40x-rent-rule
+  - how-much-does-it-cost-to-move-in-nyc
 relatedTerms:
   - fare-act
 cta:

@@ -14,6 +14,9 @@ sources:
 relatedGuides:
   - coop-flip-tax-nyc-explained
   - nyc-closing-costs-for-buyers
+  - rent-vs-buy-nyc
+  - condo-common-charges-explained
+  - coop-maintenance-explained
 relatedTerms:
   - common-charges
   - maintenance-coop
