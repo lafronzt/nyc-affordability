@@ -89,7 +89,7 @@ Existing URLs are unchanged.
 | **1e (done: build-time check, not MDX)** | Guide prose that hard-codes calculated numbers (6.95% examples in 6 guides) → MDX components or a build-time check that flags drift | guides, a test | M | Medium |
 
 ### Phase 2: Flagship tools
-Order: optimizer (**2a done**) → savings planner (**2b done**) → rent vs buy (**2c done**) → journey-based nav (brief item 23; pulled forward because two tools now sit outside the navbar) → rate/maintenance sensitivity → cost to move. Each tool is built on 1b's engines, with URL query state for non-sensitive fields only, print CSS, `aria-live` results, tests, a "How this works" section, and sources. Effort L each (rate sensitivity M).
+Order: optimizer (**2a done**) → savings planner (**2b done**) → rent vs buy (**2c done**) → journey-based nav (brief item 23; pulled forward because two tools sat outside the navbar; **done**) → rate/maintenance sensitivity → cost to move. Each tool is built on 1b's engines, with URL query state for non-sensitive fields only, print CSS, `aria-live` results, tests, a "How this works" section, and sources. Effort L each (rate sensitivity M).
 
 ### Phase 3: SEO/data expansion
 Neighborhood schema migration → Brooklyn (5) → borough hubs → remaining boroughs, all subject to the **quality gate**: a page ships only if it has ≥ 2 sourced or computed figures not shared with a sibling. Bucket gaps in `priceGrids.ts` (split the salary and income grids). Rent pages get 35×/45×/80× and FARE scenarios; salary pages get pay-period breakdowns and a housing tie-in. Glossary +20 and guides +10–12, each with worked examples and dated sources.

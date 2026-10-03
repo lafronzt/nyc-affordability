@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ALL_CALCULATORS, EXPLORE_LINKS, PRIMARY_NAV_CALCULATORS } from '../src/lib/footerLinks.ts';
+import { ALL_CALCULATORS, EXPLORE_LINKS, METHODOLOGY_LINK } from '../src/lib/footerLinks.ts';
+import { NAV, navHrefs } from '../src/lib/navGroups.ts';
 
 // Guards against the nav/footer drift fixed in Phase 1c: pages that build
 // their own footer columns quietly dropping the Explore links, and new
@@ -44,19 +45,41 @@ test('homepage calculator grid has a card for every calculator', () => {
   }
 });
 
-test('primary nav links every calculator on the primary-nav list', () => {
-  const nav = readFileSync(fileURLToPath(new URL('../src/components/NavLinks.astro', import.meta.url)), 'utf8');
-  const navConsts = [...nav.matchAll(/href:\s*(CALC_[A-Z_]+)\.href/g)].map((m) => m[1]);
-  const footer = readFileSync(fileURLToPath(new URL('../src/lib/footerLinks.ts', import.meta.url)), 'utf8');
-  const primary = footer.match(/export const PRIMARY_NAV_CALCULATORS[^=]*=\s*\[([^\]]*)\]/)?.[1].split(',').map((s) => s.trim()).filter(Boolean) ?? [];
-  assert.equal(primary.length, PRIMARY_NAV_CALCULATORS.length);
-  for (const name of primary) assert.ok(navConsts.includes(name), `NavLinks.astro is missing ${name}`);
+test('primary nav reaches every calculator', () => {
+  const hrefs = navHrefs();
+  for (const c of ALL_CALCULATORS) assert.ok(hrefs.includes(c.href!), `primary nav is missing ${c.href}`);
 });
 
-test('every calculator is either in the primary nav or on the primary-nav exception list for a reason', () => {
-  // Calculators outside the navbar must still be reachable: homepage grid + footers + /explore/
-  // (all driven by ALL_CALCULATORS and checked above). This pins the current exceptions so a new
-  // tool can't silently skip the nav without someone deciding it.
-  const outside = ALL_CALCULATORS.filter((c) => !PRIMARY_NAV_CALCULATORS.includes(c)).map((c) => c.href);
-  assert.deepEqual(outside, ['/savings-planner/', '/rent-vs-buy/']);
+test('primary nav reaches the guides, glossary, methodology, and site directory', () => {
+  const hrefs = navHrefs();
+  for (const h of ['/guides/', '/glossary/', METHODOLOGY_LINK.href!, '/explore/']) assert.ok(hrefs.includes(h), `primary nav is missing ${h}`);
+});
+
+test('every nav group has an id, an intro, and at least one link; links are internal with trailing slashes', () => {
+  const ids = new Set<string>();
+  for (const e of NAV) {
+    const links = e.kind === 'link' ? [e] : [...e.tools, ...e.reading];
+    if (e.kind === 'group') {
+      assert.ok(e.id && !ids.has(e.id), `duplicate or empty group id ${e.id}`);
+      ids.add(e.id);
+      assert.ok(e.intro && links.length, `group ${e.id} is empty`);
+    }
+    for (const l of links) assert.match(l.href, /^\/([a-z0-9-]+\/)*$/, l.href);
+  }
+});
+
+test('NavLinks renders from navGroups', () => {
+  const nav = readFileSync(fileURLToPath(new URL('../src/components/NavLinks.astro', import.meta.url)), 'utf8');
+  assert.match(nav, /import \{ NAV[^}]*\} from '\.\.\/lib\/navGroups'/);
+});
+
+test('each page appears in only one nav group, so one group is marked current', () => {
+  const seen = new Map<string, string>();
+  for (const e of NAV) {
+    if (e.kind !== 'group') continue;
+    for (const l of [...e.tools, ...e.reading]) {
+      assert.ok(!seen.has(l.href), `${l.href} is in both ${seen.get(l.href)} and ${e.id}`);
+      seen.set(l.href, e.id);
+    }
+  }
 });

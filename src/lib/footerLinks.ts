@@ -22,11 +22,6 @@ export const CALC_SAVINGS_PLANNER: FooterLink = { label: 'Down Payment Savings P
 export const CALC_RENT_VS_BUY: FooterLink = { label: 'NYC Rent vs Buy Calculator', href: '/rent-vs-buy/' };
 export const ALL_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_AFFORD_MORE, CALC_SAVINGS_PLANNER, CALC_RENT_VS_BUY, CALC_NET_PROCEEDS, CALC_REQUIRED_SALARY];
 
-/** The tools that get a slot in the primary navbar. The navbar has room for about ten
-    items before calculator titles get squeezed at desktop widths, so newer planning
-    tools live in the homepage grid, footers, and /explore/ until a journey-based nav
-    replaces this flat list. test/navParity.test.ts checks NavLinks against it. */
-export const PRIMARY_NAV_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_AFFORD_MORE, CALC_NET_PROCEEDS, CALC_REQUIRED_SALARY];
 export const HUB_LINK: FooterLink = { label: 'NYC Affordability Hub', href: '/' };
 
 /** The calculator paths as a literal tuple, for content schemas (z.enum) that
