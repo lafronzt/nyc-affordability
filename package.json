@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/rename-sitemap.mjs",
+    "build": "astro build && node scripts/rename-sitemap.mjs && node scripts/check-csp.mjs",
     "preview": "astro preview",
     "test": "node --experimental-strip-types --test test/**/*.test.ts"
   },

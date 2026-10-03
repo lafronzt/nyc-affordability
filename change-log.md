@@ -2,6 +2,27 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Fix: nav dropdowns blocked by the Content-Security-Policy
+
+**Problem**
+- The journey-nav script (PR #70) worked locally but not on the deployed preview.
+- Astro inlines small scripts into each page. `public/_headers` sends a CSP that allows inline scripts only by exact SHA-256 hash.
+- The nav script's content changed, so its hash no longer matched. The browser refused to run it, which broke the dropdowns and the mobile hamburger.
+- Local test servers send no CSP, so the bug didn't show up in local testing.
+
+**Fix**
+- `vite.build.assetsInlineLimit: 0` in `astro.config.mjs`. Astro now always emits processed scripts as files under `/_astro/`, which `script-src 'self'` already covers. Editing a script can no longer silently break it in production.
+- New `scripts/check-csp.mjs`, run at the end of `npm run build` (so Cloudflare's build runs it too). It hashes every inline executable `<script>` in `dist/` and fails the build if the CSP would block one. JSON-LD is ignored.
+- The CSP itself is unchanged. Its two listed hashes are now unused by the build, but one may cover something Cloudflare injects at the edge, so pruning them is a separate decision.
+
+**Validation**
+- Served `dist/` with the exact CSP from `_headers`:
+  - The broken build reproduces the bug ("Refused to execute inline script…"). Dropdowns don't open, and the mobile menu doesn't open either.
+  - The fixed build: dropdowns open at 1280px, and the hamburger and groups work at 390px.
+  - No CSP errors on `/coop/`, `/rent-vs-buy/`, `/savings-planner/`, `/afford-more/`, `/reality-check/`, or `/compare/`.
+- `check-csp` passes on the fixed build and fails on the broken one, naming the blocked hash.
+- `npm test`: 182/182.
+
 ## 2026-10-03: Journey-based primary navigation
 
 **User-visible changes**

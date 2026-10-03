@@ -133,6 +133,13 @@ export default defineConfig({
       tsconfigPaths: false,
     },
     build: {
+      // Never inline scripts into the HTML. public/_headers sends a CSP whose
+      // script-src allows 'self' plus a short list of inline-script hashes, so an
+      // inlined script runs only if its exact hash is listed; any edit to it
+      // silently breaks it in production. As files under /_astro/ they're
+      // covered by 'self'. scripts/check-csp.mjs fails the build if an inline
+      // script the CSP would block ever ships.
+      assetsInlineLimit: 0,
       rollupOptions: {
         // Same underlying bug, hit a second time by Rolldown's own tsconfig
         // auto-detection during the production bundle step. Remove once upstream fixes this.
