@@ -2,6 +2,16 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Fix: NY State 6.85% bracket threshold for single and head-of-household filers
+
+**User-visible changes**
+- `src/lib/salaryTaxConstants2026.ts`: NY State's 6.85% bracket now ends at $1,077,550 for single filers and $1,616,450 for head of household, per the 2026 IT-2105-I worksheets. Both statuses had reused the married-filing-jointly threshold ($2,155,350), which undertaxed income in that range by 2.8 points (9.65% vs 6.85%).
+- Only `/required-salary/` results for single or head-of-household incomes above about $1.08M change. No statically built page changes. The build diff between main and this branch is only bundled-asset hashes.
+
+**Validation**
+- A new test in `test/salaryCalc.test.ts` failed on the old thresholds, then passed. It pins all three thresholds and checks that $1.5M of single taxable income is taxed at 9.65% above $1,077,550.
+- `npm test` 235/235; `npm run build` is clean, including `check-csp`.
+
 ## 2026-10-03: Phase 3c: Rent pages get income-rule and FARE Act scenarios
 
 **User-visible changes** (all 30-odd `/rent/<amount>/` pages; URLs unchanged)
