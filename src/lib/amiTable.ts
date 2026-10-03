@@ -1,27 +1,30 @@
 /* ============================================================
-   HUD FY2026 Income Limits — New York, NY HUD Metro FMR Area (HMFA).
-   Source: U.S. Dept. of Housing and Urban Development, FY2026 Income
-   Limits Documentation System — https://www.huduser.gov/portal/datasets/il.html
-   (select New York, NY HUD Metro FMR Area). Also cited in
-   src/content/guides/nyc-ami-housing-connect-explained.md.
+   NYC Area Median Income (AMI), 2026: the 100% AMI row by household size.
+   Source: NYC HPD, "2026 New York City Area AMI" chart, which HPD and
+   Housing Connect use for eligibility (HPD credits HUD as the source) —
+   https://www.nyc.gov/site/hpd/services-and-information/area-median-income.page
+   Other bands on HPD's chart (30%, 80%, 120%, 165%...) are this row scaled.
+   This replaces an earlier table that was about 22% lower than HPD's chart
+   and labeled as HUD's New York HMFA figures; test/amiTable.test.ts pins the
+   HPD values.
    ============================================================
    Shared by the client-side affordable-housing calculator
    (src/scripts/affordable.ts), the Reality Check, and the build-time
-   pages, so every page uses the same HUD figures. Its source and update
+   pages, so every page uses the same figures. Its source and update
    date are listed on /methodology/sources/ (src/data/sourceTables.ts).
    ============================================================ */
 export const AMI_BASE: Record<number, number> = {
-  1: 97000,
-  2: 110850,
-  3: 124700,
-  4: 138550,
-  5: 149650,
-  6: 160700,
-  7: 171800,
-  8: 182900,
+  1: 118800,
+  2: 135700,
+  3: 152700,
+  4: 169600,
+  5: 183200,
+  6: 196800,
+  7: 210400,
+  8: 223900,
 };
 
-export const AMI_SOURCE_URL = 'https://www.huduser.gov/portal/datasets/il.html';
+export const AMI_SOURCE_URL = 'https://www.nyc.gov/site/hpd/services-and-information/area-median-income.page';
 
 export interface BandClass {
   name: string;
