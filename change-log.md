@@ -2,6 +2,40 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Phase 3b: Five Brooklyn neighborhood pages
+
+**User-visible changes**
+- New pages at `/neighborhoods/<slug>/`: **Greenpoint, Park Slope, Brooklyn Heights, Fort Greene, Bedford-Stuyvesant**. `/neighborhoods/` now has a Brooklyn group with 10 neighborhoods in total. All five are in the sitemap.
+- **Rent figure:** each page's rent is Corcoran's **average rent on leases signed**, August 2026. It's neighborhood-specific except Fort Greene, which Corcoran combines with Clinton Hill.
+- **Sale figure:** the sale price is Corcoran's **2Q 2026 median sale price** (co-ops and condos, including new development) for the submarket containing the neighborhood. Each submarket's name and coverage is shown on its card.
+- **Page text:** each page explains:
+  - that the rent is an average, not a median, and is based on last asking prices
+  - what the sale submarket includes, for example that Bed-Stuy's figure excludes the townhouses that make up much of its housing
+  - why the two dates differ
+- **Calculated income:** the income-needed rows say "at the average" for these pages.
+
+**Sources (each figure checked against the PDF itself)**
+- Corcoran, Brooklyn Rental Market Report, August 2026: "Average Rent by Neighborhood" table. Greenpoint $5,643, Park Slope $5,809, Brooklyn Heights $7,076, Fort Greene / Clinton Hill $4,844, Bedford-Stuyvesant $4,269. The report's footnote says the figures are based on last asking prices for leases reported signed.
+- Corcoran, Brooklyn Market Report, 2Q 2026: submarket map page.
+  - Williamsburg & Greenpoint: $1.510M
+  - Brooklyn Heights, Cobble Hill, Dumbo & Downtown: $1.661M
+  - Park Slope & Gowanus: $1.543M
+  - Fort Greene, Clinton Hill & Prospect Heights: $1.100M
+  - Bedford-Stuyvesant, Crown Heights, Lefferts Gardens & Bushwick: $800K
+  - Each submarket's own page agrees ($1.51M, $1.66M, $1.54M, $1.10M, $800K).
+- Considered and not used: Elliman's January 2026 rental report gives only a borough-wide Brooklyn median ($3,814). Its 4Q 2025 Brooklyn sales report uses four broad submarkets. Corcoran's neighborhood breakdowns are finer and more recent.
+
+**Quality gate**
+- Every new page passes on its own neighborhood-level rent, except Fort Greene, which passes on its unique zone rent and its sale figure.
+
+**Validation**
+- `npm test`: 234/234. `npm run build`: clean, including `check-csp`.
+- Browser check:
+  - all five pages render with scope tags
+  - the index groups Manhattan, Brooklyn, and Queens
+  - no overflow at 390px
+  - no errors under the production CSP
+
 ## 2026-10-03: Phase 3a: Neighborhood market-figure schema and quality gate
 
 **User-visible changes**
