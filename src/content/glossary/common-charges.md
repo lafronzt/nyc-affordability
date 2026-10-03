@@ -13,6 +13,7 @@ relatedGuides:
   - coop-vs-condo-nyc-costs
 relatedCalculators:
   - "/condo/"
+  - "/rent-vs-buy/"
 draft: false
 ---
 

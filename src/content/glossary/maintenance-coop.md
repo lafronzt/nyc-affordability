@@ -17,6 +17,7 @@ relatedGuides:
   - coop-board-reserve-requirements
 relatedCalculators:
   - "/coop/"
+  - "/rent-vs-buy/"
 draft: false
 ---
 

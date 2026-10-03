@@ -309,8 +309,8 @@ const jsonLd = {
       </div>
     </a>
 
-    <!-- Down Payment Savings Planner: 10th card, alone on the last row of a 3-per-row grid, so centered -->
-    <a class="calc-card calc-card--last-centered" href="/savings-planner/">
+    <!-- Down Payment Savings Planner + Rent vs Buy: cards 10 and 11, a pair on the last row of a 3-per-row grid, so centered -->
+    <a class="calc-card calc-card--pair-start" href="/savings-planner/">
       <div class="card-banner savings">
         <div class="card-icon">🗓️</div>
         <div class="card-banner-title">Down Payment<br>Savings Planner</div>
@@ -324,6 +324,23 @@ const jsonLd = {
           <li>Co-op vs condo timeline side by side</li>
         </ul>
         <span class="card-cta cta-savings">Plan Your Purchase →</span>
+      </div>
+    </a>
+
+    <a class="calc-card" href="/rent-vs-buy/">
+      <div class="card-banner rentbuy">
+        <div class="card-icon">⚖️</div>
+        <div class="card-banner-title">Rent vs Buy<br>Calculator</div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Buy the co-op or condo, or keep renting and invest the difference? Year-by-year net worth both ways, with NYC's costs of getting in and getting out.</p>
+        <ul class="card-features">
+          <li>Break-even year and break-even rent</li>
+          <li>Closing costs and mansion tax going in</li>
+          <li>Broker, transfer taxes, flip tax going out</li>
+          <li>Every assumption editable</li>
+        </ul>
+        <span class="card-cta cta-rentbuy">Compare Rent vs Buy →</span>
       </div>
     </a>
 
@@ -457,7 +474,7 @@ const jsonLd = {
   gap: 24px;
 }
 .calc-card { grid-column: span 2; }
-.calc-card--last-centered { grid-column: 3 / span 2; }
+.calc-card--pair-start { grid-column: 2 / span 2; }
 
 .calc-card {
   background: #fff;
@@ -494,6 +511,7 @@ const jsonLd = {
 .card-banner.reality    { background: linear-gradient(135deg, #334155, #0f172a); }
 .card-banner.levers     { background: linear-gradient(135deg, #166534, #052e16); }
 .card-banner.savings    { background: linear-gradient(135deg, #1e40af, #172554); }
+.card-banner.rentbuy    { background: linear-gradient(135deg, #6b21a8, #3b0764); }
 
 .card-icon {
   font-size: 32px;
@@ -576,6 +594,7 @@ const jsonLd = {
 .cta-reality    { background: #334155; color: #f1f5f9; }
 .cta-levers     { background: #166534; color: #f0fdf4; }
 .cta-savings    { background: #1e40af; color: #eff6ff; }
+.cta-rentbuy    { background: #6b21a8; color: #faf5ff; }
 
 .features {
   background: #fff;
@@ -598,7 +617,7 @@ const jsonLd = {
 @media (max-width: 1100px) {
   .calc-grid { grid-template-columns: repeat(2, 1fr); }
   .calc-card,
-  .calc-card--last-centered { grid-column: span 1; }
+  .calc-card--pair-start { grid-column: span 1; }
   .persona-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 820px) {
