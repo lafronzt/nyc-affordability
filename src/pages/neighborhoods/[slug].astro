@@ -11,7 +11,7 @@ import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { fmtMoney } from '../../lib/format';
 import { requiredIncomeForRent, requiredIncomeForPrice } from '../../lib/afford';
-import { firstOf, isAreaSpecific, type MarketFigure } from '../../lib/marketFigures';
+import { firstOf, firstRent, isAreaSpecific, isRent, type MarketFigure } from '../../lib/marketFigures';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -51,7 +51,8 @@ const relatedGuides = data.relatedGuides
   .filter((g) => g !== undefined);
 
 // The schema guarantees at least one of each.
-const rent = firstOf(data.figures, 'median-asking-rent')!;
+const rent = firstRent(data.figures)!;
+const rentKind = rent.metric === 'average-rent' ? 'average' : 'median';
 const sale = firstOf(data.figures, 'median-sale-price')!;
 const rentIncome = requiredIncomeForRent({ targetRent: rent.value });
 const coopIncome = requiredIncomeForPrice({ targetPrice: sale.value, propertyType: 'coop' });
@@ -121,7 +122,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
     {[rent, sale].map((f) => (
       <div class="stat-card">
         <div class="stat-label">{f.label}</div>
-        <div class="stat-value">{fmtMoney(f.value)}{f.metric === 'median-asking-rent' && <span class="stat-unit">/mo</span>}</div>
+        <div class="stat-value">{fmtMoney(f.value)}{isRent(f) && <span class="stat-unit">/mo</span>}</div>
         <div class={isAreaSpecific(f) ? 'stat-scope' : 'stat-scope stat-scope--wide'}>{scopeLine(f)}</div>
         <div class="stat-asof">As of {f.period} · <a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">{f.source.split(':')[0]}</a></div>
       </div>
@@ -135,11 +136,11 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
   <div class="card calc-card">
     <h3>What it takes to live here</h3>
-    <p class="calc-disclaimer">The figures below are <strong>calculated</strong> (not cited market data) by running {data.name}'s median rent and sale price through this site's calculator assumptions (40× rent rule, co-op/condo DTI limits). They assume no other monthly debts and don't check against real savings. Open the linked calculator to run your own numbers.</p>
+    <p class="calc-disclaimer">The figures below are <strong>calculated</strong> (not cited market data) by running {data.name}'s {rentKind} rent and median sale price (shown above) through this site's calculator assumptions (40× rent rule, co-op/condo DTI limits). They assume no other monthly debts and don't check against real savings. Open the linked calculator to run your own numbers.</p>
     <table>
       <tbody>
         <tr>
-          <td>Rent at the median (<a href="/rent/">Rent Calculator</a>)</td>
+          <td>Rent at the {rentKind} (<a href="/rent/">Rent Calculator</a>)</td>
           <td>{fmtMoney(rentIncome.annualIncomeNeeded)}/yr income needed</td>
         </tr>
         <tr>
@@ -200,7 +201,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 <Footer
   variant="site"
-  disclaimer="Median rent and sale price figures are sourced market data, cited above, and are not calculated by this site. Affordability figures elsewhere on this page are calculated using default assumptions and do not reflect your actual accounts, debts, or a specific building's financials. This page is for informational purposes only and does not constitute financial, legal, or mortgage advice."
+  disclaimer="Rent and sale price figures are sourced market data, cited above, and are not calculated by this site. Affordability figures elsewhere on this page are calculated using default assumptions and do not reflect your actual accounts, debts, or a specific building's financials. This page is for informational purposes only and does not constitute financial, legal, or mortgage advice."
   columns={footerColumns}
 />
 </BaseLayout>

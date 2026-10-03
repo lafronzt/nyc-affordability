@@ -5,7 +5,7 @@ metaDescription: "Median rent and sale price for the Upper West Side, Manhattan,
 intro: "One of Manhattan's largest residential neighborhoods, running from Central Park West to the Hudson River, 59th Street to around 110th Street: a mix of prewar co-ops, postwar rentals, and a growing number of new condo developments near the river."
 updated: "2026-08-13"
 figures:
-  - metric: "median-asking-rent"
+  - metric: "median-rent"
     value: 4700
     unitScope: "all"
     propertyScope: "all"
@@ -13,7 +13,7 @@ figures:
       kind: "broker-zone"
       name: "Westside (Elliman)"
     period: "January 2026"
-    label: "Median asking rent, all unit sizes (Elliman \"Westside\" rental zone)"
+    label: "Median rent on new leases, all unit sizes (Elliman \"Westside\" rental zone)"
     source: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
     sourceUrl: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"
   - metric: "median-sale-price"

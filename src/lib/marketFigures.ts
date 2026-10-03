@@ -12,12 +12,22 @@
    test/neighborhoodFigures.test.ts enforces the Phase 3 quality gate.
    ============================================================ */
 
-export const METRICS = ['median-asking-rent', 'median-sale-price'] as const;
+/**
+ * What a figure measures, as its source defines it.
+ * - median-rent: median rent on leases signed (Elliman reports the median
+ *   "rental price" of new leases, excluding renewals). Not an asking rent.
+ * - average-rent: average rent on leases signed (Corcoran's neighborhood
+ *   tables average the last asking price of leases reported signed).
+ * - median-sale-price: median closed sale price.
+ */
+export const METRICS = ['median-rent', 'average-rent', 'median-sale-price'] as const;
+export const RENT_METRICS: readonly Metric[] = ['median-rent', 'average-rent'];
 export const UNIT_SCOPES = ['all', 'studio', '1br', '2br', '3br+'] as const;
 export const PROPERTY_SCOPES = ['all', 'coop', 'condo', 'coop+condo'] as const;
 export const GEO_KINDS = ['neighborhood', 'broker-zone', 'borough', 'city'] as const;
 
 export type Metric = (typeof METRICS)[number];
+export const isRent = (f: { metric: Metric }) => RENT_METRICS.includes(f.metric);
 
 export interface MarketFigure {
   metric: Metric;
@@ -35,6 +45,8 @@ export interface MarketFigure {
 }
 
 export const firstOf = (figures: MarketFigure[], metric: Metric) => figures.find((f) => f.metric === metric);
+/** The page's headline rent: the first rent figure of either kind. */
+export const firstRent = (figures: MarketFigure[]) => figures.find(isRent);
 
 /** Identity of a cited number: same metric, value, scope, period, and source = the same figure. */
 export const figureKey = (f: MarketFigure) =>
@@ -54,7 +66,7 @@ export function uniqueFigureCount(own: MarketFigure[], siblings: MarketFigure[][
   const others = new Set(siblings.flat().map(figureKey));
   const unique = own.filter((f) => !others.has(figureKey(f)));
   const cited = unique.length;
-  const computed = unique.reduce((n, f) => n + (f.metric === 'median-asking-rent' ? 1 : 2), 0);
+  const computed = unique.reduce((n, f) => n + (isRent(f) ? 1 : 2), 0);
   return { cited, computed, total: cited + computed };
 }
 

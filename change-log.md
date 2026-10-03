@@ -10,6 +10,10 @@ Multi-file changes, newest first. Each entry gives the user-visible effect and h
   - an amber "Wider area: Northwest Queens (Elliman) (Astoria, Long Island City, Sunnyside, and Woodside combined)" tag for broker-zone numbers
 - Each card also links its source next to the period.
 - All numbers are unchanged. Every dollar figure on the five neighborhood pages and the index matches the previous build.
+- **Label correction:** the rent figures were labeled "Median asking rent". Checked against the cited Elliman January 2026 PDF, all five values match, but the report measures the **median rental price of new leases signed** (excluding renewals), not asking rents. The labels now read "Median rent on new leases".
+  - The metric is renamed `median-rent`.
+  - An `average-rent` metric is added for sources that publish averages (Corcoran's neighborhood rent tables), ahead of the Brooklyn pages.
+  - Page copy says "median" or "average" to match the figure.
 
 **Schema** (`src/content.config.ts`, `src/lib/marketFigures.ts`)
 - The flat `medianRent` / `medianRentLabel` / `medianRentAsOf` / `medianSalePrice…` fields are replaced by a `figures` list. Each figure records:

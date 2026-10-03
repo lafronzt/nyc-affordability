@@ -5,7 +5,7 @@ metaDescription: "Median rent and sale price for Chelsea, Manhattan (from a broa
 intro: "A Manhattan neighborhood roughly from 14th to 34th Street, west of Fifth Avenue, known for the High Line, Chelsea Market, and a mix of prewar walk-ups, converted lofts, and newer condo towers along the West Side."
 updated: "2026-08-13"
 figures:
-  - metric: "median-asking-rent"
+  - metric: "median-rent"
     value: 5135
     unitScope: "all"
     propertyScope: "all"
@@ -13,7 +13,7 @@ figures:
       kind: "broker-zone"
       name: "Downtown (Elliman)"
     period: "January 2026"
-    label: "Median asking rent, all unit sizes (Elliman \"Downtown\" rental zone)"
+    label: "Median rent on new leases, all unit sizes (Elliman \"Downtown\" rental zone)"
     source: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
     sourceUrl: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"
   - metric: "median-sale-price"

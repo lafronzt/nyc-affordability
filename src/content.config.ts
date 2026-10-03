@@ -113,8 +113,8 @@ const neighborhoods = defineCollection({
           sourceUrl: z.string().url(),
         })
       )
-      .refine((fs) => fs.some((f) => f.metric === 'median-asking-rent') && fs.some((f) => f.metric === 'median-sale-price'), {
-        message: 'needs at least one median-asking-rent and one median-sale-price figure',
+      .refine((fs) => fs.some((f) => f.metric === 'median-rent' || f.metric === 'average-rent') && fs.some((f) => f.metric === 'median-sale-price'), {
+        message: 'needs at least one rent figure (median-rent or average-rent) and one median-sale-price figure',
       }),
     // Per the citation policy for this collection: every figure must trace to a dated,
     // stable snapshot (a quarterly report PDF, a dated news article) — never a live/IDX

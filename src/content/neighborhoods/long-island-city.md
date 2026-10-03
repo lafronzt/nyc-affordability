@@ -5,7 +5,7 @@ metaDescription: "Median rent (Northwest Queens zone) and median sale price for 
 intro: "A rapidly redeveloped Queens neighborhood directly across the East River from Midtown Manhattan, known for its skyline of new-construction condo and rental towers, and among the fastest-growing residential markets in NYC over the past decade."
 updated: "2026-08-13"
 figures:
-  - metric: "median-asking-rent"
+  - metric: "median-rent"
     value: 3754
     unitScope: "all"
     propertyScope: "all"
@@ -14,7 +14,7 @@ figures:
       name: "Northwest Queens (Elliman)"
       definition: "Astoria, Long Island City, Sunnyside, and Woodside combined"
     period: "January 2026"
-    label: "Median asking rent, all unit sizes (Elliman \"Northwest Queens\" zone: Astoria, LIC, Sunnyside, Woodside combined)"
+    label: "Median rent on new leases, all unit sizes (Elliman \"Northwest Queens\" zone: Astoria, LIC, Sunnyside, Woodside combined)"
     source: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
     sourceUrl: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"
   - metric: "median-sale-price"

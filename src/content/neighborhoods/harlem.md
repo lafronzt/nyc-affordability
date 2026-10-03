@@ -5,7 +5,7 @@ metaDescription: "Median rent and sale price for Harlem, Manhattan (from a broad
 intro: "A historic Manhattan neighborhood north of Central Park, roughly 110th to 155th Street, known for its cultural history, brownstones, and a real estate market that runs meaningfully more affordable than the rest of Manhattan."
 updated: "2026-08-13"
 figures:
-  - metric: "median-asking-rent"
+  - metric: "median-rent"
     value: 3100
     unitScope: "all"
     propertyScope: "all"
@@ -13,7 +13,7 @@ figures:
       kind: "broker-zone"
       name: "Northern Manhattan (Elliman)"
     period: "January 2026"
-    label: "Median asking rent, all unit sizes (Elliman \"Northern Manhattan\" rental zone)"
+    label: "Median rent on new leases, all unit sizes (Elliman \"Northern Manhattan\" rental zone)"
     source: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
     sourceUrl: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"
   - metric: "median-sale-price"

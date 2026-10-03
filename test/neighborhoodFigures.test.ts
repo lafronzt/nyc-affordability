@@ -45,7 +45,7 @@ for (const h of published) {
 }
 
 test('the gate counts a figure shared by two pages for neither', () => {
-  const shared = { metric: 'median-asking-rent', value: 3_754, unitScope: 'all', propertyScope: 'all', geo: { kind: 'broker-zone', name: 'Zone' }, period: 'January 2026', label: 'x', source: 's', sourceUrl: 'https://example.com/a' } as MarketFigure;
+  const shared = { metric: 'median-rent', value: 3_754, unitScope: 'all', propertyScope: 'all', geo: { kind: 'broker-zone', name: 'Zone' }, period: 'January 2026', label: 'x', source: 's', sourceUrl: 'https://example.com/a' } as MarketFigure;
   const own = { ...shared, metric: 'median-sale-price', value: 700_000, geo: { kind: 'neighborhood', name: 'A' } } as MarketFigure;
   assert.deepEqual(uniqueFigureCount([shared, own], [[shared]]), { cited: 1, computed: 2, total: 3 });
   assert.deepEqual(uniqueFigureCount([shared], [[shared]]), { cited: 0, computed: 0, total: 0 });
