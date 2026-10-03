@@ -2,7 +2,7 @@
 term: "HDFC Co-op"
 shortDefinition: "An income-restricted co-op created under NYC's Housing Development Fund Corporation program, with lower purchase prices than market-rate co-ops, but capped buyer income and often a steep flip tax."
 metaDescription: "An HDFC co-op is an income-restricted NYC co-op with below-market prices but strict buyer income caps and a steep resale flip tax. See the income limit and a worked flip tax example."
-updated: "2026-09-13"
+updated: "2026-10-03"
 category: "affordable-housing"
 sources:
   - label: "NYC HPD: HDFC Program Overview"
@@ -26,4 +26,4 @@ The tradeoff shows up at resale. Where a typical market-rate co-op charges a 1-3
 
 ## Worked example
 
-A 2-person household's FY2026 100% AMI figure is $110,850 (see the [AMI table](/glossary/ami-area-median-income/)); at a 165% cap, that household could qualify up to roughly $182,900 in income. On resale, a unit bought for $300,000 and sold for $500,000 has $200,000 in profit. At a 30%-of-profit flip tax, the seller owes $60,000 at closing, on top of any other closing costs. Check a specific building's actual income cap and flip tax formula in its offering plan or house rules before assuming these figures apply.
+A 2-person household's 2026 100% AMI figure is $135,700 (see the [AMI table](/glossary/ami-area-median-income/)); at a 165% cap, that household could qualify up to $223,905 in income, the figure on HPD's chart. On resale, a unit bought for $300,000 and sold for $500,000 has $200,000 in profit. At a 30%-of-profit flip tax, the seller owes $60,000 at closing, on top of any other closing costs. Check a specific building's actual income cap and flip tax formula in its offering plan or house rules before assuming these figures apply.

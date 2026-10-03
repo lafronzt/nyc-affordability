@@ -113,6 +113,18 @@ Multi-file changes, newest first. Each entry gives the user-visible effect and h
   - the nav lists the guides
   - no overflow at 390px
   - no errors under the production CSP
+## 2026-10-03: Fix: AMI table now matches HPD's 2026 chart
+
+**User-visible changes**
+- The 100% AMI figures in `src/lib/amiTable.ts` are now NYC HPD's 2026 New York City Area AMI chart: $118,800 (1 person) through $223,900 (8 people); $152,700 for 3 and $169,600 for 4. The old table was about 22% lower: $124,700 for 3 and $138,550 for 4. It was labeled as HUD's New York HMFA figures and "the same ones HPD uses", but it didn't match HPD's chart.
+- Effect: `/affordable/` and `/reality-check/` were overstating households' AMI percentage. A 3-person household at $150,000 showed 120% AMI; HPD's chart puts it at 98%. Bands, eligibility and the max rents per band all move with the new figures.
+- `/affordable/` source notes, the AMI guide (table, examples, rent-by-band table, and a dated correction note), the AMI and HDFC glossary entries, the homepage feature list, and `/methodology/sources/` now cite HPD's chart.
+- The AMI guide no longer says its rent-by-band table is HPD's method exactly. HPD's published rents come out lower because HPD uses its own household-size assumptions.
+
+**Validation**
+- New `test/amiTable.test.ts` failed against the old table first, then passed. It pins the 1–8 person figures to HPD's chart, spot-checks HPD's 60%, 80% and 120% columns, and checks the $150K / 3-person = 98.2% example.
+- `npm test` 237/237; `npm run build` is clean, including `check-csp`.
+- In the browser under the production CSP, `/affordable/` defaults the 3-person reference to $152,700 and shows 98% for $150K at 3 people, with no overflow at 390px and no errors.
 
 ## 2026-10-03: Phase 3c: Rent pages get income-rule and FARE Act scenarios
 
