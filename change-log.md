@@ -2,6 +2,56 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Phase 2e: Cost to move (/cost-to-move/)
+
+**User-visible changes**
+- New **`/cost-to-move/`** with three modes: a rental, a co-op you're buying, or a condo you're buying. It itemizes every dollar needed on move-in day:
+  - **Rental:** first month's rent, security deposit, the $20 application fee, a broker fee only if you hired your own (FARE Act), an optional guarantor-company fee, pet and building fees, and utility setup.
+  - **Purchase:** down payment, closing costs, mansion tax, mortgage recording tax (condo), the co-op move-in deposit, and board reserves.
+  - **The move itself (all modes):** movers, supplies, days of paying for both places, breaking your current lease, furniture.
+- Every line is sorted into one of four kinds: **spent**, **becomes equity** (down payment), **comes back later** (security deposit, co-op move-in deposit), or **stays in your account** (co-op reserves). They're shown in a sentence, a stacked bar using palette slots 1 to 4 with a legend carrying the amounts, and a tagged line-by-line table.
+- **Matches the other tools:**
+  - Rental signing costs match `/rent/`.
+  - The purchase total matches the savings planner's cash target, plus utilities and the move.
+  - A co-op's $52,528 in reserves at $600K matches the reserves guide.
+- **Privacy:** no balances, income, or debts are asked for, so the share link carries the whole scenario. Inputs are saved only with "Save inputs" on.
+- **Where it's linked:**
+  - Rent nav menu ("Cost to move", where the brief places move-in costs)
+  - homepage grid (card 13, centered on its own row)
+  - every footer, `/explore/`, and the sitemap
+  - the key money, guarantor, and FARE Act glossary terms
+- `/methodology/sources/` gets a **Moving** group with three new registry entries, all labeled "our estimate":
+  - movers: $1,500
+  - supplies: $150
+  - guarantor fee: 70% of one month's rent, the value used when you turn the guarantor option on. The guarantor guide reports a 60% to 110% range.
+
+**Code**
+- `src/lib/engines/moveCost.ts` (pure):
+  - `renterMoveCost` uses `rentSnapshot`.
+  - `buyerMoveCost` uses `calculateCoop`/`calculateCondo`.
+  - The moving lines are plain addition. Zero-amount lines are dropped.
+
+**Tests** (194 → 202; `test/moveCost.test.ts`)
+- Renter signing cash equals the `/rent/` engine.
+- Only the security deposit is refundable; a tenant-hired broker and the guarantor fee add up correctly.
+- Overlap is prorated over a 30-day month.
+- Buyer cash equals the savings planner's target, and equity equals the down payment.
+- Co-op reserves are held (not spent) and the move-in deposit is refundable; condos pay mortgage recording tax.
+- Mansion tax starts at $1M.
+- Every dollar lands in exactly one bucket.
+
+**Validation**
+- `npm test`: 202/202. `npm run build`: clean, including `check-csp`.
+- Browser checks, with the production CSP header served:
+  - rental default: $9,420
+  - with a tenant-hired broker, a guarantor, and 15 days of overlap: $19,570
+  - co-op at $600K: $186,878 (equity, spent, back later, and held all shown)
+  - condo: $146,870, with the rate field hidden
+  - the Rent menu links the page
+  - no `localStorage` writes with saving off
+  - no page errors; no overflow at 390px
+- Fixed during review: script-injected stack and legend colors needed `:global()`.
+
 ## 2026-10-03: Phase 2d: Rate & maintenance sensitivity (/rate-sensitivity/)
 
 **User-visible changes**

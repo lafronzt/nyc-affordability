@@ -1,0 +1,366 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import AppHeader from '../../components/AppHeader.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_COST_TO_MOVE, otherCalculators, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: otherCalculators(CALC_COST_TO_MOVE.href!) },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'NYC Cost to Move Calculator',
+  url: 'https://www.nyc-affordability.com/cost-to-move/',
+  description: 'Every dollar it takes to move into a NYC rental, co-op, or condo: lease-signing costs under the FARE Act and NY deposit caps, or closing costs and board reserves, plus movers, overlapping rent, and breaking a lease. Shows what is spent, what becomes equity, what comes back, and what just has to stay in your account.',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  areaServed: { '@type': 'City', name: 'New York City', sameAs: 'https://www.wikidata.org/wiki/Q60' },
+};
+---
+<BaseLayout
+  variant="app"
+  ads
+  pageTitle="NYC Cost to Move Calculator: Rental, Co-op, or Condo | NYC Affordability"
+  metaDescription="How much cash do you need to move in NYC? Itemized move-in costs for a rental (FARE Act, deposit caps, guarantor fees) or a co-op or condo purchase (closing costs, board reserves), plus movers and overlapping rent."
+  canonicalPath="/cost-to-move/"
+  ogTitle="What Does It Actually Cost to Move in NYC?"
+  ogDescription="Itemized cash to move into a NYC rental, co-op, or condo: what's spent, what becomes equity, what comes back, and what has to stay in the bank."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
+  twitterTitle="What Does It Actually Cost to Move in NYC?"
+  twitterDescription="Itemized cash to move into a NYC rental, co-op, or condo: what's spent, what becomes equity, what comes back, and what has to stay in the bank."
+  jsonLd={jsonLd}
+>
+<AppHeader
+  titleHtml="NYC <em>Cost to Move</em>"
+  tagline="Every dollar between you and the keys, and which of them you get back."
+  showSaveToggle
+/>
+
+<main class="page">
+  <section class="hero">
+    <div class="eyebrow">Move-in cash</div>
+    <h2>What does it actually cost to move?</h2>
+    <p>The listing shows the rent or the price. Getting in the door takes more: a deposit, fees, a guarantor if you need one, or for buyers, closing costs and a co-op board's reserves, plus the movers and the month you pay for two places. This itemizes all of it with the same math as the <a href="/rent/">rent</a>, <a href="/coop/">co-op</a>, and <a href="/condo/">condo</a> calculators, and sorts it by what you actually lose.</p>
+  </section>
+
+  <div class="layout">
+    <section class="section-card" aria-labelledby="h-inputs">
+      <div class="section-title" id="h-inputs">Your move</div>
+      <div class="editor-body">
+        <fieldset class="type-toggle">
+          <legend>Moving into</legend>
+          <label><input type="radio" name="cm-mode" value="rent" checked> A rental</label>
+          <label><input type="radio" name="cm-mode" value="coop"> A co-op I'm buying</label>
+          <label><input type="radio" name="cm-mode" value="condo"> A condo I'm buying</label>
+        </fieldset>
+
+        <div class="editor-grid rent-only">
+          <div class="field">
+            <label for="cm-rent">Monthly rent</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="cm-rent" min="0" step="50" inputmode="numeric"></div>
+          </div>
+          <div class="field">
+            <label for="cm-broker-type">Broker</label>
+            <select class="plain" id="cm-broker-type">
+              <option value="none" selected>None, or the landlord's (landlord pays)</option>
+              <option value="pct_annual">I hired one: % of a year's rent</option>
+              <option value="months">I hired one: months of rent</option>
+              <option value="flat">I hired one: flat fee</option>
+            </select>
+            <small><a href="/guides/fare-act-broker-fees-explained/">FARE Act</a>: you pay only a broker you hire.</small>
+          </div>
+          <div class="field" id="cm-broker-pct-field">
+            <label for="cm-broker-pct">Broker fee</label>
+            <div class="input-wrap"><input type="number" id="cm-broker-pct" min="0" max="30" step="0.5"><span>% of annual rent</span></div>
+          </div>
+          <div class="field" id="cm-broker-months-field">
+            <label for="cm-broker-months">Broker fee</label>
+            <div class="input-wrap"><input type="number" id="cm-broker-months" min="0" max="3" step="0.25"><span>months</span></div>
+          </div>
+          <div class="field" id="cm-broker-flat-field">
+            <label for="cm-broker-flat">Broker fee</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="cm-broker-flat" min="0" step="100"></div>
+          </div>
+          <div class="field">
+            <label class="check"><input type="checkbox" id="cm-guarantor-on"> I'll use a guarantor company</label>
+            <div class="input-wrap"><input type="number" id="cm-guarantor" min="0" max="200" step="5"><span>% of 1 month</span></div>
+            <small>Commonly 60%–110%; <a href="/guides/nyc-rental-guarantor-companies-explained/">how they work</a></small>
+          </div>
+          <div class="field">
+            <label for="cm-pet">Pet fee</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="cm-pet" min="0" step="50"></div>
+          </div>
+          <div class="field">
+            <label for="cm-building">Building move-in fees</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="cm-building" min="0" step="50"></div>
+            <small>Elevator reservation, keys, move-in deposit</small>
+          </div>
+        </div>
+
+        <div class="editor-grid buy-only">
+          <div class="field">
+            <label for="cm-price">Purchase price</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="cm-price" min="0" step="10000" inputmode="numeric"></div>
+          </div>
+          <div class="field">
+            <label for="cm-dp">Down payment</label>
+            <div class="input-wrap"><input type="number" id="cm-dp" min="0" max="100" step="1"><span>%</span></div>
+          </div>
+          <div class="field">
+            <label for="cm-charges" id="cm-charges-label">Monthly maintenance</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="cm-charges" min="0" step="50"><span>/mo</span></div>
+          </div>
+          <div class="field coop-only">
+            <label for="cm-reserves">Board reserves</label>
+            <div class="input-wrap"><input type="number" id="cm-reserves" min="0" max="60" step="1"><span>months</span></div>
+            <small>Of mortgage + maintenance, kept after closing</small>
+          </div>
+          <div class="field coop-only">
+            <label for="cm-rate">Mortgage rate</label>
+            <div class="input-wrap"><input type="number" id="cm-rate" min="0" max="20" step="0.05"><span>%</span></div>
+            <small>Sets the reserve amount (months of mortgage + maintenance)</small>
+          </div>
+        </div>
+
+        <details class="assumptions" open>
+          <summary>The move itself</summary>
+          <div class="editor-grid">
+            <div class="field">
+              <label for="cm-movers">Movers</label>
+              <div class="input-wrap"><span>$</span><input type="number" id="cm-movers" min="0" step="100"></div>
+              <small>A placeholder; get a quote</small>
+            </div>
+            <div class="field">
+              <label for="cm-supplies">Boxes and supplies</label>
+              <div class="input-wrap"><span>$</span><input type="number" id="cm-supplies" min="0" step="25"></div>
+            </div>
+            <div class="field">
+              <label for="cm-overlap">Days paying for both places</label>
+              <div class="input-wrap"><input type="number" id="cm-overlap" min="0" max="120" step="1"><span>days</span></div>
+            </div>
+            <div class="field">
+              <label for="cm-current">What you pay now</label>
+              <div class="input-wrap"><span>$</span><input type="number" id="cm-current" min="0" step="50"><span>/mo</span></div>
+              <small>For the overlap</small>
+            </div>
+            <div class="field">
+              <label for="cm-leasebreak">Breaking your current lease</label>
+              <div class="input-wrap"><span>$</span><input type="number" id="cm-leasebreak" min="0" step="100"></div>
+            </div>
+            <div class="field">
+              <label for="cm-furnishing">Furniture and setup</label>
+              <div class="input-wrap"><span>$</span><input type="number" id="cm-furnishing" min="0" step="100"></div>
+            </div>
+            <div class="field">
+              <label for="cm-utilities">Utility setup</label>
+              <div class="input-wrap"><span>$</span><input type="number" id="cm-utilities" min="0" step="25"></div>
+            </div>
+          </div>
+        </details>
+        <p class="editor-note">Everything is calculated in your browser. Nothing you enter is sent anywhere. Defaults come from <a href="/methodology/sources/">our sources page</a>.</p>
+      </div>
+    </section>
+
+    <div class="results" aria-live="polite">
+      <section class="section-card" aria-labelledby="h-answer">
+        <div class="section-title" id="h-answer">Your answer</div>
+        <div class="answer-body">
+          <div class="big-label">Cash to have on hand</div>
+          <div class="big-value" id="cm-total">&mdash;</div>
+          <p class="headline" id="cm-headline">&mdash;</p>
+          <div class="stack" id="cm-stack" role="img" aria-labelledby="cm-headline"></div>
+          <ul class="stack-legend" id="cm-legend"></ul>
+          <dl class="tiles">
+            <div><dt>For the home</dt><dd id="cm-housing">&mdash;</dd></div>
+            <div><dt>For the move</dt><dd id="cm-moving">&mdash;</dd></div>
+          </dl>
+          <p class="editor-note">Calculated estimates. Moving costs are placeholders until you enter your own quotes.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section class="section-card" aria-labelledby="h-breakdown">
+    <div class="section-title" id="h-breakdown">Line by line</div>
+    <div class="table-wrap">
+      <table class="data"><tbody id="cm-lines"></tbody></table>
+    </div>
+  </section>
+
+  <div class="actions">
+    <span class="share-note">The link holds the scenario only: no balances or income.</span>
+    <button class="btn-share" id="cm-share" type="button">Copy scenario link</button>
+    <button class="btn-share" id="cm-print" type="button">Print</button>
+  </div>
+
+  <section class="section-card" aria-labelledby="h-how">
+    <div class="section-title" id="h-how">How this works</div>
+    <div class="prose-body">
+      <p><strong>Renting.</strong> Signing costs come from the same engine as the <a href="/rent/">rent calculator</a>: first month's rent, a security deposit (capped at one month's rent under NY law), the $20 cap on application fees, and building move-in fees. Under the <a href="/glossary/fare-act/">FARE Act</a>, a broker the landlord hired is paid by the landlord, so a broker fee only appears if you hired your own. A <a href="/guides/nyc-rental-guarantor-companies-explained/">guarantor company</a> charges a one-time fee per lease year that you don't get back. See <a href="/guides/nyc-security-deposit-move-in-costs/">security deposits and move-in costs</a>.</p>
+      <p><strong>Buying.</strong> Down payment, <a href="/guides/nyc-closing-costs-for-buyers/">closing costs</a>, the <a href="/guides/nyc-mansion-tax-explained/">mansion tax</a> at $1M and up, and <a href="/glossary/mortgage-recording-tax/">mortgage recording tax</a> on condo loans come from the <a href="/coop/">co-op</a> and <a href="/condo/">condo</a> calculators. A co-op board's <a href="/glossary/post-closing-liquidity/">post-closing reserves</a> aren't spent, but the cash has to be there, so they count toward what you need on hand. The total matches the <a href="/savings-planner/">savings planner</a>'s cash target, plus utilities and the move.</p>
+      <p><strong>Four kinds of money.</strong> <em>Spent</em> is gone: fees, taxes, movers. <em>Equity</em> is the down payment: it leaves your account but you own it. <em>Comes back</em> is a deposit you should get back: a security deposit when you move out, a co-op's move-in deposit once the move is done without damage. <em>Stays in your account</em> is money a co-op board needs to see after closing. They all have to be in hand on move-in day.</p>
+      <p><strong>What it can't see:</strong> a specific building's fees, your movers' actual quote, prorated rent or maintenance adjustments at closing, or lender credits. Not sure whether to rent or buy at all? Try <a href="/rent-vs-buy/">rent vs. buy</a>. See <a href="/methodology/">the methodology</a>.</p>
+    </div>
+  </section>
+</main>
+
+<AdSlot maxWidth="1300px" sidePadding="20px" />
+
+<Footer
+  variant="app"
+  disclaimer="This calculator is for informational purposes only and does not constitute financial, legal, or real estate advice. Fees, deposit rules, and closing costs vary by building, lender, and transaction; moving costs are placeholders. Verify lease terms with the landlord, closing costs with a real estate attorney, and moving costs with licensed movers."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<script>
+  import '../../scripts/cost-to-move';
+</script>
+
+<style>
+.page { max-width: 1300px; margin: 20px auto; padding: 0 20px 60px; }
+.hero {
+  background: linear-gradient(135deg, #0a1628 0%, #0f2a54 100%);
+  border: 1px solid #1e3a5f; border-radius: var(--r); color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 16px; padding: 26px 24px 22px;
+}
+.eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 8px; }
+.hero h2 { font-size: clamp(22px, 3.2vw, 32px); line-height: 1.15; letter-spacing: -0.5px; color: #f0f9ff; margin-bottom: 10px; }
+.hero p { color: #93b4d0; max-width: 820px; font-size: 14px; line-height: 1.65; }
+.hero p a { color: #cfe0fb; }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.section-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 16px;
+}
+.section-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--g500);
+  padding: 12px 18px 11px; border-bottom: 1px solid var(--g100);
+}
+.editor-body { padding: 16px 18px 18px; }
+.editor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; color: var(--g700); font-weight: 650; margin-bottom: 5px; }
+.field small { display: block; font-size: 11px; color: var(--g500); margin-top: 4px; }
+.optional { font-weight: 400; color: var(--g500); }
+.input-wrap {
+  display: flex; align-items: stretch; border: 1px solid var(--g300); border-radius: 5px; background: #fff;
+  overflow: hidden; transition: border-color .15s, box-shadow .15s;
+}
+.input-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.input-wrap span {
+  background: var(--g50); border-right: 1px solid var(--g200); padding: 0 8px; color: var(--g500);
+  font-size: 13px; font-weight: 600; display: flex; align-items: center; white-space: nowrap;
+}
+.input-wrap input + span { border-right: 0; border-left: 1px solid var(--g200); }
+.input-wrap input { border: 0; outline: 0; padding: 9px 9px; min-width: 0; width: 100%; font: inherit; color: var(--g900); background: #fff; }
+.type-toggle { border: 0; padding: 0; margin: 0 0 14px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.type-toggle legend { font-size: 12px; font-weight: 650; color: var(--g700); margin-right: 4px; float: left; padding-top: 2px; }
+.type-toggle label { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 650; color: var(--g800); min-height: 32px; cursor: pointer; }
+.assumptions { border-top: 1px solid var(--g100); padding-top: 12px; margin-bottom: 8px; }
+.assumptions summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--g800); margin-bottom: 12px; min-height: 28px; }
+.assumptions .muted { font-weight: 400; color: var(--g500); }
+.assumptions a { color: var(--blue); }
+.editor-note { font-size: 12px; color: var(--g500); line-height: 1.6; margin-top: 6px; }
+select.plain { width: 100%; border: 1px solid var(--g300); border-radius: 5px; padding: 9px; font: inherit; background: #fff; color: var(--g900); }
+.check { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 650; color: var(--g700); min-height: 32px; }
+:global(body.mode-rent) .buy-only, :global(body.mode-coop) .rent-only, :global(body.mode-condo) .rent-only, :global(body.mode-condo) .coop-only { display: none; }
+.stack { display: flex; height: 22px; border-radius: 5px; overflow: hidden; margin: 4px 0 10px; background: var(--g100); }
+.stack :global(span) { display: block; height: 100%; min-width: 2px; }
+.stack :global(span + span) { border-left: 2px solid #fff; }
+:global(.k-equity) { background: #2a78d6; }
+:global(.k-spent) { background: #eb6834; }
+:global(.k-refundable) { background: #1baf7a; }
+:global(.k-held) { background: #eda100; }
+.stack-legend { list-style: none; margin: 0 0 12px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+.stack-legend :global(li) { display: flex; align-items: baseline; gap: 8px; font-size: 13px; color: var(--g700); }
+.stack-legend :global(i) { width: 10px; height: 10px; border-radius: 2px; flex: none; transform: translateY(1px); }
+.stack-legend :global(b) { margin-left: auto; color: var(--g900); font-variant-numeric: tabular-nums; }
+table.data :global(.tag) { display: inline-block; font-size: 10.5px; font-weight: 700; border-radius: 10px; padding: 1px 8px; margin-left: 6px; vertical-align: 1px; }
+table.data :global(.tag-spent) { background: #fdeee7; color: #9a3412; }
+table.data :global(.tag-equity) { background: #e8f1fb; color: #1e4f8f; }
+table.data :global(.tag-refundable) { background: #e6f6ef; color: #0f6b4a; }
+table.data :global(.tag-held) { background: #fdf3dc; color: #7a5200; }
+table.data :global(tr.group th) { text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--g100); background: var(--g50); font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--g500); }
+table.data :global(td.neg) { color: #b42318; }
+
+.answer-body { padding: 18px; }
+.big-label { font-size: 12px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; }
+.big-value { font-size: 38px; font-weight: 850; letter-spacing: -1.1px; color: var(--g900); margin: 4px 0 8px; }
+.big-value.long { font-size: 24px; letter-spacing: -0.4px; line-height: 1.25; }
+.headline { font-size: 14.5px; color: var(--g700); line-height: 1.6; margin-bottom: 14px; }
+.headline :global(strong) { color: var(--g900); }
+.headline :global(a) { color: var(--blue); }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin: 0 0 12px; }
+.tiles div { background: var(--g50); border: 1px solid var(--g100); border-radius: 6px; padding: 9px 11px; }
+.tiles dt { font-size: 11px; color: var(--g500); font-weight: 650; }
+.tiles dd { margin: 2px 0 0; font-size: 16px; font-weight: 800; color: var(--g900); font-variant-numeric: tabular-nums; }
+.target-line { font-size: 14px; color: var(--g700); line-height: 1.6; background: var(--blue-xlt); border: 1px solid var(--blue-lt); border-radius: 6px; padding: 10px 12px; }
+.target-line :global(strong) { color: var(--g900); }
+
+
+.chart-body { padding: 14px 18px 16px; }
+.legend { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 8px; padding: 0; }
+.legend li { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--g700); font-weight: 600; }
+.key { display: inline-block; width: 18px; height: 3px; border-radius: 2px; }
+.chart-wrap { position: relative; width: 100%; }
+.tooltip {
+  position: absolute; pointer-events: none; background: #fff; border: 1px solid var(--g200); border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.12); padding: 8px 10px; font-size: 12px; color: var(--g800); min-width: 170px; z-index: 5;
+}
+.tooltip :global(.tt-date) { font-weight: 800; margin-bottom: 4px; }
+.tooltip :global(.tt-row) { display: flex; justify-content: space-between; gap: 12px; font-variant-numeric: tabular-nums; }
+.tooltip :global(.tt-row span:first-child) { display: inline-flex; align-items: center; gap: 6px; color: var(--g600); }
+.tooltip :global(.sw) { width: 10px; height: 3px; border-radius: 2px; display: inline-block; }
+.chart-desc { font-size: 12.5px; color: var(--g600); line-height: 1.6; margin: 8px 0; }
+.table-view summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--g700); min-height: 28px; }
+
+.table-wrap { overflow-x: auto; }
+table.data { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.data th { text-align: left; font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; padding: 10px 14px; border-bottom: 1px solid var(--g100); background: var(--g50); }
+table.data :global(td), table.data :global(th[scope="row"]) { padding: 10px 14px; border-bottom: 1px solid var(--g100); color: var(--g800); text-align: left; font-weight: 600; }
+table.data :global(.num) { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.data :global(tr.total td), table.data :global(tr.total th) { font-weight: 850; color: var(--g900); border-top: 2px solid var(--g200); }
+table.data :global(.sub) { display: block; font-size: 12px; font-weight: 400; color: var(--g500); }
+
+.actions { display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.share-note { font-size: 12.5px; color: var(--g600); }
+.btn-share {
+  border: 1px solid var(--blue-lt); background: #fff; color: var(--blue); border-radius: 6px;
+  padding: 10px 20px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; min-height: 40px;
+}
+.btn-share:hover { background: var(--blue-xlt); }
+
+.prose-body { padding: 16px 18px 18px; }
+.prose-body p { font-size: 13.5px; color: var(--g600); line-height: 1.7; margin-bottom: 10px; }
+.prose-body p:last-child { margin-bottom: 0; }
+.prose-body a { color: var(--blue); text-decoration: none; }
+.prose-body a:hover { text-decoration: underline; }
+
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .page { padding: 0 14px 44px; margin-top: 14px; }
+  .hero { padding: 22px 18px 18px; }
+  .editor-grid { grid-template-columns: 1fr; }
+  .big-value { font-size: 30px; }
+  .tiles { grid-template-columns: 1fr; }
+  }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media print {
+  :global(header), :global(footer), :global(.page-tagline), .actions, .hero { display: none !important; }
+  .page { margin: 0; padding: 0; max-width: none; }
+  .section-card { box-shadow: none; break-inside: avoid; }
+  .table-view { display: block; }
+}
+</style>

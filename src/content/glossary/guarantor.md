@@ -16,6 +16,7 @@ relatedGuides:
   - nyc-rental-guarantor-companies-explained
 relatedCalculators:
   - "/rent/"
+  - "/cost-to-move/"
 draft: false
 ---
 

@@ -21,7 +21,8 @@ export const CALC_AFFORD_MORE: FooterLink = { label: 'How Do I Afford More?', hr
 export const CALC_SAVINGS_PLANNER: FooterLink = { label: 'Down Payment Savings Planner', href: '/savings-planner/' };
 export const CALC_RENT_VS_BUY: FooterLink = { label: 'NYC Rent vs Buy Calculator', href: '/rent-vs-buy/' };
 export const CALC_RATE_SENSITIVITY: FooterLink = { label: 'Rate & Maintenance Sensitivity', href: '/rate-sensitivity/' };
-export const ALL_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_AFFORD_MORE, CALC_SAVINGS_PLANNER, CALC_RENT_VS_BUY, CALC_RATE_SENSITIVITY, CALC_NET_PROCEEDS, CALC_REQUIRED_SALARY];
+export const CALC_COST_TO_MOVE: FooterLink = { label: 'NYC Cost to Move Calculator', href: '/cost-to-move/' };
+export const ALL_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_AFFORD_MORE, CALC_SAVINGS_PLANNER, CALC_RENT_VS_BUY, CALC_RATE_SENSITIVITY, CALC_COST_TO_MOVE, CALC_NET_PROCEEDS, CALC_REQUIRED_SALARY];
 
 export const HUB_LINK: FooterLink = { label: 'NYC Affordability Hub', href: '/' };
 
@@ -29,7 +30,7 @@ export const HUB_LINK: FooterLink = { label: 'NYC Affordability Hub', href: '/' 
     let an entry name the calculators it relates to. test/navParity.test.ts
     checks it matches ALL_CALCULATORS. */
 export const CALCULATOR_PATHS = [
-  '/reality-check/', '/coop/', '/condo/', '/rent/', '/affordable/', '/compare/', '/afford-more/', '/savings-planner/', '/rent-vs-buy/', '/rate-sensitivity/', '/sell/', '/required-salary/',
+  '/reality-check/', '/coop/', '/condo/', '/rent/', '/affordable/', '/compare/', '/afford-more/', '/savings-planner/', '/rent-vs-buy/', '/rate-sensitivity/', '/cost-to-move/', '/sell/', '/required-salary/',
 ] as const;
 
 /** All calculators except the current page, plus the hub link, in canonical order. */
