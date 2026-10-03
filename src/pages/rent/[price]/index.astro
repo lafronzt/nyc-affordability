@@ -13,6 +13,8 @@ import { buildBreadcrumbJsonLd } from '../../../lib/breadcrumbs';
 import { fmtMoney } from '../../../lib/format';
 import { requiredIncomeForRent, maxAffordablePrice, DEFAULT_ASSUMPTIONS } from '../../../lib/afford';
 import { nearest } from '../../../lib/relatedPages';
+import { renterMoveCost, defaultRenterMoveInputs } from '../../../lib/engines/moveCost';
+import { ASSUMPTIONS as A } from '../../../data/assumptions';
 import { RENT_PRICES as PRICES, INCOME_AMOUNTS, BUY_PRICES } from '../../../data/priceGrids';
 
 export function getStaticPaths() {
@@ -24,8 +26,24 @@ export function getStaticPaths() {
 
 const { price } = Astro.props;
 const standard = requiredIncomeForRent({ targetRent: price });
-const guarantorMultiplier = 80;
+const guarantorMultiplier = A.guarantorIncomeMultiplier.value;
 const guarantor = requiredIncomeForRent({ targetRent: price, incomeMultiplier: guarantorMultiplier });
+
+// Income rules side by side. 40x is the default everywhere on the site; some
+// landlords use 35x or 45x (see the registry note). All calculated.
+const RULES = [35, 40, 45].map((m) => ({ mult: m, income: requiredIncomeForRent({ targetRent: price, incomeMultiplier: m }).annualIncomeNeeded }));
+
+// Lease-signing cash under the FARE Act, from the same engine as /cost-to-move/
+// (movers and other moving costs left out: this is what the lease itself takes).
+const signing = (o: Parameters<typeof defaultRenterMoveInputs>[0] = {}) =>
+  renterMoveCost(defaultRenterMoveInputs({ rent: price, movers: 0, supplies: 0, ...o })).housing;
+const BROKER_PCT = 15;
+const GUARANTOR_FEE_PCT = A.guarantorCompanyFeePct.value;
+const SCENARIOS = [
+  { label: 'Landlord\'s broker, or no broker', note: 'FARE Act: the landlord pays a broker the landlord hired', total: signing() },
+  { label: `You hired a broker (${BROKER_PCT}% of a year's rent)`, note: 'Only if you engaged the broker yourself', total: signing({ brokerType: 'pct_annual', brokerFeePct: BROKER_PCT }) },
+  { label: `With a guarantor company (${GUARANTOR_FEE_PCT}% of one month)`, note: 'If you don\'t meet the income rule; fee varies, commonly 60%–110%', total: signing({ guarantorFeePct: GUARANTOR_FEE_PCT }) },
+];
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -37,7 +55,7 @@ const footerColumns: FooterColumn[] = [
 const canonicalPath = `/rent/${price}/`;
 const priceLabel = fmtMoney(price);
 const pageTitle = `${priceLabel} Rent in NYC: Salary Needed & 40x Rule | NYC Affordability`;
-const metaDescription = `The annual income typically needed to rent a ${priceLabel}/month NYC apartment under the 40x rule, plus the guarantor income requirement, calculated using our calculators' default assumptions.`;
+const metaDescription = `The annual income typically needed to rent a ${priceLabel}/month NYC apartment under the 40x rule (and 35x/45x), the guarantor requirement, and the cash it takes to sign the lease under the FARE Act, calculated using our calculators' default assumptions.`;
 
 const SITE_ORIGIN = 'https://www.nyc-affordability.com';
 const jsonLd = {
@@ -91,7 +109,7 @@ const relatedBuyPrice = nearest(
   <Breadcrumbs items={breadcrumbItems} />
 
   <div class="calc-note card">
-    <p><strong>This is the 40&times; rule income screening threshold only</strong>: the market convention most NYC landlords and management companies apply, not a legal requirement or a check against your real savings or debts. It doesn't include move-in cash (first month, security deposit, broker fee) or NYC's FARE Act broker-fee rules. Open the <a href="/rent/">Rent Calculator</a> for the full picture, including move-in costs and a guarantor lever.</p>
+    <p><strong>The 40&times; rule is a screening convention</strong> most NYC landlords and management companies apply, not a legal requirement or a check against your real savings or debts. Everything on this page is calculated from this site's default assumptions. Open the <a href="/rent/">Rent Calculator</a> to check your own income and savings.</p>
   </div>
 
   <div class="result-grid">
@@ -107,6 +125,35 @@ const relatedBuyPrice = nearest(
       <div class="result-binding">{guarantorMultiplier}&times; monthly rent</div>
       <a class="result-link" href="/guides/nyc-40x-rent-rule/">Read the 40x rule guide &rarr;</a>
     </div>
+  </div>
+
+  <div class="card">
+    <h3>Not every landlord uses 40&times;</h3>
+    <table class="data">
+      <thead><tr><th scope="col">Income rule</th><th scope="col" class="num">Annual income needed</th></tr></thead>
+      <tbody>
+        {RULES.map((r) => (
+          <tr class={r.mult === DEFAULT_ASSUMPTIONS.rentIncomeMultiplier ? 'current' : undefined}>
+            <th scope="row">{r.mult}&times; monthly rent{r.mult === DEFAULT_ASSUMPTIONS.rentIncomeMultiplier ? ' (most common)' : ''}</th>
+            <td class="num">{fmtMoney(r.income)}</td>
+          </tr>
+        ))}
+        <tr><th scope="row">Personal guarantor at {guarantorMultiplier}&times;</th><td class="num">{fmtMoney(guarantor.annualIncomeNeeded)}</td></tr>
+      </tbody>
+    </table>
+    <p class="table-note">Institutional guarantor companies often look for about 27&times; instead and charge a fee; see <a href="/guides/nyc-rental-guarantor-companies-explained/">how guarantor companies work</a> and <a href="/guides/nyc-40x-rent-rule/">the 40x rule</a>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Cash to sign a {priceLabel} lease</h3>
+    <table class="data">
+      <tbody>
+        {SCENARIOS.map((s) => (
+          <tr><th scope="row">{s.label}<span class="sub">{s.note}</span></th><td class="num">{fmtMoney(s.total)}</td></tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="table-note">Each total is first month's rent, a one-month security deposit (the legal cap), the $20 application fee cap, {fmtMoney(A.rentBuildingFee.value)} of building move-in fees, and {fmtMoney(A.rentUtilitySetup.value)} of utility setup, plus the broker or guarantor fee where shown. Movers and overlapping rent aren't included: add them on <a href={`/cost-to-move/?mode=rent&rent=${price}`}>Cost to Move</a>. See the <a href="/guides/fare-act-broker-fees-explained/">FARE Act guide</a>.</p>
   </div>
 
   <MiniCalcWidget mode="rent-price" defaultValue={price} />
@@ -184,6 +231,14 @@ const relatedBuyPrice = nearest(
 }
 .chip:hover { border-color: var(--blue-lt); background: var(--blue-lt); color: var(--blue); text-decoration: none; }
 .custom-note { font-size: 13px; margin-top: 4px; }
+
+table.data { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 10px; }
+table.data th, table.data td { padding: 10px 12px; border-bottom: 1px solid var(--g100); text-align: left; color: var(--g800); font-weight: 600; }
+table.data thead th { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--g500); background: var(--g50); }
+table.data .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 800; color: var(--g900); }
+table.data tr.current th, table.data tr.current td { background: var(--blue-xlt, #eef4ff); }
+table.data .sub { display: block; font-size: 12px; font-weight: 400; color: var(--g500); margin-top: 2px; }
+.card p.table-note { font-size: 12.5px; color: var(--g500); margin: 0; }
 
 @media (max-width: 640px) {
   .result-grid { grid-template-columns: 1fr; }
