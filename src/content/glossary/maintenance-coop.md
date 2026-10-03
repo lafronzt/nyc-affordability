@@ -18,6 +18,7 @@ relatedGuides:
 relatedCalculators:
   - "/coop/"
   - "/rent-vs-buy/"
+  - "/rate-sensitivity/"
 draft: false
 ---
 
