@@ -2,6 +2,36 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Phase 2c: NYC Rent vs Buy (/rent-vs-buy/)
+
+**User-visible changes**
+- New **`/rent-vs-buy/`**: buy a co-op or condo, or keep renting and invest what the buyer spent at closing. Each month, whoever has the cheaper housing bill invests the difference. At each year-end the buyer "sells" and pays NYC seller costs. The page shows:
+  - **Your answer:** which path is ahead after your chosen stay (1 to 30 years, slider), by how much, the break-even year (searched out to 30 years when it falls beyond the stay), and the **break-even rent** (the starting rent at which both paths finish even over that stay).
+  - **A net-worth chart** (legend, direct labels, break-even dot, hover/keyboard tooltip, text summary, yearly table view) using the validated palette pair (orange/blue).
+  - **Where the money goes:** cash at closing, housing bills paid, sale price, loan payoff, selling costs, investments, and net worth, side by side.
+  - Every output is labeled as a calculated estimate; the growth and return rates are labeled placeholders, not forecasts. "What's left out" spells out the omissions: income taxes both ways, refinancing, assessments, the co-op move-in deposit refund, and the value of flexibility.
+- The share link carries the whole scenario. It has no personal fields (no income, balances, or debts), so there is no opt-in checkbox. Inputs are saved only with "Save inputs" on.
+- Linked from the homepage grid (cards 10 and 11 now a centered pair), every footer, `/explore/`, the sitemap, `/savings-planner/`, and the flip-tax, co-op maintenance, and common-charges glossary terms. Not in the primary nav; it joins `/savings-planner/` on the pinned exception list until the journey-based nav lands.
+- `/methodology/sources/` gains **Selling** and **Long-run projections** groups. The savings yield moved from "Mortgage" to the projections group, which is where it belongs.
+
+**Code**
+- `src/lib/engines/sale.ts`: `/sell/`'s waterfall moved **verbatim** out of `src/scripts/sell.ts` (which now imports it). Browser check: `/sell/` page text is identical before and after in 4 scenarios (condo, co-op, capital gains on, co-op over $3M with capital gains).
+- `src/lib/engines/rentVsBuy.ts` (pure): `purchaseFor` (closing cash and payment from the shared co-op/condo engines), `compareRentVsBuy` (monthly projection with PMI dropping off at 78% of the price), and `breakEvenRent` (bisection).
+- Registry: `/sell/` defaults (broker 5%, attorney $2,500, title/misc $1,000, flip tax 2%, co-op transfer fee $500) with `inputs` on page `sell`, so the parity test now covers `/sell/`. Five illustrative projection entries: rent growth 3%, home price change 3%, owner cost growth 3%, in-unit upkeep 0.5% of value, and investment return 5%.
+
+**Tests** (162 → 179)
+- `test/rentVsBuy.test.ts`: `/sell/` golden waterfalls (condo, co-op, capital gains with the single/MFJ exclusion); purchase cash and payment equal the condo engine and the amortization formula; the loan reaches zero at term and matches the closed-form balance at year 1; zero-growth bookkeeping matches by hand; the cheaper side invests the difference; the co-op flip tax gap; yearly vs. monthly compounding; PMI drop-off; break-even rent ties at the horizon and is monotone; and the break-even year is the first year ahead.
+- `test/defaultsParity.test.ts`: plus 5 `/sell/` input checks.
+
+**Validation**
+- `npm test`: 179/179. `npm run build`: clean (134 pages).
+- Browser checks:
+  - Default (condo $700K vs. $4,000): renting ahead by $206,108 after 10 years; break-even rent $5,179/mo.
+  - Co-op at $5,500 rent: buying pulls ahead in year 4.
+  - A 1-year stay; a 30-year stay with prices falling 2%/yr.
+  - Tooltip renders; no page errors; no horizontal overflow at 1280 or 390px.
+  - The homepage grid's last row is centered.
+
 ## 2026-10-02: Phase 2b: Down Payment Savings Planner (/savings-planner/)
 
 **User-visible changes**

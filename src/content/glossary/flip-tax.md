@@ -19,6 +19,7 @@ relatedGuides:
 relatedCalculators:
   - "/sell/"
   - "/coop/"
+  - "/rent-vs-buy/"
 draft: false
 ---
 

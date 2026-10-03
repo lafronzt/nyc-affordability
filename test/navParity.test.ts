@@ -58,5 +58,5 @@ test('every calculator is either in the primary nav or on the primary-nav except
   // (all driven by ALL_CALCULATORS and checked above). This pins the current exceptions so a new
   // tool can't silently skip the nav without someone deciding it.
   const outside = ALL_CALCULATORS.filter((c) => !PRIMARY_NAV_CALCULATORS.includes(c)).map((c) => c.href);
-  assert.deepEqual(outside, ['/savings-planner/']);
+  assert.deepEqual(outside, ['/savings-planner/', '/rent-vs-buy/']);
 });

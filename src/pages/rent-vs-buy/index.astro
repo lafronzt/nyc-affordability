@@ -1,0 +1,358 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import AppHeader from '../../components/AppHeader.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { CALC_RENT_VS_BUY, otherCalculators, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { ASSUMPTIONS as A } from '../../data/assumptions';
+
+const rateWeek = new Date(`${A.mortgageRatePct.effectiveDate}T00:00:00Z`).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: otherCalculators(CALC_RENT_VS_BUY.href!) },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'NYC Rent vs Buy Calculator',
+  url: 'https://www.nyc-affordability.com/rent-vs-buy/',
+  description: 'Should you rent or buy in NYC? Compares a co-op or condo purchase against renting and investing the difference, with NYC closing costs, mansion tax, co-op flip tax, and seller transfer taxes, year by year.',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  areaServed: { '@type': 'City', name: 'New York City', sameAs: 'https://www.wikidata.org/wiki/Q60' },
+};
+---
+<BaseLayout
+  variant="app"
+  ads
+  pageTitle="NYC Rent vs Buy Calculator: Co-op, Condo, or Keep Renting? | NYC Affordability"
+  metaDescription="Rent or buy in NYC? Compare a co-op or condo against renting and investing the difference, with NYC closing costs, mansion tax, flip tax, and seller transfer taxes. See the break-even year and break-even rent."
+  canonicalPath="/rent-vs-buy/"
+  ogTitle="NYC Rent vs Buy: When Does Buying Pay Off?"
+  ogDescription="Co-op or condo vs. renting and investing the difference, with every NYC transaction cost on both ends. Break-even year and break-even rent."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
+  twitterTitle="NYC Rent vs Buy: When Does Buying Pay Off?"
+  twitterDescription="Co-op or condo vs. renting and investing the difference, with every NYC transaction cost on both ends."
+  jsonLd={jsonLd}
+>
+<AppHeader
+  titleHtml="NYC <em>Rent vs. Buy</em>"
+  tagline="Same money, two paths: buy the apartment, or keep renting and invest the difference."
+  showSaveToggle
+/>
+
+<main class="page">
+  <section class="hero">
+    <div class="eyebrow">Rent vs. buy</div>
+    <h2>When does buying actually pay off?</h2>
+    <p>Buying in NYC costs a lot on the way in (closing costs, mansion tax at $1M+, mortgage recording tax on condos) and a lot on the way out (broker, city and state transfer taxes, a co-op's flip tax). This compares owning against renting and investing the cash you didn't put down, and tells you how long you'd need to stay for buying to come out ahead.</p>
+  </section>
+
+  <div class="layout">
+    <section class="section-card" aria-labelledby="h-inputs">
+      <div class="section-title" id="h-inputs">The two options</div>
+      <div class="editor-body">
+        <fieldset class="type-toggle">
+          <legend>Buying a</legend>
+          <label><input type="radio" name="rb-type" value="coop"> Co-op</label>
+          <label><input type="radio" name="rb-type" value="condo" checked> Condo</label>
+        </fieldset>
+        <div class="editor-grid">
+          <div class="field">
+            <label for="rb-price">Purchase price</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="rb-price" min="0" step="10000" inputmode="numeric"></div>
+          </div>
+          <div class="field">
+            <label for="rb-rent">Rent for a comparable apartment</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="rb-rent" min="0" step="50" inputmode="numeric"><span>/mo</span></div>
+            <small>Same size, same neighborhood</small>
+          </div>
+          <div class="field">
+            <label for="rb-dp">Down payment</label>
+            <div class="input-wrap"><input type="number" id="rb-dp" min="0" max="100" step="1"><span>%</span></div>
+          </div>
+          <div class="field">
+            <label for="rb-rate">Mortgage rate</label>
+            <div class="input-wrap"><input type="number" id="rb-rate" min="0" max="20" step="0.05"><span>%</span></div>
+            <small>Freddie Mac average, week of {rateWeek}</small>
+          </div>
+          <div class="field">
+            <label for="rb-charges" id="rb-charges-label">Monthly common charges</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="rb-charges" min="0" step="50"><span>/mo</span></div>
+            <small class="coop-only">Includes the building's property tax</small>
+          </div>
+          <div class="field condo-only">
+            <label for="rb-tax">Property tax</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="rb-tax" min="0" step="25"><span>/mo</span></div>
+          </div>
+          <div class="field condo-only">
+            <label for="rb-ins">Homeowner's insurance (HO-6)</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="rb-ins" min="0" step="5"><span>/mo</span></div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="rb-years">How long you'd stay</label>
+          <div class="years-row"><input type="range" id="rb-years" min="1" max="30" step="1"><output id="rb-years-out" for="rb-years">10 years</output></div>
+        </div>
+
+        <details class="assumptions">
+          <summary>Assumptions <span class="muted">(placeholders, not forecasts: <a href="/methodology/sources/">sources page</a>)</span></summary>
+          <div class="editor-grid">
+            <div class="field">
+              <label for="rb-rentgrowth">Rent increases</label>
+              <div class="input-wrap"><input type="number" id="rb-rentgrowth" min="-10" max="20" step="0.5"><span>%/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="rb-appreciation">Home price change</label>
+              <div class="input-wrap"><input type="number" id="rb-appreciation" min="-10" max="20" step="0.5"><span>%/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="rb-costgrowth" id="rb-costgrowth-label">Common charge, tax &amp; insurance increases</label>
+              <div class="input-wrap"><input type="number" id="rb-costgrowth" min="-10" max="20" step="0.5"><span>%/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="rb-upkeep">In-unit repairs</label>
+              <div class="input-wrap"><input type="number" id="rb-upkeep" min="0" max="5" step="0.1"><span>% of value/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="rb-return">Return on invested cash</label>
+              <div class="input-wrap"><input type="number" id="rb-return" min="-10" max="20" step="0.5"><span>%/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="rb-rentins">Renter's insurance</label>
+              <div class="input-wrap"><span>$</span><input type="number" id="rb-rentins" min="0" step="5"><span>/mo</span></div>
+            </div>
+            <div class="field">
+              <label for="rb-broker">Broker commission when you sell</label>
+              <div class="input-wrap"><input type="number" id="rb-broker" min="0" max="10" step="0.25"><span>%</span></div>
+            </div>
+            <div class="field coop-only">
+              <label for="rb-flip">Flip tax when you sell</label>
+              <div class="input-wrap"><input type="number" id="rb-flip" min="0" max="30" step="0.25"><span>%</span></div>
+            </div>
+          </div>
+          <p class="editor-note">Seller attorney ({'$' + A.sellAttorneyFee.value.toLocaleString('en-US')}), title and misc. ({'$' + A.sellTitleMiscFee.value.toLocaleString('en-US')}), and the co-op transfer fee ({'$' + A.sellCoopTransferFee.value.toLocaleString('en-US')}) use the <a href="/sell/">net proceeds calculator</a>'s defaults. NYC and NYS transfer taxes are calculated from the sale price.</p>
+        </details>
+        <p class="editor-note">Everything is calculated in your browser. Nothing you enter is sent anywhere.</p>
+      </div>
+    </section>
+
+    <div class="results" aria-live="polite">
+      <section class="section-card" aria-labelledby="h-answer">
+        <div class="section-title" id="h-answer">Your answer</div>
+        <div class="answer-body">
+          <div class="big-label" id="rb-verdict-label">After 10 years, better off</div>
+          <div class="big-value" id="rb-verdict">&mdash;</div>
+          <p class="headline" id="rb-headline">&mdash;</p>
+          <dl class="tiles">
+            <div><dt>Owning, first month</dt><dd id="rb-own-mo">&mdash;</dd></div>
+            <div><dt>Renting, first month</dt><dd id="rb-rent-mo">&mdash;</dd></div>
+            <div><dt>Cash at closing</dt><dd id="rb-upfront">&mdash;</dd></div>
+            <div><dt>Break-even rent</dt><dd id="rb-be-rent">&mdash;</dd></div>
+          </dl>
+          <p class="editor-note">All figures here are calculated estimates from the inputs and assumptions on the left, not market data.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section class="section-card" aria-labelledby="h-chart">
+    <div class="section-title" id="h-chart">Net worth if you sold at the end of each year</div>
+    <div class="chart-body">
+      <ul class="legend" aria-label="Chart legend">
+        <li><span class="key key-buy"></span>Buy (sale proceeds + investments)</li>
+        <li><span class="key key-rent"></span>Rent (invested cash)</li>
+      </ul>
+      <div class="chart-wrap" id="rb-chart-wrap">
+        <svg id="rb-chart" role="img" aria-labelledby="rb-chart-desc"></svg>
+        <div class="tooltip" id="rb-tooltip" hidden></div>
+      </div>
+      <p class="chart-desc" id="rb-chart-desc">&mdash;</p>
+      <details class="table-view">
+        <summary>Show as a table</summary>
+        <div class="table-wrap"><table class="data"><thead><tr><th scope="col">Year</th><th scope="col" class="num">Home value</th><th scope="col" class="num">Loan left</th><th scope="col" class="num">Sale proceeds</th><th scope="col" class="num">Buy: net worth</th><th scope="col" class="num">Rent: net worth</th><th scope="col" class="num">Buy minus rent</th></tr></thead><tbody id="rb-table"></tbody></table></div>
+      </details>
+    </div>
+  </section>
+
+  <section class="section-card" aria-labelledby="h-breakdown">
+    <div class="section-title" id="h-breakdown">Where the money goes over <span id="rb-bd-years">10 years</span></div>
+    <div class="table-wrap">
+      <table class="data"><thead><tr><th scope="col"></th><th scope="col" class="num">Buy</th><th scope="col" class="num">Rent</th></tr></thead><tbody id="rb-breakdown"></tbody></table>
+    </div>
+  </section>
+
+  <div class="actions">
+    <span class="share-note">The link holds the scenario only: price, rent, and assumptions.</span>
+    <button class="btn-share" id="rb-share" type="button">Copy scenario link</button>
+    <button class="btn-share" id="rb-print" type="button">Print</button>
+  </div>
+
+  <section class="section-card" aria-labelledby="h-how">
+    <div class="section-title" id="h-how">How this works</div>
+    <div class="prose-body">
+      <p><strong>Two people, same money.</strong> One buys. The other keeps renting and invests what the buyer spent at closing (down payment plus closing costs). Every month, whoever has the cheaper housing bill invests the difference at the same return. At the end of each year we ask: if the buyer sold now, who has more?</p>
+      <p><strong>The buyer's side</strong> uses the same engine as the <a href="/coop/">co-op</a> and <a href="/condo/">condo</a> calculators for closing costs, the <a href="/guides/nyc-mansion-tax-explained/">mansion tax</a>, <a href="/glossary/mortgage-recording-tax/">mortgage recording tax</a>, and the monthly payment. Monthly cost is principal and interest, PMI until the loan reaches 78% of the price, the building's charges (plus property tax and insurance for a condo), and in-unit repairs. The sale uses the <a href="/sell/">net proceeds calculator</a>'s math: broker commission, NYC and NYS transfer taxes, attorney and title costs, and for co-ops the <a href="/glossary/flip-tax/">flip tax</a> and transfer fee.</p>
+      <p><strong>Paying down principal isn't a cost.</strong> It comes back when you sell, which is why "rent is throwing money away" is only half true. Interest, building charges, repairs, and the transaction costs on both ends don't come back. Neither does rent.</p>
+      <p><strong>The break-even rent</strong> is the starting rent at which the two paths finish even over the years you chose. If a comparable apartment rents for more than that, buying wins over that stay; less, and renting does.</p>
+      <p><strong>What's left out:</strong> income taxes in both directions (the mortgage-interest and property-tax deductions, tax on investment gains, and capital gains on the sale, which the <a href="/sell/">sell calculator</a> can estimate), refinancing, special assessments, a co-op's refundable move-in deposit, and the value of stability or of being able to leave. Under the <a href="/glossary/fare-act/">FARE Act</a>, renters usually no longer pay the landlord's broker, so no broker fee is assumed for the renter. Growth and return rates are illustrative placeholders, not forecasts. See <a href="/methodology/">the methodology</a>.</p>
+    </div>
+  </section>
+</main>
+
+<AdSlot maxWidth="1300px" sidePadding="20px" />
+
+<Footer
+  variant="app"
+  disclaimer="This calculator is for informational purposes only and does not constitute financial, legal, tax, investment, or mortgage advice. Rent growth, home prices, and investment returns are illustrative assumptions, not predictions; results are estimates. Verify closing and selling costs with a real estate attorney, financing with a licensed mortgage professional, and tax effects with a tax professional."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<script>
+  import '../../scripts/rent-vs-buy';
+</script>
+
+<style>
+.page { max-width: 1300px; margin: 20px auto; padding: 0 20px 60px; }
+.hero {
+  background: linear-gradient(135deg, #0a1628 0%, #0f2a54 100%);
+  border: 1px solid #1e3a5f; border-radius: var(--r); color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 16px; padding: 26px 24px 22px;
+}
+.eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 8px; }
+.hero h2 { font-size: clamp(22px, 3.2vw, 32px); line-height: 1.15; letter-spacing: -0.5px; color: #f0f9ff; margin-bottom: 10px; }
+.hero p { color: #93b4d0; max-width: 820px; font-size: 14px; line-height: 1.65; }
+.hero p a { color: #cfe0fb; }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.section-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 16px;
+}
+.section-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--g500);
+  padding: 12px 18px 11px; border-bottom: 1px solid var(--g100);
+}
+.editor-body { padding: 16px 18px 18px; }
+.editor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; color: var(--g700); font-weight: 650; margin-bottom: 5px; }
+.field small { display: block; font-size: 11px; color: var(--g500); margin-top: 4px; }
+.optional { font-weight: 400; color: var(--g500); }
+.input-wrap {
+  display: flex; align-items: stretch; border: 1px solid var(--g300); border-radius: 5px; background: #fff;
+  overflow: hidden; transition: border-color .15s, box-shadow .15s;
+}
+.input-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.input-wrap span {
+  background: var(--g50); border-right: 1px solid var(--g200); padding: 0 8px; color: var(--g500);
+  font-size: 13px; font-weight: 600; display: flex; align-items: center; white-space: nowrap;
+}
+.input-wrap input + span { border-right: 0; border-left: 1px solid var(--g200); }
+.input-wrap input { border: 0; outline: 0; padding: 9px 9px; min-width: 0; width: 100%; font: inherit; color: var(--g900); background: #fff; }
+.type-toggle { border: 0; padding: 0; margin: 0 0 14px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.type-toggle legend { font-size: 12px; font-weight: 650; color: var(--g700); margin-right: 4px; float: left; padding-top: 2px; }
+.type-toggle label { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 650; color: var(--g800); min-height: 32px; cursor: pointer; }
+.assumptions { border-top: 1px solid var(--g100); padding-top: 12px; margin-bottom: 8px; }
+.assumptions summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--g800); margin-bottom: 12px; min-height: 28px; }
+.assumptions .muted { font-weight: 400; color: var(--g500); }
+.assumptions a { color: var(--blue); }
+.editor-note { font-size: 12px; color: var(--g500); line-height: 1.6; margin-top: 6px; }
+:global(body.type-condo) .coop-only { display: none; }
+:global(body.type-coop) .condo-only { display: none; }
+.years-row { display: flex; align-items: center; gap: 12px; }
+.years-row input[type=range] { flex: 1; accent-color: var(--blue); min-height: 32px; }
+.years-row output { font-weight: 800; color: var(--g900); min-width: 72px; text-align: right; font-variant-numeric: tabular-nums; }
+table.data :global(td.neg) { color: #b42318; }
+
+.answer-body { padding: 18px; }
+.big-label { font-size: 12px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; }
+.big-value { font-size: 38px; font-weight: 850; letter-spacing: -1.1px; color: var(--g900); margin: 4px 0 8px; }
+.big-value.long { font-size: 24px; letter-spacing: -0.4px; line-height: 1.25; }
+.headline { font-size: 14.5px; color: var(--g700); line-height: 1.6; margin-bottom: 14px; }
+.headline :global(strong) { color: var(--g900); }
+.headline :global(a) { color: var(--blue); }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin: 0 0 12px; }
+.tiles div { background: var(--g50); border: 1px solid var(--g100); border-radius: 6px; padding: 9px 11px; }
+.tiles dt { font-size: 11px; color: var(--g500); font-weight: 650; }
+.tiles dd { margin: 2px 0 0; font-size: 16px; font-weight: 800; color: var(--g900); font-variant-numeric: tabular-nums; }
+.target-line { font-size: 14px; color: var(--g700); line-height: 1.6; background: var(--blue-xlt); border: 1px solid var(--blue-lt); border-radius: 6px; padding: 10px 12px; }
+.target-line :global(strong) { color: var(--g900); }
+
+
+.chart-body { padding: 14px 18px 16px; }
+.legend { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 8px; padding: 0; }
+.legend li { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--g700); font-weight: 600; }
+.key { display: inline-block; width: 18px; height: 3px; border-radius: 2px; }
+.key-rent { background: #2a78d6; }
+.key-buy { background: #eb6834; }
+.chart-wrap { position: relative; width: 100%; }
+#rb-chart { display: block; width: 100%; height: 300px; overflow: visible; }
+#rb-chart :global(.grid) { stroke: #eceae6; stroke-width: 1; }
+#rb-chart :global(.axis-label) { fill: var(--g500); font-size: 11px; font-variant-numeric: tabular-nums; }
+#rb-chart :global(.series) { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+#rb-chart :global(.s-rent) { stroke: #2a78d6; }
+#rb-chart :global(.s-buy) { stroke: #eb6834; }
+#rb-chart :global(.zero) { stroke: var(--g400); stroke-width: 1; }
+#rb-chart :global(.dot) { stroke: #fff; stroke-width: 2; }
+#rb-chart :global(.direct-label) { fill: var(--g700); font-size: 11.5px; font-weight: 700; }
+#rb-chart :global(.crosshair) { stroke: var(--g400); stroke-width: 1; }
+.tooltip {
+  position: absolute; pointer-events: none; background: #fff; border: 1px solid var(--g200); border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.12); padding: 8px 10px; font-size: 12px; color: var(--g800); min-width: 170px; z-index: 5;
+}
+.tooltip :global(.tt-date) { font-weight: 800; margin-bottom: 4px; }
+.tooltip :global(.tt-row) { display: flex; justify-content: space-between; gap: 12px; font-variant-numeric: tabular-nums; }
+.tooltip :global(.tt-row span:first-child) { display: inline-flex; align-items: center; gap: 6px; color: var(--g600); }
+.tooltip :global(.sw) { width: 10px; height: 3px; border-radius: 2px; display: inline-block; }
+.chart-desc { font-size: 12.5px; color: var(--g600); line-height: 1.6; margin: 8px 0; }
+.table-view summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--g700); min-height: 28px; }
+
+.table-wrap { overflow-x: auto; }
+table.data { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.data th { text-align: left; font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; padding: 10px 14px; border-bottom: 1px solid var(--g100); background: var(--g50); }
+table.data :global(td), table.data :global(th[scope="row"]) { padding: 10px 14px; border-bottom: 1px solid var(--g100); color: var(--g800); text-align: left; font-weight: 600; }
+table.data :global(.num) { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.data :global(tr.total td), table.data :global(tr.total th) { font-weight: 850; color: var(--g900); border-top: 2px solid var(--g200); }
+table.data :global(.sub) { display: block; font-size: 12px; font-weight: 400; color: var(--g500); }
+
+.actions { display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.share-note { font-size: 12.5px; color: var(--g600); }
+.btn-share {
+  border: 1px solid var(--blue-lt); background: #fff; color: var(--blue); border-radius: 6px;
+  padding: 10px 20px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; min-height: 40px;
+}
+.btn-share:hover { background: var(--blue-xlt); }
+
+.prose-body { padding: 16px 18px 18px; }
+.prose-body p { font-size: 13.5px; color: var(--g600); line-height: 1.7; margin-bottom: 10px; }
+.prose-body p:last-child { margin-bottom: 0; }
+.prose-body a { color: var(--blue); text-decoration: none; }
+.prose-body a:hover { text-decoration: underline; }
+
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .page { padding: 0 14px 44px; margin-top: 14px; }
+  .hero { padding: 22px 18px 18px; }
+  .editor-grid { grid-template-columns: 1fr; }
+  .big-value { font-size: 30px; }
+  .tiles { grid-template-columns: 1fr; }
+  #rb-chart { height: 240px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media print {
+  :global(header), :global(footer), :global(.page-tagline), .actions, .hero { display: none !important; }
+  .page { margin: 0; padding: 0; max-width: none; }
+  .section-card { box-shadow: none; break-inside: avoid; }
+  .table-view { display: block; }
+}
+</style>

@@ -1,27 +1,10 @@
-import { calcNycRptt, calcNysTransferTax } from '../lib/calc';
+import { calculateSale as compute, type SaleInputs as Inputs, type SaleWaterfall as Waterfall } from '../lib/engines/sale';
 import { fmtMoney } from '../lib/format';
 import { wireShareButton } from '../lib/share';
 
 /* ============================================================
    NYC Sale Net Proceeds Calculator
    ============================================================ */
-
-interface Inputs {
-  propertyType: 'condo' | 'coop';
-  salePrice: number;
-  mortgageBalance: number;
-  purchasePrice: number;
-  capImprovements: number;
-  brokerPct: number;
-  attorneyFee: number;
-  titleMiscFee: number;
-  flipTaxPct: number;
-  coopTransferFee: number;
-  capGainsEnabled: boolean;
-  filingStatus: 'single' | 'mfj';
-  fedLtcgPct: number;
-  nyCombinedPct: number;
-}
 
 function $(id: string) { return document.getElementById(id); }
 function $input(id: string) { return document.getElementById(id) as HTMLInputElement | null; }
@@ -60,69 +43,6 @@ function readInputs(): Inputs {
     filingStatus: ($select('filing-status')?.value as 'single' | 'mfj') || 'single',
     fedLtcgPct: num('fed-ltcg-pct'),
     nyCombinedPct: num('ny-combined-pct'),
-  };
-}
-
-interface Waterfall {
-  salePrice: number;
-  mortgageBalance: number;
-  brokerFee: number;
-  rptt: number;
-  nysTax: number;
-  flipTax: number;
-  coopFee: number;
-  attorneyFee: number;
-  titleMiscFee: number;
-  sellingCosts: number;
-  netBeforeTax: number;
-  amountRealized: number;
-  adjustedBasis: number;
-  exclusion: number;
-  taxableGain: number;
-  capGainsTax: number;
-  netProceeds: number;
-  isCoop: boolean;
-}
-
-function compute(inp: Inputs): Waterfall {
-  const isCoop = inp.propertyType === 'coop';
-  const brokerFee = inp.salePrice * (inp.brokerPct || 0) / 100;
-  const rptt = calcNycRptt(inp.salePrice);
-  const nysTax = calcNysTransferTax(inp.salePrice);
-  const flipTax = isCoop ? inp.salePrice * (inp.flipTaxPct || 0) / 100 : 0;
-  const coopFee = isCoop ? (inp.coopTransferFee || 0) : 0;
-  const sellingCosts = brokerFee + rptt + nysTax + flipTax + coopFee + inp.attorneyFee + inp.titleMiscFee;
-  const netBeforeTax = inp.salePrice - inp.mortgageBalance - sellingCosts;
-
-  const amountRealized = inp.salePrice - sellingCosts;
-  const adjustedBasis = inp.purchasePrice + inp.capImprovements;
-  const rawGain = Math.max(0, amountRealized - adjustedBasis);
-  const exclusion = inp.filingStatus === 'mfj' ? 500000 : 250000;
-  const taxableGain = inp.capGainsEnabled ? Math.max(0, rawGain - exclusion) : 0;
-  const combinedRate = ((inp.fedLtcgPct || 0) + (inp.nyCombinedPct || 0)) / 100;
-  const capGainsTax = inp.capGainsEnabled ? taxableGain * combinedRate : 0;
-
-  const netProceeds = netBeforeTax - capGainsTax;
-
-  return {
-    salePrice: inp.salePrice,
-    mortgageBalance: inp.mortgageBalance,
-    brokerFee,
-    rptt,
-    nysTax,
-    flipTax,
-    coopFee,
-    attorneyFee: inp.attorneyFee,
-    titleMiscFee: inp.titleMiscFee,
-    sellingCosts,
-    netBeforeTax,
-    amountRealized,
-    adjustedBasis,
-    exclusion,
-    taxableGain,
-    capGainsTax,
-    netProceeds,
-    isCoop,
   };
 }
 
