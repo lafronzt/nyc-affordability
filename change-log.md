@@ -2,6 +2,23 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Phase 3c: Rent pages get income-rule and FARE Act scenarios
+
+**User-visible changes** (all 30-odd `/rent/<amount>/` pages; URLs unchanged)
+- **"Not every landlord uses 40×":**
+  - Income needed at 35×, 40× (highlighted as most common), and 45× the rent, plus the personal-guarantor 80× rule.
+  - A note that institutional guarantor companies often look for about 27×, linking the guarantor guide that cites it.
+- **"Cash to sign a $X lease"** under the FARE Act, from the same engine as `/cost-to-move/`. Three scenarios:
+  - no broker or the landlord's broker
+  - a broker you hired (15% of a year's rent)
+  - a guarantor company (the 70%-of-one-month registry estimate)
+- Each total spells out what it includes. A link opens Cost to Move pre-filled with the rent, so movers and overlap can be added. For $3,500, it's $7,770 at signing, and $9,420 on Cost to Move with the default movers and supplies.
+- The intro note no longer says the page ignores move-in cash and the FARE Act. The meta description mentions the new sections.
+- The guarantor multiple now reads from the registry instead of a hard-coded 80.
+
+**Validation**
+- `npm test`: 202/202. `npm run build`: clean, including `check-csp`.
+- Browser check on `/rent/3500/` at 1280 and 390px: tables render, no overflow, no errors under the production CSP, and the Cost to Move link matches.
 ## 2026-10-03: Phase 3b: Five Brooklyn neighborhood pages
 
 **User-visible changes**
