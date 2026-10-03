@@ -2,6 +2,33 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Phase 3e: Salary pages get pay-period and housing sections
+
+**User-visible changes** (every `/salary/<amount>/` page; URLs unchanged)
+- **"Per paycheck":** gross, withheld, and take-home for weekly (52), every two weeks (26), twice a month (24), and monthly (12). The page explains why biweekly and semimonthly checks differ, and notes that these are averages: real withholding follows payroll tables.
+- **"What housing takes out of this paycheck":**
+  - Covers rent at the 40× maximum, a co-op at the board DTI limit, and a condo at the lender DTI limit.
+  - Each row shows the monthly housing cost, its share of **take-home** pay, and what's left each month.
+  - Linked from the matching `/rent/<amount>/` page and the calculators.
+  - Example at $100,000: $5,870/mo take-home. A $2,500 rent uses 43% of it, a $214K co-op 40%, and a $238K condo 61%.
+- The meta description now mentions both sections.
+
+**Code**
+- `src/lib/payPeriods.ts` (pure): splits the annual `computeBreakdown()` result across pay frequencies.
+- The housing rows reuse `maxAffordableRent`/`maxAffordablePrice` and the registry DTI limits. At the DTI ceiling, monthly housing equals the limit times gross monthly pay.
+
+**Tests** (234 → 236; `test/payPeriods.test.ts`)
+- Each frequency multiplies back to the annual gross, withholding, and net.
+- Biweekly and semimonthly checks differ.
+
+**Validation**
+- `npm test`: 236/236. `npm run build`: clean, including `check-csp`.
+- Browser check on `/salary/100000/`:
+  - Tables render.
+  - The figures cross-check against the engine and DTI limits.
+  - No overflow at 390px.
+  - No errors under the production CSP.
+
 ## 2026-10-03: Phase 3b: Five Brooklyn neighborhood pages
 
 **User-visible changes**
