@@ -362,6 +362,24 @@ const jsonLd = {
       </div>
     </a>
 
+    <!-- Cost to Move: 13th card, alone on the last row of a 3-per-row grid, so centered -->
+    <a class="calc-card calc-card--last-centered" href="/cost-to-move/">
+      <div class="card-banner movecost">
+        <div class="card-icon">📦</div>
+        <div class="card-banner-title">Cost to Move<br>Calculator</div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Every dollar between you and the keys, for a rental, co-op, or condo, sorted into what's spent, what becomes equity, what comes back, and what just has to sit in the bank.</p>
+        <ul class="card-features">
+          <li>FARE Act broker rules and NY deposit caps</li>
+          <li>Guarantor company fees</li>
+          <li>Closing costs and co-op board reserves</li>
+          <li>Movers, overlap rent, breaking a lease</li>
+        </ul>
+        <span class="card-cta cta-movecost">Add Up the Move →</span>
+      </div>
+    </a>
+
   </div>
 </section>
 
@@ -492,6 +510,7 @@ const jsonLd = {
   gap: 24px;
 }
 .calc-card { grid-column: span 2; }
+.calc-card--last-centered { grid-column: 3 / span 2; }
 
 .calc-card {
   background: #fff;
@@ -530,6 +549,7 @@ const jsonLd = {
 .card-banner.savings    { background: linear-gradient(135deg, #1e40af, #172554); }
 .card-banner.rentbuy    { background: linear-gradient(135deg, #6b21a8, #3b0764); }
 .card-banner.ratesens   { background: linear-gradient(135deg, #9f1239, #4c0519); }
+.card-banner.movecost   { background: linear-gradient(135deg, #0369a1, #082f49); }
 
 .card-icon {
   font-size: 32px;
@@ -614,6 +634,7 @@ const jsonLd = {
 .cta-savings    { background: #1e40af; color: #eff6ff; }
 .cta-rentbuy    { background: #6b21a8; color: #faf5ff; }
 .cta-ratesens   { background: #9f1239; color: #fff1f2; }
+.cta-movecost   { background: #0369a1; color: #f0f9ff; }
 
 .features {
   background: #fff;
@@ -635,7 +656,8 @@ const jsonLd = {
 
 @media (max-width: 1100px) {
   .calc-grid { grid-template-columns: repeat(2, 1fr); }
-  .calc-card { grid-column: span 1; }
+  .calc-card,
+  .calc-card--last-centered { grid-column: span 1; }
   .persona-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 820px) {

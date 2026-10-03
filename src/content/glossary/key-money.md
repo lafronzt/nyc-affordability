@@ -14,6 +14,7 @@ relatedGuides:
   - fare-act-broker-fees-explained
 relatedCalculators:
   - "/rent/"
+  - "/cost-to-move/"
 draft: false
 ---
 

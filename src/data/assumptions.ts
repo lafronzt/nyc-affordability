@@ -276,6 +276,22 @@ export const ASSUMPTIONS = asm({
     notes: 'After-tax, after-inflation is not implied; this is a nominal placeholder. Use what you would actually earn on the down payment if you kept renting.',
   },
 
+  // ---- Moving ----
+  moversCost: {
+    value: 1500, unit: 'USD', label: 'Movers (local NYC move)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'A placeholder for a small local move. Walk-ups, distance, volume, and weekends move it a lot; get a quote.',
+  },
+  movingSupplies: {
+    value: 150, unit: 'USD', label: 'Boxes and moving supplies', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+  },
+  guarantorCompanyFeePct: {
+    value: 70, unit: '%', label: 'Guarantor company fee (% of one month\'s rent, per lease year)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Our guarantor-companies guide reports fees commonly around 60% to 110% of a month\'s rent depending on credit and income. Off by default on /cost-to-move/; this is the value used when you turn it on.',
+  },
+
   // ---- Selling ----
   sellBrokerPct: {
     value: 5, unit: '%', label: 'Seller broker commission', basis: 'convention',

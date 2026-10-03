@@ -16,6 +16,7 @@ relatedGuides:
   - nyc-security-deposit-move-in-costs
 relatedCalculators:
   - "/rent/"
+  - "/cost-to-move/"
 draft: false
 ---
 
