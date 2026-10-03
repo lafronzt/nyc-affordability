@@ -17,6 +17,7 @@ relatedGuides:
   - pmi-on-nyc-condos-explained
   - nyc-closing-costs-for-buyers
   - income-needed-to-buy-nyc-apartment
+  - how-much-down-payment-nyc-apartment
 relatedCalculators:
   - "/condo/"
   - "/rent-vs-buy/"

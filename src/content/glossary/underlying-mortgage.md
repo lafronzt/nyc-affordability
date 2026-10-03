@@ -18,6 +18,7 @@ relatedTerms:
 relatedGuides:
   - coop-vs-condo-nyc-costs
   - how-mortgage-rates-affect-nyc-affordability
+  - coop-maintenance-explained
 relatedCalculators:
   - "/coop/"
   - "/rate-sensitivity/"

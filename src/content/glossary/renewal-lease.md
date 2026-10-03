@@ -19,6 +19,7 @@ relatedTerms:
 relatedGuides:
   - nyc-rent-stabilization-explained
   - nyc-40x-rent-rule
+  - good-cause-eviction-nyc-explained
 relatedCalculators:
   - "/rent/"
 draft: false

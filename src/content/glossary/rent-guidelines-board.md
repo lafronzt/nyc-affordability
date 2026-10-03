@@ -19,6 +19,7 @@ relatedTerms:
   - preferential-rent
 relatedGuides:
   - nyc-rent-stabilization-explained
+  - scrie-drie-rent-freeze-program
 relatedCalculators:
   - "/rent/"
 draft: false

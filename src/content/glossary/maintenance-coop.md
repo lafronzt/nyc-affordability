@@ -15,6 +15,8 @@ relatedTerms:
 relatedGuides:
   - coop-vs-condo-nyc-costs
   - coop-board-reserve-requirements
+  - coop-maintenance-explained
+  - nyc-coop-condo-property-tax-abatement
 relatedCalculators:
   - "/coop/"
   - "/rent-vs-buy/"

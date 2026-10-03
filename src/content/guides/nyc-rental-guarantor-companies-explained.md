@@ -2,7 +2,7 @@
 title: "NYC Guarantor Companies: What They Cost and When to Use One"
 metaDescription: "Can't hit NYC's 40x income rule and don't have a guarantor earning 80x? Institutional guarantor companies charge a one-time fee, commonly about 60%-110% of a month's rent. See how they work, who qualifies, and a worked cost example."
 intro: "NYC landlords want 40x the monthly rent in income, and a personal guarantor who earns 80x. Plenty of renters, including new grads, freelancers, recent arrivals, and people with savings but thin income, can't show either. Institutional guarantor companies fill that gap for a fee. Here's how they work, what they cost, and how to compare that fee against the alternatives."
-updated: "2026-09-23"
+updated: "2026-10-03"
 category: "renting"
 sources:
   - label: "Insurent: Rental Guarantor Service: Renter Information"
@@ -11,8 +11,8 @@ sources:
     url: "https://www.6sqft.com/everything-you-need-to-know-about-using-a-guarantor-in-nyc/"
   - label: "NYC Department of Consumer and Worker Protection: FARE Act FAQ (fee disclosure rules)"
     url: "https://www.nyc.gov/site/dca/about/FAQ-Broker-Fees.page"
-  - label: "New York State Senate: RPL §227-g (security deposit cap, HSTPA 2019)"
-    url: "https://www.nysenate.gov/legislation/laws/RPP/227-G"
+  - label: "NY Legislature: S.6458 (HSTPA 2019), §25 adding General Obligations Law §7-108(1-a) (security deposit cap)"
+    url: "https://legislation.nysenate.gov/pdf/bills/2019/S6458"
 relatedGuides:
   - nyc-40x-rent-rule
   - nyc-security-deposit-move-in-costs
@@ -71,7 +71,7 @@ That fee is real money, but compare it with the cost of what you'd otherwise do:
 
 ## How this fits with NYC's move-in fee caps
 
-New York caps what a *landlord* can collect upfront: a security deposit of no more than one month's rent under [RPL §227-g](https://www.nysenate.gov/legislation/laws/RPP/227-G), and an application fee of no more than $20 (see [security deposits and move-in costs](/guides/nyc-security-deposit-move-in-costs/)). A guarantor company's fee is paid to the company, not the landlord, under your own contract with it, which is why it sits outside those caps.
+New York caps what a *landlord* can collect upfront: a security deposit of no more than one month's rent under [General Obligations Law §7-108(1-a)](https://legislation.nysenate.gov/pdf/bills/2019/S6458) (added by the HSTPA in 2019), and an application fee of no more than $20 (see [security deposits and move-in costs](/guides/nyc-security-deposit-move-in-costs/)). A guarantor company's fee is paid to the company, not the landlord, under your own contract with it, which is why it sits outside those caps.
 
 Two protections still apply:
 

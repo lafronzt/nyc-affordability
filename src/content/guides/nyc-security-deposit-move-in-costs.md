@@ -2,11 +2,11 @@
 title: "Security Deposits & Move-In Costs for NYC Renters"
 metaDescription: "NYC security deposits are capped at one month's rent and application fees at $20. See exactly what a landlord can and can't charge at move-in, how deposit refunds work, and a worked cost example."
 intro: "Since 2019, New York law has drawn a hard line around what a landlord can charge a tenant before handing over keys: a security deposit capped at one month's rent, an application fee capped at $20, and no separate 'move-in fee' of any kind. Here's exactly what that means for your total move-in cash, and what happens to your deposit when you move out."
-updated: "2026-08-11"
+updated: "2026-10-03"
 category: "renting"
 sources:
-  - label: "New York State Senate: RPL §227-g (Security Deposit Cap, HSTPA 2019)"
-    url: "https://www.nysenate.gov/legislation/laws/RPP/227-G"
+  - label: "NY Legislature: S.6458 (HSTPA 2019), §25 adding General Obligations Law §7-108(1-a) (security deposit cap)"
+    url: "https://legislation.nysenate.gov/pdf/bills/2019/S6458"
   - label: "New York State Attorney General: Tenants' Rights Guide"
     url: "https://ag.ny.gov/publications/residential-tenants-rights-guide"
   - label: "NYC Department of Consumer and Worker Protection: FARE Act FAQ"
@@ -14,6 +14,8 @@ sources:
 relatedGuides:
   - fare-act-broker-fees-explained
   - nyc-40x-rent-rule
+  - breaking-a-lease-in-nyc
+  - how-much-does-it-cost-to-move-in-nyc
 relatedTerms:
   - fare-act
   - guarantor
@@ -26,7 +28,7 @@ cta:
 
 ## The rule, in one sentence
 
-A landlord can charge, at most, one month's rent as a security deposit, nothing more, regardless of what the lease says or what was standard before 2019. This cap comes from the Housing Stability and Tenant Protection Act (HSTPA) of 2019, codified at New York Real Property Law §227-g, and it applies to the overwhelming majority of NYC residential leases.
+A landlord can charge, at most, one month's rent as a security deposit, nothing more, regardless of what the lease says or what was standard before 2019. This cap comes from the Housing Stability and Tenant Protection Act (HSTPA) of 2019, codified at New York General Obligations Law §7-108(1-a), and it applies to the overwhelming majority of NYC residential leases.
 
 ## What counts toward the deposit, and what doesn't
 

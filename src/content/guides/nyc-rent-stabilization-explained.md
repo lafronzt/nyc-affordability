@@ -20,6 +20,8 @@ sources:
 relatedGuides:
   - fare-act-broker-fees-explained
   - nyc-40x-rent-rule
+  - good-cause-eviction-nyc-explained
+  - scrie-drie-rent-freeze-program
 relatedTerms:
   - rent-stabilization
   - nyc-40x-rule

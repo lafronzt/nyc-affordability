@@ -16,6 +16,7 @@ sources:
 relatedGuides:
   - nyc-40x-rent-rule
   - income-needed-to-buy-nyc-apartment
+  - nyc-city-income-tax-explained
 relatedTerms:
   - nyc-40x-rule
   - fica-tax

@@ -14,6 +14,7 @@ relatedTerms:
   - housing-choice-voucher-section-8
 relatedGuides:
   - nyc-ami-housing-connect-explained
+  - homefirst-down-payment-assistance
 relatedCalculators:
   - "/affordable/"
 draft: false

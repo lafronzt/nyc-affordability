@@ -2,6 +2,30 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Phase 3h: Eleven new guides
+
+**User-visible changes**
+- 11 new `/guides/<slug>/` pages. Each has dated sources, a worked example, and related links.
+  - Renting: good-cause-eviction-nyc-explained, breaking-a-lease-in-nyc, how-much-does-it-cost-to-move-in-nyc.
+  - Buying: how-much-down-payment-nyc-apartment, rent-vs-buy-nyc, condo-common-charges-explained, nyc-coop-condo-property-tax-abatement.
+  - Co-ops: coop-maintenance-explained.
+  - Income: nyc-city-income-tax-explained.
+  - Affordable housing: scrie-drie-rent-freeze-program, homefirst-down-payment-assistance.
+- Worked examples come from the site's own engines: `calculateCoop`/`calculateCondo`, `compareRentVsBuy`/`breakEvenRent`, `renterMoveCost` and `computeBreakdown`. Rules and thresholds come from official pages:
+  - HPD Good Cause local rent standard of 8.38%
+  - HomeFirst: up to $100,000 at 120% AMI
+  - SCRIE/DRIE: $50,000 income limit
+  - DOF abatement tiers: 28.1%–17.5%
+  - IT-2105-I 2026 NYC brackets
+- **Citation fixes:** three existing guides cited "RPL §227-g" for the security deposit cap. The 2019 HSTPA bill text puts it in General Obligations Law §7-108(1-a). They now cite that section, linked to the bill text.
+- Existing guides and glossary entries now link to the new guides through `relatedGuides`.
+
+**Validation**
+- `npm test` 263/263. Eight new `test/guideExamples.test.ts` checks recompute each default-dependent worked example: down payment, rent vs buy, common charges, maintenance, city tax, cost to move.
+- `npm run build` is clean (207 pages), including `check-csp`. The link crawl finds 0 broken internal links.
+- All 11 guides render at 390px under the production CSP with no console errors. Each has a Worked example section. A four-column table on the lease-break guide overflowed and was folded to two columns.
+- Key figures were re-fetched from official sources and matched.
+
 ## 2026-10-03: Phase 3g: Twenty new glossary terms
 
 **User-visible changes**

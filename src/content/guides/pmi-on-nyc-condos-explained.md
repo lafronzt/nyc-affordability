@@ -12,6 +12,7 @@ sources:
 relatedGuides:
   - nyc-closing-costs-for-buyers
   - income-needed-to-buy-nyc-apartment
+  - how-much-down-payment-nyc-apartment
 cta:
   heading: "See PMI factored into your max purchase price"
   body: "The condo calculator applies PMI automatically based on your down payment percentage and folds it into both your monthly payment and your DTI check, no separate lookup required."

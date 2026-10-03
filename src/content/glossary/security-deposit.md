@@ -17,6 +17,7 @@ relatedTerms:
 relatedGuides:
   - nyc-security-deposit-move-in-costs
   - fare-act-broker-fees-explained
+  - breaking-a-lease-in-nyc
 relatedCalculators:
   - "/rent/"
   - "/cost-to-move/"
