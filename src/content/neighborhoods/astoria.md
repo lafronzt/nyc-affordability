@@ -4,12 +4,30 @@ borough: "queens"
 metaDescription: "Median rent (Northwest Queens zone) and median sale price for Astoria, Queens, plus the income it takes to afford each, calculated from cited market data."
 intro: "A Queens neighborhood along the East River across from Manhattan's Upper East Side, known for its Greek and broader immigrant history, waterfront parks, and a mix of pre-war walk-ups, rowhouses, and newer rental buildings."
 updated: "2026-08-13"
-medianRent: 3754
-medianRentLabel: "Median asking rent, all unit sizes (Elliman \"Northwest Queens\" zone: Astoria, LIC, Sunnyside, Woodside combined)"
-medianRentAsOf: "January 2026"
-medianSalePrice: 700000
-medianSalePriceLabel: "Median sale price, all property types, Astoria-specific"
-medianSalePriceAsOf: "1H 2026"
+figures:
+  - metric: "median-rent"
+    value: 3754
+    unitScope: "all"
+    propertyScope: "all"
+    geo:
+      kind: "broker-zone"
+      name: "Northwest Queens (Elliman)"
+      definition: "Astoria, Long Island City, Sunnyside, and Woodside combined"
+    period: "January 2026"
+    label: "Median rent on new leases, all unit sizes (Elliman \"Northwest Queens\" zone: Astoria, LIC, Sunnyside, Woodside combined)"
+    source: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
+    sourceUrl: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"
+  - metric: "median-sale-price"
+    value: 700000
+    unitScope: "all"
+    propertyScope: "all"
+    geo:
+      kind: "neighborhood"
+      name: "Astoria"
+    period: "1H 2026"
+    label: "Median sale price, all property types, Astoria-specific"
+    source: "Corcoran: Long Island City & Astoria Market Report, 1H 2026"
+    sourceUrl: "https://inhabit.corcoran.com/long-island-city-astoria-market-report-1h-2026/"
 sources:
   - label: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
     url: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"
