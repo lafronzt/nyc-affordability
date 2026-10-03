@@ -33,13 +33,14 @@ Multi-file changes, newest first. Each entry gives the user-visible effect and h
 - Corcoran 2Q 2026 Brooklyn: median price $895K.
 - Elliman Q4 2025 Queens: Queens Matrix median $739,053; Co-Op Matrix $339,750; Condo Matrix $680,000; 1–3 Family $910,000 (quoted in the notes).
 
-**Tests** (234 → 245; `test/boroughHubs.test.ts`)
+**Tests** (234 → 246; `test/boroughHubs.test.ts`)
 - Each hub passes the quality gate against the other hubs.
 - Every figure is borough-wide, dated, and sourced on the page.
 - Every hub has notes and is reachable from the primary nav.
+- `/explore/` links borough headings in its Neighborhoods section, and only there. Added after review caught the link rendering in the Guides section, where it never appeared.
 
 **Validation**
-- `npm test`: 245/245. `npm run build`: clean, including `check-csp`.
+- `npm test`: 246/246. `npm run build`: clean, including `check-csp`.
 - Browser:
   - all three hubs render
   - Queens shows "Not yet tracked"

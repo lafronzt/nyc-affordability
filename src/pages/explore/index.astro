@@ -173,7 +173,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
     <p>Sourced explainers on NYC's housing rules. <a href="/guides/">Browse all guides</a></p>
     {guideGroups.map((group) => (
       <div class="group">
-        <h4>{group.hub ? <a href={`/${group.hub.slug}/`}>{group.label}</a> : group.label}</h4>
+        <h4>{group.label}</h4>
         <ul class="link-list two-col">
           {group.guides.map((g) => <li><a href={`/guides/${g.id}/`}>{g.data.title}</a></li>)}
         </ul>
@@ -208,7 +208,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
     <p>Cited rent and sale prices, plus the income each takes. Borough names link to borough guides. <a href="/neighborhoods/">All neighborhoods</a></p>
     {hoodGroups.map((group) => (
       <div class="group">
-        <h4>{group.label}</h4>
+        <h4>{group.hub ? <a href={`/${group.hub.slug}/`}>{group.label}</a> : group.label}</h4>
         <ul class="link-list three-col">
           {group.hoods.map((h) => <li><a href={`/neighborhoods/${h.id}/`}>{h.data.name}</a></li>)}
         </ul>

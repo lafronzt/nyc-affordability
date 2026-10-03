@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { BOROUGH_HUBS } from '../src/data/boroughs.ts';
 import { uniqueFigureCount, QUALITY_GATE_MIN } from '../src/lib/marketFigures.ts';
@@ -40,3 +40,12 @@ for (const hub of BOROUGH_HUBS) {
     assert.ok(navHrefs().includes(`/${hub.slug}/`));
   });
 }
+
+test('/explore/ links borough headings to hubs in the Neighborhoods section (not elsewhere)', () => {
+  const src = readFileSync(fileURLToPath(new URL('../src/pages/explore/index.astro', import.meta.url)), 'utf8');
+  const hoods = src.slice(src.indexOf('id="neighborhoods"'));
+  const hoodsSection = hoods.slice(0, hoods.indexOf('</section>'));
+  assert.match(hoodsSection, /group\.hub \? <a href=\{`\/\$\{group\.hub\.slug\}\/`\}>/);
+  const guides = src.slice(src.indexOf('id="guides"'));
+  assert.doesNotMatch(guides.slice(0, guides.indexOf('</section>')), /group\.hub/);
+});
