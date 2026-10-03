@@ -2,7 +2,7 @@
 title: "NYC Rent Stabilization Explained: What Tenants Should Know"
 metaDescription: "Rent stabilization caps how much a NYC landlord can raise your rent and gives you renewal and succession rights a market-rate lease doesn't. See how to check if you're covered and the 2026-27 rent freeze."
 intro: "Roughly one million NYC apartments are rent-stabilized, but plenty of tenants living in one don't realize it, or don't know what it actually changes. Here's how stabilization works, how to check if your unit is covered, and the current legal caps on renewal increases."
-updated: "2026-09-23"
+updated: "2026-10-03"
 category: "renting"
 sources:
   - label: "NYC Rent Guidelines Board: 2026-27 Apartment/Loft Order #58 (adopted June 25, 2026)"
@@ -13,6 +13,10 @@ sources:
     url: "https://portal.311.nyc.gov/article/?kanumber=KA-03296"
   - label: "NY Attorney General: Residential Tenants' Rights Guide"
     url: "https://ag.ny.gov/publications/residential-tenants-rights-guide"
+  - label: "Brick Underground: Rent Guidelines Board approves rent freezes for one- and two-year leases (June 25, 2026)"
+    url: "https://www.brickunderground.com/rent/rent-guidelines-board-approves-rent-freeze-one-two-year-leases"
+  - label: "Brick Underground: NYC's rent freeze is still in place, at least for now (October 1, 2026)"
+    url: "https://www.brickunderground.com/rent/rent-freeze-remains-in-effect-RGB-lawsuit-stabilized-apartments-nyc"
 relatedGuides:
   - fare-act-broker-fees-explained
   - nyc-40x-rent-rule
@@ -42,7 +46,7 @@ On June 25, 2026, the board voted 7-1 to adopt **Order #58, a full rent freeze**
 | Oct 1, 2026 – Sep 30, 2027 (Order #58) | 0% | 0% |
 | Oct 1, 2025 – Sep 30, 2026 (Order #57) | 3% | 4.5% |
 
-What matters is the date your renewal lease *commences*, not when you sign it. A renewal starting September 1, 2026 still falls under Order #57's caps. These are ceilings, not automatic increases. A landlord can renew at the same rent or lower, but legally cannot exceed the board's cap for that renewal period. The RGB revisits these numbers every year, so check the [Rent Guidelines Board's current order](https://rentguidelinesboard.cityofnewyork.us/rent-guidelines/) before assuming the freeze carries into your next cycle.
+What matters is the date your renewal lease *commences*, not when you sign it. A renewal starting September 1, 2026 still falls under Order #57's caps. These are ceilings, not automatic increases. A landlord can renew at the same rent or lower, but legally cannot exceed the board's cap for that renewal period. The RGB revisits these numbers every year, so check the [Rent Guidelines Board's current order](https://rentguidelinesboard.cityofnewyork.us/rent-guidelines/) before assuming the freeze carries into your next cycle. One more caveat: a group of landlords has sued to overturn the freeze. As of October 1, 2026 it remains in effect, the judge declined to restore the old 3% and 4.5% caps in the meantime, and a ruling is expected before the end of the year. If the freeze were overturned, the board would have to vote again, and what that would mean for renewals already signed isn't settled.
 
 ## How to check if your apartment is actually stabilized
 

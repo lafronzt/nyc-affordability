@@ -2,6 +2,23 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Phase 3g: Twenty new glossary terms
+
+**User-visible changes**
+- 20 new `/glossary/<slug>/` pages, each with a plain definition, dated primary or clearly labeled secondary sources, related links, and a worked example:
+  - Buying and financing: private-mortgage-insurance-pmi, mortgage-points, rate-lock, escrow-account, title-insurance, contract-of-sale, offering-plan, working-capital-contribution.
+  - Taxes: cema, nyc-real-property-transfer-tax, nys-transfer-tax.
+  - Co-ops: proprietary-lease, underlying-mortgage, special-assessment.
+  - Renting: security-deposit, preferential-rent, rent-guidelines-board, renewal-lease, net-effective-rent, broker-fee.
+- Worked-example numbers either use the site's own formulas and defaults (`calcPmiRate`, `calcMortgageRecordingTax`, `calcNycRptt`, `calcNysTransferTax`, the assumptions registry) or are labeled hypothetical.
+- **Rent stabilization guide:** now notes the pending landlord lawsuit against the 2026–27 freeze (still in effect as of October 1, 2026; a ruling is expected by year end). It also cites the June 25, 2026 report of the 7-1 vote.
+- **Seller closing costs guide:** corrected. The NYS 0.4% transfer tax applies statewide; only the 0.25% additional tier is NYC-only.
+
+**Validation**
+- `npm test` and `npm run build`, including the glossary link and orphan checks.
+- Each source was fetched and its supporting text read. Claims that couldn't be sourced were dropped.
+- Every worked example was recomputed with node.
+
 ## 2026-10-03: Phase 3f: Fill gaps in the price grids; split salary from income
 
 **User-visible changes** (32 new pages; every existing URL kept)
