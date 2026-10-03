@@ -23,6 +23,97 @@ Multi-file changes, newest first. Each entry gives the user-visible effect and h
 - **Link crawl**: every internal `href` in `dist/` resolves to a built page (0 broken).
 - **Browser** (390px, production CSP): `/salary/35000/`, `/rent/1500/`, `/rent/10000/`, `/buy/2500000/`, `/income/110000/`, and `/salary/` render with no overflow or errors.
 
+## 2026-10-03: Phase 3e: Salary pages get pay-period and housing sections
+
+**User-visible changes** (every `/salary/<amount>/` page; URLs unchanged)
+- **"Per paycheck":** gross, withheld, and take-home for weekly (52), every two weeks (26), twice a month (24), and monthly (12). The page explains why biweekly and semimonthly checks differ, and notes that these are averages: real withholding follows payroll tables.
+- **"What housing takes out of this paycheck":**
+  - Covers rent at the 40× maximum, a co-op at the board DTI limit, and a condo at the lender DTI limit.
+  - Each row shows the monthly housing cost, its share of **take-home** pay, and what's left each month.
+  - Linked from the matching `/rent/<amount>/` page and the calculators.
+  - Example at $100,000: $5,870/mo take-home. A $2,500 rent uses 43% of it, a $214K co-op 40%, and a $238K condo 61%.
+- The meta description now mentions both sections.
+
+**Code**
+- `src/lib/payPeriods.ts` (pure): splits the annual `computeBreakdown()` result across pay frequencies.
+- The housing rows reuse `maxAffordableRent`/`maxAffordablePrice` and the registry DTI limits. At the DTI ceiling, monthly housing equals the limit times gross monthly pay.
+
+**Tests** (234 → 236; `test/payPeriods.test.ts`)
+- Each frequency multiplies back to the annual gross, withholding, and net.
+- Biweekly and semimonthly checks differ.
+
+**Validation**
+- `npm test`: 236/236. `npm run build`: clean, including `check-csp`.
+- Browser check on `/salary/100000/`:
+  - Tables render.
+  - The figures cross-check against the engine and DTI limits.
+  - No overflow at 390px.
+  - No errors under the production CSP.
+
+## 2026-10-03: Phase 3d: Borough hubs (/manhattan/, /brooklyn/, /queens/)
+
+**User-visible changes**
+- **New borough guides.** Each has cited borough-wide figures, notes on what each figure covers, the calculated income needed, and the borough's neighborhood pages with their rents. Sources are listed with links. The footer carries a "not advice" disclaimer.
+  - **Manhattan:**
+    - Median rent on new leases: $4,695 (Elliman, January 2026).
+    - Median apartment sale price: $1,290,000 (Brown Harris Stevens, Q2 2026, resale and new development).
+  - **Brooklyn:**
+    - Median rent on leases signed: $4,368 (Corcoran, August 2026; a borough record per the report).
+    - Median co-op/condo sale price: $895K (Corcoran, 2Q 2026).
+  - **Queens:**
+    - Median sale price: $739,053 for co-ops, condos, and 1–3 family homes; co-ops $339,750; condos $680,000 (Elliman, Q4 2025).
+    - Rent shows **"Not yet tracked"**. No stable source publishes a borough-wide Queens rent, and Elliman's Northwest Queens zone is only part of the borough.
+- **Income rows use property-type medians when the source has them.** In Queens, co-op income is computed at the co-op median: $128,536/yr, versus $219,159 if the blended median, which includes houses, were used.
+- **The Bronx and Staten Island have no hub yet.** None of the reachable reports publish borough-wide figures for them, and an empty page would fail the quality gate.
+- **Linking:**
+  - The Neighborhoods nav menu lists "Manhattan guide", "Brooklyn guide", and "Queens guide".
+  - Borough headings on `/neighborhoods/` and `/explore/` link to the hubs.
+  - Each neighborhood page links back to its borough guide.
+  - The sitemap includes all three hubs.
+
+**Code**
+- `src/data/boroughs.ts` holds the hub data in the same `MarketFigure` shape as the neighborhood collection. `src/pages/[borough]/index.astro` builds only the hubs that are listed there.
+
+**Sources (each figure checked against the PDF)**
+- Elliman January 2026 rentals: Manhattan median rental price $4,695. Doorman $5,433 and non-doorman $3,850 are quoted in the notes.
+- BHS Q2 2026: "The median price rose 6% … to $1,290,000"; includes new development and resale apartments.
+- Corcoran August 2026 Brooklyn rentals: "median rent … to a record $4,368".
+- Corcoran 2Q 2026 Brooklyn: median price $895K.
+- Elliman Q4 2025 Queens: Queens Matrix median $739,053; Co-Op Matrix $339,750; Condo Matrix $680,000; 1–3 Family $910,000 (quoted in the notes).
+
+**Tests** (234 → 246; `test/boroughHubs.test.ts`)
+- Each hub passes the quality gate against the other hubs.
+- Every figure is borough-wide, dated, and sourced on the page.
+- Every hub has notes and is reachable from the primary nav.
+- `/explore/` links borough headings in its Neighborhoods section, and only there. Added after review caught the link rendering in the Guides section, where it never appeared.
+
+**Validation**
+- `npm test`: 246/246. `npm run build`: clean, including `check-csp`.
+- Browser:
+  - all three hubs render
+  - Queens shows "Not yet tracked"
+  - the index and neighborhood back-links work
+  - the nav lists the guides
+  - no overflow at 390px
+  - no errors under the production CSP
+
+## 2026-10-03: Phase 3c: Rent pages get income-rule and FARE Act scenarios
+
+**User-visible changes** (all 30-odd `/rent/<amount>/` pages; URLs unchanged)
+- **"Not every landlord uses 40×":**
+  - Income needed at 35×, 40× (highlighted as most common), and 45× the rent, plus the personal-guarantor 80× rule.
+  - A note that institutional guarantor companies often look for about 27×, linking the guarantor guide that cites it.
+- **"Cash to sign a $X lease"** under the FARE Act, from the same engine as `/cost-to-move/`. Three scenarios:
+  - no broker or the landlord's broker
+  - a broker you hired (15% of a year's rent)
+  - a guarantor company (the 70%-of-one-month registry estimate)
+- Each total spells out what it includes. A link opens Cost to Move pre-filled with the rent, so movers and overlap can be added. For $3,500, it's $7,770 at signing, and $9,420 on Cost to Move with the default movers and supplies.
+- The intro note no longer says the page ignores move-in cash and the FARE Act. The meta description mentions the new sections.
+- The guarantor multiple now reads from the registry instead of a hard-coded 80.
+
+**Validation**
+- `npm test`: 202/202. `npm run build`: clean, including `check-csp`.
+- Browser check on `/rent/3500/` at 1280 and 390px: tables render, no overflow, no errors under the production CSP, and the Cost to Move link matches.
 ## 2026-10-03: Phase 3b: Five Brooklyn neighborhood pages
 
 **User-visible changes**

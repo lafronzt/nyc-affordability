@@ -11,6 +11,7 @@ import { AD_MULTIPLEX_HORIZONTAL } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { fmtMoney } from '../../lib/format';
 import { firstOf, firstRent } from '../../lib/marketFigures';
+import { BOROUGH_HUBS } from '../../data/boroughs';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -93,7 +94,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   ) : (
     grouped.map((group) => (
       <div class="borough-group">
-        <h3 class="borough-heading">{group.label}</h3>
+        <h3 class="borough-heading">{BOROUGH_HUBS.some((h) => h.slug === group.borough) ? <a href={`/${group.borough}/`}>{group.label} guide &rarr;</a> : group.label}</h3>
         <div class="hood-grid">
           {group.hoods.map((hood) => (
             <a class="hood-card" href={`/neighborhoods/${hood.id}/`}>
@@ -164,6 +165,8 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 .coverage-note p { font-size: 13px; color: var(--g700); margin: 0; }
 
 .borough-group { margin-bottom: 28px; }
+.borough-heading a { color: inherit; text-decoration: none; }
+.borough-heading a:hover { color: var(--blue); }
 .borough-heading {
   font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
   color: var(--g500); margin-bottom: 12px;
