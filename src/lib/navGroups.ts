@@ -9,6 +9,7 @@ import {
   NEIGHBORHOODS_INDEX_LINK, AFFORDABILITY_INDEX_LINK, SALARY_INDEX_LINK, SITE_DIRECTORY_LINK, METHODOLOGY_LINK,
   type FooterLink,
 } from './footerLinks.ts';
+import { BOROUGH_HUBS } from '../data/boroughs.ts';
 
 /* ============================================================
    Primary navigation, organized by what the visitor is trying to do
@@ -98,6 +99,7 @@ export const NAV: NavEntry[] = [
     kind: 'group', id: 'places', label: 'Neighborhoods', intro: 'I\'m comparing neighborhoods',
     tools: [
       to(NEIGHBORHOODS_INDEX_LINK, 'Neighborhood directory'),
+      ...BOROUGH_HUBS.map((h) => ({ label: `${h.name} guide`, href: `/${h.slug}/` })),
       to(AFFORDABILITY_INDEX_LINK, 'Affordability Index'),
       to(INCOME_INDEX_LINK, 'What my income buys'),
     ],
