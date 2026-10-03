@@ -2,6 +2,52 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Phase 3d: Borough hubs (/manhattan/, /brooklyn/, /queens/)
+
+**User-visible changes**
+- **New borough guides.** Each has cited borough-wide figures, notes on what each figure covers, the calculated income needed, and the borough's neighborhood pages with their rents. Sources are listed with links. The footer carries a "not advice" disclaimer.
+  - **Manhattan:**
+    - Median rent on new leases: $4,695 (Elliman, January 2026).
+    - Median apartment sale price: $1,290,000 (Brown Harris Stevens, Q2 2026, resale and new development).
+  - **Brooklyn:**
+    - Median rent on leases signed: $4,368 (Corcoran, August 2026; a borough record per the report).
+    - Median co-op/condo sale price: $895K (Corcoran, 2Q 2026).
+  - **Queens:**
+    - Median sale price: $739,053 for co-ops, condos, and 1–3 family homes; co-ops $339,750; condos $680,000 (Elliman, Q4 2025).
+    - Rent shows **"Not yet tracked"**. No stable source publishes a borough-wide Queens rent, and Elliman's Northwest Queens zone is only part of the borough.
+- **Income rows use property-type medians when the source has them.** In Queens, co-op income is computed at the co-op median: $128,536/yr, versus $219,159 if the blended median, which includes houses, were used.
+- **The Bronx and Staten Island have no hub yet.** None of the reachable reports publish borough-wide figures for them, and an empty page would fail the quality gate.
+- **Linking:**
+  - The Neighborhoods nav menu lists "Manhattan guide", "Brooklyn guide", and "Queens guide".
+  - Borough headings on `/neighborhoods/` and `/explore/` link to the hubs.
+  - Each neighborhood page links back to its borough guide.
+  - The sitemap includes all three hubs.
+
+**Code**
+- `src/data/boroughs.ts` holds the hub data in the same `MarketFigure` shape as the neighborhood collection. `src/pages/[borough]/index.astro` builds only the hubs that are listed there.
+
+**Sources (each figure checked against the PDF)**
+- Elliman January 2026 rentals: Manhattan median rental price $4,695. Doorman $5,433 and non-doorman $3,850 are quoted in the notes.
+- BHS Q2 2026: "The median price rose 6% … to $1,290,000"; includes new development and resale apartments.
+- Corcoran August 2026 Brooklyn rentals: "median rent … to a record $4,368".
+- Corcoran 2Q 2026 Brooklyn: median price $895K.
+- Elliman Q4 2025 Queens: Queens Matrix median $739,053; Co-Op Matrix $339,750; Condo Matrix $680,000; 1–3 Family $910,000 (quoted in the notes).
+
+**Tests** (234 → 246; `test/boroughHubs.test.ts`)
+- Each hub passes the quality gate against the other hubs.
+- Every figure is borough-wide, dated, and sourced on the page.
+- Every hub has notes and is reachable from the primary nav.
+- `/explore/` links borough headings in its Neighborhoods section, and only there. Added after review caught the link rendering in the Guides section, where it never appeared.
+
+**Validation**
+- `npm test`: 246/246. `npm run build`: clean, including `check-csp`.
+- Browser:
+  - all three hubs render
+  - Queens shows "Not yet tracked"
+  - the index and neighborhood back-links work
+  - the nav lists the guides
+  - no overflow at 390px
+  - no errors under the production CSP
 ## 2026-10-03: Fix: NY State 6.85% bracket threshold for single and head-of-household filers
 
 **User-visible changes**
