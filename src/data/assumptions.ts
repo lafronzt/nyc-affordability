@@ -45,7 +45,7 @@ export interface Assumption {
   lastVerified: string | null;
   notes?: string;
   /** Calculator <input> fields that must default to this value. */
-  inputs?: { page: 'coop' | 'condo' | 'rent'; id: string }[];
+  inputs?: { page: 'coop' | 'condo' | 'rent' | 'sell'; id: string }[];
 }
 
 const asm = <T extends Record<string, Assumption>>(t: T) => t;
@@ -246,6 +246,65 @@ export const ASSUMPTIONS = asm({
     value: 3, unit: '%', label: 'Yield on savings while you save to buy', basis: 'illustrative',
     sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
     notes: 'A placeholder, not a rate quote. High-yield savings and money-market rates move with Fed policy; enter your own account\'s APY on the savings planner.',
+  },
+
+  // ---- Long-run projections (rent vs buy) ----
+  // None of these is a forecast. They're round, editable midpoints so the
+  // comparison has somewhere to start; /rent-vs-buy/ shows them as inputs.
+  rentGrowthPct: {
+    value: 3, unit: '%', label: 'Annual rent increase', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Free-market NYC rents have swung from double-digit drops (2020) to double-digit jumps (2022). Rent-stabilized renewals follow the Rent Guidelines Board instead.',
+  },
+  homeAppreciationPct: {
+    value: 3, unit: '%', label: 'Annual home price change', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'A placeholder, not a forecast. Co-op prices in many NYC submarkets were flat for most of the 2010s.',
+  },
+  ownerCostGrowthPct: {
+    value: 3, unit: '%', label: 'Annual increase in maintenance / common charges, taxes and insurance', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+  },
+  ownerUpkeepPct: {
+    value: 0.5, unit: '%', label: 'In-unit repairs and upkeep (per year, % of home value)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'The building\'s charges cover the structure and common areas; the inside of the unit (appliances, floors, paint) is on you. Lower than the house rule of thumb (1%) for that reason.',
+  },
+  investmentReturnPct: {
+    value: 5, unit: '%', label: 'Annual return on money not tied up in the home', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'After-tax, after-inflation is not implied; this is a nominal placeholder. Use what you would actually earn on the down payment if you kept renting.',
+  },
+
+  // ---- Selling ----
+  sellBrokerPct: {
+    value: 5, unit: '%', label: 'Seller broker commission', basis: 'convention',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Typical NYC range is 4% to 6% of sale price, negotiable.',
+    inputs: [{ page: 'sell', id: 'broker-pct' }],
+  },
+  sellAttorneyFee: {
+    value: 2500, unit: 'USD', label: 'Seller attorney fee', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Roughly $1,500 to $3,000 for a straightforward resale.',
+    inputs: [{ page: 'sell', id: 'attorney-fee' }],
+  },
+  sellTitleMiscFee: {
+    value: 1000, unit: 'USD', label: 'Seller title and miscellaneous closing costs', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Payoff/satisfaction fee, move-out deposit, filing fees.',
+    inputs: [{ page: 'sell', id: 'title-misc-fee' }],
+  },
+  sellCoopFlipTaxPct: {
+    value: 2, unit: '%', label: 'Co-op flip tax (seller)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'Set by each building\'s proprietary lease; commonly 1% to 3%, some buildings charge none.',
+    inputs: [{ page: 'sell', id: 'flip-tax-pct' }],
+  },
+  sellCoopTransferFee: {
+    value: 500, unit: 'USD', label: 'Co-op transfer / processing fee (seller)', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    inputs: [{ page: 'sell', id: 'coop-transfer-fee' }],
   },
 
   // ---- Rent ----
