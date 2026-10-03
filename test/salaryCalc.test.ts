@@ -148,6 +148,22 @@ test('NY State 2026 single brackets reflect the 0.1-point middle-class rate cut'
   assert.ok(Math.abs(applyBrackets(80650, brackets) - expected) < 0.01);
 });
 
+test('NY State 2026 6.85% bracket ends at each filing status\'s own threshold (IT-2105-I)', () => {
+  // IT-2105-I (2026) worksheets: the 6.85% bracket runs to $1,077,550 for
+  // single, $1,616,450 for head of household and $2,155,350 for married
+  // filing jointly, then 9.65% to $5,000,000. Single and HOH previously
+  // reused the joint threshold.
+  const top685 = (s: 'single' | 'headOfHousehold' | 'marriedFilingJointly') =>
+    TAX_CONSTANTS_2026.nyState.brackets[s].find((b) => b.rate === 0.0685)!.upTo;
+  assert.equal(top685('single'), 1_077_550);
+  assert.equal(top685('headOfHousehold'), 1_616_450);
+  assert.equal(top685('marriedFilingJointly'), 2_155_350);
+  // Taxable income of $1.5M (single): $422,450 above $1,077,550 is taxed at 9.65%, not 6.85%.
+  const single = TAX_CONSTANTS_2026.nyState.brackets.single;
+  const diff = applyBrackets(1_500_000, single) - applyBrackets(1_077_550, single);
+  assert.ok(Math.abs(diff - 422_450 * 0.0965) < 0.01);
+});
+
 test('solveRequiredSalary inverts computeBreakdown.netTakeHome', () => {
   const inputs: RequiredSalaryInputs = {
     filingStatus: 'marriedFilingJointly',
