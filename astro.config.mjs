@@ -28,6 +28,9 @@ const SITEMAP_PAGE_META = {
   '/buy/':        { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-12' },
   '/rent/prices/': { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-14' },
   '/neighborhoods/':      { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-08-13' },
+  '/manhattan/':          { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-10-03' },
+  '/brooklyn/':           { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-10-03' },
+  '/queens/':             { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-10-03' },
   '/affordability-index/': { changefreq: 'weekly', priority: 0.6, lastmod: '2026-08-13' },
   // No hand-set lastmod: it's derived from the newest content entry (see serialize()).
   '/explore/':   { changefreq: 'weekly',  priority: 0.5 },
