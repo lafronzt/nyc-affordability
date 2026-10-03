@@ -2,6 +2,42 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Journey-based primary navigation
+
+**User-visible changes**
+- The navbar is organized by what you're trying to do (brief item 23), not one flat list of calculators: **Home · Start here · Rent ▾ · Buy ▾ · Own ▾ · Affordable ▾ · Neighborhoods ▾ · Learn ▾**.
+  - "Start here" is the Reality Check.
+  - Each dropdown opens a panel headed by the journey ("I want to rent", "I want to buy", "I already own", "I need affordable housing", "I'm comparing neighborhoods"). Panels split **Tools** (calculators and lookup pages) from **Read** (guides).
+  - Only pages that exist are listed. Lease renewal, borough hubs, refinance math, and cost to move join their groups when they ship.
+- **Every calculator is now reachable from the navbar**, including `/savings-planner/` and `/rent-vs-buy/`, which had been footer-and-homepage only. Guides, glossary, methodology, and the site directory are also in the navbar.
+- The current page's group is underlined. Guide and glossary pages not listed individually light up Learn.
+- **Accessibility:** follows the disclosure pattern (buttons with `aria-expanded`/`aria-controls`, plain links; not an ARIA menu).
+  - Escape closes the panel and returns focus to its button.
+  - Tabbing out of a group, clicking outside, or opening another group closes it.
+  - Desktop panels are measured and shifted so they never run off the viewport.
+- **Mobile (hamburger, ≤1024px):** the groups expand inline in the same menu.
+- Calculator titles have more room at desktop widths: the co-op title is 287px at 1280 (263px before).
+
+**Code**
+- `src/lib/navGroups.ts`: the nav as data (`NAV`, `navHrefs`). `NavLinks.astro` renders from it. The `SiteNavigationElement` JSON-LD now lists every nav link.
+- Removed `PRIMARY_NAV_CALCULATORS` and its exception list (`footerLinks.ts`), since nothing is outside the nav anymore.
+
+**Tests** (179 → 182; `test/navParity.test.ts`)
+- The nav reaches every calculator, plus guides, glossary, methodology, and `/explore/`.
+- Groups are well-formed, and links are internal with trailing slashes.
+- Each page sits in one group only, so one group is marked current.
+- `NavLinks` renders from `navGroups`.
+- These replace the flat-list and exception-list checks.
+
+**Validation**
+- `npm test`: 182/182. `npm run build`: clean.
+- Browser checks:
+  - Active group correct on `/`, `/coop/`, `/rent-vs-buy/`, a rent guide, and a buy guide.
+  - Open/close behavior: one panel at a time, Escape returns focus, tabbing out and clicking outside close the panel.
+  - Every panel stays in the viewport at 1025, 1280, and 1440px, on pages with and without the save toggle.
+  - The 390px hamburger menu expands groups inline with no horizontal overflow.
+  - No page errors.
+
 ## 2026-10-03: Phase 2c: NYC Rent vs Buy (/rent-vs-buy/)
 
 **User-visible changes**

@@ -1,47 +1,27 @@
 ---
-import {
-  HUB_LINK,
-  CALC_REALITY_CHECK,
-  CALC_COOP,
-  CALC_CONDO,
-  CALC_RENT,
-  CALC_AFFORDABLE,
-  CALC_COMPARE,
-  CALC_AFFORD_MORE,
-  CALC_NET_PROCEEDS,
-  CALC_REQUIRED_SALARY,
-  GUIDES_INDEX_LINK,
-} from '../lib/footerLinks';
+import { NAV, type NavLink } from '../lib/navGroups';
 
 interface Props {
   showSaveToggle?: boolean;
 }
 const { showSaveToggle = false } = Astro.props;
 
-const NAV_ITEMS = [
-  { label: 'Home', href: HUB_LINK.href! },
-  { label: 'Reality Check', href: CALC_REALITY_CHECK.href! },
-  { label: 'Co-op', href: CALC_COOP.href! },
-  { label: 'Condo', href: CALC_CONDO.href! },
-  { label: 'Rent', href: CALC_RENT.href! },
-  { label: 'Affordable', href: CALC_AFFORDABLE.href! },
-  { label: 'Compare', href: CALC_COMPARE.href! },
-  { label: 'Afford More', href: CALC_AFFORD_MORE.href! },
-  { label: 'Sell', href: CALC_NET_PROCEEDS.href! },
-  { label: 'Required Salary', href: CALC_REQUIRED_SALARY.href! },
-  { label: GUIDES_INDEX_LINK.label, href: GUIDES_INDEX_LINK.href! },
-];
-
 const pathname = Astro.url.pathname;
-const isActive = (href: string) =>
-  href === '/guides/' ? pathname.startsWith('/guides/') : pathname === href;
+const isActive = (href: string) => pathname === href;
+const groupHas = (links: NavLink[]) => links.some((l) => isActive(l.href));
+const anyExact = NAV.some((e) => (e.kind === 'link' ? isActive(e.href) : groupHas([...e.tools, ...e.reading])));
+// Guides and glossary entries aren't listed one by one; they live under Learn.
+const groupActive = (id: string, links: NavLink[]) =>
+  groupHas(links) || (id === 'learn' && !anyExact && /^\/(guides|glossary)\//.test(pathname));
 
 const siteOrigin = Astro.site?.origin ?? 'https://www.nyc-affordability.com';
+const flat = NAV.flatMap((e) => (e.kind === 'link' ? [e] : [...e.tools, ...e.reading]))
+  .filter((l, i, arr) => arr.findIndex((x) => x.href === l.href) === i);
 const siteNavJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SiteNavigationElement',
-  name: NAV_ITEMS.map((item) => item.label),
-  url: NAV_ITEMS.map((item) => new URL(item.href, siteOrigin).toString()),
+  name: flat.map((item) => item.label),
+  url: flat.map((item) => new URL(item.href, siteOrigin).toString()),
 };
 ---
 <button
@@ -55,17 +35,42 @@ const siteNavJsonLd = {
 </button>
 <nav class="navlinks" aria-label="Primary">
   <ul class="navbar-menu" id="navbar-menu">
-    {NAV_ITEMS.map((item) => {
-      const active = isActive(item.href);
+    {NAV.map((entry) => {
+      if (entry.kind === 'link') {
+        const active = isActive(entry.href);
+        return (
+          <li>
+            <a href={entry.href} class={active ? 'nav-item nav-item--active' : 'nav-item'} aria-current={active ? 'page' : undefined}>
+              {entry.label}
+            </a>
+          </li>
+        );
+      }
+      const active = groupActive(entry.id, [...entry.tools, ...entry.reading]);
+      const sections = [
+        { heading: 'Tools', links: entry.tools },
+        { heading: 'Read', links: entry.reading },
+      ].filter((sec) => sec.links.length);
       return (
-        <li>
-          <a
-            href={item.href}
-            class={active ? 'nav-item nav-item--active' : 'nav-item'}
-            aria-current={active ? 'page' : undefined}
-          >
-            {item.label}
-          </a>
+        <li class="nav-group">
+          <button type="button" class={active ? 'nav-item nav-group-btn nav-item--active' : 'nav-item nav-group-btn'} aria-expanded="false" aria-controls={`nav-panel-${entry.id}`}>
+            {entry.label}<span class="caret" aria-hidden="true"></span>
+          </button>
+          <div class="nav-panel" id={`nav-panel-${entry.id}`} hidden>
+            <p class="nav-panel-intro">{entry.intro}</p>
+            <div class="nav-panel-cols">
+              {sections.map((sec) => (
+                <div class="nav-panel-col">
+                  <p class="nav-panel-heading">{sec.heading}</p>
+                  <ul>
+                    {sec.links.map((l) => (
+                      <li><a href={l.href} class="nav-panel-link" aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a></li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
         </li>
       );
     })}
@@ -151,6 +156,74 @@ const siteNavJsonLd = {
   border-bottom: 2px solid transparent;
 }
 .nav-item:hover { color: #e2e8f0; }
+.nav-group { position: relative; }
+.nav-group-btn {
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  gap: 5px;
+}
+.nav-group-btn:focus-visible, .nav-item:focus-visible, .nav-panel-link:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+}
+.caret {
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .15s;
+}
+.nav-group-btn[aria-expanded="true"] { color: #e2e8f0; }
+.nav-group-btn[aria-expanded="true"] .caret { transform: translateY(1px) rotate(-135deg); }
+.nav-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 300;
+  min-width: 240px;
+  background: #fff;
+  border: 1px solid var(--g200, #e5e7eb);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, .18);
+  padding: 14px 16px 12px;
+}
+.nav-panel[hidden] { display: none; }
+.nav-panel-intro {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--g900, #111827);
+  margin: 0 0 10px;
+  white-space: nowrap;
+}
+.nav-panel-cols { display: flex; gap: 22px; }
+.nav-panel-col { min-width: 170px; }
+.nav-panel-heading {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--g500, #6b7280);
+  margin: 0 0 4px;
+}
+.nav-panel ul { list-style: none; margin: 0; padding: 0; }
+.nav-panel-link {
+  display: block;
+  padding: 6px 8px;
+  margin: 0 -8px;
+  border-radius: 5px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--g800, #1f2937);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nav-panel-link:hover { background: var(--blue-xlt, #eff6ff); color: var(--blue, #2563eb); }
+.nav-panel-link[aria-current="page"] { color: var(--blue, #2563eb); box-shadow: inset 3px 0 0 var(--gold); }
 .nav-item--active {
   color: #e2e8f0;
   font-weight: 700;
@@ -237,39 +310,98 @@ const siteNavJsonLd = {
     border-left-color: var(--gold);
   }
   .save-toggle-item { padding: 8px 16px; }
+  .nav-group-btn {
+    width: 100%;
+    justify-content: space-between;
+    text-align: left;
+    font-size: 14px;
+  }
+  .nav-panel {
+    position: static;
+    min-width: 0;
+    border: 0;
+    border-bottom: 1px solid #223458;
+    border-radius: 0;
+    box-shadow: none;
+    background: #0f2342;
+    padding: 10px 16px 12px 19px;
+  }
+  .nav-panel-intro { color: #e2e8f0; }
+  .nav-panel-cols { flex-direction: column; gap: 10px; }
+  .nav-panel-heading { color: #8aabcf; }
+  .nav-panel-link { color: #cfe0fb; white-space: normal; min-height: 40px; display: flex; align-items: center; }
+  .nav-panel-link:hover { background: #1a3358; color: #fff; }
+  .nav-panel-link[aria-current="page"] { color: #fff; }
 }
 </style>
 
 <script>
 const toggle = document.querySelector<HTMLButtonElement>('.navbar-toggle');
 const menu = document.querySelector<HTMLUListElement>('.navbar-menu');
+const groupBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('.nav-group-btn'));
 
-if (toggle && menu) {
-  const closeMenu = () => {
-    menu.classList.remove('is-open');
-    toggle.setAttribute('aria-expanded', 'false');
-  };
+const panelOf = (btn: HTMLButtonElement) => document.getElementById(btn.getAttribute('aria-controls')!)!;
+const setGroup = (btn: HTMLButtonElement, open: boolean) => {
+  btn.setAttribute('aria-expanded', String(open));
+  const panel = panelOf(btn);
+  panel.hidden = !open;
+  panel.style.left = '';
+  // Desktop dropdowns open under their button; shift left if that would run off the viewport.
+  if (open && getComputedStyle(panel).position === 'absolute') {
+    const overflow = panel.getBoundingClientRect().right - (document.documentElement.clientWidth - 12);
+    if (overflow > 0) panel.style.left = `${-overflow}px`;
+  }
+};
+const closeGroups = (except?: HTMLButtonElement) => groupBtns.forEach((b) => b !== except && setGroup(b, false));
+const openGroup = () => groupBtns.find((b) => b.getAttribute('aria-expanded') === 'true');
 
-  toggle.addEventListener('click', () => {
-    const isOpen = menu.classList.toggle('is-open');
-    toggle.setAttribute('aria-expanded', String(isOpen));
+// Disclosure pattern (not an ARIA menu): each group button shows/hides its panel of plain links.
+groupBtns.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') !== 'true';
+    closeGroups(btn);
+    setGroup(btn, open);
   });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && menu.classList.contains('is-open')) {
-      closeMenu();
-      toggle.focus();
-    }
+  // Close a desktop panel once focus leaves its group (Tab past the last link).
+  btn.parentElement!.addEventListener('focusout', (e) => {
+    const next = (e as FocusEvent).relatedTarget as Node | null;
+    if (next && !btn.parentElement!.contains(next) && !(menu?.classList.contains('is-open'))) setGroup(btn, false);
   });
+});
 
-  document.addEventListener('click', (event) => {
-    if (
-      menu.classList.contains('is-open') &&
-      !menu.contains(event.target as Node) &&
-      !toggle.contains(event.target as Node)
-    ) {
-      closeMenu();
-    }
-  });
-}
+const closeMenu = () => {
+  if (!toggle || !menu) return;
+  menu.classList.remove('is-open');
+  toggle.setAttribute('aria-expanded', 'false');
+};
+
+toggle?.addEventListener('click', () => {
+  if (!menu) return;
+  const isOpen = menu.classList.toggle('is-open');
+  toggle.setAttribute('aria-expanded', String(isOpen));
+  if (!isOpen) closeGroups();
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  const btn = openGroup();
+  if (btn) {
+    setGroup(btn, false);
+    btn.focus();
+  } else if (menu?.classList.contains('is-open')) {
+    closeMenu();
+    toggle?.focus();
+  }
+});
+
+document.addEventListener('click', (event) => {
+  const target = event.target as Node;
+  if (!groupBtns.some((b) => b.parentElement!.contains(target))) {
+    if (!menu?.classList.contains('is-open')) closeGroups();
+  }
+  if (menu?.classList.contains('is-open') && !menu.contains(target) && !toggle?.contains(target)) {
+    closeMenu();
+    closeGroups();
+  }
+});
 </script>
