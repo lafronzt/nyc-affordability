@@ -18,14 +18,21 @@ export const CALC_NET_PROCEEDS: FooterLink = { label: 'NYC Sale Net Proceeds Cal
 export const CALC_REALITY_CHECK: FooterLink = { label: 'NYC Housing Reality Check', href: '/reality-check/' };
 export const CALC_REQUIRED_SALARY: FooterLink = { label: 'Required Salary Calculator', href: '/required-salary/' };
 export const CALC_AFFORD_MORE: FooterLink = { label: 'How Do I Afford More?', href: '/afford-more/' };
-export const ALL_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_AFFORD_MORE, CALC_NET_PROCEEDS, CALC_REQUIRED_SALARY];
+export const CALC_SAVINGS_PLANNER: FooterLink = { label: 'Down Payment Savings Planner', href: '/savings-planner/' };
+export const ALL_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_AFFORD_MORE, CALC_SAVINGS_PLANNER, CALC_NET_PROCEEDS, CALC_REQUIRED_SALARY];
+
+/** The tools that get a slot in the primary navbar. The navbar has room for about ten
+    items before calculator titles get squeezed at desktop widths, so newer planning
+    tools live in the homepage grid, footers, and /explore/ until a journey-based nav
+    replaces this flat list. test/navParity.test.ts checks NavLinks against it. */
+export const PRIMARY_NAV_CALCULATORS: FooterLink[] = [CALC_REALITY_CHECK, CALC_COOP, CALC_CONDO, CALC_RENT, CALC_AFFORDABLE, CALC_COMPARE, CALC_AFFORD_MORE, CALC_NET_PROCEEDS, CALC_REQUIRED_SALARY];
 export const HUB_LINK: FooterLink = { label: 'NYC Affordability Hub', href: '/' };
 
 /** The calculator paths as a literal tuple, for content schemas (z.enum) that
     let an entry name the calculators it relates to. test/navParity.test.ts
     checks it matches ALL_CALCULATORS. */
 export const CALCULATOR_PATHS = [
-  '/reality-check/', '/coop/', '/condo/', '/rent/', '/affordable/', '/compare/', '/afford-more/', '/sell/', '/required-salary/',
+  '/reality-check/', '/coop/', '/condo/', '/rent/', '/affordable/', '/compare/', '/afford-more/', '/savings-planner/', '/sell/', '/required-salary/',
 ] as const;
 
 /** All calculators except the current page, plus the hub link, in canonical order. */

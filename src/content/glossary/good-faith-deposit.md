@@ -14,6 +14,7 @@ relatedGuides:
 relatedCalculators:
   - "/condo/"
   - "/coop/"
+  - "/savings-planner/"
 draft: false
 ---
 

@@ -17,6 +17,7 @@ const SITEMAP_PAGE_META = {
   '/sell/':       { changefreq: 'monthly', priority: 0.9, lastmod: '2026-08-11' },
   '/required-salary/': { changefreq: 'monthly', priority: 0.8, lastmod: '2026-09-17' },
   '/afford-more/': { changefreq: 'monthly', priority: 0.8, lastmod: '2026-10-02' },
+  '/savings-planner/': { changefreq: 'monthly', priority: 0.8, lastmod: '2026-10-02' },
   '/guides/':     { changefreq: 'weekly',  priority: 0.8, lastmod: '2026-08-04' },
   '/glossary/':   { changefreq: 'weekly',  priority: 0.7, lastmod: '2026-08-12' },
   '/income/':     { changefreq: 'monthly', priority: 0.7, lastmod: '2026-08-12' },

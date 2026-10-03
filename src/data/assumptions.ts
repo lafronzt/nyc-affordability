@@ -241,6 +241,13 @@ export const ASSUMPTIONS = asm({
     inputs: [{ page: 'condo', id: 'wc-months' }],
   },
 
+  // ---- Savings ----
+  savingsYieldPct: {
+    value: 3, unit: '%', label: 'Yield on savings while you save to buy', basis: 'illustrative',
+    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
+    notes: 'A placeholder, not a rate quote. High-yield savings and money-market rates move with Fed policy; enter your own account\'s APY on the savings planner.',
+  },
+
   // ---- Rent ----
   rentIncomeMultiplier: {
     value: 40, unit: 'x', label: 'Landlord income requirement (x monthly rent)', basis: 'convention',
