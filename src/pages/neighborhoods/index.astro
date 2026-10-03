@@ -10,6 +10,7 @@ import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } fro
 import { AD_MULTIPLEX_HORIZONTAL } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { fmtMoney } from '../../lib/format';
+import { firstOf } from '../../lib/marketFigures';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -98,9 +99,9 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
             <a class="hood-card" href={`/neighborhoods/${hood.id}/`}>
               <div class="hood-name">{hood.data.name}</div>
               <div class="hood-stats">
-                <span>{fmtMoney(hood.data.medianRent)}/mo</span>
+                <span>{fmtMoney(firstOf(hood.data.figures, 'median-asking-rent')!.value)}/mo</span>
                 <span class="sep">·</span>
-                <span>{fmtMoney(hood.data.medianSalePrice)}</span>
+                <span>{fmtMoney(firstOf(hood.data.figures, 'median-sale-price')!.value)}</span>
               </div>
               <div class="hood-asof">See page for sources &amp; dates</div>
             </a>

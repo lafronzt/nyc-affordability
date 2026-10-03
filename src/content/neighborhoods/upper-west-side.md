@@ -4,12 +4,30 @@ borough: "manhattan"
 metaDescription: "Median rent and sale price for the Upper West Side, Manhattan, plus the income it takes to afford each, calculated from cited market data."
 intro: "One of Manhattan's largest residential neighborhoods, running from Central Park West to the Hudson River, 59th Street to around 110th Street: a mix of prewar co-ops, postwar rentals, and a growing number of new condo developments near the river."
 updated: "2026-08-13"
-medianRent: 4700
-medianRentLabel: "Median asking rent, all unit sizes (Elliman \"Westside\" rental zone)"
-medianRentAsOf: "January 2026"
-medianSalePrice: 793500
-medianSalePriceLabel: "Median resale 1-bedroom price (BHS \"West Side\" zone, 59th–110th St)"
-medianSalePriceAsOf: "Q2 2026"
+figures:
+  - metric: "median-asking-rent"
+    value: 4700
+    unitScope: "all"
+    propertyScope: "all"
+    geo:
+      kind: "broker-zone"
+      name: "Westside (Elliman)"
+    period: "January 2026"
+    label: "Median asking rent, all unit sizes (Elliman \"Westside\" rental zone)"
+    source: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
+    sourceUrl: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"
+  - metric: "median-sale-price"
+    value: 793500
+    unitScope: "1br"
+    propertyScope: "coop+condo"
+    geo:
+      kind: "broker-zone"
+      name: "West Side (BHS)"
+      definition: "59th to 110th Street"
+    period: "Q2 2026"
+    label: "Median resale 1-bedroom price (BHS \"West Side\" zone, 59th–110th St)"
+    source: "Brown Harris Stevens: Manhattan Apartment Market Report, Q2 2026"
+    sourceUrl: "https://bhs-content.ion3.io/2026/07/Manhattan_2Q26_MR.pdf"
 sources:
   - label: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
     url: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"

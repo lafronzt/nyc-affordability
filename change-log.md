@@ -2,6 +2,36 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Phase 3a: Neighborhood market-figure schema and quality gate
+
+**User-visible changes**
+- Each neighborhood stat card now says **what area the figure covers**:
+  - a green "Astoria only" tag for neighborhood-specific numbers
+  - an amber "Wider area: Northwest Queens (Elliman) (Astoria, Long Island City, Sunnyside, and Woodside combined)" tag for broker-zone numbers
+- Each card also links its source next to the period.
+- All numbers are unchanged. Every dollar figure on the five neighborhood pages and the index matches the previous build.
+
+**Schema** (`src/content.config.ts`, `src/lib/marketFigures.ts`)
+- The flat `medianRent` / `medianRentLabel` / `medianRentAsOf` / `medianSalePrice…` fields are replaced by a `figures` list. Each figure records:
+  - `metric` and `value`
+  - `unitScope` (all, studio, 1br, …) and `propertyScope` (all, coop, condo, coop+condo)
+  - `geo` {kind: neighborhood / broker-zone / borough / city, name, definition}
+  - `period`, `label`, `source`, and `sourceUrl`
+- The schema requires at least one rent figure and one sale figure.
+- The five existing pages were migrated by script. Values, labels, periods, and sources were copied verbatim, with a round-trip check. The scope fields only restate what each label already said (for example, the BHS figures are resale one-bedrooms in a BHS zone).
+
+**Quality gate** (plan §5, Phase 3)
+- `test/neighborhoodFigures.test.ts` fails if a published neighborhood has fewer than 2 figures that no sibling page also shows.
+- A cited figure counts if no sibling cites the same figure. Calculated figures count only when derived from a unique cited one: 1 for a rent, 2 for a sale price (co-op and condo income).
+- Today, Astoria and LIC share their rent figure, so each passes on its own sale price. The Manhattan pages pass on distinct zone figures.
+- The test also checks that every figure's source appears in the page's Sources list, that its period includes a year, and that wider-area figures name their area.
+- `js-yaml` is now a declared devDependency. It was already installed as a transitive dependency; the test uses it to read frontmatter.
+
+**Validation**
+- `npm test`: 219/219. `npm run build`: clean.
+- Dollar figures on all six neighborhood pages are identical to main.
+- Browser: scope tags and source links render. No overflow at 390px. No errors under the production CSP.
+
 ## 2026-10-03: Phase 2e: Cost to move (/cost-to-move/)
 
 **User-visible changes**

@@ -4,12 +4,30 @@ borough: "queens"
 metaDescription: "Median rent (Northwest Queens zone) and median sale price for Long Island City, Queens, plus the income it takes to afford each, calculated from cited market data."
 intro: "A rapidly redeveloped Queens neighborhood directly across the East River from Midtown Manhattan, known for its skyline of new-construction condo and rental towers, and among the fastest-growing residential markets in NYC over the past decade."
 updated: "2026-08-13"
-medianRent: 3754
-medianRentLabel: "Median asking rent, all unit sizes (Elliman \"Northwest Queens\" zone: Astoria, LIC, Sunnyside, Woodside combined)"
-medianRentAsOf: "January 2026"
-medianSalePrice: 1156000
-medianSalePriceLabel: "Median sale price, all property types, LIC-specific"
-medianSalePriceAsOf: "1H 2026"
+figures:
+  - metric: "median-asking-rent"
+    value: 3754
+    unitScope: "all"
+    propertyScope: "all"
+    geo:
+      kind: "broker-zone"
+      name: "Northwest Queens (Elliman)"
+      definition: "Astoria, Long Island City, Sunnyside, and Woodside combined"
+    period: "January 2026"
+    label: "Median asking rent, all unit sizes (Elliman \"Northwest Queens\" zone: Astoria, LIC, Sunnyside, Woodside combined)"
+    source: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
+    sourceUrl: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"
+  - metric: "median-sale-price"
+    value: 1156000
+    unitScope: "all"
+    propertyScope: "all"
+    geo:
+      kind: "neighborhood"
+      name: "Long Island City"
+    period: "1H 2026"
+    label: "Median sale price, all property types, LIC-specific"
+    source: "Corcoran: Long Island City & Astoria Market Report, 1H 2026"
+    sourceUrl: "https://inhabit.corcoran.com/long-island-city-astoria-market-report-1h-2026/"
 sources:
   - label: "Elliman Report: Manhattan, Brooklyn & Queens Rentals, January 2026 (Miller Samuel)"
     url: "https://millersamuel.com/reports/elliman-report-manhattan-brooklyn-queens-rentals-1-2026/"
