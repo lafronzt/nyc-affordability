@@ -291,6 +291,6 @@ test('move-cost guide: worked example matches the engine', () => {
   c.expect(`illustrative ${ASSUMPTIONS.guarantorCompanyFeePct.value}% of one month's rent`, 'guarantor pct');
   c.expect(`for **${usd(g.cashNeeded)}** in total`, 'with guarantor');
   c.expect(`for **${usd(b.cashNeeded)}** in total`, 'with broker');
-  c.expect(`starts at a ${usd(ASSUMPTIONS.rentBuildingFee.value)} illustrative placeholder`, 'building fee default');
+  c.expect(`"co-op/condo move-in fee" line, which starts at ${usd(ASSUMPTIONS.rentBuildingFee.value)}`, 'building fee default');
   c.done();
 });

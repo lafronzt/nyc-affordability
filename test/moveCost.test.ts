@@ -76,3 +76,18 @@ test('zero-amount lines are dropped', () => {
   assert.ok(c.lines.every((l) => l.amount > 0));
   assert.ok(!c.lines.some((l) => l.id === 'guarantor' || l.id === 'overlap'));
 });
+
+test('renters default to no building move-in fee; co-op and condo buyers still pay one', () => {
+  // RPL §238-a(1)(a) (HSTPA 2019) bars a landlord from charging any fee at
+  // the start of a tenancy beyond the capped background/credit check. A
+  // move-in fee is a co-op or condo board charge, so it defaults to $0 for
+  // renters (enter it only when renting a unit in a co-op or condo building)
+  // and stays in the co-op and condo closing costs.
+  assert.equal(A.rentBuildingFee.value, 0);
+  assert.equal(A.rentBuildingFee.basis, 'law');
+  const renter = renterMoveCost(defaultRenterMoveInputs({ rent: 3_500 }));
+  assert.equal(line(renter, 'building'), 0);
+  const coop = buyerMoveCost(defaultBuyerMoveInputs('coop', { price: 700_000 }));
+  assert.equal(line(coop, 'coop-deposit'), A.coopMoveInDeposit.value);
+  assert.ok(A.coopMoveInDeposit.value > 0);
+});

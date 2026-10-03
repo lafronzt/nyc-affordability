@@ -78,7 +78,7 @@ Two common add-ons change the picture fast:
 - **Guarantor company** at the calculator's illustrative 70% of one month's rent: $3,500 × 0.70 = $2,450, for **$12,370** in total.
 - **A broker you hired** at 15% of a year's rent: $3,500 × 12 × 0.15 = $6,300, for **$16,220** in total.
 
-One note on the calculator: it also has a "building move-in fees" line, which starts at a $500 illustrative placeholder for elevator reservations, move-in deposits, and keys. We set it to $0 here. RPL §238-a bars a landlord from demanding any fee at the start of a tenancy other than the capped background check, so if a landlord asks you for one, ask which law permits it. If a third party you deal with directly charges you something, enter the real amount.
+One note on the calculator: it also has a "co-op/condo move-in fee" line, which starts at $0. RPL §238-a bars a landlord from demanding any fee at the start of a tenancy other than the capped background check, so if a landlord asks you for one, ask which law permits it. The exception is renting a unit in a co-op or condo building, where the board (not your landlord) often charges a move-in fee or deposit; enter the real amount if yours does.
 
 ## Ways to shrink it
 
