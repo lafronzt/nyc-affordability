@@ -14,7 +14,8 @@ import { fmtMoney, fmtPercent } from '../../../lib/format';
 import { computeBreakdown, SALARY_LANDING_PAGE_BASELINE } from '../../../lib/salaryCalc';
 import { TAX_CONSTANTS_2026 } from '../../../lib/salaryTaxConstants2026';
 import type { FilingStatus } from '../../../lib/salaryTaxConstants2026';
-import { INCOME_AMOUNTS as AMOUNTS } from '../../../data/priceGrids';
+import { SALARY_AMOUNTS as AMOUNTS, INCOME_AMOUNTS } from '../../../data/priceGrids';
+import { incomePageFor } from '../../../lib/relatedPages';
 import '../../../styles/salaryIncomeLanding.css';
 
 /* ============================================================
@@ -78,9 +79,10 @@ const breadcrumbItems = [
 const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
 const otherAmounts = AMOUNTS.filter((a) => a !== amount);
+const incomeAmount = incomePageFor(amount, INCOME_AMOUNTS);
 
 const relatedItems = [
-  { label: `${amountLabel}/yr housing`, sublabel: 'See max rent, co-op, and condo price at this income', href: `/income/${amount}/` },
+  { label: `${fmtMoney(incomeAmount)}/yr housing`, sublabel: 'See max rent, co-op, and condo price at this income', href: `/income/${incomeAmount}/` },
   { label: 'Know your target take-home?', sublabel: 'Work backwards to the salary you need instead', href: '/required-salary/' },
 ];
 

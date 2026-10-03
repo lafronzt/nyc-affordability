@@ -18,7 +18,7 @@ import {
 } from '../../lib/footerLinks';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { fmtMoney } from '../../lib/format';
-import { INCOME_AMOUNTS, RENT_PRICES, BUY_PRICES } from '../../data/priceGrids';
+import { INCOME_AMOUNTS, SALARY_AMOUNTS, RENT_PRICES, BUY_PRICES } from '../../data/priceGrids';
 
 /* ============================================================
    Site directory (HTML sitemap for humans)
@@ -79,7 +79,7 @@ const numericFamilies = [
     title: 'Salary after taxes',
     hub: { label: 'All salaries', href: '/salary/' },
     blurb: 'Federal, NY State, NYC, and FICA take-home by filing status.',
-    items: INCOME_AMOUNTS.map((n) => ({ label: fmtMoney(n), href: `/salary/${n}/` })),
+    items: SALARY_AMOUNTS.map((n) => ({ label: fmtMoney(n), href: `/salary/${n}/` })),
   },
   {
     title: 'What it takes to buy',

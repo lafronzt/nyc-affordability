@@ -2,6 +2,27 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Phase 3f: Fill gaps in the price grids; split salary from income
+
+**User-visible changes** (32 new pages; every existing URL kept)
+- **`/income/<n>/`**: added $65K, $70K, $85K, $110K, $130K, and $140K (17 → 23 pages).
+- **`/salary/<n>/`**: now has its own grid, `SALARY_AMOUNTS`. It covers every income amount plus $35K, $40K, and $45K (17 → 26 pages). Below $50K, take-home pay is still a real question, but a housing page would mostly say "see affordable housing". So those three get salary pages only.
+- **`/rent/<n>/`**: added $1,500, $2,250, $2,750, $3,250, $3,750, $5,500, $6,500, $7,000, $8,000, and $10,000 (9 → 19 pages).
+- **`/buy/<n>/`**: added $350K, $450K, $550K, $650K, $700K, $1.75M, and $2.5M (13 → 20 pages).
+- **Index pages**: the hub pages, `/explore/`, chip rows, and "nearest page" cross-links all pick up the new amounts automatically. The sitemap now lists 172 URLs.
+- **Salary-only amounts**: a salary page links to its own income page when one exists, otherwise to the nearest one. `/salary/35000/` links to `/income/50000/`, never to a missing `/income/35000/`.
+
+**Tests** (234 → 241; `test/priceGrids.test.ts`)
+- Each grid is ascending, unique, and whole numbers.
+- **Every pre-Phase-3 amount is pinned, so a published URL can't be removed by accident.**
+- Each income page has a salary page.
+- Each salary page's income link resolves.
+
+**Validation**
+- `npm test`: 241/241. `npm run build`: 173 pages, clean, including `check-csp`.
+- **Link crawl**: every internal `href` in `dist/` resolves to a built page (0 broken).
+- **Browser** (390px, production CSP): `/salary/35000/`, `/rent/1500/`, `/rent/10000/`, `/buy/2500000/`, `/income/110000/`, and `/salary/` render with no overflow or errors.
+
 ## 2026-10-03: Phase 3b: Five Brooklyn neighborhood pages
 
 **User-visible changes**
