@@ -95,7 +95,7 @@ Order: optimizer (**2a done**) → savings planner (**2b done**) → rent vs buy
 Neighborhood schema migration (**3a done**: `figures` list + quality-gate test) → Brooklyn (5) (**3b done**: Greenpoint, Park Slope, Brooklyn Heights, Fort Greene, Bed-Stuy; Corcoran reports) → borough hubs (**3d done**: Manhattan, Brooklyn, Queens; Bronx and Staten Island wait for a source) → remaining boroughs, all subject to the **quality gate**: a page ships only if it has ≥ 2 sourced or computed figures not shared with a sibling. Bucket gaps in `priceGrids.ts` (split the salary and income grids) (**3f done**). Rent pages get 35×/45×/80× and FARE scenarios (**3c done**); salary pages get pay-period breakdowns and a housing tie-in (**3e done**). Glossary +20 (**3g done**) and guides +10–12 (**3h done**: 11 guides), each with worked examples and dated sources.
 
 ### Phase 4: Data product
-Index history file, condo median once a stable citywide source is confirmed, charts that separate measured from calculated, `/data/*.json` + CSV downloads with license, and a scheduled GitHub Action that **opens PRs only** (PMMS weekly; HUD AMI/tax tables yearly).
+Index history file, condo median once a stable citywide source is confirmed, charts that separate measured from calculated, `/data/*.json` + CSV downloads with license (**4a done**: CC0, five datasets), and a scheduled GitHub Action that **opens PRs only** (PMMS weekly; HUD AMI/tax tables yearly).
 
 ### Phase 5: Personalized planning + trust
 Profile v2 (named scenarios, import/export JSON, reset), scenario A/B, `/plan/` with binding-constraint sentences, sanitized share links (replace co-op's balance-bearing hash), methodology/changelog/corrections/reviewer line.
@@ -107,4 +107,4 @@ Profile v2 (named scenarios, import/export JSON, reset), scenario A/B, `/plan/` 
    - Every page currently opts in (`ads` on all 28 page templates, all calculators included). If ads are re-enabled, the AdSense script will run on pages that hold financial inputs. It can't be sent anything by our code, but it does have DOM access. This is a known exception to the brief's "no third-party scripts that could read inputs" constraint, to revisit at enable time.
    - `/privacy/` currently says "This site shows ads served by Google AdSense" while ads are off. It's accurate whenever ads are on. A small wording fix ("may show ads") could ride along with PR 1c if you want it.
 2. **Named reviewer:** is there a person (name + credential) to list as reviewer on tax and legal content, or should pages say "maintained by" only? (Phase 5)
-3. **Data license** for `/data/` downloads: CC BY 4.0 (my suggestion), or match the repo's MIT? (Phase 4)
+3. ~~**Data license**~~ **Decided 2026-10-04: CC0 1.0** for `/data/` downloads (code stays MIT).

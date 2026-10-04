@@ -36,6 +36,7 @@ const SITEMAP_PAGE_META = {
   '/explore/':   { changefreq: 'weekly',  priority: 0.5 },
   '/methodology/':         { changefreq: 'monthly', priority: 0.5, lastmod: '2026-10-02' },
   '/methodology/sources/': { changefreq: 'monthly', priority: 0.5, lastmod: '2026-10-02' },
+  '/data/':              { changefreq: 'weekly',  priority: 0.5, lastmod: '2026-10-04' },
   '/about/':      { changefreq: 'yearly',  priority: 0.5, lastmod: '2026-08-02' },
   '/contact/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-11' },
   '/privacy/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-02' },
