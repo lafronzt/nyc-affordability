@@ -1,16 +1,18 @@
 import { loadSharedProfile, saveSharedProfile, SHARED_KEY } from '../lib/sharedProfile';
 import { wireShareButton } from '../lib/share';
-import { calculateCoop } from '../lib/engines/coop';
-import { calculateCondo } from '../lib/engines/condo';
-import { calculateRent, rentSnapshot } from '../lib/engines/rent';
-import { coopInputsFromDefaults, condoInputsFromDefaults, rentInputsFromDefaults, defaultSharedAssumptions } from '../lib/engines/defaults';
+import { defaultSharedAssumptions } from '../lib/engines/defaults';
+import {
+  SAMPLE_PROFILE, num, normalizeAccounts, profileInputs, weightedAssets, rentOption, coopOption, condoOption,
+  type BaseInputs, type CommonResult, type RentResult, type BuyResult,
+} from '../lib/housingOptions';
 
 /* ============================================================
    NYC Housing Affordability Comparison Dashboard — TypeScript port
    ============================================================
-   Rent / co-op / condo numbers come from the same engines the calculators
-   run (../lib/engines/), fed with the shared profile plus each calculator's
-   saved assumptions (read from their localStorage keys below). Fields this
+   Rent / co-op / condo numbers come from ../lib/housingOptions (shared
+   with the scenario A/B view on /my-data/), which runs the calculators'
+   engines with the shared profile plus each calculator's saved
+   assumptions (read from their localStorage keys below). Fields this
    page doesn't expose (closing-cost line items, fees) use the sourced
    defaults from src/data/assumptions.ts via ../lib/engines/defaults.ts.
    An earlier version kept its own copy of the formulas, which skipped PMI,
@@ -33,19 +35,7 @@ const ASMP_RENT_KEY = 'nyc_shared_assumptions_rent';
 const ASMP_COOP_KEY = 'nyc_shared_assumptions_coop';
 const ASMP_CONDO_KEY = 'nyc_shared_assumptions_condo';
 
-interface Account {
-  name: string;
-  balance: number;
-  liquidity: number;
-  closing: boolean;
-  [key: string]: unknown;
-}
-
-interface ProfileState {
-  annualIncome: number;
-  otherDebts: number;
-  accounts: Account[];
-}
+type ProfileState = BaseInputs;
 
 interface RentAssumptions {
   incomeMult: number;
@@ -74,33 +64,6 @@ interface SharedAssumptions {
   condo: CondoAssumptions | null;
 }
 
-interface CommonResult {
-  cashRequired: number;
-  monthlyTotal: number;
-  dti: number;
-  reserve: number;
-  binding: string;
-}
-interface RentResult extends CommonResult { maxRent: number; }
-interface CoopResult extends CommonResult { maxPrice: number; }
-interface CondoResult extends CommonResult { maxPrice: number; }
-
-interface BaseInputs {
-  annualIncome: number;
-  otherDebts: number;
-  accounts: Account[];
-}
-
-const SAMPLE_PROFILE: ProfileState = {
-  annualIncome: 150000,
-  otherDebts: 0,
-  accounts: [
-    { name: 'Checking', balance: 15000, liquidity: 100, closing: true },
-    { name: 'High-Yield Savings', balance: 35000, liquidity: 100, closing: true },
-    { name: 'Brokerage / Investments', balance: 70000, liquidity: 80, closing: true },
-  ],
-};
-
 /* ── DOM helpers ── */
 function $(id: string) { return document.getElementById(id); }
 function $input(id: string) { return document.getElementById(id) as HTMLInputElement | null; }
@@ -109,7 +72,6 @@ function $select(id: string) { return document.getElementById(id) as HTMLSelectE
 function money(n: number): string { return isFinite(n) ? '$' + Math.round(n).toLocaleString('en-US') : '-'; }
 function monthly(n: number): string { return isFinite(n) ? money(n) + '/mo' : '-'; }
 function pct(n: number): string { return isFinite(n) ? (n * 100).toFixed(1) + '%' : '-'; }
-function num(v: unknown): number { const n = Number(v); return isFinite(n) ? n : 0; }
 function escHtml(s: unknown): string {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -119,24 +81,6 @@ function escHtml(s: unknown): string {
 function loadProfile(): { profile: ProfileState; isSample: boolean } {
   const raw = loadSharedProfile();
   return raw ? { profile: raw as unknown as ProfileState, isSample: false } : { profile: SAMPLE_PROFILE, isSample: true };
-}
-
-function normalizeAccounts(accounts: unknown): Account[] {
-  const list = (Array.isArray(accounts) && accounts.length ? accounts : SAMPLE_PROFILE.accounts) as any[];
-  return list.map(a => {
-    const balance = num(a.balance);
-    const liquidity = a.liquidity !== undefined ? num(a.liquidity) : (a.closing ? 100 : (a.reserve !== undefined ? num(a.reserve) : 0));
-    const closing = a.closing !== undefined ? !!a.closing : liquidity >= 100;
-    return { name: a.name || 'Account', balance, liquidity, closing };
-  });
-}
-
-function profileInputs(profile: any): ProfileState {
-  return {
-    annualIncome: num(profile.annualIncome),
-    otherDebts: num(profile.otherDebts),
-    accounts: normalizeAccounts(profile.accounts),
-  };
 }
 
 let loaded = loadProfile();
@@ -257,11 +201,6 @@ function updateFromEditor(save = true) {
   render();
 }
 
-/* ── profile helpers ── */
-function weightedAssets(accounts: Account[]): number {
-  return accounts.reduce((s, a) => s + a.balance * a.liquidity / 100, 0);
-}
-
 const ASMP: { rent: RentAssumptions; coop: CoopAssumptions; condo: CondoAssumptions } = defaultSharedAssumptions();
 
 /* ── "What if...?" scenario sliders — purely ephemeral display-time deltas,
@@ -273,63 +212,9 @@ const ASMP: { rent: RentAssumptions; coop: CoopAssumptions; condo: CondoAssumpti
    the Adjust Assumptions panel that edits them) are never mutated. ── */
 const WHATIF = { salaryDelta: 0, savingsDelta: 0, rateDelta: 0 };
 
-function calcRent(base: BaseInputs): RentResult {
-  const inp = rentInputsFromDefaults({
-    ...base,
-    incomeMult: ASMP.rent.incomeMult,
-    rentersInsurance: ASMP.rent.rentersInsurance,
-    reserveMonths: ASMP.rent.reserveMonths,
-  });
-  const r = calculateRent(inp);
-  const snap = rentSnapshot(r.maxRent, inp, r);
-  return {
-    maxRent: r.maxRent,
-    cashRequired: snap.totalCashNeeded,
-    monthlyTotal: r.maxRent + inp.rentersInsurance, // housing cost only; debts count in DTI below
-    dti: snap.totalDTI / 100,
-    reserve: snap.reserveBuffer,
-    binding: r.binding,
-  };
-}
-
-function calcCoop(base: BaseInputs, rateOverride?: number): CoopResult {
-  const r = calculateCoop(coopInputsFromDefaults({
-    ...base,
-    mortgageRate: rateOverride ?? ASMP.coop.mortgageRate,
-    dpPct: ASMP.coop.dpPct,
-    reserveMo: ASMP.coop.reserveMo,
-    maxDTIPct: ASMP.coop.maxDTIPct,
-    maint: ASMP.coop.maint,
-  }));
-  return {
-    maxPrice: r.maxPrice,
-    cashRequired: r.totalCash,
-    monthlyTotal: r.moTotal,
-    dti: r.dtiActual,
-    reserve: r.maintRes + r.mtgRes,
-    binding: r.binding,
-  };
-}
-
-function calcCondo(base: BaseInputs, rateOverride?: number): CondoResult {
-  const r = calculateCondo(condoInputsFromDefaults({
-    ...base,
-    mortgageRate: rateOverride ?? ASMP.condo.mortgageRate,
-    dpPct: ASMP.condo.dpPct,
-    maxDtiPct: ASMP.condo.maxDtiPct,
-    commonCharges: ASMP.condo.commonCharges,
-    propTaxes: ASMP.condo.propTaxes,
-    hoInsurance: ASMP.condo.hoInsurance,
-  }));
-  return {
-    maxPrice: r.maxPrice,
-    cashRequired: r.totalCash,
-    monthlyTotal: r.moTotal,
-    dti: r.dtiActual,
-    reserve: r.resReq,
-    binding: r.binding,
-  };
-}
+function calcRent(base: BaseInputs): RentResult { return rentOption(base, ASMP); }
+function calcCoop(base: BaseInputs, rateOverride?: number): BuyResult { return coopOption(base, ASMP, rateOverride); }
+function calcCondo(base: BaseInputs, rateOverride?: number): BuyResult { return condoOption(base, ASMP, rateOverride); }
 
 function render() {
   const whatIfActive = WHATIF.salaryDelta !== 0 || WHATIF.savingsDelta !== 0 || WHATIF.rateDelta !== 0;

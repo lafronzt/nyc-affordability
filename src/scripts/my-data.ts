@@ -14,8 +14,9 @@ import {
   STORAGE_KEYS, MAX_SCENARIOS,
   savedKeys, listScenarios, saveScenario, loadScenario, renameScenario, deleteScenario,
   resetAll, exportData, parseImport, applyImport,
-  type StorageLike, type ParsedImport, type Scenario,
+  snapshot, type StorageLike, type ParsedImport, type Scenario, type Snapshot,
 } from '../lib/profileStore.ts';
+import { scenarioOutcome, compareScenarios, summarize, type CompareRow, type Format } from '../lib/scenarioCompare.ts';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const LABEL = new Map(STORAGE_KEYS.map((k) => [k.key, k.label]));
@@ -93,6 +94,13 @@ function scenarioItem(s: Scenario): HTMLLIElement {
       if (loadScenario(storage!, s.id)) setStatus('scenario-status', `Loaded "${s.name}". Open any calculator to see it.`);
       refresh();
     }),
+    button('Compare', 'btn-secondary', () => {
+      pick.b = s.id;
+      if (pick.a === s.id) pick.a = CURRENT;
+      renderCompare();
+      document.getElementById('compare')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      $<HTMLSelectElement>('ab-b').focus({ preventScroll: true });
+    }),
     button('Rename', 'btn-secondary', () => startRename(li, s)),
     button('Delete', 'btn-danger', () => {
       if (!window.confirm(`Delete the scenario "${s.name}"? What the calculators have saved now isn't affected.`)) return;
@@ -156,6 +164,90 @@ function onSave(e: Event) {
     }[r.reason]);
   }
   refresh();
+}
+
+// ---- Compare two scenarios ----
+
+const CURRENT = '__current__';
+const pick = { a: CURRENT, b: '' };
+
+function fmt(v: number | string, f: Format): string {
+  if (typeof v === 'string') return v;
+  if (!isFinite(v)) return '-';
+  switch (f) {
+    case 'money': return '$' + Math.round(v).toLocaleString('en-US');
+    case 'monthly': return '$' + Math.round(v).toLocaleString('en-US') + '/mo';
+    case 'rate': return `${+v.toFixed(3)}%`;
+    case 'pct': return `${(v * 100).toFixed(1)}%`;
+    case 'number': return `${+v.toFixed(2)}x`;
+    default: return String(v);
+  }
+}
+
+function fmtDelta(r: CompareRow): string {
+  if (r.delta === null) return r.a === r.b ? 'Same' : 'Differs';
+  if (r.delta === 0) return 'Same';
+  const sign = r.delta > 0 ? '+' : '−';
+  if (r.format === 'rate') return `${sign}${+Math.abs(r.delta).toFixed(3)} pts`;
+  return sign + fmt(Math.abs(r.delta), r.format);
+}
+
+function compareRow(r: CompareRow): HTMLTableRowElement {
+  const tr = el('tr');
+  const th = el('th', undefined, r.label);
+  th.scope = 'row';
+  const cell = (v: number | string, isDefault: boolean, win: boolean) => {
+    const td = el('td', [r.format === 'text' ? 'text' : '', win ? 'win' : ''].filter(Boolean).join(' '), fmt(v, r.format));
+    if (isDefault) td.append(el('span', 'dflt', 'default'));
+    return td;
+  };
+  tr.append(th, cell(r.a, r.defaultA, r.better === 'a'), cell(r.b, r.defaultB, r.better === 'b'), el('td', 'delta', fmtDelta(r)));
+  return tr;
+}
+
+function renderCompare() {
+  if (!storage) return;
+  const list = listScenarios(storage);
+  const sources: { id: string; name: string; data: Snapshot }[] = [
+    { id: CURRENT, name: 'What\'s saved now', data: snapshot(storage) },
+    ...list.map((s) => ({ id: s.id, name: s.name, data: s.data })),
+  ];
+  const has = (id: string) => sources.some((x) => x.id === id);
+  if (!has(pick.a)) pick.a = CURRENT;
+  if (!has(pick.b) || pick.b === pick.a) pick.b = sources.find((x) => x.id !== pick.a)?.id ?? '';
+  for (const side of ['a', 'b'] as const) {
+    const sel = $<HTMLSelectElement>(`ab-${side}`);
+    sel.replaceChildren(...sources.map((x) => {
+      const o = el('option', undefined, x.name);
+      o.value = x.id;
+      return o;
+    }));
+    sel.value = pick[side];
+    sel.disabled = sources.length < 2;
+  }
+  const ready = sources.length >= 2 && pick.b !== '';
+  $('ab-empty').hidden = ready;
+  $('ab-result').hidden = !ready;
+  if (!ready) return;
+
+  const A = sources.find((x) => x.id === pick.a)!;
+  const B = sources.find((x) => x.id === pick.b)!;
+  const oa = scenarioOutcome(A.data);
+  const ob = scenarioOutcome(B.data);
+  $('ab-head-a').textContent = `A: ${A.name}`;
+  $('ab-head-b').textContent = `B: ${B.name}`;
+  $('ab-summary').replaceChildren(...summarize(oa, ob, { a: A.name, b: B.name }).map((t) => el('li', undefined, t)));
+  const rows: HTMLTableRowElement[] = [];
+  for (const sec of compareScenarios(oa, ob)) {
+    const head = el('tr', 'ab-section');
+    const th = el('th', undefined, sec.title);
+    th.colSpan = 4;
+    th.scope = 'colgroup';
+    th.append(el('span', 'kind', sec.kind === 'calculated' ? '· Calculated' : '· Saved or default'));
+    head.append(th);
+    rows.push(head, ...sec.rows.map(compareRow));
+  }
+  $('ab-body').replaceChildren(...rows);
 }
 
 // ---- Export / import ----
@@ -241,6 +333,7 @@ function onReset() {
 function refresh() {
   renderSaved();
   renderScenarios();
+  renderCompare();
 }
 
 function init() {
@@ -257,6 +350,15 @@ function init() {
   $('reset-btn').addEventListener('click', () => showResetConfirm(true));
   $('reset-no').addEventListener('click', () => showResetConfirm(false));
   $('reset-yes').addEventListener('click', onReset);
+  for (const side of ['a', 'b'] as const) {
+    $<HTMLSelectElement>(`ab-${side}`).addEventListener('change', (e) => {
+      pick[side] = (e.target as HTMLSelectElement).value;
+      // Picking the same one on both sides moves the other side to the next option.
+      const other = side === 'a' ? 'b' : 'a';
+      if (pick[other] === pick[side]) pick[other] = '';
+      renderCompare();
+    });
+  }
   // Another tab changing a calculator updates this page.
   window.addEventListener('storage', refresh);
   refresh();
