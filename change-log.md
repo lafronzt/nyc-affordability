@@ -14,6 +14,49 @@ Multi-file changes, newest first. Each entry gives the user-visible effect and h
 
 **Validation**
 - `npm test` 337/337; `npm run build` is clean, including `check-csp`. The built page reads "There is one snapshot so far (2026-08)".
+## 2026-10-04: Data: default renter's insurance $15 → $18/month (ValuePenguin, September 2026)
+
+**User-visible changes**
+- The renter's insurance default on `/rent/`, `/compare/` and rent vs buy is now **$18/mo**: ValuePenguin's "Average Cost of Renters Insurance" (updated Sep 25, 2026) for New York, NY ($19 statewide), quoted for $30,000 of personal property, $100,000 of liability, and a $500 deductible. The old $15 default cited a ValuePenguin page that now returns 404; its replacement doesn't support $15.
+- Effects: default `/rent/` move-in cash $7,800 → $7,806 (two months of reserve × $3); with DTI screening on, max rent falls $3. The rent vs buy guide's example moves: renter month one $4,015 → $4,018, renter portfolio $618,407 → $617,883, renting ahead by $229,039 → $228,514. Pre-built `/rent/<price>/` pages don't include insurance and don't change.
+- `/rent/`'s hint and source note now say "about $18/mo" with the coverage it assumes, instead of "~$15–25". Listed on `/methodology/changelog/` as a data update.
+
+**Code and tests**
+- New `test/marketDefaults.test.ts` pins the value to its source (URL, effective date, last verified); it failed at $15 first, then passed.
+- `/compare/`'s own renters-insurance input is now in the registry's `inputs`, so `test/defaultsParity.test.ts` catches it drifting (it was hard-coded to 15 without a check).
+- Three rent goldens in `test/engines.test.ts` updated by exactly the $3 difference; `test/guideExamples.test.ts` listed the three guide figures, now updated.
+
+**Validation**
+- `npm test` 339/339; `npm run build` clean (including `check-csp`). Built-output diff against the base branch: exactly six files change (`/rent/`, `/compare/`, `/methodology/sources/`, `/data/assumptions.{csv,json}`, the rent vs buy guide).
+
+## 2026-10-04: Content: guide contradictions, dead source links, monthly link check
+
+**User-visible changes**
+- **Two guides contradicted each other on co-op PMI.** `pmi-on-nyc-condos-explained` said "co-ops don't carry PMI in the same form"; `coop-vs-condo-nyc-costs` said PMI is modeled the same on both, which is what the co-op calculator does. Both now say: most boards require 20%+ down, so co-op buyers rarely face PMI; where less is allowed, expect mortgage insurance or a higher rate, and the co-op calculator models it as PMI.
+- **Condo reserves.** `coop-vs-condo-nyc-costs` said condo lenders "don't usually impose" a reserve requirement. It now says condos have no board rule, but a lender may ask for reserves loan by loan (usually a few months, not a year or more), and points to the condo calculator's optional reserve buffer.
+- **Glossary "good-faith deposit"** said 20%+ down is typical at "co-op and condo buildings". It now says 20% or more at most co-ops; condos often allow less.
+- **Dead source links replaced** (11 + 3 + 3 places, plus 2 mislabeled sources):
+  - NYC DOF's transfer-tax page moved (`/taxes/` → `/property/`); the old URL shows "Page Moved". Fixed in 11 places: calculators, homepage, `/about/`, guides, and the sources table.
+  - HPD affordable housing, HPD tenant rights and NYCHA voucher payment standards returned 404. Each now points to the agency's current page.
+  - HUD New York (404) → `hud.gov/states/new-york`.
+  - NYS Tax "Publication 1099" (404), cited for the mansion tax in 5 places → TSB-M-19(1)R, the memo four other pages already cite. Every tier in `calcMansionTax` was checked against the memo's table (1% plus the NYC supplemental 0.25% to 2.9%), and the sources table now records it as verified 2026-10-04.
+  - ValuePenguin renter's insurance (404) → its current average-cost page. That page puts NYC at $18/mo against the $15 default; updating the default is a separate data PR, since it moves `/rent/` figures.
+  - Two guides labeled the DOF transfer-tax page as their "Mortgage Recording Tax" source. They now cite DOF's Recording Property-Related Documents page, which covers the tax, like the other three pages that cite it.
+- **Rent caps now cite the statute.** The $20 application-fee cap and the one-month deposit cap cited an HPD page that doesn't mention either. They now cite the HSTPA bill text (S.6458 §10, RPL §238-a(1)(b); §25, GOL §7-108(1-a)(a)), with the quoted language checked and `lastVerified` set.
+- `updated` is bumped to 2026-10-04 on the three content entries whose text changed. Link-only changes don't bump dates.
+
+**Code**
+- New `scripts/check-links.mjs` (`npm run check-links`). It checks every `https://` URL in `src/` with curl and reports:
+  - **Broken:** 404, 410, or a 200 "Page Moved / Not Found" page, which is how DOF answers.
+  - **Unverified:** 403, 429, 5xx, or a timeout. Many sites block automated requests, so these are left for a person to check.
+- New `.github/workflows/check-links.yml`. It runs monthly, opens one "Broken external links" issue (or comments on the open one), and closes it when a run is clean. It never edits the site.
+
+**Validation**
+- Before: 3 broken out of 181 links (after the 4 found by hand were fixed). After: **0 broken** out of 180.
+  - The 32 unverified are bot blocks: StreetEasy, Medium, Miller Samuel and the Rent Guidelines Board return 403.
+  - A few `tax.ny.gov` requests reset through this sandbox's proxy, and the Baruch PDF fails certificate verification here.
+- The workflow's broken-count parsing was checked against a clean report (0) and a fabricated report with one broken link (1). The YAML parses.
+- `npm test` 337/337; `npm run build` is clean, including `check-csp`.
 
 ## 2026-10-04: Phase 5e: Changelog, corrections, and a maintainer line
 

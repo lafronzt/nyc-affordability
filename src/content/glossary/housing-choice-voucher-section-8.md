@@ -8,7 +8,7 @@ sources:
   - label: "NYCHA: About Section 8"
     url: "https://www.nyc.gov/site/nycha/section-8/about-section-8.page"
   - label: "NYCHA: Voucher Payment Standards and Utility Allowance Schedule"
-    url: "https://www.nyc.gov/site/nycha/section-8/voucher-payment-standards-vps-utility-allowance-schedule.page"
+    url: "https://www.nyc.gov/site/nycha/section-8/voucher-payment-standards-utility-allowance-schedules.page"
 relatedTerms:
   - ami-area-median-income
 relatedGuides:

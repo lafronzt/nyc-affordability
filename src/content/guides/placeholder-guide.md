@@ -9,7 +9,7 @@ sources:
   - label: "Freddie Mac Primary Mortgage Market Survey (PMMS)"
     url: "https://www.freddiemac.com/pmms"
   - label: "NYC Department of Finance / ACRIS"
-    url: "https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page"
+    url: "https://www.nyc.gov/site/finance/property/property-real-property-transfer-tax-rptt.page"
 cta:
   heading: "See what you can actually afford"
   body: "Run your own numbers through the NYC Co-op Affordability Calculator to reverse-engineer your max purchase price."
