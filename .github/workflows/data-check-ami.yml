@@ -1,0 +1,40 @@
+# Monthly: compare NYC HPD's AMI chart with src/lib/amiTable.ts. When HPD
+# publishes new figures, open (or refresh) one draft PR with the new table
+# and a report. Never merges and never pushes to the default branch.
+name: Data check - HPD AMI chart
+
+on:
+  schedule:
+    - cron: '23 14 3 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: data-check-ami
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - id: check
+        run: node --experimental-strip-types scripts/data-updates/check-hpd-ami.ts "$RUNNER_TEMP/report.md"
+      - if: steps.check.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: data/hpd-ami
+          TITLE: 'Data: HPD AMI chart ${{ steps.check.outputs.year }}'
+          REPORT: ${{ runner.temp }}/report.md
+        run: bash scripts/data-updates/open-pr.sh

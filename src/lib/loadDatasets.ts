@@ -5,13 +5,11 @@ import { getCollection } from 'astro:content';
 import { ASSUMPTIONS } from '../data/assumptions.ts';
 import { AFFORDABILITY_INDEX } from '../data/affordabilityIndex.ts';
 import { BOROUGH_HUBS } from '../data/boroughs.ts';
-import { AMI_BASE, AMI_SOURCE_URL } from './amiTable.ts';
+import { AMI_BASE, AMI_SOURCE_URL, AMI_YEAR } from './amiTable.ts';
 import {
   marketFiguresDataset, incomeNeededDataset, affordabilityIndexDataset, amiDataset, assumptionsDataset,
   type AreaFigures, type Dataset,
 } from './dataExport.ts';
-
-export const AMI_YEAR = 2026;
 
 export async function loadDatasets(): Promise<Dataset[]> {
   const hoods = (await getCollection('neighborhoods', ({ data }) => !data.draft))
