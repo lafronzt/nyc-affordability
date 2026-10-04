@@ -1,0 +1,35 @@
+# Yearly: the tax tables can't be scraped reliably (the IRS publishes a
+# Revenue Procedure, New York a withholding PDF), so this opens a checklist
+# issue instead of a PR. Opens nothing if one is already open.
+name: Data reminder - yearly tax tables
+
+on:
+  schedule:
+    - cron: '41 15 10 12 *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          next=$(( $(date -u +%Y) + 1 ))
+          title="Update tax tables for $next"
+          if gh issue list --state open --search "\"$title\" in:title" --json number --jq 'length' | grep -qv '^0$'; then
+            echo "Already open: $title"; exit 0
+          fi
+          gh issue create --title "$title" --body "Yearly reminder from \`.github/workflows/data-reminder-tax.yml\`.
+
+          Before January 1, $next:
+          - [ ] Federal brackets, standard deduction, FICA wage base, 401(k)/HSA/FSA limits: IRS Revenue Procedure for $next (usually October/November).
+          - [ ] NY State and NYC brackets: NYS-50-T-NYS / NYS-50-T-NYC and IT-2105-I for $next (usually December/January).
+          - [ ] Copy \`src/lib/salaryTaxConstants$((next - 1)).ts\` to \`salaryTaxConstants$next.ts\`, update the figures, and repoint the import.
+          - [ ] Update the pinned values in \`test/salaryCalc.test.ts\` and the vintage and last-verified dates in \`src/data/sourceTables.ts\`.
+          - [ ] Run \`npm test\`; guide examples that quote take-home pay will list the text to update."

@@ -2,6 +2,39 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Phase 4c: Scheduled data checks that open PRs only
+
+**What it does**
+- `.github/workflows/data-update-pmms.yml` runs every Thursday evening and on demand.
+  - It reads Freddie Mac's `PMMS_history.csv`. When there's a newer survey week than the site's default, it updates:
+    - `mortgageRatePct` (value, effective date, last-verified date, notes)
+    - the four rate `<input>` defaults on `/coop/`, `/condo/` and `/compare/`
+  - Then it runs the tests and opens or refreshes one draft PR on `data/pmms-rate`.
+  - The PR body lists the failing golden tests with their new values, the guide sentences that quote the old figures (from `guideExamples`), and every line that still says the old rate.
+- `.github/workflows/data-check-ami.yml` runs monthly. It parses HPD's AMI chart, and if the year or any figure differs from `src/lib/amiTable.ts`, it updates the table and opens a draft PR on `data/hpd-ami` with the same kind of report.
+- `.github/workflows/data-reminder-tax.yml` runs yearly on Dec 10. It opens a checklist issue for the federal, NYS and NYC tax tables, which can't be scraped reliably. It skips this if the issue is already open.
+- **Safety:**
+  - The workflows never merge and never push to the default branch.
+  - If people have pushed their own commits to a data branch, the job comments the new figures on the PR instead of force-pushing over their work.
+  - Parsers throw on any format change rather than guessing.
+- `/data/` now says what the scheduled checks do.
+
+**Code**
+- `src/lib/sourceParsers.ts` (pure): `parsePmmsCsv`, `parseHpdAmiPage` (includes sanity checks: values rise with household size, and the 1-person/4-person ratio is about 0.7), and `setInputValue`.
+- `scripts/data-updates/`: `update-pmms.ts`, `check-hpd-ami.ts`, `shared.ts` and `open-pr.sh`.
+- `AMI_YEAR` moved into `src/lib/amiTable.ts`.
+
+**Validation**
+- New `test/sourceParsers.test.ts` (6 tests) runs against trimmed copies of the real files, fetched 2026-10-04: the PMMS history tail and the HPD AMI page excerpt.
+- **Live parse:** PMMS returns 7.28% for the week of 2026-10-01, and 6.95% for 2026-09-17, which matches the current default. HPD 2026 matches `amiTable.ts` exactly.
+- **PMMS dry run** on a scratch copy:
+  - It updated the registry and inputs to 7.28%, and the report listed 30 tests to update (20 engine goldens, 10 guide examples) and 24 lines quoting 6.95%.
+- **AMI dry run** on a scratch copy:
+  - The real page made no change.
+  - A synthetic 2027 page updated the table and year, and the 3 pinned AMI tests failed, as designed.
+- YAML parses and `bash -n` passes.
+- `npm test` 283/283; `npm run build` is clean, including `check-csp`.
+
 ## 2026-10-04: Phase 4a: Public data downloads (/data/)
 
 **User-visible changes**

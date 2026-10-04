@@ -24,6 +24,9 @@ export const AMI_BASE: Record<number, number> = {
   8: 223900,
 };
 
+/** Year of HPD's chart the table above comes from. */
+export const AMI_YEAR = 2026;
+
 export const AMI_SOURCE_URL = 'https://www.nyc.gov/site/hpd/services-and-information/area-median-income.page';
 
 export interface BandClass {

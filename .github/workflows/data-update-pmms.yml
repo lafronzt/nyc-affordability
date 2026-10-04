@@ -1,0 +1,42 @@
+# Weekly: check Freddie Mac's PMMS 30-year rate. When there's a newer survey
+# week than the site's default, open (or refresh) one draft PR with the new
+# rate and a report of what a person still has to update. Never merges and
+# never pushes to the default branch.
+name: Data update - PMMS mortgage rate
+
+on:
+  schedule:
+    # PMMS publishes Thursdays around noon ET; check that evening.
+    - cron: '17 22 * * 4'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: data-update-pmms
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - id: check
+        run: node --experimental-strip-types scripts/data-updates/update-pmms.ts "$RUNNER_TEMP/report.md"
+      - if: steps.check.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: data/pmms-rate
+          TITLE: 'Data: PMMS 30-year rate ${{ steps.check.outputs.rate }}% (week of ${{ steps.check.outputs.week }})'
+          REPORT: ${{ runner.temp }}/report.md
+        run: bash scripts/data-updates/open-pr.sh
