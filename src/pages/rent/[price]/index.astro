@@ -153,7 +153,7 @@ const relatedBuyPrice = nearest(
         ))}
       </tbody>
     </table>
-    <p class="table-note">Each total is first month's rent, a one-month security deposit (the legal cap), the $20 application fee cap, {fmtMoney(A.rentBuildingFee.value)} of building move-in fees, and {fmtMoney(A.rentUtilitySetup.value)} of utility setup, plus the broker or guarantor fee where shown. Movers and overlapping rent aren't included: add them on <a href={`/cost-to-move/?mode=rent&rent=${price}`}>Cost to Move</a>. See the <a href="/guides/fare-act-broker-fees-explained/">FARE Act guide</a>.</p>
+    <p class="table-note">Each total is first month's rent, a one-month security deposit (the legal cap), the $20 application fee cap, and {fmtMoney(A.rentUtilitySetup.value)} of utility setup, plus the broker or guarantor fee where shown. There's no move-in fee: a landlord can't charge one (RPL §238-a), though a co-op or condo board can if you rent a unit in its building. Movers and overlapping rent aren't included: add them on <a href={`/cost-to-move/?mode=rent&rent=${price}`}>Cost to Move</a>. See the <a href="/guides/fare-act-broker-fees-explained/">FARE Act guide</a>.</p>
   </div>
 
   <MiniCalcWidget mode="rent-price" defaultValue={price} />

@@ -358,9 +358,11 @@ export const ASSUMPTIONS = asm({
     inputs: [{ page: 'rent', id: 'app-fee' }],
   },
   rentBuildingFee: {
-    value: 500, unit: 'USD', label: 'Building / move-in admin fee', basis: 'illustrative',
-    sourceOrg: null, sourceUrl: null, effectiveDate: null, lastVerified: null,
-    notes: 'Move-in deposit, key deposit, elevator reservation, etc.',
+    value: 0, unit: 'USD', label: 'Co-op/condo board move-in fee (renting in a co-op or condo)', basis: 'law',
+    sourceOrg: 'NY Legislature, S.6458 (HSTPA 2019) §10, RPL §238-a',
+    sourceUrl: 'https://legislation.nysenate.gov/pdf/bills/2019/S6458',
+    effectiveDate: '2019-06-14', lastVerified: '2026-10-03',
+    notes: 'RPL §238-a(1)(a) bars a landlord from charging any fee at the start of a tenancy other than the capped background/credit check, so the default is $0. Move-in fees are co-op and condo board charges: enter one only when renting a unit in a co-op or condo building. Buyers pay theirs in /coop/ (coopMoveInDeposit) and /condo/ (building fees).',
     inputs: [{ page: 'rent', id: 'building-fee' }],
   },
   rentUtilitySetup: {

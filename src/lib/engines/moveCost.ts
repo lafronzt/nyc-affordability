@@ -176,7 +176,7 @@ export function renterMoveCost(p: RenterMoveInputs): MoveCost {
     { id: 'broker', label: 'Broker fee (a broker you hired)', amount: s.brokerFee, kind: 'spent', group: 'housing', note: 'Under the FARE Act, the landlord pays a broker the landlord hired.' },
     { id: 'guarantor', label: 'Guarantor company fee', amount: p.rent * p.guarantorFeePct / 100, kind: 'spent', group: 'housing', note: 'Paid to the guarantor company, per lease year.' },
     { id: 'pet', label: 'Pet fee', amount: p.petFee, kind: 'spent', group: 'housing' },
-    { id: 'building', label: 'Building move-in fees', amount: p.buildingFee, kind: 'spent', group: 'housing', note: 'Elevator reservation, move-in deposit, keys.' },
+    { id: 'building', label: 'Co-op/condo move-in fee', amount: p.buildingFee, kind: 'spent', group: 'housing', note: 'Charged by a co-op or condo board when you rent in its building; a landlord can\'t charge one.' },
     { id: 'utilities', label: 'Utility setup', amount: p.utilitySetup, kind: 'spent', group: 'housing' },
     ...movingLines(p),
   ];

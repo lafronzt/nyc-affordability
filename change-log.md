@@ -2,6 +2,24 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-03: Move-in fee applies to co-op and condo buildings only
+
+**User-visible changes**
+- `/rent/` and `/cost-to-move/` no longer add a $500 "building / move-in admin fee" by default. RPL §238-a(1)(a), added by the HSTPA in 2019, bars a landlord from charging any fee at the start of a tenancy other than the capped background/credit check. The field is now "Co-op/condo move-in fee", defaults to $0, and says to fill it in only when renting a unit in a co-op or condo building, where the board can charge one.
+- Buyers are unchanged: `/coop/` keeps its $1,000 refundable move-in deposit, and `/condo/` keeps building fees, which include move-in.
+- `/rent/<price>/` signing totals drop by $500, and the table note now explains why there's no move-in fee. The cost-to-move guide's calculator note is updated to match.
+- `rentBuildingFee` in the registry is now basis `law`, value 0, and cites the HSTPA bill text.
+
+**Validation**
+- A new `test/moveCost.test.ts` check failed on the $500 default first, then passed. It covers: renter default 0 with basis law, no building line in the renter move cost, and the co-op buyer still paying the move-in deposit.
+- Three rent golden values in `test/engines.test.ts` dropped by exactly $500: 8,300 → 7,800; fixed fees 770 → 270; 10,175 → 9,675.
+- `npm test` 268/268; `npm run build` is clean (207 pages), including `check-csp`.
+- Browser at 390px under the production CSP:
+  - `/rent/` shows the new label and a $0 default.
+  - `/cost-to-move/` shows $0.
+  - The `/rent/3000/` note is updated.
+  - No console errors.
+
 ## 2026-10-03: Phase 3h: Eleven new guides
 
 **User-visible changes**
