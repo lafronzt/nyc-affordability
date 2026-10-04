@@ -12,6 +12,8 @@ import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { fmtMoney } from '../../lib/format';
 import { firstOf, firstRent } from '../../lib/marketFigures';
 import { BOROUGH_HUBS } from '../../data/boroughs';
+import NeighborhoodCharts from '../../components/charts/NeighborhoodCharts.astro';
+import { chartRows } from '../../lib/neighborhoodCharts';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -37,6 +39,8 @@ const grouped = BOROUGH_ORDER.map((b) => ({
   label: BOROUGH_LABELS[b],
   hoods: hoods.filter((h) => h.data.borough === b),
 })).filter((g) => g.hoods.length > 0);
+
+const rows = chartRows(hoods.map((h) => ({ areaType: 'neighborhood' as const, slug: h.id, name: h.data.name, borough: h.data.borough, figures: h.data.figures })));
 
 const SITE_ORIGIN = 'https://www.nyc-affordability.com';
 
@@ -111,6 +115,8 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
       </div>
     ))
   )}
+
+  {rows.length > 1 && <NeighborhoodCharts rows={rows} />}
 
   {hoods.length > 0 && (
     <div style="margin-bottom:20px;">

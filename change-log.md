@@ -2,6 +2,43 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Phase 4b: Charts that keep cited and calculated figures apart (/neighborhoods/)
+
+**User-visible changes**
+- `/neighborhoods/` has a new "Side by side" section with two charts. Both show the same neighborhoods in the same order, highest cited rent first.
+  - **Cited: rent, as reported.** Horizontal bars, one color, with the value at each tip. Each row says "avg" (Corcoran average on leases signed) or "median" (Elliman median of new leases), and "zone" when the figure covers a wider area than the neighborhood.
+  - **Calculated: annual income it takes.** A dot plot on one income axis, with three series: rent at 40x (circle), co-op (square) and condo (diamond). It's a different chart form from the cited bars, and it carries a dashed "Calculated" badge. The caption says the values move with the site's assumptions.
+- **Sale prices aren't charted.** Brown Harris Stevens reports one-bedroom medians while Corcoran and Elliman report all units, often for multi-neighborhood submarkets, so the page explains why and puts them in the table instead.
+- **Hover and keyboard tooltips** on every bar and dot. The value comes first, then the source, period and scope. Text is set with `textContent`.
+- **"Show every number as a table"** lists every cited and calculated value with its scope and source, and links the `/data/` downloads.
+
+**Design checks (dataviz method)**
+- Palette slots 1–3 (#2a78d6, #eb6834, #1baf7a) pass the validator on the white card surface with `--pairs all`: worst CVD ΔE 9.2, normal-vision ΔE 24.0.
+  - Aqua is 2.82:1, so it gets relief: a distinct marker shape per series, a legend, tooltips and the table view.
+- Bars are 14px with a 4px rounded data end. Dots are 10px with a 2px surface ring and a 24px hit area. Gridlines are hairlines. There's only one axis per chart.
+- On phones, every other tick label is hidden so labels don't collide.
+
+**Code**
+- `src/lib/neighborhoodCharts.ts` (pure):
+  - `chartRows` uses `incomeBasis` from the data export, so the charts, the area pages and `/data/` agree.
+  - Also `describeFigure`, `niceTicks` (the 1/2/2.5/5 step with the least empty axis) and `compactMoney`.
+- `src/components/charts/NeighborhoodCharts.astro` and `src/scripts/chartTips.ts`.
+
+**Validation**
+- New `test/neighborhoodCharts.test.ts` (6 tests):
+  - row order
+  - the calculated incomes equal the `/data/` income-needed rows
+  - rent qualifiers match metric and geography
+  - descriptions carry period, scope and source
+  - tick and money formatting
+- `npm test` 289/289; `npm run build` is clean, including `check-csp`.
+- Browser at 390px and 1280px under the production CSP:
+  - no overflow and no console errors
+  - 10 bars and 30 dots
+  - the hover tooltip ("$401,618/yr, Park Slope: to buy a co-op, from the Corcoran 2Q 2026 submarket median") and the keyboard-focus tooltip both work
+  - after the fix, the phone axis labels no longer overlap
+  - the table view renders as cards on phones
+
 ## 2026-10-04: Phase 4c: Scheduled data checks that open PRs only
 
 **What it does**

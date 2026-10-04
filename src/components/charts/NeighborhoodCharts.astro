@@ -1,0 +1,238 @@
+---
+/* Cited rents (bars) and calculated income needed (dots) for the
+   neighborhood directory, plus a table view with every value. See
+   src/lib/neighborhoodCharts.ts for what is charted and why sale prices
+   aren't. Marks are plain HTML sized at build time; the only script is the
+   shared tooltip. Colors: reference categorical slots 1-3, validated for
+   all-pairs CVD separation on white; aqua is under 3:1, so every series
+   also has its own marker shape, a legend, and the table view. */
+import { fmtMoney } from '../../lib/format';
+import { niceTicks, compactMoney, describeFigure, type ChartRow } from '../../lib/neighborhoodCharts';
+
+interface Props { rows: ChartRow[] }
+const { rows } = Astro.props;
+
+const rentMax = Math.max(...rows.map((r) => r.rent.value));
+// The longest bar uses ~78% of the track so its value label fits beside it.
+const barPct = (v: number) => (v / rentMax) * 78;
+
+const SERIES = [
+  { key: 'rent', label: 'To rent (40x rule)', shape: 'circle' },
+  { key: 'coop', label: 'To buy a co-op', shape: 'square' },
+  { key: 'condo', label: 'To buy a condo', shape: 'diamond' },
+] as const;
+const incomeMax = Math.max(...rows.flatMap((r) => [r.income.rent, r.income.coop, r.income.condo]));
+const ticks = niceTicks(incomeMax, 4);
+const axisMax = ticks[ticks.length - 1];
+const dotPct = (v: number) => (v / axisMax) * 100;
+const basisOf = (r: ChartRow, key: 'rent' | 'coop' | 'condo') => key === 'rent' ? r.rent : key === 'coop' ? r.coopBasis : r.condoBasis;
+---
+<section class="viz-section" aria-labelledby="viz-h">
+  <h3 id="viz-h">Side by side: what sources report, and what it takes</h3>
+  <p class="viz-intro">The first chart is <strong>cited</strong>: rents published by brokerages, each with its own date. The second is <strong>calculated</strong>: our estimate of the income each one takes, using this site's default assumptions. Same neighborhoods, same order, different kinds of number.</p>
+
+  <figure class="viz">
+    <figcaption>
+      <span class="kind kind--cited">Cited</span>
+      <span class="viz-title">Rent, as reported</span>
+      <span class="viz-sub">Monthly rent on leases signed. "avg" is an average (Corcoran), "median" a median (Elliman): close cousins, not the same measure. "zone" means the figure covers a wider area that includes the neighborhood.</span>
+    </figcaption>
+    <ul class="bars">
+      {rows.map((r) => {
+        const tipText = `${fmtMoney(r.rent.value)}/mo|${r.name}|${describeFigure(r.rent)}`;
+        return (
+          <li class="bar-row" tabindex="0" data-tip={tipText} aria-label={tipText.replace(/\|/g, '. ')}>
+            <span class="row-label">{r.name}<span class="q">{r.rentQualifier}</span></span>
+            <span class="bar-track">
+              <span class="bar" style={`width:${barPct(r.rent.value).toFixed(2)}%`}></span>
+              <span class="bar-val">{fmtMoney(r.rent.value)}</span>
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  </figure>
+
+  <figure class="viz">
+    <figcaption>
+      <span class="kind kind--calc">Calculated</span>
+      <span class="viz-title">Annual income it takes</span>
+      <span class="viz-sub">Our math, not a published figure: 40x the cited rent, and for buying, the income at which the monthly cost of the cited sale median hits the co-op board (28%) or lender (43%) debt-to-income limit, with this site's default rate and down payment. Change the assumptions and these move.</span>
+    </figcaption>
+    <ul class="legend" aria-label="Legend">
+      {SERIES.map((s) => (
+        <li><span class={`mk mk--${s.key} mk--${s.shape}`} aria-hidden="true"></span>{s.label}</li>
+      ))}
+    </ul>
+    <div class="dots">
+      <div class="dot-grid" aria-hidden="true">
+        {ticks.map((t) => <span class="gridline" style={`left:${dotPct(t).toFixed(2)}%`}></span>)}
+      </div>
+      <ul class="dot-rows">
+        {rows.map((r) => (
+          <li class="dot-row">
+            <span class="row-label">{r.name}</span>
+            <span class="dot-track">
+              {SERIES.map((s) => {
+                const v = r.income[s.key];
+                const tipText = `${fmtMoney(v)}/yr|${r.name}: ${s.label.toLowerCase()}|From: ${describeFigure(basisOf(r, s.key))}`;
+                return <span class={`dot mk mk--${s.key} mk--${s.shape}`} tabindex="0" style={`left:${dotPct(v).toFixed(2)}%`} data-tip={tipText} aria-label={tipText.replace(/\|/g, '. ')}></span>;
+              })}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div class="axis" aria-hidden="true">
+        <span class="row-label"></span>
+        <span class="axis-track">
+          {ticks.map((t) => <span class="tick" style={`left:${dotPct(t).toFixed(2)}%`}>{compactMoney(t)}</span>)}
+        </span>
+      </div>
+    </div>
+  </figure>
+
+  <p class="viz-note">Sale prices aren't charted. The sources measure different things (all apartments vs one-bedrooms only, one neighborhood vs a multi-neighborhood submarket), so bars side by side would suggest a comparison the data can't support. They're in the table with their scope.</p>
+
+  <details class="viz-table">
+    <summary>Show every number as a table</summary>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Neighborhood</th>
+            <th scope="col">Rent <span class="th-kind">cited</span></th>
+            <th scope="col">Sale price used <span class="th-kind">cited</span></th>
+            <th scope="col">Income to rent <span class="th-kind">calc.</span></th>
+            <th scope="col">Co-op <span class="th-kind">calc.</span></th>
+            <th scope="col">Condo <span class="th-kind">calc.</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr>
+              <th scope="row"><a href={`/neighborhoods/${r.slug}/`}>{r.name}</a></th>
+              <td data-label="Rent (cited)">{fmtMoney(r.rent.value)}/mo<span class="cell-note">{describeFigure(r.rent)}</span></td>
+              <td data-label="Sale price (cited)">{fmtMoney(r.coopBasis.value)}{r.condoBasis !== r.coopBasis && <> / {fmtMoney(r.condoBasis.value)}</>}<span class="cell-note">{describeFigure(r.coopBasis)}</span></td>
+              <td data-label="Income to rent (calculated)" class="num">{fmtMoney(r.income.rent)}</td>
+              <td data-label="Co-op (calculated)" class="num">{fmtMoney(r.income.coop)}</td>
+              <td data-label="Condo (calculated)" class="num">{fmtMoney(r.income.condo)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="cell-note">Download these as CSV or JSON on the <a href="/data/">data page</a> (<code>market-figures</code> and <code>income-needed</code>).</p>
+  </details>
+</section>
+
+<script>
+  import '../../scripts/chartTips';
+</script>
+
+<style>
+.viz-section {
+  --surface: #ffffff;
+  --ink: var(--g900);
+  --ink-2: var(--g600);
+  --ink-muted: var(--g500);
+  --grid: #e8e8e4;
+  --s-rent: #2a78d6;
+  --s-coop: #eb6834;
+  --s-condo: #1baf7a;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 24px; margin-bottom: 20px;
+}
+.viz-section h3 { font-size: 17px; font-weight: 800; color: var(--ink); margin-bottom: 8px; letter-spacing: -.2px; }
+.viz-intro, .viz-note { font-size: 13.5px; color: var(--ink-2); line-height: 1.7; margin-bottom: 18px; }
+.viz-note { margin: 4px 0 14px; font-size: 12.5px; }
+
+.viz { margin: 0 0 26px; }
+figcaption { display: block; margin-bottom: 14px; }
+.viz-title { font-size: 15px; font-weight: 750; color: var(--ink); margin-left: 6px; }
+.viz-sub { display: block; font-size: 12.5px; color: var(--ink-muted); line-height: 1.55; margin-top: 4px; }
+.kind { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 999px; padding: 2px 9px; border: 1px solid transparent; vertical-align: 1px; }
+.kind--cited { background: #ecfeff; color: #155e75; border-color: #a5f3fc; }
+.kind--calc { background: #f8fafc; color: #475569; border-color: #cbd5e1; border-style: dashed; }
+
+ul { list-style: none; margin: 0; padding: 0; }
+.row-label { flex: 0 0 150px; font-size: 13px; font-weight: 650; color: var(--ink); line-height: 1.25; padding-right: 10px; }
+.q { display: block; font-size: 11px; font-weight: 500; color: var(--ink-muted); }
+
+/* Bars: <= 24px thick, 4px rounded data end, square at the baseline. */
+.bar-row { display: flex; align-items: center; padding: 5px 0; border-radius: 6px; outline: none; cursor: default; }
+.bar-row:focus-visible { box-shadow: 0 0 0 2px var(--blue); }
+.bar-track { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.bar { display: block; height: 14px; background: var(--s-rent); border-radius: 0 4px 4px 0; transition: opacity .12s; }
+.bar-row:hover .bar, .bar-row.is-active .bar { opacity: .82; }
+.bar-val { font-size: 12.5px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Dot plot */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 10px 150px; }
+.legend li { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink-2); }
+.dots { position: relative; }
+.dot-grid { position: absolute; top: 0; bottom: 22px; left: 150px; right: 10px; pointer-events: none; }
+.gridline { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid); }
+.dot-row { display: flex; align-items: center; min-height: 32px; border-bottom: 1px solid transparent; }
+.dot-track { position: relative; flex: 1; height: 26px; margin-right: 10px; }
+.mk { display: inline-block; width: 10px; height: 10px; flex: 0 0 auto; }
+.mk--rent { background: var(--s-rent); }
+.mk--coop { background: var(--s-coop); }
+.mk--condo { background: var(--s-condo); }
+.mk--circle { border-radius: 50%; }
+.mk--square { border-radius: 1px; }
+.mk--diamond { transform: rotate(45deg) scale(.9); border-radius: 1px; }
+.dot {
+  position: absolute; top: 50%; margin: -5px 0 0 -5px; outline: none;
+  box-shadow: 0 0 0 2px var(--surface); /* 2px surface ring where dots overlap */
+}
+.dot.mk--diamond { transform: rotate(45deg) scale(.9); }
+/* Hit area bigger than the mark: 24px. */
+.dot::after { content: ''; position: absolute; inset: -7px; }
+.dot:hover, .dot.is-active, .dot:focus-visible { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink); z-index: 2; }
+.axis { display: flex; height: 22px; }
+.axis-track { position: relative; flex: 1; margin-right: 10px; border-top: 1px solid #d6d5ce; }
+.tick { position: absolute; top: 4px; transform: translateX(-50%); font-size: 11px; color: var(--ink-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tick:first-child { transform: none; }
+.tick:last-child { transform: translateX(-100%); }
+
+/* Table view */
+.viz-table summary { cursor: pointer; font-size: 13.5px; font-weight: 700; color: var(--blue); padding: 6px 0; }
+.table-wrap { overflow-x: auto; margin-top: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 8px; border-bottom: 1px solid var(--border); color: var(--g700); }
+thead th { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: var(--ink-muted); font-weight: 700; border-bottom: 2px solid var(--border); }
+tbody th { font-weight: 700; color: var(--ink); }
+tbody th a { color: var(--blue); text-decoration: none; }
+td.num { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); white-space: nowrap; }
+.th-kind { display: block; font-size: 10px; letter-spacing: .4px; font-weight: 600; text-transform: none; color: var(--g400); }
+.cell-note { display: block; font-size: 11.5px; color: var(--ink-muted); line-height: 1.45; margin-top: 3px; font-weight: 400; }
+.cell-note a { color: var(--blue); }
+.cell-note code { font-size: 11px; }
+
+@media (max-width: 560px) {
+  .viz-section { padding: 22px 16px 18px; }
+  .row-label { flex-basis: 108px; font-size: 12px; }
+  .legend { margin-left: 0; }
+  .dot-grid { left: 108px; }
+  /* Too narrow for every tick label: keep the gridlines, label every other one. */
+  .tick:nth-child(even) { visibility: hidden; }
+  /* Table rows become cards on phones. */
+  thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  table, tbody, tr, th, td { display: block; width: 100%; }
+  tr { border-bottom: 1px solid var(--border); padding: 8px 0; }
+  th, td { border: 0; padding: 3px 0; }
+  td[data-label]::before { content: attr(data-label) ': '; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-muted); }
+}
+
+/* The tooltip is created by script, so it needs a global rule. Values lead. */
+:global(.chart-tip) {
+  position: fixed; z-index: 1000; max-width: 280px; pointer-events: none;
+  background: #ffffff; border: 1px solid rgba(11,11,11,.12); border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 8px 11px; font-size: 12px; color: #52514e; line-height: 1.45;
+}
+:global(.chart-tip strong) { display: block; font-size: 14px; color: #0b0b0b; font-variant-numeric: tabular-nums; }
+:global(.chart-tip span) { display: block; }
+@media (forced-colors: active) {
+  .bar, .mk { forced-color-adjust: none; border: 1px solid CanvasText; }
+}
+</style>
