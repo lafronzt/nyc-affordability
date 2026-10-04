@@ -40,7 +40,7 @@ export const SITE_CHANGES: SiteChange[] = [
     title: 'Default renter\'s insurance $15 → $18 a month',
     summary: 'ValuePenguin\'s September 2026 survey puts the average for New York City at $18 a month (for $30,000 of belongings and $100,000 of liability). The old $15 default cited a page that no longer exists. Move-in cash on /rent/ rises by $6 (two months of reserve), and the rent vs buy example shifts by about $500 over 30 years.',
     affects: ['/rent/', '/compare/', '/rent-vs-buy/', '/guides/rent-vs-buy-nyc/'],
-    pr: null,
+    pr: 104,
   },
   {
     date: '2026-10-04',
