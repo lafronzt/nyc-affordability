@@ -7,6 +7,7 @@ import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { ASSUMPTIONS } from '../../data/assumptions';
+import { MAINTAINER, REVIEWER } from '../../data/editorial';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -104,7 +105,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   <div class="card">
     <h3>How defaults are reviewed, and what happens when data gets old</h3>
     <ul>
-      <li>There's no automatic refresh. Defaults are updated by hand when a source publishes something new, such as a new Freddie Mac survey or HUD's annual income limits.</li>
+      <li>Nothing updates itself. Scheduled checks watch Freddie Mac's mortgage rate every week and HPD's AMI chart every month, and propose an update when either changes; a person reviews it before it reaches the site. Everything else is updated by hand when its source publishes something new. Each update is listed in the <a href="/methodology/changelog/">changelog</a>.</li>
       <li>Each default records when it was last re-verified. Where no check is recorded, the <a href="/methodology/sources/">sources page</a> says "not yet re-verified" instead of showing a date we can't back up.</li>
       <li>Cited market figures keep their own as-of date, even when two numbers on the same page come from different months. We'd rather show you the real gap than pretend they were measured together.</li>
       <li>Every default is editable on its calculator. If you have a better number (the actual maintenance, your rate quote), use it.</li>
@@ -125,7 +126,14 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
   <div class="card">
     <h3>Found a mistake?</h3>
-    <p>Tell us on the <a href="/contact/">contact page</a> or open an issue on <a href="https://github.com/lafronzt/nyc-affordability/issues" target="_blank" rel="noopener noreferrer">GitHub ↗</a>. Corrections to the math or a cited figure are noted in the project's change log on GitHub.</p>
+    <p>Tell us on the <a href="/contact/">contact page</a> or open an issue on <a href="https://github.com/lafronzt/nyc-affordability/issues" target="_blank" rel="noopener noreferrer">GitHub ↗</a>. Every correction to the math or a cited figure is listed on the <a href="/methodology/corrections/">corrections page</a> with what was wrong, what's right, and which pages showed it. Data updates and method changes are in the <a href="/methodology/changelog/">changelog</a>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Who's behind it</h3>
+    <p>The site is written and maintained by one person, <a href={MAINTAINER.url} target="_blank" rel="noopener noreferrer">{MAINTAINER.name}</a>. {REVIEWER
+      ? <>Content is reviewed by {REVIEWER.name}, {REVIEWER.credential}.</>
+      : <>No licensed attorney, accountant, or mortgage professional has reviewed it, which is one more reason to confirm anything that matters with one.</>} The tests, sources, and every past change are public, so you can check the work instead of taking our word for it.</p>
   </div>
 </div>
 </main>

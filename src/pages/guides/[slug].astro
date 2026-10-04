@@ -5,6 +5,8 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Byline from '../../components/Byline.astro';
+import { MAINTAINER, REVIEWER } from '../../data/editorial';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../lib/footerLinks';
 import { AD_IN_ARTICLE } from '../../lib/adSlots';
@@ -57,6 +59,8 @@ const jsonLd = {
   url: `${SITE_ORIGIN}${canonicalPath}`,
   datePublished: data.updated,
   dateModified: data.updated,
+  author: { '@type': 'Person', name: MAINTAINER.name, url: MAINTAINER.url },
+  ...(REVIEWER ? { reviewedBy: { '@type': 'Person', name: REVIEWER.name, url: REVIEWER.url, jobTitle: REVIEWER.credential } } : {}),
   isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
 };
 
@@ -98,6 +102,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
   <div class="card guide-body">
     <Content />
+    <Byline path={canonicalPath} updated={data.updated} />
   </div>
 
   <div style="margin-bottom:20px;">

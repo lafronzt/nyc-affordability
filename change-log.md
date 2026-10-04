@@ -2,6 +2,46 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Phase 5e: Changelog, corrections, and a maintainer line
+
+**User-visible changes**
+- **New `/methodology/changelog/`.** Every change that could move a number, newest first: 7 corrections, 3 data updates, 2 method changes. Each has a date, what moved, the affected pages, and a link to the PR.
+- **New `/methodology/corrections/`.** Covers:
+  - How a mistake is handled: a failing test first, numbers in the notice, a dated note on the page, and the correction stays listed.
+  - How to report one.
+  - Every correction with "What was wrong" and "What's right now", from the renter move-in fee (#88) back to the condo mortgage recording tax (#42).
+- **A byline on every guide and glossary term**, plus the changelog and corrections pages: "Maintained by Tyler La Fronz (linking to tylerlafronz.com/Links/). Last updated … Not reviewed by a licensed attorney, accountant, or mortgage professional." `/about/` names the maintainer from the same config. It links "How we check figures" and "Corrections". A page affected by a correction also shows a dated note linking to it (the AMI guide today).
+- Guide Article JSON-LD gains `author`. `reviewedBy` appears only once a reviewer is set.
+- **`/methodology/` updates:**
+  - The stale "There's no automatic refresh" line now describes the scheduled rate and AMI checks, with a person reviewing each update.
+  - "Found a mistake?" points to the corrections page.
+  - A new "Who's behind it" card says plainly that no licensed professional has reviewed the content.
+- **Links:** "Corrections" in the footer About column; both pages on `/explore/`; a corrections link on `/about/`; sitemap entries.
+
+**Reviewer**
+- The plan's open question (a named reviewer with a credential, or "maintained by" only) is still unanswered, so this ships "maintained by" with an explicit not-reviewed line. When there's a reviewer, set `REVIEWER` in `src/data/editorial.ts` (name, credential, review date). Every byline and the JSON-LD then switch over.
+
+**Code**
+- `src/data/siteChanges.ts`: the reader-facing record. Entries come only from this log, commit messages and PR numbers, with UTC merge dates.
+- `src/data/editorial.ts`, `src/components/Byline.astro`, `src/components/ChangeEntry.astro`.
+
+**Validation**
+- New `test/siteChanges.test.ts` (6 tests):
+  - Dates are valid and newest first; anchors are unique.
+  - Corrections carry wrong/right/affects.
+  - Every affected path resolves to a real page, guide or term.
+  - Every "Fix:" heading in this file has a correction, or is explicitly listed as not changing a figure (the CSP nav fix).
+  - Every `logHeading` exists in this file.
+  - The reviewer is unset or fully named and dated.
+- Mutation-checked: a typo'd path and an unlinked fix each made the test fail.
+- `npm test` 337/337; `npm run build` is clean, including `check-csp`.
+- Browser at 390 and 1280px:
+  - The AMI guide's "What changed" link lands on its correction, below the sticky header.
+  - Both new pages have no overflow and no console errors.
+  - Fixed during the check: Astro dropped the space in "2026. Not reviewed".
+
+**Also in this branch (merged up from 5d):** the `/plan/` spacing fix. The cards no longer touch "How this works", and link labels no longer break mid-phrase.
+
 ## 2026-10-04: Phase 5d: My NYC Plan (`/plan/`)
 
 **User-visible changes**
