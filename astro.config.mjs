@@ -34,8 +34,10 @@ const SITEMAP_PAGE_META = {
   '/affordability-index/': { changefreq: 'weekly', priority: 0.6, lastmod: '2026-08-13' },
   // No hand-set lastmod: it's derived from the newest content entry (see serialize()).
   '/explore/':   { changefreq: 'weekly',  priority: 0.5 },
-  '/methodology/':         { changefreq: 'monthly', priority: 0.5, lastmod: '2026-10-02' },
+  '/methodology/':         { changefreq: 'monthly', priority: 0.5, lastmod: '2026-10-04' },
   '/methodology/sources/': { changefreq: 'monthly', priority: 0.5, lastmod: '2026-10-02' },
+  '/methodology/changelog/':   { changefreq: 'weekly',  priority: 0.4, lastmod: '2026-10-04' },
+  '/methodology/corrections/': { changefreq: 'monthly', priority: 0.4, lastmod: '2026-10-04' },
   '/data/':              { changefreq: 'weekly',  priority: 0.5, lastmod: '2026-10-04' },
   '/plan/':              { changefreq: 'monthly', priority: 0.6, lastmod: '2026-10-04' },
   '/my-data/':           { changefreq: 'monthly', priority: 0.3, lastmod: '2026-10-04' },

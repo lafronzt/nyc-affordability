@@ -1,0 +1,40 @@
+---
+/* Who maintains this page, whether it's been professionally reviewed,
+   when it was last updated, and any correction that changed a figure on
+   it. Data: src/data/editorial.ts and src/data/siteChanges.ts. */
+import { MAINTAINER, REVIEWER } from '../data/editorial';
+import { correctionsFor, changeId } from '../data/siteChanges';
+
+interface Props {
+  /** This page's path, e.g. /guides/nyc-40x-rent-rule/ */
+  path: string;
+  /** YYYY-MM-DD */
+  updated?: string;
+}
+
+const { path, updated } = Astro.props;
+const fmt = (d: string) => new Date(`${d}T00:00:00Z`).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+const corrections = correctionsFor(path);
+---
+<aside class="byline" aria-label="About this page">
+  <p>
+    Maintained by <a href={MAINTAINER.url} target="_blank" rel="noopener noreferrer">{MAINTAINER.name}</a>{updated && <>. Last updated {fmt(updated)}</>}.{' '}
+    {REVIEWER
+      ? <>Reviewed by <a href={REVIEWER.url} target="_blank" rel="noopener noreferrer">{REVIEWER.name}</a>, {REVIEWER.credential}, on {fmt(REVIEWER.reviewed)}.</>
+      : <>Not reviewed by a licensed attorney, accountant, or mortgage professional.</>}
+    {' '}<a href="/methodology/">How we check figures</a> · <a href="/methodology/corrections/">Corrections</a>
+  </p>
+  {corrections.map((c) => (
+    <p class="corrected">
+      <strong>Corrected {fmt(c.date)}:</strong> {c.title}. <a href={`/methodology/corrections/#${changeId(c)}`}>What changed</a>
+    </p>
+  ))}
+</aside>
+
+<style>
+.byline { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 12px; }
+.byline p { font-size: 12.5px; color: var(--g500); line-height: 1.6; margin: 0 0 6px; }
+.byline a { color: var(--blue); text-decoration: none; }
+.byline a:hover { text-decoration: underline; }
+.byline .corrected { color: #7c2d12; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 8px 10px; }
+</style>

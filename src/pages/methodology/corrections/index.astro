@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import Footer from '../../../components/Footer.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ChangeEntry from '../../../components/ChangeEntry.astro';
+import Byline from '../../../components/Byline.astro';
+import type { FooterColumn } from '../../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../../lib/breadcrumbs';
+import { CORRECTIONS } from '../../../data/siteChanges';
+
+/* Corrections policy and every correction, newest first.
+   Data: src/data/siteChanges.ts (kind 'correction'). */
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const latest = CORRECTIONS[0]?.date;
+
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Corrections | NYC Affordability',
+  url: `${SITE_ORIGIN}/methodology/corrections/`,
+  description: 'How NYC Affordability handles mistakes, and every correction to a figure on the site: what was wrong, what is right now, and which pages showed it.',
+  ...(latest ? { dateModified: latest } : {}),
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
+};
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Methodology', path: '/methodology/' },
+  { name: 'Corrections', path: '/methodology/corrections/' },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+---
+<BaseLayout
+  variant="site"
+  pageTitle="Corrections: What We Got Wrong and Fixed | NYC Affordability"
+  metaDescription="How NYC Affordability handles mistakes, and every correction to a figure on the site: what was wrong, what's right now, which pages showed it, and the code that fixed it."
+  canonicalPath="/methodology/corrections/"
+  ogTitle="NYC Affordability Corrections"
+  ogDescription="Every figure we got wrong, what's right now, and which pages showed it."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
+  twitterTitle="NYC Affordability Corrections"
+  twitterDescription="Every figure we got wrong, what's right now, and which pages showed it."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Methodology</div>
+  <h2>Corrections</h2>
+  <p>Every figure we got wrong, what's right now, and who would have seen it. They stay listed after they're fixed.</p>
+</div>
+
+<div class="page">
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <div class="card">
+    <h3>How we handle a mistake</h3>
+    <ul>
+      <li><strong>Fix the math with a test first.</strong> A correction to a formula or table starts with an automated test that fails on the wrong number. That test then stays in the project, so the same mistake can't quietly come back.</li>
+      <li><strong>Say what changed, with numbers.</strong> Each correction below gives the figure readers saw, the right one, and the pages that showed it. "Improved accuracy" isn't a correction notice.</li>
+      <li><strong>Mark the page.</strong> Guides and glossary entries affected by a correction show a dated note linking here.</li>
+      <li><strong>Keep it listed.</strong> Corrections stay here after the fix. The code change behind each one is linked.</li>
+    </ul>
+    <p>A routine data update, like a new weekly mortgage rate, isn't a correction: the old number was right when it was published. Those are in the <a href="/methodology/changelog/">changelog</a>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Found one?</h3>
+    <p>Tell us on the <a href="/contact/">contact page</a> or open an issue on <a href="https://github.com/lafronzt/nyc-affordability/issues" target="_blank" rel="noopener noreferrer">GitHub ↗</a>. It helps to include the page, the inputs you used, the number you saw, and where the right number comes from.</p>
+  </div>
+
+  <section class="card" aria-labelledby="h-list">
+    <h3 id="h-list">Corrections, newest first</h3>
+    {CORRECTIONS.length
+      ? CORRECTIONS.map((c) => <ChangeEntry change={c} />)
+      : <p>None yet.</p>}
+    <Byline path="/methodology/corrections/" updated={latest} />
+  </section>
+</div>
+</main>
+
+<Footer
+  variant="site"
+  disclaimer="NYC Affordability is for informational purposes only and does not constitute financial, legal, tax, or mortgage advice. Always verify figures with a licensed mortgage professional and a real estate attorney before making a housing decision."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+
+.page { max-width: 820px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 30px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card p { font-size: 14.5px; color: var(--g600); line-height: 1.75; margin-bottom: 10px; }
+.card ul { padding-left: 20px; margin: 0 0 10px; }
+.card li { font-size: 14.5px; color: var(--g700); line-height: 1.7; margin-bottom: 6px; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+
+.lede { font-size: 14.5px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; color: var(--g500); margin: 0 0 6px; }
+
+@media (max-width: 560px) {
+  .page { padding: 28px 16px 48px; }
+  .card { padding: 22px 18px 24px; }
+}
+</style>

@@ -117,6 +117,8 @@ export const EXPLORE_LINKS: FooterLink[] = [
 export const ABOUT_LINK: FooterLink = { label: 'About This Project', href: '/about/' };
 export const CONTACT_LINK: FooterLink = { label: 'Contact', href: '/contact/' };
 export const METHODOLOGY_LINK: FooterLink = { label: 'Methodology & Sources', href: '/methodology/' };
+export const CORRECTIONS_LINK: FooterLink = { label: 'Corrections', href: '/methodology/corrections/' };
+export const CHANGELOG_LINK: FooterLink = { label: 'Changelog', href: '/methodology/changelog/' };
 export const PRIVACY_LINK: FooterLink = { label: 'Privacy Policy', href: '/privacy/' };
 export const MY_DATA_LINK: FooterLink = { label: 'Your Saved Data', href: '/my-data/' };
 export const TERMS_LINK: FooterLink = { label: 'Terms of Service', href: '/terms/' };
@@ -128,7 +130,7 @@ export const SUPPORT_LINK: FooterLink = { label: 'Support this project', href: '
     so the old standalone GUIDES_LINK entry here was dropped to avoid a duplicate /guides/ link. */
 export const STANDARD_ABOUT_COLUMN: FooterColumn = {
   heading: 'About',
-  links: [ABOUT_LINK, METHODOLOGY_LINK, CONTACT_LINK, PRIVACY_LINK, MY_DATA_LINK, TERMS_LINK, GITHUB_LINK, SUPPORT_LINK],
+  links: [ABOUT_LINK, METHODOLOGY_LINK, CORRECTIONS_LINK, CONTACT_LINK, PRIVACY_LINK, MY_DATA_LINK, TERMS_LINK, GITHUB_LINK, SUPPORT_LINK],
 };
 
 // Links repeated verbatim (same URL) across 2+ pages with today's labels already
