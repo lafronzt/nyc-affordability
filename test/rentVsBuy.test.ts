@@ -39,15 +39,21 @@ test('sale engine: co-op adds flip tax and transfer fee; capital gains after the
   near(calculateSale(sell({ capGainsEnabled: true, filingStatus: 'mfj' })).capGainsTax, 0, 0.01);
 });
 
+// Behavior tests use a fixed rate, not the site default, so they keep testing
+// the same scenario when the weekly PMMS update moves the default (see
+// .github/workflows/data-update-pmms.yml). Default-dependent figures are
+// checked in test/afford.test.ts and test/guideExamples.test.ts instead.
+const TEST_RATE = 6.95;
+
 const flat = (type: 'coop' | 'condo', o = {}) => defaultRentVsBuyInputs(type, {
-  price: 700_000, monthlyRent: 3_800, years: 10,
+  price: 700_000, monthlyRent: 3_800, years: 10, mortgageRate: TEST_RATE,
   rentGrowthPct: 0, homeAppreciationPct: 0, ownerCostGrowthPct: 0, ownerUpkeepPct: 0, investmentReturnPct: 0, ...o,
 });
 
 test('purchase cash and payment come from the shared condo engine', () => {
   const p = flat('condo');
   const got = purchaseFor(p);
-  const r = calculateCondo(condoInputsFromDefaults({ targetOverride: 700_000 }));
+  const r = calculateCondo(condoInputsFromDefaults({ targetOverride: 700_000, mortgageRate: TEST_RATE }));
   near(got.upfront, r.totalAtClose, 0.01);
   near(got.monthlyPI, r.moMtg, 0.01);
   // Standard amortization: 560K at 6.95% over 30 years.
@@ -60,7 +66,7 @@ test('loan amortizes to zero at the end of the term', () => {
   assert.equal(r.rows.length, 30);
   near(r.rows[29].loanBalance, 0, 0.01);
   // Closed-form balance after 12 payments.
-  const i = 6.95 / 1200, pmt = r.purchase.monthlyPI;
+  const i = TEST_RATE / 1200, pmt = r.purchase.monthlyPI;
   const bal12 = 560_000 * Math.pow(1 + i, 12) - pmt * (Math.pow(1 + i, 12) - 1) / i;
   near(r.rows[0].loanBalance, bal12, 0.01);
 });

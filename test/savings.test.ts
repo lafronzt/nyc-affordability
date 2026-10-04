@@ -9,6 +9,12 @@ import { calcMansionTax, calcMortgageRecordingTax } from '../src/lib/calc.ts';
 // be plain, checkable compound savings.
 
 const near = (a: number, b: number, tol = 1) => assert.ok(Math.abs(a - b) <= tol, `expected ${b}, got ${a}`);
+// Behavior tests use a fixed rate, not the site default, so they keep testing
+// the same scenario when the weekly PMMS update moves the default (see
+// .github/workflows/data-update-pmms.yml). Default-dependent figures are
+// checked in test/afford.test.ts and test/guideExamples.test.ts instead.
+const TEST_RATE = 6.95;
+
 const base = (type: 'coop' | 'condo', o = {}) => defaultSavingsInputs(type, {
   targetPrice: 600_000, currentSavings: 110_000, monthlyContribution: 2_000, savingsYieldPct: 3,
   annualIncome: 145_000, monthlyDebts: 0, ...o,
@@ -25,9 +31,9 @@ test('cash target matches the build-time /buy/ figures at the same price', () =>
 });
 
 test('co-op cash target includes board reserves; condo includes mortgage recording tax instead', () => {
-  const coop = cashNeeded(base('coop'));
-  const condo = cashNeeded(base('condo'));
-  near(coop.reserves, 52_528, 1); // matches the co-op reserves guide's worked example
+  const coop = cashNeeded(base('coop', { mortgageRate: TEST_RATE }));
+  const condo = cashNeeded(base('condo', { mortgageRate: TEST_RATE }));
+  near(coop.reserves, 52_528, 1); // $600K co-op at 6.95%: 12 x (P&I + $1,200 maintenance)
   assert.equal(coop.mortgageRecordingTax, 0);
   assert.equal(condo.reserves, 0);
   near(condo.mortgageRecordingTax, calcMortgageRecordingTax(480_000), 0.01);
