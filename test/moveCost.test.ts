@@ -10,6 +10,12 @@ import { ASSUMPTIONS as A } from '../src/data/assumptions.ts';
 // page agrees with /rent/, /coop/, /condo/, and the savings planner), and
 // every dollar must land in exactly one bucket.
 
+// Behavior tests use a fixed rate, not the site default, so they keep testing
+// the same scenario when the weekly PMMS update moves the default (see
+// .github/workflows/data-update-pmms.yml). Default-dependent figures are
+// checked in test/afford.test.ts and test/guideExamples.test.ts instead.
+const TEST_RATE = 6.95;
+
 const near = (a: number, b: number, tol = 0.01) => assert.ok(Math.abs(a - b) <= tol, `expected ${b}, got ${a}`);
 const line = (c: MoveCost, id: string) => c.lines.find((l) => l.id === id)?.amount ?? 0;
 const buckets = (c: MoveCost) => {
@@ -57,8 +63,8 @@ test('buyer: co-op and condo cash match the savings planner\'s cash target (plus
 });
 
 test('buyer: co-op reserves are held, not spent; the move-in deposit comes back; condos pay MRT', () => {
-  const coop = buyerMoveCost(defaultBuyerMoveInputs('coop', { price: 600_000 }));
-  near(coop.held, 52_528, 1); // the co-op reserves guide's worked example
+  const coop = buyerMoveCost(defaultBuyerMoveInputs('coop', { price: 600_000, mortgageRate: TEST_RATE }));
+  near(coop.held, 52_528, 1); // $600K co-op at 6.95%: 12 x (P&I + $1,200 maintenance)
   near(coop.refundable, A.coopMoveInDeposit.value);
   assert.equal(line(coop, 'mrt'), 0);
   const condo = buyerMoveCost(defaultBuyerMoveInputs('condo', { price: 600_000 }));

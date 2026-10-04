@@ -8,13 +8,19 @@ import { coopInputsFromDefaults } from '../src/lib/engines/defaults.ts';
 // brief: $145K income, $110K saved, $400/month student loans.
 
 const near = (a: number, b: number, tol = 1) => assert.ok(Math.abs(a - b) <= tol, `expected ${b}, got ${a}`);
-const coop = defaultPlanInputs('coop', { annualIncome: 145_000, monthlyDebts: 400, cash: 110_000 });
-const condo = defaultPlanInputs('condo', { annualIncome: 145_000, monthlyDebts: 400, cash: 110_000 });
+// Behavior tests use a fixed rate, not the site default, so they keep testing
+// the same scenario when the weekly PMMS update moves the default (see
+// .github/workflows/data-update-pmms.yml). Default-dependent figures are
+// checked in test/afford.test.ts and test/guideExamples.test.ts instead.
+const TEST_RATE = 6.95;
+
+const coop = defaultPlanInputs('coop', { annualIncome: 145_000, monthlyDebts: 400, cash: 110_000, mortgageRate: TEST_RATE });
+const condo = defaultPlanInputs('condo', { annualIncome: 145_000, monthlyDebts: 400, cash: 110_000, mortgageRate: TEST_RATE });
 const byId = (p: typeof coop) => Object.fromEntries(rankLevers(p).results.map((r) => [r.lever.id, r]));
 
 test('evaluatePlan matches calling the co-op engine directly', () => {
   const direct = calculateCoop(coopInputsFromDefaults({
-    annualIncome: 145_000, otherDebts: 400,
+    annualIncome: 145_000, otherDebts: 400, mortgageRate: TEST_RATE,
     accounts: [
       { name: 'Cash', balance: 110_000, liquidity: 100, closing: true },
       { name: 'Investments', balance: 0, liquidity: 80, closing: true },

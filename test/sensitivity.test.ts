@@ -10,7 +10,13 @@ import { requiredIncomeForPrice } from '../src/lib/afford.ts';
 
 const near = (a: number, b: number, tol = 1) => assert.ok(Math.abs(a - b) <= tol, `expected ${b}, got ${a}`);
 // Project brief example.
-const brief = (type: 'coop' | 'condo', o = {}) => defaultPlanInputs(type, { annualIncome: 145_000, monthlyDebts: 400, cash: 110_000, ...o });
+// Behavior tests use a fixed rate, not the site default, so they keep testing
+// the same scenario when the weekly PMMS update moves the default (see
+// .github/workflows/data-update-pmms.yml). Default-dependent figures are
+// checked in test/afford.test.ts and test/guideExamples.test.ts instead.
+const TEST_RATE = 6.95;
+
+const brief = (type: 'coop' | 'condo', o = {}) => defaultPlanInputs(type, { annualIncome: 145_000, monthlyDebts: 400, cash: 110_000, mortgageRate: TEST_RATE, ...o });
 
 test('a point at the current rate is exactly evaluatePlan', () => {
   for (const type of ['coop', 'condo'] as const) {
