@@ -2,6 +2,20 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Structured data: audit follow-ups (HowTo, Dataset, Place)
+
+**User-visible changes** (search markup only; no visible page text changes)
+- `/coop/`: removed the HowTo JSON-LD. Google retired HowTo rich results in 2023, so it was dead weight (Phase 0 audit §5). The FAQPage stays: each answer condenses the visible "How this works" text on the page.
+- `/affordability-index/`: the Dataset markup said the license was `/terms/`, but the data is CC0, as `/data/` already says. It now gives the CC0 URL, `isAccessibleForFree`, and a `distribution` pointing at `/data/affordability-index.json` and `.csv` (audit §5: "add `distribution` once downloads exist").
+- Neighborhood pages: the Article gains `about`, a `Place` (e.g. "Astoria, Queens, New York City") `containedInPlace` its borough, with the borough hub's URL where one exists (audit §5).
+
+**Validation**
+- `npm test` 337/337; `npm run build` is clean, including `check-csp`.
+- Parsed the built JSON-LD:
+  - `/coop/` has WebApplication and FAQPage, no HowTo.
+  - The index Dataset has the CC0 license and two downloads, both present in `dist/data/`.
+  - All 10 neighborhood pages name their borough and link the right hub.
+
 ## 2026-10-04: Phase 5e: Changelog, corrections, and a maintainer line
 
 **User-visible changes**
