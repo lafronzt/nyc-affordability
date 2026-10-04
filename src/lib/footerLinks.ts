@@ -116,6 +116,7 @@ export const ABOUT_LINK: FooterLink = { label: 'About This Project', href: '/abo
 export const CONTACT_LINK: FooterLink = { label: 'Contact', href: '/contact/' };
 export const METHODOLOGY_LINK: FooterLink = { label: 'Methodology & Sources', href: '/methodology/' };
 export const PRIVACY_LINK: FooterLink = { label: 'Privacy Policy', href: '/privacy/' };
+export const MY_DATA_LINK: FooterLink = { label: 'Your Saved Data', href: '/my-data/' };
 export const TERMS_LINK: FooterLink = { label: 'Terms of Service', href: '/terms/' };
 export const GITHUB_LINK: FooterLink = { label: 'View on GitHub', href: 'https://github.com/lafronzt/nyc-affordability' };
 export const SUPPORT_LINK: FooterLink = { label: 'Support this project', href: 'https://buymeacoffee.com/lafronzt' };
@@ -125,7 +126,7 @@ export const SUPPORT_LINK: FooterLink = { label: 'Support this project', href: '
     so the old standalone GUIDES_LINK entry here was dropped to avoid a duplicate /guides/ link. */
 export const STANDARD_ABOUT_COLUMN: FooterColumn = {
   heading: 'About',
-  links: [ABOUT_LINK, METHODOLOGY_LINK, CONTACT_LINK, PRIVACY_LINK, TERMS_LINK, GITHUB_LINK, SUPPORT_LINK],
+  links: [ABOUT_LINK, METHODOLOGY_LINK, CONTACT_LINK, PRIVACY_LINK, MY_DATA_LINK, TERMS_LINK, GITHUB_LINK, SUPPORT_LINK],
 };
 
 // Links repeated verbatim (same URL) across 2+ pages with today's labels already

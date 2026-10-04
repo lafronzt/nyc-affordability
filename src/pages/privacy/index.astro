@@ -8,6 +8,11 @@ import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN, PRIVACY_LINK } from '../../lib/footerLinks';
 import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+import { STORAGE_KEYS, SCENARIOS_INFO } from '../../lib/profileStore';
+
+// Rendered from the same registry as /my-data/, so a new storage key can't
+// be missing here (test/profileStore.test.ts checks every key is registered).
+const storageRows = [...STORAGE_KEYS, SCENARIOS_INFO];
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -52,7 +57,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   <div class="hero-eyebrow">Privacy Policy</div>
   <h2>What this site stores, and what it doesn't.</h2>
   <p>NYC Affordability runs entirely in your browser. This page explains exactly what's saved, where, and how the ads on this site work.</p>
-  <span class="updated">Last updated: August 2, 2026</span>
+  <span class="updated">Last updated: October 4, 2026</span>
 </div>
 
 <div class="page">
@@ -72,19 +77,14 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
       <table class="key-table">
         <thead><tr><th>Key</th><th>Used by</th><th>Purpose</th></tr></thead>
         <tbody>
-          <tr><td><code>nyc_shared_profile</code></td><td>All calculators, Compare</td><td>Income, other debts, and account balances shared across every tool so you don't re-enter them</td></tr>
-          <tr><td><code>nyc_shared_assumptions_rent</code></td><td>Rent, Compare</td><td>Rent calculator assumptions (income multiplier, insurance, reserve buffer)</td></tr>
-          <tr><td><code>nyc_shared_assumptions_coop</code></td><td>Co-op, Compare</td><td>Co-op assumptions (mortgage rate, down payment %, maintenance, DTI limit, reserve months)</td></tr>
-          <tr><td><code>nyc_shared_assumptions_condo</code></td><td>Condo, Compare</td><td>Condo assumptions (mortgage rate, down payment %, common charges, taxes, DTI limit)</td></tr>
-          <tr><td><code>nyc_coop_inputs</code></td><td>Co-op calculator</td><td>Full set of co-op-specific calculator inputs</td></tr>
-          <tr><td><code>nyc_condo_inputs</code></td><td>Condo calculator</td><td>Full set of condo-specific calculator inputs</td></tr>
-          <tr><td><code>nyc_rent_inputs</code></td><td>Rent calculator</td><td>Full set of rent-specific calculator inputs</td></tr>
-          <tr><td><code>nyc_affordable_inputs</code></td><td>Affordable Housing Finder</td><td>Household size, income, and unit-size inputs for AMI eligibility</td></tr>
-          <tr><td><code>nyc_reality_check_inputs</code></td><td>Housing Reality Check</td><td>Liquid savings and household size for the Reality Check tool, kept separate from <code>nyc_shared_profile</code> so its single-number simplification never overwrites a fuller account breakdown you've built on another calculator</td></tr>
+          {storageRows.map((k) => (
+            <tr><td><code>{k.key}</code></td><td><a href={k.href}>{k.label}</a></td><td>{k.purpose}</td></tr>
+          ))}
         </tbody>
       </table>
     </div>
-    <p>These values persist until you clear your browser's site data or storage for www.nyc-affordability.com, or until you turn off saving. The <a href="https://www.nyc-co-op-affordability.com/">legacy co-op domain</a> uses a one-time redirect that copies <code>nyc_coop_inputs</code> and <code>nyc_shared_profile</code> into a URL fragment so a saved profile can carry over to the canonical domain. That fragment is read once by your browser and then removed from the address bar; it is never sent to any server in the process. The NYC Sale Net Proceeds calculator (<code>/sell/</code>) stores nothing. It doesn't have a Save toggle and resets when you close the tab.</p>
+    <p>These values persist until you clear your browser's site data or storage for www.nyc-affordability.com, turn off saving, or delete them on the <a href="/my-data/">Your Saved Data</a> page. That page shows which of these keys hold anything, lets you save named scenarios (the <code>nyc_scenarios</code> key), and exports or imports everything as a JSON file. The export is a file your browser downloads, and an import reads a file you pick. Neither one is sent to a server. The NYC Sale Net Proceeds calculator (<code>/sell/</code>) stores nothing. It doesn't have a Save toggle and resets when you close the tab.</p>
+    <p>The <a href="https://www.nyc-co-op-affordability.com/">legacy co-op domain</a> forwards to this site. If that browser has co-op inputs saved there, only the calculator settings (rate, term, down payment percentage, reserve months, DTI limit, maintenance, and closing-cost settings) come along, in a URL fragment that your browser reads once and removes from the address bar. Fragments are never sent to a server. Income, debts, and account balances are not carried over: if any are saved there, the old address stops on a short page that lists them and offers them as a file to download, which you can import on <a href="/my-data/">Your Saved Data</a>.</p>
   </div>
 
   <div class="card">
