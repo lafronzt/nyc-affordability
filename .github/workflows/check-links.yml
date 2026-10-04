@@ -7,7 +7,8 @@ name: Check external links
 
 on:
   schedule:
-    - cron: '23 14 3 * *'
+    # The 5th, so it doesn't share a slot with the AMI check on the 3rd.
+    - cron: '23 14 5 * *'
   workflow_dispatch:
 
 permissions:
@@ -19,15 +20,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
       - name: Check links
         id: check
         run: |
           node scripts/check-links.mjs --report report.md
-          broken=$(grep -c '^- https' <(sed -n '/^### Broken/,/^### Unverified/p' report.md) || true)
+          # Show the report on the run's summary page, not just in the log.
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+          # First line reads "Checked N external links in `src/`: A ok, B broken, C unverified."
+          broken=$(head -1 report.md | grep -oE '[0-9]+ broken' | grep -oE '[0-9]+')
           echo "broken=$broken" >> "$GITHUB_OUTPUT"
       - name: Open, update, or close the issue
         env:
