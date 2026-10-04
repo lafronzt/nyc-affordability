@@ -2,11 +2,11 @@
 title: "Co-op vs Condo in NYC: What Actually Costs More"
 metaDescription: "Condos cost more upfront in mortgage recording tax; co-ops cost more over time in reserves and flip tax. See the real numbers on both sides before deciding which fits your budget."
 intro: "\"Co-ops are cheaper\" and \"condos are easier\" are both true and both incomplete. Co-ops cost less to buy but come with board scrutiny, reserve requirements, and a resale flip tax condos don't have. Condos cost more upfront in taxes but qualify on a much looser debt-to-income standard. Here's where the real dollars land on each side."
-updated: "2026-08-04"
+updated: "2026-10-04"
 category: "buying"
 sources:
-  - label: "NYC Department of Finance / ACRIS: Mortgage Recording Tax"
-    url: "https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page"
+  - label: "NYC Department of Finance: Recording Property-Related Documents (Mortgage Recording Tax)"
+    url: "https://www.nyc.gov/site/finance/property/property-recording-property-related-documents.page"
   - label: "Hauseit: What Is the Average Co-op Flip Tax in NYC and Who Pays It?"
     url: "https://hauseit.medium.com/flip-tax-coop-nyc-79841ee7634e"
   - label: "Prevu: Flip Tax NYC: The Buyer's Guide"
@@ -42,7 +42,7 @@ On an $800,000 purchase with 20% down (a $640,000 loan), that's **$12,320** in m
 
 Co-ops make up for the cheaper closing in two ways condos mostly avoid:
 
-**Reserve requirements.** Co-op boards typically require 12 months of post-closing liquid reserves (24+ at conservative buildings): cash that has to sit, uninvested in the deal, on top of the down payment. Condo lenders don't usually impose an equivalent post-closing liquidity requirement. See our [co-op board reserve guide](/guides/coop-board-reserve-requirements/) for the full math on what counts as liquid and how much this actually adds up to.
+**Reserve requirements.** Co-op boards typically require 12 months of post-closing liquid reserves (24+ at conservative buildings): cash that has to sit, uninvested in the deal, on top of the down payment. Condos have no board rule like this. A condo lender may still ask for reserves, but that's set loan by loan, usually a few months of payments rather than a year or more. The [condo calculator](/condo/) leaves reserves off by default and has an optional reserve buffer if your lender wants one. See our [co-op board reserve guide](/guides/coop-board-reserve-requirements/) for the full math on what counts as liquid and how much this actually adds up to.
 
 **Flip tax at resale.** Most NYC co-ops charge a flip tax when you sell, typically **1% to 3% of the sale price**, seller-paid, set independently by each building's proprietary lease. On an $800,000 sale, a 2% flip tax (roughly the citywide average) is **$16,000** coming off the seller's proceeds. Condos generally don't carry an equivalent fee, though some newer condo buildings do charge a comparable "reserve fund contribution" at resale. It's less common and usually smaller, but worth checking a specific building's rules before assuming condos are flip-tax-free across the board.
 
@@ -54,7 +54,7 @@ Condos also generally allow more flexibility to sublet, rent out, or sell to buy
 
 ## What's the same either way
 
-The mansion tax (1% to 3.9% of price on residential purchases of $1,000,000 or more) applies identically to co-ops and condos; it's a state tax tied to price, not property type, so it isn't a factor in choosing between them. PMI, if you're putting down less than 20%, is also modeled the same way on both sides. The real differentiators are the ones above: mortgage recording tax, reserve requirements, DTI ceilings, and flip tax.
+The mansion tax (1% to 3.9% of price on residential purchases of $1,000,000 or more) applies identically to co-ops and condos; it's a state tax tied to price, not property type, so it isn't a factor in choosing between them. PMI, if you're putting down less than 20%, is also modeled the same way on both sides, though most co-op boards won't allow less than 20% down, so co-op buyers rarely face it. The real differentiators are the ones above: mortgage recording tax, reserve requirements, DTI ceilings, and flip tax.
 
 ## The bottom line
 

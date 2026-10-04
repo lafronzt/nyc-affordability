@@ -137,5 +137,5 @@ export const STANDARD_ABOUT_COLUMN: FooterColumn = {
 // matching, or unified onto the more descriptive of two differing labels.
 export const HPD_HOME_LINK: FooterLink = { label: 'NYC HPD (Housing Preservation & Development)', href: 'https://www.nyc.gov/site/hpd/index.page' };
 export const CFPB_OWNING_HOME_LINK: FooterLink = { label: 'CFPB: Owning a Home Guide', href: 'https://www.consumerfinance.gov/owning-a-home/' };
-export const MANSION_TAX_GUIDE_LINK: FooterLink = { label: 'NY Mansion Tax Guide (NYS Tax Dept.)', href: 'https://www.tax.ny.gov/pdf/publications/real_estate/pub1099.pdf' };
-export const NYC_HPD_TENANT_RIGHTS_LINK: FooterLink = { label: 'NYC HPD Tenant Rights', href: 'https://www.nyc.gov/site/hpd/renters/tenantrights.page' };
+export const MANSION_TAX_GUIDE_LINK: FooterLink = { label: 'NY Mansion Tax Rules (NYS Tax Dept. memo)', href: 'https://www.tax.ny.gov/pdf/memos/real_estate/m19-1r.pdf' };
+export const NYC_HPD_TENANT_RIGHTS_LINK: FooterLink = { label: 'NYC HPD Tenant Rights', href: 'https://www.nyc.gov/site/hpd/services-and-information/tenants-rights.page' };

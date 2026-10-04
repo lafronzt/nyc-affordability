@@ -6,7 +6,7 @@ updated: "2026-10-03"
 category: "buying"
 sources:
   - label: "NYC Department of Finance: Real Property Transfer Tax (RPTT)"
-    url: "https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page"
+    url: "https://www.nyc.gov/site/finance/property/property-real-property-transfer-tax-rptt.page"
   - label: "NYS Department of Taxation and Finance: Real Estate Transfer Tax"
     url: "https://www.tax.ny.gov/bus/transfer/rptidx.htm"
   - label: "NYS Dept. of Taxation and Finance: TSB-M-19(1)R, Summary of Amendments to the Real Estate Transfer Tax"

@@ -1,0 +1,49 @@
+# Monthly: checks every external link in src/ (scripts/check-links.mjs).
+# Opens one issue when something is broken (404, 410, or a "page moved"
+# page) and comments on it with each new report; closes it when a run
+# finds nothing broken. Never edits the site. Links that only fail because
+# a site blocks automated requests are listed as unverified, not broken.
+name: Check external links
+
+on:
+  schedule:
+    - cron: '23 14 3 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check links
+        id: check
+        run: |
+          node scripts/check-links.mjs --report report.md
+          broken=$(grep -c '^- https' <(sed -n '/^### Broken/,/^### Unverified/p' report.md) || true)
+          echo "broken=$broken" >> "$GITHUB_OUTPUT"
+      - name: Open, update, or close the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BROKEN: ${{ steps.check.outputs.broken }}
+        run: |
+          title="Broken external links"
+          open=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          body="$(cat report.md)
+
+          From \`.github/workflows/check-links.yml\` (run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})). Replace each broken link with the source's current page, or cite a different source if it's gone; update \`lastVerified\` where the link backs a default in \`src/data/assumptions.ts\` or \`src/data/sourceTables.ts\`."
+          if [ "${BROKEN:-0}" -gt 0 ]; then
+            if [ -n "$open" ]; then gh issue comment "$open" --body "$body"; else gh issue create --title "$title" --body "$body"; fi
+          elif [ -n "$open" ]; then
+            gh issue close "$open" --comment "This month's check found no broken links.
+
+          $(cat report.md)"
+          fi
