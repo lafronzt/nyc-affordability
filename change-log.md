@@ -2,6 +2,21 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Workflows: Node 24 actions; link-check report on the run page
+
+**What changed**
+- The first manual run of "Check external links" (#1) passed: 180 links, 0 broken, so no issue was opened. It surfaced four problems, now fixed:
+  - **Node 20 deprecation warning.** `actions/checkout@v4` and `actions/setup-node@v4` run on Node 20, which GitHub is retiring. All three workflows that use them now use `@v6`; the floating tags were confirmed with `git ls-remote`.
+  - **The report was only in the raw log.** It's now written to the run's summary page (`$GITHUB_STEP_SUMMARY`), with the unverified list collapsed in a `<details>` block, in the issue too.
+  - **Our own links counted as unverified.** The repo's commits page returned 429 and tylerlafronz.com returned a bot challenge. Both are now skipped.
+  - **Same slot as the AMI check** (14:23 UTC on the 3rd). The link check now runs on the 5th.
+- The broken-link count now comes from the report's first line, since the unverified heading moved into the `<details>` block.
+
+**Validation**
+- All four workflow files parse as YAML.
+- The checker reports 174 links: 140 ok, 0 broken, 34 unverified, with no own-domain links.
+- The count parser returns 0 for that report and 2 for a sample "2 broken" line.
+
 ## 2026-10-04: Structured data: audit follow-ups (HowTo, Dataset, Place)
 
 **User-visible changes** (search markup only; no visible page text changes)
