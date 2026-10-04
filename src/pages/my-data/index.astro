@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN, MY_DATA_LINK } from '../../lib/footerLinks';
@@ -15,7 +17,6 @@ import { STORAGE_KEYS, MAX_SCENARIOS } from '../../lib/profileStore';
    The table is rendered from STORAGE_KEYS at build time; the script
    (src/scripts/my-data.ts) only fills in which rows have data and
    handles the buttons. Nothing on this page sends anything anywhere.
-   No ads on this page (BaseLayout's `ads` is left off).
    ============================================================ */
 
 const footerColumns: FooterColumn[] = [
@@ -41,6 +42,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 ---
 <BaseLayout
   variant="site"
+  ads
   pageTitle="Your Saved Data: Scenarios, Export & Reset | NYC Affordability"
   metaDescription="See which calculators saved your inputs in this browser, keep named scenarios, export them to a file, import them on another device, or delete everything. Nothing is stored on a server."
   canonicalPath="/my-data/"
@@ -168,9 +170,13 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
     <p class="status" id="reset-status" aria-live="polite"></p>
   </section>
 
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
+  </div>
+
   <div class="card">
     <h3>Fine print</h3>
-    <p>The full list of storage keys and what each one is for is also on the <a href="/privacy/">privacy page</a>. Shared result links and share text never include balances or other saved inputs. This page loads no ads.</p>
+    <p>The full list of storage keys and what each one is for is also on the <a href="/privacy/">privacy page</a>. Shared result links and share text never include balances or other saved inputs.</p>
     <p>Saved scenarios are your own numbers run through the site's calculators. They're estimates, not advice, and they don't update themselves when rates or prices move. Open the calculator again to see the current math.</p>
   </div>
 </div>

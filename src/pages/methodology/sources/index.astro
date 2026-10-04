@@ -2,6 +2,8 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import Footer from '../../../components/Footer.astro';
+import AdSlot from '../../../components/AdSlot.astro';
+import { AD_IN_ARTICLE } from '../../../lib/adSlots';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../../lib/footerLinks';
@@ -109,6 +111,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 ---
 <BaseLayout
   variant="site"
+  ads
   pageTitle="Sources & Data Status: Every Default and Where It Comes From | NYC Affordability"
   metaDescription="Every default value, tax table, and income limit NYC Affordability uses, with its source, what kind of number it is (law, data, convention, or our estimate), and when it was last verified."
   canonicalPath="/methodology/sources/"
@@ -185,6 +188,10 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
       </div>
     </section>
   ))}
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
+  </div>
 
   <section class="card" aria-labelledby="h-tables">
     <h3 id="h-tables">Tax tables, income limits, and rate tiers</h3>
