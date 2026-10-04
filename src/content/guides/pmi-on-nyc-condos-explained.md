@@ -2,7 +2,7 @@
 title: "PMI on NYC Condos: When You Need It and How Much It Costs"
 metaDescription: "Private mortgage insurance kicks in on conventional condo loans with under 20% down. See the rate tiers by down payment, a worked monthly cost example, and how to get PMI cancelled once you hit 20% equity."
 intro: "Putting less than 20% down on an NYC condo doesn't just mean a bigger loan; it means the lender adds private mortgage insurance (PMI) to your monthly payment until you build enough equity. Here's how the rate is set, what it actually costs on a real NYC purchase, and how federal law requires it to eventually go away."
-updated: "2026-08-11"
+updated: "2026-10-04"
 category: "buying"
 sources:
   - label: "Consumer Financial Protection Bureau: What Is Private Mortgage Insurance?"
@@ -26,7 +26,7 @@ Private mortgage insurance protects the *lender*, not the buyer, against default
 
 ## When it applies
 
-Any conventional loan with a down payment under 20% (loan-to-value, or LTV, above 80%) requires PMI. This applies the same way to a NYC condo as anywhere else. Co-ops don't carry PMI in the same form since co-op share loans are underwritten differently, though a lender may still price risk into the interest rate itself. Jumbo loans, which cover most financed condo purchases above roughly $1.2M in NYC's high-cost lending area, usually require 20%+ down as a condition of the loan and typically don't carry conventional PMI at all, so PMI mostly matters for conforming-size loans below that threshold.
+Any conventional loan with a down payment under 20% (loan-to-value, or LTV, above 80%) requires PMI. This applies the same way to a NYC condo as anywhere else. Co-op buyers rarely face it, because most boards require at least 20% down. Where a building and lender do allow less, expect mortgage insurance or a higher rate; the [co-op calculator](/coop/) models it as PMI, the same way as the condo calculator. Jumbo loans, which cover most financed condo purchases above roughly $1.2M in NYC's high-cost lending area, usually require 20%+ down as a condition of the loan and typically don't carry conventional PMI at all, so PMI mostly matters for conforming-size loans below that threshold.
 
 ## The rate tiers
 

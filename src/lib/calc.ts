@@ -53,7 +53,7 @@ export function calcPmiMonthly(loanAmt: number, dp: number): number {
  * NYS Mansion Tax — buyer-paid on residential purchases >= $1,000,000.
  * Uses full-price-at-tier rate (NOT marginal brackets).
  * NYC has additional higher tiers above $2M.
- * Source: NYS Tax Dept pub1099 / NYC DOF.
+ * Source: NYS Tax Dept TSB-M-19(1)R (2019 amendments) / NYC DOF.
  * IMPORTANT: Crossing a tier boundary raises the entire bill — watch price cliffs.
  */
 export function calcMansionTax(price: number): number {
