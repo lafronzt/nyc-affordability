@@ -7,6 +7,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN, PRIVACY_LINK } from '../../lib/footerLinks';
 import { AD_IN_ARTICLE } from '../../lib/adSlots';
+import { ADS_ENABLED } from '../../lib/adsConfig';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { STORAGE_KEYS, SCENARIOS_INFO } from '../../lib/profileStore';
 
@@ -94,7 +95,8 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
   <div class="card">
     <h3>Third-party advertising (Google AdSense)</h3>
-    <p>This site shows ads served by Google AdSense (<a href="https://support.google.com/adsense/answer/9007336" target="_blank" rel="noopener noreferrer">Google's AdSense program</a>). Google and its advertising partners use cookies (including the DoubleClick cookie) to serve ads based on your visits to this site and other sites on the internet. This lets Google show ads that may be more relevant to you (personalized ads) rather than generic ones (non-personalized ads).</p>
+    <p>{ADS_ENABLED ? 'This site shows' : 'Ads are turned off right now. When they\'re on, this site shows'} ads served by Google AdSense (<a href="https://support.google.com/adsense/answer/9007336" target="_blank" rel="noopener noreferrer">Google's AdSense program</a>). Google and its advertising partners use cookies (including the DoubleClick cookie) to serve ads based on your visits to this site and other sites on the internet. This lets Google show ads that may be more relevant to you (personalized ads) rather than generic ones (non-personalized ads).</p>
+    <p>{ADS_ENABLED ? 'Ads appear' : 'When they\'re on, ads appear'} on every page, including the calculators. Our own code never sends the numbers you type to Google or anyone else, and nothing on this site passes them to the ad script. The ad script does run on the same page, though, and any script on a page can technically read what's on it. If that matters to you, an ad blocker removes the ad script entirely and every calculator still works without it.</p>
     <p>We do not control what data Google or its partners collect through these cookies, and this policy doesn't cover their practices. For details on how Google uses information from sites that use its services, see <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Google's "How Google uses information from sites or apps that use our services"</a>. This site publishes an <a href="/ads.txt">ads.txt</a> file, which is a standard transparency mechanism that lets ad exchanges verify who is authorized to sell ad inventory on this domain.</p>
   </div>
 

@@ -22,6 +22,40 @@ Multi-file changes, newest first. Each entry gives the user-visible effect and h
 - New `test/censusAcs.test.ts` (7 tests) re-parses verbatim lines from the Census summary files (`test/fixtures/acs-2024-nyc.txt`) and checks every value and margin in the data file. It also checks the burden arithmetic, the wide-margin flag, the comparison wording, and the `/data/` rows.
 - `npm test` 346/346; `npm run build` is clean, including `check-csp`.
 - Browser at 390px and 1280px: no overflow and no errors on `/brooklyn/`, `/affordability-index/` and `/income/150000/`. The card first rendered without padding, because the page's `.card` style is scoped; it now has its own styles.
+## 2026-10-04: Ads ready to switch on; README brought up to date
+
+**User-visible changes**
+- None while ads stay off (`ADS_ENABLED = false`). Built pages contain no ad markup, and the privacy page now says ads are turned off right now.
+
+**Ads readiness**
+- The 8 pages added since the ads decision now opt in with `ads` and have an in-article `<AdSlot>`, so all 212 built pages carry ads when the flag is on: `/plan/`, `/my-data/`, `/data/`, `/explore/`, and the 4 methodology pages. `/my-data/` no longer says "This page loads no ads".
+- **CSP (`public/_headers`).** A build with ads on was loaded in Chromium under the production policy. AdSense's config fetch and ping, Google's ad-traffic-quality checks, and its timing beacon were all blocked. The policy now allows:
+  - `connect-src`: `pagead2.googlesyndication.com`, `*.adtrafficquality.google`, `csi.gstatic.com`
+  - `script-src`: `*.adtrafficquality.google`
+  - `frame-src`: `*.googlesyndication.com`, `*.adtrafficquality.google`, `www.google.com`
+  - `img-src`: `*.googlesyndication.com`, `*.g.doubleclick.net`, `*.adtrafficquality.google`
+
+  Re-run on `/coop/`, `/rent/`, a guide, `/plan/`, `/my-data/` and `/methodology/corrections/` at 390px: **0 violations**. The slots come back "unfilled" because the site isn't approved and this is localhost.
+- **Privacy page.** The ad wording follows the flag. It now also says plainly that the ad script runs on calculator pages and could technically read the page, that our code never passes it inputs, and that an ad blocker removes it without breaking anything.
+- New `test/adsReady.test.ts` (45 checks):
+  - Every page renders `<BaseLayout ads>` and has an `<AdSlot>`.
+  - `ads.txt` matches the publisher ID.
+  - The flag is a plain boolean.
+
+  Mutation-checked: removing `ads` from `/plan/` fails it.
+
+**README**
+- Rewritten to match the code:
+  - Pages table: every current route.
+  - Legacy-domain behavior after 5a.
+  - Module map: the engines, the assumptions registry, saved data.
+  - Data and scheduled checks.
+  - How to switch ads on.
+  - Commands, including `npm test` and `npm run check-links`.
+- Removed the stale "Calculator assumptions" section (it quoted a 6.30% rate) in favor of pointers to the registry, `/methodology/sources/`, and `/data/`.
+
+**Validation**
+- `npm test` 384/384; `npm run build` is clean, including `check-csp`, with ads off. The build with ads on also passes `check-csp`.
 
 ## 2026-10-04: Structured data: audit follow-ups (HowTo, Dataset, Place)
 

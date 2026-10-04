@@ -2,6 +2,8 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import Footer from '../../../components/Footer.astro';
+import AdSlot from '../../../components/AdSlot.astro';
+import { AD_IN_ARTICLE } from '../../../lib/adSlots';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import ChangeEntry from '../../../components/ChangeEntry.astro';
 import Byline from '../../../components/Byline.astro';
@@ -46,6 +48,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 ---
 <BaseLayout
   variant="site"
+  ads
   pageTitle="Changelog: Corrections, Data Updates & Method Changes | NYC Affordability"
   metaDescription="Every change to NYC Affordability that could move a number you relied on: corrections, data updates like the default mortgage rate, and changes to the method, each dated and linked to the code."
   canonicalPath="/methodology/changelog/"
@@ -73,6 +76,10 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
     <p class="lede">This covers changes that could move a figure you used: <strong>corrections</strong> (we had something wrong), <strong>data updates</strong> (a source published new numbers), and <strong>method</strong> changes (how something is calculated). New pages and design changes aren't listed. Mistakes also get their own page, <a href="/methodology/corrections/">Corrections</a>, with what was wrong and what's right.</p>
     <p class="filters">{counts.map((c) => <span>{c}</span>)}</p>
     <p class="filters">The full engineering history, every commit, is on <a href="https://github.com/lafronzt/nyc-affordability/commits/main" target="_blank" rel="noopener noreferrer">GitHub ↗</a>.</p>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
   </div>
 
   <section class="card" aria-label="Changes, newest first">
