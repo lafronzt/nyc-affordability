@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build && node scripts/rename-sitemap.mjs && node scripts/check-csp.mjs",
     "preview": "astro preview",
-    "test": "node --experimental-strip-types --test test/**/*.test.ts"
+    "test": "node --experimental-strip-types --test test/**/*.test.ts",
+    "check-links": "node scripts/check-links.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

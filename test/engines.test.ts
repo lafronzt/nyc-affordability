@@ -117,9 +117,9 @@ test('rent: 40x rule binds for the default profile; move-in cash is rent + depos
   const { r, s } = rent();
   near(r.maxRent, 1_875);
   assert.equal(r.binding, 'Income (40× rule)');
-  // $1,875 first month + $1,875 deposit + $20 + $250, plus 2 x ($1,875 + $15) reserve.
+  // $1,875 first month + $1,875 deposit + $20 + $250, plus 2 x ($1,875 + $18 insurance) reserve.
   // No building fee: landlords can't charge one (RPL §238-a), so it defaults to $0.
-  near(s.totalCashNeeded, 7_800);
+  near(s.totalCashNeeded, 7_806);
 });
 
 test('rent: thin savings make move-in cash the binding constraint', () => {
@@ -130,12 +130,12 @@ test('rent: thin savings make move-in cash the binding constraint', () => {
 
 test('rent: optional DTI screening subtracts debts and insurance', () => {
   const { r } = rent({ dtiEnabled: true, otherDebts: 800 });
-  near(r.maxRent, 75_000 / 12 * 0.35 - 15 - 800);
+  near(r.maxRent, 75_000 / 12 * 0.35 - 18 - 800);
   assert.equal(r.binding, 'Income (Rent-Burden)');
 });
 
 test('rent: a tenant-hired broker fee raises move-in cash', () => {
-  near(rent({ brokerType: 'months' }).s.totalCashNeeded, 7_800 + 1_875);
+  near(rent({ brokerType: 'months' }).s.totalCashNeeded, 7_806 + 1_875);
 });
 
 // ---- Hidden-field defaults match the calculator pages ----

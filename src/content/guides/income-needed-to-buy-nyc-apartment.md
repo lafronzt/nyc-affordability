@@ -7,8 +7,8 @@ category: "buying"
 sources:
   - label: "StreetEasy: Debt to Income Ratio for Co-op Boards"
     url: "https://streeteasy.com/blog/what-is-debt-to-income-ratio/"
-  - label: "NYC Department of Finance / ACRIS: Mortgage Recording Tax"
-    url: "https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page"
+  - label: "NYC Department of Finance: Recording Property-Related Documents (Mortgage Recording Tax)"
+    url: "https://www.nyc.gov/site/finance/property/property-recording-property-related-documents.page"
   - label: "Freddie Mac: Primary Mortgage Market Survey: Mortgage Rates Average 7.28% (October 1, 2026)"
     url: "https://www.freddiemac.com/pmms"
 relatedGuides:

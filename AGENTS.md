@@ -18,6 +18,7 @@ This is a static Astro site for NYC housing affordability, served by Cloudflare 
 - `npm run dev`: start Astro with hot reload.
 - `npm run build`: generate `dist/` and normalize the sitemap to `dist/sitemap.xml`.
 - `npm run preview`: preview the production Astro build.
+- `npm run check-links`: check every external link in `src/` (needs network; a monthly workflow runs it and opens an issue for broken ones).
 - `npm run build` followed by `npx wrangler dev --local`: exercise Worker routing against built assets. Astro's dev server does not run hostname routing.
 
 ## Coding Style & Naming Conventions
