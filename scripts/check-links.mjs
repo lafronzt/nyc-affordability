@@ -39,6 +39,10 @@ const SKIP = [
   /^https:\/\/pagead2\.googlesyndication\.com/,
   /^https:\/\/static\.cloudflareinsights\.com/,
   /^https:\/\/fonts\.(googleapis|gstatic)\.com/,
+  // Our own repo (GitHub rate-limits unauthenticated checks) and the
+  // maintainer's site (behind a bot challenge): known to exist.
+  /^https:\/\/github\.com\/lafronzt\/nyc-affordability/,
+  /^https:\/\/tylerlafronz\.com/,
 ];
 const MOVED_TITLE = /page (has )?moved|page not found|404/i;
 
@@ -111,7 +115,8 @@ const report = [
   '',
   broken.length ? `### Broken (404, 410, or a "page moved" page)\n\n${broken.map(line).join('\n')}` : '### Broken\n\nNone.',
   '',
-  unverified.length ? `### Unverified (blocked, rate-limited, server error, or timed out; check by hand)\n\n${unverified.map(line).join('\n')}` : '',
+  // Collapsed: most are sites that block automated requests, not dead links.
+  unverified.length ? `<details><summary>Unverified: ${unverified.length} (blocked, rate-limited, server error, or timed out; check by hand)</summary>\n\n${unverified.map(line).join('\n')}\n\n</details>` : '',
 ].join('\n');
 
 console.log(report);
