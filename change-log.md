@@ -2,6 +2,18 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Content: Affordability Index update note matches how it's updated
+
+**User-visible changes**
+- `/affordability-index/` said "this site has no backend or scheduled job". Scheduled checks have existed since Phase 4c (the mortgage rate weekly, HPD's AMI chart monthly), so the note now says those exist and that nothing watches the index figures, because their sources publish reports and some block automated requests.
+- "Exactly one snapshot so far" was hard-coded. It's now computed from the snapshot array, so it stays true once a second snapshot is added.
+
+**Code**
+- The `src/data/affordabilityIndex.ts` header says the same, notes that the array is the index history (append-only; the page and `/data/affordability-index` read every entry), and says to cite dated reports, never live dashboards.
+- Plan: the Phase 4 "index history file" item is structurally done. New snapshots are blocked on dated citywide sources (StreetEasy blocks automated access; the Baruch/Zicklin PDF fails TLS from this environment; PropertyShark is a live dashboard and blocked).
+
+**Validation**
+- `npm test` 337/337; `npm run build` is clean, including `check-csp`. The built page reads "There is one snapshot so far (2026-08)".
 ## 2026-10-04: Data: default renter's insurance $15 → $18/month (ValuePenguin, September 2026)
 
 **User-visible changes**

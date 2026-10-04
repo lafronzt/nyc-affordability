@@ -2,11 +2,17 @@
    NYC Affordability Index — versioned monthly snapshots.
    ============================================================
    HONEST SCOPING NOTE (read before adding a snapshot): this is a static
-   site with no backend, no database, and no scheduled job — "monthly
-   updated" cannot be an automatic feature here. Each entry below is added
-   by a human (or a scheduled agent session) editing this file and
-   redeploying. There is no mechanism enforcing a monthly cadence; the
+   site with no backend or database. The scheduled workflows in
+   .github/workflows/ cover the mortgage rate and HPD's AMI chart only;
+   nothing watches these figures, because their sources publish reports
+   (and StreetEasy blocks automated requests). Each entry below is added
+   by a person editing this file. Nothing enforces a monthly cadence; the
    page must not claim more freshness than what's actually in this array.
+
+   This array IS the index history (append-only, oldest first): the page
+   and the /data/affordability-index download both read every entry.
+   Cite dated reports (a quarterly PDF, a monthly market report), never a
+   live dashboard whose number changes under the same URL.
 
    FIELD SCOPING: `medianCoopPrice` and `medianRent` are independently
    sourced and are NOT guaranteed to be from the same month — each entry
