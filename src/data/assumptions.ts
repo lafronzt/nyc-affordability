@@ -372,11 +372,11 @@ export const ASSUMPTIONS = asm({
     inputs: [{ page: 'rent', id: 'utility-setup' }],
   },
   rentersInsuranceMo: {
-    value: 15, unit: 'USD/mo', label: "Renter's insurance", basis: 'market-survey',
+    value: 18, unit: 'USD/mo', label: "Renter's insurance", basis: 'market-survey',
     sourceOrg: 'ValuePenguin', sourceUrl: 'https://www.valuepenguin.com/average-cost-renters-insurance',
-    effectiveDate: null, lastVerified: null,
-    notes: 'NYC average roughly $15 to $25/month.',
-    inputs: [{ page: 'rent', id: 'renters-insurance' }],
+    effectiveDate: '2026-09-25', lastVerified: '2026-10-04',
+    notes: 'ValuePenguin\'s average for New York, NY ($19 statewide), quoted for $30,000 of personal property, $100,000 of liability, and a $500 deductible. Your premium depends on coverage and building.',
+    inputs: [{ page: 'rent', id: 'renters-insurance' }, { page: 'compare', id: 'a-rent-insurance' }],
   },
   rentReserveMonths: {
     value: 2, unit: 'months', label: 'Renter reserve buffer', basis: 'illustrative',

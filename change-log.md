@@ -2,6 +2,21 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Data: default renter's insurance $15 → $18/month (ValuePenguin, September 2026)
+
+**User-visible changes**
+- The renter's insurance default on `/rent/`, `/compare/` and rent vs buy is now **$18/mo**: ValuePenguin's "Average Cost of Renters Insurance" (updated Sep 25, 2026) for New York, NY ($19 statewide), quoted for $30,000 of personal property, $100,000 of liability, and a $500 deductible. The old $15 default cited a ValuePenguin page that now returns 404; its replacement doesn't support $15.
+- Effects: default `/rent/` move-in cash $7,800 → $7,806 (two months of reserve × $3); with DTI screening on, max rent falls $3. The rent vs buy guide's example moves: renter month one $4,015 → $4,018, renter portfolio $618,407 → $617,883, renting ahead by $229,039 → $228,514. Pre-built `/rent/<price>/` pages don't include insurance and don't change.
+- `/rent/`'s hint and source note now say "about $18/mo" with the coverage it assumes, instead of "~$15–25". Listed on `/methodology/changelog/` as a data update.
+
+**Code and tests**
+- New `test/marketDefaults.test.ts` pins the value to its source (URL, effective date, last verified); it failed at $15 first, then passed.
+- `/compare/`'s own renters-insurance input is now in the registry's `inputs`, so `test/defaultsParity.test.ts` catches it drifting (it was hard-coded to 15 without a check).
+- Three rent goldens in `test/engines.test.ts` updated by exactly the $3 difference; `test/guideExamples.test.ts` listed the three guide figures, now updated.
+
+**Validation**
+- `npm test` 339/339; `npm run build` clean (including `check-csp`). Built-output diff against the base branch: exactly six files change (`/rent/`, `/compare/`, `/methodology/sources/`, `/data/assumptions.{csv,json}`, the rent vs buy guide).
+
 ## 2026-10-04: Content: guide contradictions, dead source links, monthly link check
 
 **User-visible changes**

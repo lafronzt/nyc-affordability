@@ -37,6 +37,14 @@ export const SITE_CHANGES: SiteChange[] = [
   {
     date: '2026-10-04',
     kind: 'data',
+    title: 'Default renter\'s insurance $15 → $18 a month',
+    summary: 'ValuePenguin\'s September 2026 survey puts the average for New York City at $18 a month (for $30,000 of belongings and $100,000 of liability). The old $15 default cited a page that no longer exists. Move-in cash on /rent/ rises by $6 (two months of reserve), and the rent vs buy example shifts by about $500 over 30 years.',
+    affects: ['/rent/', '/compare/', '/rent-vs-buy/', '/guides/rent-vs-buy-nyc/'],
+    pr: null,
+  },
+  {
+    date: '2026-10-04',
+    kind: 'data',
     title: 'Default mortgage rate 6.95% → 7.28%',
     summary: 'Freddie Mac\'s weekly survey put the 30-year fixed at 7.28% as of October 1, 2026. Every calculator and pre-built page now starts from that rate, and guide worked examples were recomputed at it. Higher rates lower what income supports.',
     affects: ['/coop/', '/condo/', '/compare/', '/buy/', '/income/', '/neighborhoods/', '/affordability-index/'],
