@@ -11,6 +11,7 @@ import {
   type CoopConstants as Constants,
 } from '../lib/engines/coop';
 import { wireShareButton } from '../lib/share';
+import { sanitizeMigrationPayload, COOP_INPUTS_KEY } from '../lib/migrationPayload';
 
 /* ============================================================
    NYC Co-op Affordability Calculator — TypeScript port
@@ -173,35 +174,36 @@ function applySharedAssumptions(asmp: { coop: CoopAssumptions } | null) {
    ═══════════════════════════════════════
    Consumes the `#migrate-local-storage=<base64>` URL fragment produced by
    functions/[[path]].js's renderStorageMigrationPage() when a browser is
-   redirected from the retired nyc-co-op-affordability.com domain. The
-   payload is a JSON object keyed by the exact localStorage key names the
-   Worker encoded (nyc_coop_inputs, nyc_shared_profile) — LS_KEY/SHARED_KEY
-   here must keep matching those names exactly. Runs first thing in the
-   DOMContentLoaded boot handler, before any other localStorage read, and
-   clears the URL fragment via history.replaceState once consumed (or on
-   failure) so a refresh doesn't re-trigger the import. */
+   redirected from the retired nyc-co-op-affordability.com domain. Runs
+   first thing in the DOMContentLoaded boot handler.
+
+   The fragment is removed from the address bar (history.replaceState)
+   BEFORE it's parsed, so it doesn't linger even if parsing fails. Only the
+   allowlisted calculator settings in src/lib/migrationPayload.ts are
+   imported: income, debts, account balances and the shared profile never
+   travel in a URL, and an old link that still carries them is ignored. */
 function importMigratedLocalStorage(): boolean {
   const marker = '#migrate-local-storage=';
   if (!window.location.hash.startsWith(marker)) return false;
-
-  let imported = false;
-  try {
-    const encoded = decodeURIComponent(window.location.hash.slice(marker.length));
-    const payload = JSON.parse(decodeUtf8Base64(encoded));
-    [LS_KEY, SHARED_KEY, ASSUMPTIONS_KEY].forEach(key => {
-      if (typeof payload[key] === 'string') {
-        localStorage.setItem(key, payload[key]);
-        imported = true;
-      }
-    });
-  } catch (e) {
-    imported = false;
-  }
-
+  const raw = window.location.hash.slice(marker.length);
   if (window.history && window.history.replaceState) {
     window.history.replaceState(null, '', window.location.pathname + window.location.search);
   }
-  return imported;
+
+  try {
+    const payload = JSON.parse(decodeUtf8Base64(decodeURIComponent(raw)));
+    const safe = sanitizeMigrationPayload(payload);
+    const value = safe[COOP_INPUTS_KEY];
+    if (!value) return false;
+    // Merge the settings into anything already saved here, so a migration
+    // never wipes accounts or income entered on the new address.
+    const existing = loadFromStorage() || {};
+    const merged = { ...existing, inputs: { ...(existing.inputs || {}), ...JSON.parse(value).inputs } };
+    localStorage.setItem(LS_KEY, JSON.stringify(merged));
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 function decodeUtf8Base64(value: string): string {

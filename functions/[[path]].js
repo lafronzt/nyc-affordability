@@ -134,6 +134,15 @@ function migrateLocalStorageThenRedirect(request, url, prefix) {
   });
 }
 
+// Co-op calculator settings that may travel in the migration URL. Keep in
+// sync with SAFE_COOP_INPUT_KEYS in src/lib/migrationPayload.ts
+// (test/migrationPayload.test.ts checks). Income, debts and account
+// balances never go in a URL: it lands in the address bar and history.
+const SAFE_COOP_INPUT_KEYS = [
+  'mtgRate', 'loanTerm', 'dpPct', 'reserveMo', 'maxDti', 'monthlyMaint',
+  'fcAtty', 'fcBankAtty', 'fcCoop', 'fcMoveIn', 'fcOther', 'varPct',
+];
+
 function renderStorageMigrationPage(target) {
   const canonical = escapeHtml(target.toString());
   return `<!doctype html>
@@ -146,47 +155,91 @@ function renderStorageMigrationPage(target) {
 <title>Moving to NYC Affordability</title>
 <style>
 body{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#f3f4f6;color:#111827}
-main{max-width:480px;padding:32px;text-align:center}
+main{max-width:520px;padding:32px 20px;text-align:center}
 a{color:#2563eb}
+#personal{text-align:left;background:#fff;border:1px solid #e2e4e9;border-radius:10px;padding:20px 22px;margin-top:8px}
+#personal h2{font-size:17px;margin:0 0 8px}
+#personal p{font-size:14px;line-height:1.6;color:#4b5563;margin:0 0 10px}
+#saved{font-size:14px;line-height:1.7;margin:0 0 14px;padding-left:20px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:inherit;font-size:14px;font-weight:600;padding:9px 14px;border-radius:8px;border:1px solid #2563eb;background:#2563eb;color:#fff;cursor:pointer}
 </style>
 </head>
 <body>
 <main>
-<h1>Opening the co-op calculator...</h1>
-<p>Your saved inputs are moving to the new NYC Affordability URL in this browser.</p>
-<p><a id="fallback" href="${canonical}">Continue to the co-op calculator</a></p>
+<h1 id="heading">Opening the co-op calculator...</h1>
+<p id="lede">Your saved settings are moving to the new NYC Affordability address in this browser.</p>
+<section id="personal" hidden>
+<h2>Your saved numbers stay here</h2>
+<p>This browser saved some personal figures on the old address. We don't put income, debts or account balances in a web address, because addresses end up in your browser history. Your calculator settings (rate, down payment, fees) will carry over; re-enter these on the new page:</p>
+<ul id="saved"></ul>
+<p>Or download them as a file. It stays on your device; keep it private.</p>
+<div class="actions"><button type="button" id="download">Download my saved data</button></div>
+</section>
+<p><a id="continue" href="${canonical}">Continue to the co-op calculator</a></p>
 </main>
 <script>
 (function () {
   var target = ${JSON.stringify(target.toString())};
-  var keys = ['nyc_coop_inputs', 'nyc_shared_profile'];
-  var payload = {};
+  var SAFE = ${JSON.stringify(SAFE_COOP_INPUT_KEYS)};
+  var stored = {};
+  ['nyc_coop_inputs', 'nyc_shared_profile'].forEach(function (key) {
+    try { var v = localStorage.getItem(key); if (v !== null) stored[key] = v; } catch (e) {}
+  });
+  function parse(s) { try { return JSON.parse(s); } catch (e) { return null; } }
+  var coop = parse(stored.nyc_coop_inputs) || {};
+  var profile = parse(stored.nyc_shared_profile) || {};
+  var inputs = coop.inputs || {};
 
-  function encodeUtf8Base64(value) {
-    var bytes = new TextEncoder().encode(value);
-    var binary = '';
-    var chunkSize = 0x8000;
-    for (var i = 0; i < bytes.length; i += chunkSize) {
-      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
-    }
-    return btoa(binary);
-  }
-
-  keys.forEach(function (key) {
-    try {
-      var value = localStorage.getItem(key);
-      if (value !== null) payload[key] = value;
-    } catch (e) {}
+  // Only allowlisted calculator settings go in the link.
+  var safe = {};
+  SAFE.forEach(function (k) {
+    var v = inputs[k];
+    var n = typeof v === 'number' ? v : (typeof v === 'string' && v.trim() !== '' ? Number(v) : NaN);
+    if (isFinite(n)) safe[k] = n;
   });
   try {
-    if (Object.keys(payload).length) {
-      var encoded = encodeUtf8Base64(JSON.stringify(payload));
-      var targetUrl = new URL(target);
-      targetUrl.hash = 'migrate-local-storage=' + encodeURIComponent(encoded);
-      target = targetUrl.toString();
+    if (Object.keys(safe).length) {
+      var payload = { nyc_coop_inputs: JSON.stringify({ inputs: safe }) };
+      var bytes = new TextEncoder().encode(JSON.stringify(payload));
+      var binary = '';
+      for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      var url = new URL(target);
+      url.hash = 'migrate-local-storage=' + encodeURIComponent(btoa(binary));
+      target = url.toString();
     }
   } catch (e) {}
-  location.replace(target);
+  document.getElementById('continue').href = target;
+
+  // Anything personal? Show it here instead of sending it on.
+  function money(n) { var x = Number(n); return isFinite(x) ? '$' + Math.round(x).toLocaleString('en-US') : null; }
+  var items = [];
+  var income = inputs.annualIncome != null && inputs.annualIncome !== '' ? inputs.annualIncome : profile.annualIncome;
+  var debts = inputs.otherDebts != null && inputs.otherDebts !== '' ? inputs.otherDebts : profile.otherDebts;
+  if (money(income) && Number(income) > 0) items.push('Annual income: ' + money(income));
+  if (money(debts) && Number(debts) > 0) items.push('Monthly debt payments: ' + money(debts));
+  var accounts = Array.isArray(coop.accounts) && coop.accounts.length ? coop.accounts : (Array.isArray(profile.accounts) ? profile.accounts : []);
+  accounts.forEach(function (a) {
+    if (!a) return;
+    var bal = money(a.balance);
+    if (bal) items.push((a.name ? String(a.name) : 'Account') + ': ' + bal);
+  });
+
+  if (!items.length) { location.replace(target); return; }
+
+  document.getElementById('heading').textContent = 'Moving to the new address';
+  document.getElementById('lede').textContent = 'One step before you go.';
+  var list = document.getElementById('saved');
+  items.forEach(function (t) { var li = document.createElement('li'); li.textContent = t; list.appendChild(li); });
+  document.getElementById('personal').hidden = false;
+  document.getElementById('download').addEventListener('click', function () {
+    var data = { exported: new Date().toISOString(), from: location.hostname, nyc_coop_inputs: coop, nyc_shared_profile: profile };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'nyc-co-op-saved-data.json';
+    document.body.appendChild(a); a.click(); a.remove();
+  });
 }());
 </script>
 </body>

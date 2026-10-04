@@ -221,15 +221,15 @@ document.addEventListener('DOMContentLoaded', () => {
   render();
 
   wireShareButton('rc-share', () => {
+    // Results only: the share text never includes the income typed in.
     const r = lastResults;
-    const incomeLabel = money(inputs.annualIncome) + '/yr';
     const text = r
-      ? `My NYC Housing Reality Check (${incomeLabel} income):\n` +
+      ? `My NYC Housing Reality Check:\n` +
         `🏙 Rent: ${monthly(r.rent.maxRent)} (${r.rent.verdict})\n` +
         `🔑 Co-op: up to ${money(r.coop.maxPrice)}\n` +
         `🏢 Condo: up to ${money(r.condo.maxPrice)}\n` +
         `🏠 Affordable housing: ${r.ami.pct.toFixed(0)}% AMI (${r.ami.bandClass.short})`
-      : `My NYC Housing Reality Check (${incomeLabel} income)`;
+      : 'My NYC Housing Reality Check';
     return { title: 'My NYC Housing Reality Check', text, url: 'https://www.nyc-affordability.com/reality-check/' };
   });
 

@@ -2,6 +2,29 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Phase 5a: No personal finances in URLs
+
+**User-visible changes**
+- **Legacy-domain hand-off.** Visitors to the retired nyc-co-op-affordability.com used to be redirected with their saved co-op data in a `#migrate-local-storage=` URL fragment: account balances, income, debts and the shared profile. Now only an allowlist of 12 calculator settings travels: rate, term, down payment, reserves, DTI limit, maintenance and closing fees.
+- If the old address has personal figures saved (income, debts, account balances), the page no longer auto-redirects. It lists those figures on screen, offers "Download my saved data" (a JSON file that stays on the device), and links on with the safe settings only.
+- `/coop/` removes the fragment from the address bar before reading it. It imports only the allowlisted settings, merged into anything already saved, so an old link that still carries balances can't bring them in.
+- **Reality Check share text** no longer includes the income you typed. It shares the results only.
+- The other calculators were audited: their share links carry scenario inputs only, and the income/savings/debt options (afford-more, rate-sensitivity, savings-planner) stay opt-in and unchecked by default. No change was needed.
+
+**Code**
+- New `src/lib/migrationPayload.ts`: `SAFE_COOP_INPUT_KEYS`, `safeCoopInputs` and `sanitizeMigrationPayload`.
+- `functions/[[path]].js` keeps a copy of the allowlist; a test checks the two match.
+
+**Validation**
+- New `test/migrationPayload.test.ts` (6 tests):
+  - The sanitizer drops accounts, income, debts, the shared profile and unknown keys.
+  - **The real Worker page runs in a node:vm sandbox with fake saved data.** It redirects immediately when only settings are saved, redirects with a clean URL when nothing is saved, and doesn't redirect when personal data exists. It shows the personal values, and its link carries none of them.
+  - The two allowlists match.
+- Run against the previous Worker, 2 of the 6 tests fail, including the personal-data one; they pass with the new code.
+- `npm test` 295/295; `npm run build` is clean, including `check-csp`.
+- Browser:
+  - `/coop/` opened with an old-style link (income $185,000, a $99,999 balance) cleared the URL, imported rate 7.1% and down payment 25%, and kept its default income and accounts.
+  - The legacy page at 390px with saved personal data listed the three figures, didn't redirect, built a link with only `{mtgRate, dpPct}`, and downloaded `nyc-co-op-saved-data.json`. No errors.
 ## 2026-10-04: Data: default mortgage rate 6.95% → 7.28% (PMMS, week of October 1, 2026)
 
 **User-visible changes**
