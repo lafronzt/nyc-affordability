@@ -2,7 +2,7 @@
 title: "Rent vs Buy in NYC: How to Actually Run the Comparison"
 metaDescription: "Rent or buy in NYC? It turns on price-to-rent, closing costs both ways, what your down payment would earn, and how long you stay. A worked example."
 intro: "\"Rent is throwing money away\" skips the interest, the building charges, the closing costs on the way in, and the broker and transfer taxes on the way out. \"Renting is always cheaper\" skips that the owner keeps the equity. The honest comparison is two people with the same money, one who buys and one who rents and invests the difference, checked at the moment the buyer would sell."
-updated: "2026-10-03"
+updated: "2026-10-04"
 category: "buying"
 sources:
   - label: "NYC Department of Finance: Real Property Transfer Tax (RPTT)"
@@ -65,16 +65,16 @@ Buying front-loads the costs and back-loads the rewards: equity from principal p
 
 ## Worked example
 
-This is the [/rent-vs-buy/](/rent-vs-buy/) calculator's own starting example: a $700,000 condo with 20% down against a comparable apartment renting for $4,000 a month, held 10 years. It uses the site's defaults: a 6.95% mortgage rate (the Freddie Mac 30-year average as of September 17, 2026), plus illustrative 3% yearly growth in rents, home prices, and building costs and a 5% return on invested cash.
+This is the [/rent-vs-buy/](/rent-vs-buy/) calculator's own starting example: a $700,000 condo with 20% down against a comparable apartment renting for $4,000 a month, held 10 years. It uses the site's defaults: a 7.28% mortgage rate (the Freddie Mac 30-year average as of October 1, 2026), plus illustrative 3% yearly growth in rents, home prices, and building costs and a 5% return on invested cash.
 
 - **Cash at closing:** $140,000 down plus $26,240 in closing costs = **$166,240**. The renter invests this instead.
-- **Month one:** the owner pays **$6,324** (mortgage, common charges, tax, insurance, and in-unit repairs). The renter pays **$4,015** (rent plus insurance) and invests the gap.
-- **Year 10, if the owner sells:** the condo is worth **$940,741**. After paying off the **$479,983** loan balance and **$67,706** in seller costs, the owner walks away with **$393,053**.
-- **The renter's portfolio:** **$599,161**.
+- **Month one:** the owner pays **$6,448** (mortgage, common charges, tax, insurance, and in-unit repairs). The renter pays **$4,015** (rent plus insurance) and invests the gap.
+- **Year 10, if the owner sells:** the condo is worth **$940,741**. After paying off the **$483,668** loan balance and **$67,706** in seller costs, the owner walks away with **$389,368**.
+- **The renter's portfolio:** **$618,407**.
 
-Renting comes out ahead by **$206,108**. At these settings, buying doesn't catch up within 30 years. Over 10 years, buying wins only if the comparable rent is above about **$5,180** a month, a price-to-rent ratio of about **11.3**. Stay 5 years and the break-even rent rises to about **$5,920**; stay 15 and it falls to about **$4,880**.
+Renting comes out ahead by **$229,039**. At these settings, buying doesn't catch up within 30 years. Over 10 years, buying wins only if the comparable rent is above about **$5,310** a month, a price-to-rent ratio of about **11.0**. Stay 5 years and the break-even rent rises to about **$6,060**; stay 15 and it falls to about **$5,000**.
 
-Switch it to a $700,000 co-op with the calculator's illustrative $1,200 monthly maintenance and the result nearly flips. With no mortgage recording tax and lower monthly charges, the break-even rent over 10 years is about **$4,030**, and at $4,000 rent buying pulls ahead in **year 11** if you stay that long. The flip tax at sale doesn't erase that. The same apartment, owned two different ways, gives two different answers.
+Switch it to a $700,000 co-op with the calculator's illustrative $1,200 monthly maintenance and the result nearly flips. With no mortgage recording tax and lower monthly charges, the break-even rent over 10 years is about **$4,160**, and at $4,000 rent buying pulls ahead in **year 13** if you stay that long. The flip tax at sale doesn't erase that. The same apartment, owned two different ways, gives two different answers.
 
 ## What the comparison leaves out
 

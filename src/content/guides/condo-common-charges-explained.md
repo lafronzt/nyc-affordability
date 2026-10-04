@@ -2,7 +2,7 @@
 title: "Condo Common Charges in NYC, Explained"
 metaDescription: "NYC condo common charges pay for the building, split by each unit's common interest. Unlike co-op maintenance they exclude property tax, and lenders count them."
 intro: "Common charges are the monthly bill for being part of a building: the super, the boiler, the insurance, the roof fund. They look like a co-op's maintenance on a listing, but they cover less, they're split by a formula fixed in the condo's legal documents, and your lender counts every dollar of them against your income."
-updated: "2026-10-03"
+updated: "2026-10-04"
 category: "buying"
 sources:
   - label: "N.Y. Real Property Law § 339-i: Common elements (common interest)"
@@ -67,13 +67,13 @@ The building's finances matter too, not just yours. In a Full Review, Fannie Mae
 
 Take a hypothetical building with a $2,400,000 annual budget and a unit whose declaration sets its common interest at 0.5%. That unit's share is $2,400,000 × 0.5% = $12,000 a year, or **$1,000 a month**, which happens to be the site's illustrative citywide default. If the budget passes Fannie Mae's 10% reserve test, at least $100 of that goes to reserves each month.
 
-Now buy that unit for $700,000 with 20% down, at a 30-year rate of 6.95% (the Freddie Mac 30-year average as of September 17, 2026), with the calculator's other defaults: $1,250 a month in property tax (rounded from a reported citywide average) and an illustrative $75 for HO-6 insurance.
+Now buy that unit for $700,000 with 20% down, at a 30-year rate of 7.28% (the Freddie Mac 30-year average as of October 1, 2026), with the calculator's other defaults: $1,250 a month in property tax (rounded from a reported citywide average) and an illustrative $75 for HO-6 insurance.
 
-- Mortgage P&I on $560,000: **$3,707**
+- Mortgage P&I on $560,000: **$3,832**
 - Common charges + property tax + insurance: $1,000 + $1,250 + $75 = $2,325
-- Monthly housing expense: **$6,032**
-- Income needed at a 43% DTI: **$168,332**
+- Monthly housing expense: **$6,157**
+- Income needed at a 43% DTI: **$171,812**
 
-Put the same unit in a building charging $1,500 a month and the housing expense rises to **$6,532**, so the income needed rises to **$182,286**. Every $500 a month of common charges costs you about **$14,000** a year of required income at a 43% DTI, whatever the mortgage rate.
+Put the same unit in a building charging $1,500 a month and the housing expense rises to **$6,657**, so the income needed rises to **$185,765**. Every $500 a month of common charges costs you about **$14,000** a year of required income at a 43% DTI, whatever the mortgage rate.
 
 And the co-op comparison: this condo's $1,000 in common charges isn't cheaper than the co-op calculator's illustrative $1,200 maintenance. Add the $1,250 tax and it's $2,250 a month, against a co-op figure that already includes its tax.
