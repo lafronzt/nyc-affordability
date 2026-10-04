@@ -3,6 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import Footer from '../../../components/Footer.astro';
 import AdSlot from '../../../components/AdSlot.astro';
+import { acsArea, ACS_AREAS, relativeTo, ACS_TABLES } from '../../../data/censusAcs';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import RelatedBudgets from '../../../components/RelatedBudgets.astro';
 import MiniCalcWidget from '../../../components/MiniCalcWidget.astro';
@@ -24,6 +25,11 @@ export function getStaticPaths() {
 }
 
 const { amount } = Astro.props;
+const nyc = acsArea('nyc')!;
+const boroughMedians = ACS_AREAS.filter((a) => a.slug !== 'nyc')
+  .sort((x, y) => x.medianHouseholdIncome.value - y.medianHouseholdIncome.value)
+  .map((a) => `${fmtMoney(a.medianHouseholdIncome.value)} in ${a.name === 'The Bronx' ? 'the Bronx' : a.name}`)
+  .join(', ');
 
 const rent = maxAffordableRent({ annualIncome: amount });
 const coop = maxAffordablePrice({ annualIncome: amount, propertyType: 'coop' });
@@ -134,6 +140,12 @@ const shareText = `What ${amountLabel}/year gets you in NYC:\n` +
     </div>
   </div>
 
+  <div class="card">
+    <h3>How {amountLabel} compares</h3>
+    <p>{amountLabel} a year is {relativeTo(amount, nyc.medianHouseholdIncome.value)} New York City's median household income ({fmtMoney(nyc.medianHouseholdIncome.value)}), and {relativeTo(amount, nyc.renterMedianIncome.value)} the median for renter households ({fmtMoney(nyc.renterMedianIncome.value)}). By borough, the median household earns {boroughMedians}.</p>
+    <p class="calc-note-src">Census Bureau, <a href={ACS_TABLES.B19013.url} target="_blank" rel="noopener noreferrer">2024 American Community Survey</a> 1-year estimates: survey figures for residents, not calculated by this site.</p>
+  </div>
+
   <MiniCalcWidget mode="income" defaultValue={amount} />
 
   <div class="card">
@@ -202,4 +214,5 @@ const shareText = `What ${amountLabel}/year gets you in NYC:\n` +
 <style>
 /* Shared hero/card/result-grid/table/cta-box rules live in
    salaryIncomeLanding.css (imported above) — nothing page-specific here. */
+.calc-note-src { font-size: 12px !important; color: var(--g500) !important; }
 </style>

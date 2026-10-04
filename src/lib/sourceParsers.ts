@@ -88,3 +88,24 @@ export function setInputValue(src: string, id: string, value: string): { src: st
   const next = tag.replace(/\bvalue="[^"]*"/, `value="${value}"`);
   return { src: src.replace(tag, next), changed: next !== tag };
 }
+
+/**
+ * One table from the Census ACS table-based summary files: pipe-delimited,
+ * a GEO_ID column, then <TABLE>_E### estimates and <TABLE>_M### margins.
+ * Returns row values by GEO_ID for the geographies asked for.
+ */
+export function parseAcsTable(text: string, geoIds: string[]): Map<string, Record<string, number>> {
+  const lines = text.trim().split('\n').filter((l) => l && !l.startsWith('#'));
+  const header = lines[0].split('|');
+  if (header[0] !== 'GEO_ID') throw new Error('ACS summary file: first column must be GEO_ID');
+  const want = new Set(geoIds);
+  const out = new Map<string, Record<string, number>>();
+  for (const line of lines.slice(1)) {
+    const cells = line.split('|');
+    if (!want.has(cells[0])) continue;
+    const row: Record<string, number> = {};
+    header.slice(1).forEach((h, i) => { row[h] = Number(cells[i + 1]); });
+    out.set(cells[0], row);
+  }
+  return out;
+}

@@ -1,0 +1,77 @@
+---
+/* What residents earn and pay, from the Census ACS (src/data/censusAcs.ts).
+   Survey estimates, labeled as such and kept apart from the cited market
+   figures (new leases, sales) and from this site's calculations. When a
+   page passes the market rent it cites, the card sets the two side by
+   side, because the gap between "what neighbors pay" and "what a new
+   lease asks" is the useful part. */
+import { acsArea, rentBurden, renterShare, isWide, ACS_SOURCE, ACS_TABLES, type AcsArea, type Estimate } from '../data/censusAcs';
+
+interface Props {
+  slug: AcsArea['slug'];
+  title: string;
+  /** The market rent this page cites (e.g. median rent on new leases), to set beside what residents pay. */
+  marketRent?: { label: string; value: number; period: string };
+}
+
+const { slug, title, marketRent } = Astro.props;
+const a = acsArea(slug)!;
+const burden = rentBurden(a);
+const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
+const pct = (n: number) => `${Math.round(n * 100)}%`;
+const moe = (e: Estimate) => `±${usd(e.moe)}${isWide(e) ? ', a wide margin' : ''}`;
+const marketLabel = marketRent ? `${marketRent.label}: ${usd(marketRent.value)} (${marketRent.period})` : null;
+---
+<section class="census" aria-labelledby={`h-census-${slug}`}>
+  <h3 id={`h-census-${slug}`}>{title} <span class="badge">Census survey</span></h3>
+  <div class="grid">
+    <div class="stat">
+      <div class="lbl">Median household income</div>
+      <div class="val">{usd(a.medianHouseholdIncome.value)}</div>
+      <div class="sub">{moe(a.medianHouseholdIncome)}</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">Renters vs owners</div>
+      <div class="val">{usd(a.renterMedianIncome.value)}</div>
+      <div class="sub">renter households ({moe(a.renterMedianIncome)}); owners {usd(a.ownerMedianIncome.value)}</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">Median rent actually paid</div>
+      <div class="val">{usd(a.medianGrossRent.value)}<span class="unit">/mo</span></div>
+      <div class="sub">rent plus utilities, every lease ({moe(a.medianGrossRent)})</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">Renters paying 30%+ of income</div>
+      <div class="val">{pct(burden.atLeast30)}</div>
+      <div class="sub">{pct(burden.atLeast50)} pay half or more</div>
+    </div>
+  </div>
+  <p>
+    {pct(renterShare(a))} of households here rent. "Rent actually paid" covers every renter household: rent-stabilized apartments, renewals, and people who moved in years ago. That's why it's far below what a new lease costs today{marketLabel ? <>. {marketLabel}, cited above.</> : '.'}
+  </p>
+  <p class="src">
+    {ACS_SOURCE}: tables {Object.entries(ACS_TABLES).map(([id, t], i) => <>{i > 0 && ', '}<a href={t.url} target="_blank" rel="noopener noreferrer">{id}</a></>)}. Margins are the Census's 90% margins of error. The 30% and 50% shares are this site's division of the Census counts, leaving out households with no computed ratio.
+  </p>
+</section>
+
+<style>
+.census {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r, 10px);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 26px 28px 24px; margin-bottom: 20px;
+}
+.census h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin: 0 0 10px; letter-spacing: -.2px; }
+.census p { font-size: 14px; color: var(--g600); line-height: 1.7; margin: 0 0 10px; }
+.census p:last-child { margin-bottom: 0; }
+.badge { display: inline-block; font-size: 10.5px; font-weight: 700; color: #155e75; background: #ecfeff; border: 1px solid #a5f3fc; border-radius: 999px; padding: 1px 8px; vertical-align: 2px; margin-left: 4px; }
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 8px 0 14px; }
+.stat { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+.lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--g500); }
+.val { font-size: 22px; font-weight: 800; color: var(--g900); font-variant-numeric: tabular-nums; margin: 2px 0; }
+.unit { font-size: 13px; font-weight: 600; color: var(--g500); }
+.sub { font-size: 12px; color: var(--g500); line-height: 1.45; }
+.src { font-size: 12px !important; color: var(--g500) !important; line-height: 1.6 !important; }
+.src a { color: var(--blue); text-decoration: none; }
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .census { padding: 22px 16px 20px; } }
+@media (max-width: 420px) { .grid { grid-template-columns: 1fr; } }
+</style>

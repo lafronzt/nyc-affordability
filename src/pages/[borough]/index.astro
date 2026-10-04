@@ -5,6 +5,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import CensusCard from '../../components/CensusCard.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../lib/footerLinks';
 import { AD_IN_ARTICLE } from '../../lib/adSlots';
@@ -116,6 +117,12 @@ const cards: { kind: 'rent' | 'sale'; figure: MarketFigure | undefined }[] = [
     <h2>What these numbers cover</h2>
     {hub.notes.map((n) => <p>{n}</p>)}
   </div>
+
+  <CensusCard
+    slug={hub.slug}
+    title={`Who lives in ${hub.name}`}
+    marketRent={rent ? { label: `${rent.metric === 'average-rent' ? 'Average' : 'Median'} rent on new leases`, value: rent.value, period: rent.period } : undefined}
+  />
 
   <div class="card calc-card">
     <h3>What it takes to live here</h3>
