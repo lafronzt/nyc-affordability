@@ -2,6 +2,34 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Phase 4a: Public data downloads (/data/)
+
+**User-visible changes**
+- New `/data/` page with five datasets, each as JSON and CSV. They're built from the same files the pages read, so a download can't disagree with the site.
+  - `market-figures`: every cited rent and sale figure on a neighborhood or borough page, with source, URL, period and the area the source measured. *Cited.*
+  - `income-needed`: income needed to rent at, or buy a co-op or condo at, each area's cited figure. Each row names the figure it started from and the method, and the values match the area pages to the dollar. *Calculated.*
+  - `affordability-index`: index history, one row per metric. The untracked condo median is listed as `not-yet-tracked` with a blank value. *Cited.*
+  - `ami-2026`: HPD's 100% AMI row by household size. *Cited.*
+  - `assumptions`: the whole defaults registry with each entry's basis. *Assumptions.*
+- `/data/index.json` manifest with the field dictionary.
+- **License:** CC0 1.0. The page notes that CC0 covers this site's compilation and calculations, and that cited figures should be credited to their sources.
+- `/data/` is linked from the Learn menu and the Explore footer column, and listed in the sitemap. The JSON and CSV files aren't.
+- `_headers`: `/data/*` gets `Access-Control-Allow-Origin: *` and a one-hour revalidating cache.
+
+**Validation**
+- New `test/dataExport.test.ts` (9 tests):
+  - CSV escaping, and CSV line counts.
+  - Every row has exactly the declared columns.
+  - Every cited row has a value, source, https URL and a dated period, and untracked rows stay blank.
+  - Calculated rows match `requiredIncomeForRent`/`requiredIncomeForPrice`, including Queens using its co-op median.
+  - One assumption row per registry entry; the manifest lists both files per dataset under CC0.
+- `npm test` 277/277; `npm run build` is clean, including `check-csp`. The link crawl, including the download links, finds 0 broken.
+- In the browser under the production CSP:
+  - `/data/` renders at 390px and 1280px with no overflow or errors.
+  - The CSV is served as `text/csv`.
+  - The manifest lists 5 datasets (27, 38, 3, 8 and 49 rows).
+  - Manhattan income-needed in the CSV ($187,800 rent, $344,199 co-op) matches `/manhattan/`.
+
 ## 2026-10-03: Move-in fee applies to co-op and condo buildings only
 
 **User-visible changes**

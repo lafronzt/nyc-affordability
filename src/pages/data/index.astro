@@ -1,0 +1,220 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+import { loadDatasets } from '../../lib/loadDatasets';
+import { DATA_LICENSE, type Dataset } from '../../lib/dataExport';
+
+/* ============================================================
+   Public data downloads
+   ============================================================
+   Lists the build-time files from src/pages/data/[file].ts. The table
+   and field dictionary come from the same dataset objects as the files,
+   so this page can't describe a column the download doesn't have.
+   ============================================================ */
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const datasets = await loadDatasets();
+const KIND_LABEL: Record<Dataset['kind'], string> = {
+  cited: 'Cited',
+  assumption: 'Assumptions',
+  calculated: 'Calculated',
+  mixed: 'Mixed',
+};
+
+const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'DataCatalog',
+  name: 'NYC Affordability public data',
+  url: `${SITE_ORIGIN}/data/`,
+  description: 'Cited NYC rent and sale figures, calculator assumptions, AMI limits, and calculated income-needed figures, as JSON and CSV. Public domain (CC0).',
+  license: DATA_LICENSE.url,
+  dataset: datasets.map((d) => ({
+    '@type': 'Dataset',
+    name: d.title,
+    description: d.description,
+    license: DATA_LICENSE.url,
+    isAccessibleForFree: true,
+    distribution: [
+      { '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: `${SITE_ORIGIN}/data/${d.id}.json` },
+      { '@type': 'DataDownload', encodingFormat: 'text/csv', contentUrl: `${SITE_ORIGIN}/data/${d.id}.csv` },
+    ],
+  })),
+};
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Data downloads', path: '/data/' },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+---
+<BaseLayout
+  variant="site"
+  pageTitle="NYC Housing Data Downloads: JSON & CSV, Public Domain | NYC Affordability"
+  metaDescription="Download the cited NYC rent and sale figures, calculator assumptions, AMI limits, and income-needed calculations behind this site as JSON or CSV. Public domain (CC0)."
+  canonicalPath="/data/"
+  ogTitle="NYC Affordability: Data Downloads"
+  ogDescription="The cited figures, assumptions, and calculations behind the site, as JSON and CSV. Public domain."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
+  twitterTitle="NYC Affordability: Data Downloads"
+  twitterDescription="The cited figures, assumptions, and calculations behind the site, as JSON and CSV. Public domain."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Data</div>
+  <h2>Data downloads</h2>
+  <p>The numbers behind every page, as JSON and CSV. Generated from the same files the pages read, so a download can't disagree with the site.</p>
+</div>
+<div class="page">
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <div class="card summary">
+    <h3>Three kinds of number, never mixed up</h3>
+    <ul class="legend">
+      <li><span class="badge badge--cited">Cited</span> Published by someone else. Every row has the value, the period, the source, and a link. If no stable, dated source exists, the row says <em>not yet tracked</em> and the value is blank. It's never filled in with an estimate.</li>
+      <li><span class="badge badge--assumption">Assumptions</span> The defaults the calculators start from. Each one says whether it's law, official data, a market convention, or a midpoint we chose.</li>
+      <li><span class="badge badge--calculated">Calculated</span> Our math applied to a cited figure. Each row names the figure it started from and how it was computed, and it changes when our defaults (like the mortgage rate) change.</li>
+    </ul>
+  </div>
+
+  <section class="card" aria-labelledby="h-files">
+    <h3 id="h-files">Datasets</h3>
+    <div class="table-wrap">
+      <table class="src-table">
+        <thead>
+          <tr><th scope="col">Dataset</th><th scope="col">Kind</th><th scope="col">Rows</th><th scope="col">Download</th></tr>
+        </thead>
+        <tbody>
+          {datasets.map((d) => (
+            <tr>
+              <th scope="row">
+                <a href={`#ds-${d.id}`}>{d.title}</a>
+                <span class="note">{d.description}</span>
+              </th>
+              <td data-label="Kind"><span class={`badge badge--${d.kind}`}>{KIND_LABEL[d.kind]}</span></td>
+              <td class="num" data-label="Rows">{d.rows.length}</td>
+              <td data-label="Download" class="dl">
+                <a href={`/data/${d.id}.csv`} download>CSV</a>
+                <a href={`/data/${d.id}.json`}>JSON</a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>A machine-readable list of everything here, with the field dictionary, is at <a href="/data/index.json"><code>/data/index.json</code></a>.</p>
+  </section>
+
+  <section class="card" aria-labelledby="h-license">
+    <h3 id="h-license">License: public domain (CC0)</h3>
+    <p>To the extent we hold any rights in these files, we've dedicated them to the public domain under <a href={DATA_LICENSE.url} target="_blank" rel="noopener noreferrer">{DATA_LICENSE.name} ↗</a>. Use them for anything, commercial included. You don't have to ask or credit us.</p>
+    <p>One caveat: CC0 covers what this site made, meaning the calculations, the assumptions, and how the data is organized. The <span class="badge badge--cited">Cited</span> figures were published by the source named on each row, such as StreetEasy, Corcoran, Douglas Elliman, Brown Harris Stevens, or NYC HPD. We can't waive their rights for them, so credit them when you reuse a cited figure, and check their terms if you're republishing at scale.</p>
+  </section>
+
+  {datasets.map((d) => (
+    <section class="card" id={`ds-${d.id}`} aria-labelledby={`h-${d.id}`}>
+      <h3 id={`h-${d.id}`}>{d.title} <span class={`badge badge--${d.kind}`}>{KIND_LABEL[d.kind]}</span></h3>
+      <p>{d.description}</p>
+      <p class="files"><a href={`/data/${d.id}.csv`} download><code>/data/{d.id}.csv</code></a> · <a href={`/data/${d.id}.json`}><code>/data/{d.id}.json</code></a> · {d.rows.length} rows</p>
+      <div class="table-wrap">
+        <table class="src-table fields">
+          <thead><tr><th scope="col">Field</th><th scope="col">Meaning</th></tr></thead>
+          <tbody>
+            {d.columns.map((c) => (
+              <tr><th scope="row"><code>{c.key}</code></th><td data-label="Meaning">{c.description}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  ))}
+
+  <div class="card">
+    <h3>How fresh is it?</h3>
+    <p>These files are rebuilt every time the site is deployed. Nothing updates on its own schedule: each cited figure has its own period, and the <a href="/methodology/sources/">sources page</a> shows when each default was last checked. Your own calculator inputs are never in here. They stay in your browser.</p>
+    <p>Spot a wrong number? Tell us on the <a href="/contact/">contact page</a> or open an issue on <a href="https://github.com/lafronzt/nyc-affordability/issues" target="_blank" rel="noopener noreferrer">GitHub ↗</a>.</p>
+  </div>
+</div>
+</main>
+<Footer
+  variant="site"
+  disclaimer="NYC Affordability is for informational purposes only and does not constitute financial, legal, tax, or mortgage advice. Calculated figures depend on this site's default assumptions; verify any figure that matters to your decision with a licensed professional or the original source."
+  columns={footerColumns}
+/>
+</BaseLayout>
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 680px; margin: 0 auto; line-height: 1.7; }
+
+.page { max-width: 1040px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 30px; margin-bottom: 20px;
+  scroll-margin-top: 80px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.75; margin-bottom: 10px; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+.card code { font-size: 12.5px; background: var(--g50); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; overflow-wrap: anywhere; }
+
+.summary { background: var(--blue-xlt); border-color: var(--blue-lt); }
+.legend { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; }
+.legend li { font-size: 13.5px; color: var(--g700); line-height: 1.6; }
+
+.badge {
+  display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .2px; white-space: nowrap;
+  border-radius: 999px; padding: 2px 9px; border: 1px solid transparent; margin-right: 4px; vertical-align: 1px;
+}
+/* Each badge carries its label text; color is a secondary cue only. */
+.badge--cited       { background: #ecfeff; color: #155e75; border-color: #a5f3fc; }
+.badge--assumption  { background: #fefce8; color: #854d0e; border-color: #fde68a; }
+.badge--calculated  { background: #f8fafc; color: #475569; border-color: #cbd5e1; border-style: dashed; }
+.badge--mixed       { background: #f8fafc; color: #475569; border-color: #cbd5e1; }
+
+.table-wrap { overflow-x: auto; margin: 0 -4px; }
+.src-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.src-table th, .src-table td { text-align: left; vertical-align: top; padding: 10px 8px; border-bottom: 1px solid var(--border); color: var(--g700); }
+.src-table thead th { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--g500); font-weight: 700; border-bottom: 2px solid var(--border); }
+.src-table tbody th { font-weight: 650; color: var(--g900); min-width: 220px; }
+.src-table.fields tbody th { min-width: 0; width: 34%; }
+.src-table .num { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; color: var(--g900); }
+.dl { white-space: nowrap; }
+.dl a { display: inline-block; font-weight: 700; margin-right: 12px; }
+.files { font-size: 13px !important; }
+.note { display: block; font-weight: 400; font-size: 12.5px; color: var(--g500); line-height: 1.5; margin-top: 3px; }
+
+@media (max-width: 720px) {
+  .page { padding: 28px 16px 48px; }
+  .card { padding: 22px 16px 24px; }
+  /* Stack table rows into cards on phones instead of scrolling sideways. */
+  .src-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .src-table, .src-table tbody, .src-table tr, .src-table th, .src-table td { display: block; width: 100% !important; }
+  .src-table tr { border-bottom: 1px solid var(--border); padding: 10px 0; }
+  .src-table th, .src-table td { border: 0; padding: 3px 0; }
+  .src-table tbody th { min-width: 0; }
+  .src-table td[data-label]::before {
+    content: attr(data-label) ': '; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .6px; color: var(--g500); margin-right: 4px;
+  }
+}
+</style>
