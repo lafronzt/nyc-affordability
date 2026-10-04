@@ -50,6 +50,24 @@ Multi-file changes, newest first. Each entry gives the user-visible effect and h
 - Browser:
   - `/coop/` opened with an old-style link (income $185,000, a $99,999 balance) cleared the URL, imported rate 7.1% and down payment 25%, and kept its default income and accounts.
   - The legacy page at 390px with saved personal data listed the three figures, didn't redirect, built a link with only `{mtgRate, dpPct}`, and downloaded `nyc-co-op-saved-data.json`. No errors.
+## 2026-10-04: Data: default mortgage rate 6.95% → 7.28% (PMMS, week of October 1, 2026)
+
+**User-visible changes**
+- The weekly PMMS job opened this PR (`data/pmms-rate`). It updated `mortgageRatePct` and the rate inputs on `/coop/`, `/condo/` and `/compare/`. Every calculator and build-time page (homepage table, `/income/`, `/buy/`, neighborhood and borough pages, `/data/`) now computes at 7.28%.
+- Source: Freddie Mac PMMS page, "Mortgage Rates Average 7.28%". The 30-year fixed averaged 7.28% as of October 1, 2026, up from 7.03% the week before (6.34% a year earlier).
+- **Hand updates on top of the automated commit:**
+  - Nine guides' worked examples were recomputed at 7.28%: rates, income needed, reserves, down payment, rent vs buy, common charges, maintenance. The rates guide's "where rates are now" paragraph and its source were also updated to the October 1 release.
+  - The mortgage-points, rate-lock and PMI glossary examples were recomputed. PMI now reaches 80% LTV after 104 payments, and 78% after 119.
+  - The `/coop/` and `/condo/` rate hints were updated. The co-op median now needs about $170K of income. The September Bankrate figure was dropped rather than carried forward unverified.
+  - `test/afford.test.ts` goldens were recaptured at 7.28%; that file exists to pin the defaults.
+- Includes the fixed-rate behavior-test change from its own PR. It no-ops here once that PR merges.
+
+**Validation**
+- `npm test` 289/289.
+- `npm run build` is clean, including `check-csp`. The built `/coop/` and `/condo/` inputs default to 7.28.
+- No remaining "6.95%" in `src/`, other than the rates guide's own history ("6.95% in mid-September") and the registry's test-pinning note.
+- No remaining dollar figures derived from 6.95% ($434K, $576K, $166K and others).
+
 ## 2026-10-04: Tests: behavior tests use a fixed rate, not the site default
 
 **What changed**

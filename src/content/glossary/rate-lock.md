@@ -2,7 +2,7 @@
 term: "Rate Lock"
 shortDefinition: "A lender's commitment that your interest rate won't change between the offer and closing, as long as you close within the lock period and your application doesn't change."
 metaDescription: "A mortgage rate lock fixes your rate until closing if you close on time. See common lock lengths, what can still change your rate, and an NYC payment example."
-updated: "2026-10-03"
+updated: "2026-10-04"
 category: "buying"
 sources:
   - label: "Consumer Financial Protection Bureau: What's a lock-in or a rate lock on a mortgage?"
@@ -31,6 +31,6 @@ The NYC wrinkle is timing. A co-op purchase has a [board approval](/guides/coop-
 
 ## Worked example
 
-On a $600,000, 30-year loan locked at this site's default 6.95% rate, principal and interest is about $3,971.69 a month. If rates hypothetically climbed to 7.20% before closing and you hadn't locked, the payment would be about $4,072.73, roughly **$101 more a month**, or about $1,212 a year, for the life of the loan unless you refinanced. That's the risk a lock takes off the table; the trade-off is that you don't get the lower payment if rates fall instead.
+On a $600,000, 30-year loan locked at this site's default 7.28% rate, principal and interest is about $4,105.27 a month. If rates hypothetically climbed to 7.53% before closing and you hadn't locked, the payment would be about $4,207.62, roughly **$102 more a month**, or about $1,228 a year, for the life of the loan unless you refinanced. That's the risk a lock takes off the table; the trade-off is that you don't get the lower payment if rates fall instead.
 
 Model how a quarter-point swing changes what you can afford on the [Rate Sensitivity tool](/rate-sensitivity/).

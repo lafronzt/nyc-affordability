@@ -2,15 +2,15 @@
 title: "How Much Income Do You Need to Buy a NYC Apartment?"
 metaDescription: "The income you need to buy a NYC apartment depends on whether it's a co-op (28% board DTI) or condo (43% lender DTI): the same price can require a $70K+ income gap. See the math."
 intro: "There's no single answer to \"how much do I need to make to buy in NYC,\" because the honest answer depends on what you're buying, not just what it costs. A co-op board and a condo lender apply different debt-to-income ceilings to the identical purchase price, and that gap alone can mean tens of thousands of dollars of required income."
-updated: "2026-09-23"
+updated: "2026-10-04"
 category: "buying"
 sources:
   - label: "StreetEasy: Debt to Income Ratio for Co-op Boards"
     url: "https://streeteasy.com/blog/what-is-debt-to-income-ratio/"
   - label: "NYC Department of Finance / ACRIS: Mortgage Recording Tax"
     url: "https://www.nyc.gov/site/finance/taxes/property-real-property-transfer-tax-rptt.page"
-  - label: "Freddie Mac: Primary Mortgage Market Survey: Mortgage Rates Average 6.95% (September 17, 2026)"
-    url: "https://www.globenewswire.com/news-release/2026/09/17/3364253/0/en/mortgage-rates-average-6-95.html"
+  - label: "Freddie Mac: Primary Mortgage Market Survey: Mortgage Rates Average 7.28% (October 1, 2026)"
+    url: "https://www.freddiemac.com/pmms"
 relatedGuides:
   - coop-board-approval-process
   - pmi-on-nyc-condos-explained
@@ -51,15 +51,15 @@ Take a $700,000 purchase, 20% down ($140,000), a $560,000 loan, and a $1,200/mon
 
 | Scenario | Monthly P&I | Monthly housing cost | DTI ceiling | Annual income needed |
 | --- | --- | --- | --- | --- |
-| Co-op (6.95% rate, board DTI) | $3,707 | $4,907 | 28% | **$210,296** |
-| Condo (6.95% rate, lender DTI) | $3,707 | $4,907 | 43% | **$136,937** |
-| Condo (6.95% rate, conservative DTI) | $3,707 | $4,907 | 36% | **$163,564** |
+| Co-op (7.28% rate, board DTI) | $3,832 | $5,032 | 28% | **$215,640** |
+| Condo (7.28% rate, lender DTI) | $3,832 | $5,032 | 43% | **$140,416** |
+| Condo (7.28% rate, conservative DTI) | $3,832 | $5,032 | 36% | **$167,720** |
 
-The monthly payment is identical in all three rows: every row uses the same 6.95% rate (the Freddie Mac 30-year average as of September 17, 2026). The **~$73,000 difference** between the co-op and standard-condo income requirement comes entirely from which DTI ceiling applies, not from anything about the property itself. That's just the income side, too. See our [co-op vs condo cost guide](/guides/coop-vs-condo-nyc-costs/) for how the two also differ on closing costs and resale fees.
+The monthly payment is identical in all three rows: every row uses the same 7.28% rate (the Freddie Mac 30-year average as of October 1, 2026). The **~$75,000 difference** between the co-op and standard-condo income requirement comes entirely from which DTI ceiling applies, not from anything about the property itself. That's just the income side, too. See our [co-op vs condo cost guide](/guides/coop-vs-condo-nyc-costs/) for how the two also differ on closing costs and resale fees.
 
 ## A real-world calibration point
 
-This site's own co-op calculator, using the citywide median co-op sale price (~$506,000, Q1 2025, StreetEasy/Baruch CUNY), its default 6.95% mortgage rate, and the standard 28% board DTI, puts the minimum qualifying income at roughly **$166,000**. That's before accounting for a board's reserve requirement, which is a separate, cash-side hurdle on top of the income number. See the [reserve guide](/guides/coop-board-reserve-requirements/) for how that math works.
+This site's own co-op calculator, using the citywide median co-op sale price (~$506,000, Q1 2025, StreetEasy/Baruch CUNY), its default 7.28% mortgage rate, and the standard 28% board DTI, puts the minimum qualifying income at roughly **$170,000**. That's before accounting for a board's reserve requirement, which is a separate, cash-side hurdle on top of the income number. See the [reserve guide](/guides/coop-board-reserve-requirements/) for how that math works.
 
 ## What actually moves the number
 
@@ -68,7 +68,7 @@ A few levers change the required income, and they're not all equally effective:
 - **A bigger down payment** lowers the loan amount and therefore the monthly P&I, but it doesn't touch which DTI ceiling applies, so it helps at the margin without closing a 28%-vs-43%-sized gap.
 - **Paying off other debts** helps more than people expect on the co-op side specifically, since board DTI calculations typically fold in car payments, student loans, and other recurring obligations, not just the housing payment. Condo lenders do the same for a full mortgage-qualification DTI, but a co-op board's number tends to be less forgiving of any other debt sharing the 28% ceiling.
 - **A different building** changes the ceiling itself. Outer-borough co-op boards sometimes allow 30–35% DTI instead of 28%; a lender open to a 43% back-end DTI instead of holding to a conservative 36% target does the same thing on the condo side.
-- **Interest rate** matters, but less than the DTI ceiling does in this comparison: the rows above use the same rate, so the DTI gap alone accounts for the full ~$73,000 swing. For scale, the rise in the 30-year average from about 6.3% in April 2026 to 6.95% in mid-September 2026 added roughly $10,000 to the co-op row's required income on its own.
+- **Interest rate** matters, but less than the DTI ceiling does in this comparison: the rows above use the same rate, so the DTI gap alone accounts for the full ~$75,000 swing. For scale, the rise in the 30-year average from about 6.3% in April 2026 to 7.28% at the start of October 2026 added roughly $20,000 to the co-op row's required income on its own.
 
 ## Why this matters more than people expect
 

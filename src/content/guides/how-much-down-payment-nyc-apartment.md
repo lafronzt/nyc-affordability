@@ -2,7 +2,7 @@
 title: "How Much Down Payment Do You Need for a NYC Apartment?"
 metaDescription: "NYC co-op boards usually want 20% to 25% down, and some ask for 50% or all cash. Condos can go lower, with PMI. See the minimums and the cash math."
 intro: "The lender's minimum and the building's minimum are two different numbers, and in NYC the building usually wins. A co-op board can demand far more than any bank would, while a condo can let you in with less but charges you for it every month. Here's what each side typically asks for, what has to be left over after you close, and how the down payment changes the rest of the math."
-updated: "2026-10-03"
+updated: "2026-10-04"
 category: "buying"
 sources:
   - label: "Skybriz: Down Payment Requirements for Co-ops in NYC (2026), January 27, 2026"
@@ -62,7 +62,7 @@ Condo buyers don't face a board test like that, but the CFPB's advice still appl
 
 ## Worked example
 
-Take a $700,000 condo at the site's defaults: a 30-year mortgage at 6.95% (the Freddie Mac 30-year average as of September 17, 2026), and $2,325/month in common charges, property tax, and insurance. The common charge and insurance figures are illustrative; the tax figure rounds a reported citywide average. The condo calculator's closing costs include its illustrative fee and title estimates plus the mortgage recording tax.
+Take a $700,000 condo at the site's defaults: a 30-year mortgage at 7.28% (the Freddie Mac 30-year average as of October 1, 2026), and $2,325/month in common charges, property tax, and insurance. The common charge and insurance figures are illustrative; the tax figure rounds a reported citywide average. The condo calculator's closing costs include its illustrative fee and title estimates plus the mortgage recording tax.
 
 | | 10% down | 20% down |
 | --- | --- | --- |
@@ -71,14 +71,14 @@ Take a $700,000 condo at the site's defaults: a 30-year mortgage at 6.95% (the F
 | Fees and title | $15,530 | $15,460 |
 | Mortgage recording tax (1.925%) | $12,128 | $10,780 |
 | **Cash to close** | **$97,658** | **$166,240** |
-| Monthly P&I | $4,170 | $3,707 |
+| Monthly P&I | $4,311 | $3,832 |
 | PMI (0.70% a year at 10% down) | $368 | $0 |
-| **Monthly housing cost** | **$6,863** | **$6,032** |
-| Income needed at 43% DTI | $191,519 | $168,332 |
+| **Monthly housing cost** | **$7,003** | **$6,157** |
+| Income needed at 43% DTI | $195,434 | $171,812 |
 
-Doubling the down payment costs about $68,600 more cash at closing and lowers the monthly bill by about **$831**. It also cuts the income a lender needs to see by roughly **$23,000**. The bigger down payment even shaves a bit off the recording tax, since that tax is charged on the loan amount.
+Doubling the down payment costs about $68,600 more cash at closing and lowers the monthly bill by about **$846**. It also cuts the income a lender needs to see by roughly **$24,000**. The bigger down payment even shaves a bit off the recording tax, since that tax is charged on the loan amount.
 
-Now a $700,000 co-op at the same rate, with the calculator's illustrative $1,200/month maintenance and a 12-month reserve requirement. At 20% down, the reserve is **$58,883** and total cash needed is **$210,433**. At 25% down, the reserve only falls to **$56,103**, while total cash rises to **$242,653**. Each extra dollar of down payment saves less than a dime of reserve. A board that asks for more down is asking for more cash. Full stop.
+Now a $700,000 co-op at the same rate, with the calculator's illustrative $1,200/month maintenance and a 12-month reserve requirement. At 20% down, the reserve is **$60,379** and total cash needed is **$211,929**. At 25% down, the reserve only falls to **$57,505**, while total cash rises to **$244,055**. Each extra dollar of down payment saves less than a dime of reserve. A board that asks for more down is asking for more cash. Full stop.
 
 ## Where this fits in the calculators
 

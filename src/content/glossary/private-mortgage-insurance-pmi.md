@@ -2,7 +2,7 @@
 term: "Private Mortgage Insurance (PMI)"
 shortDefinition: "Insurance that protects the lender, not you, on a conventional loan with less than 20% down. It's added to your monthly payment and can be cancelled once you build enough equity."
 metaDescription: "PMI is lender-protecting insurance on conventional loans with under 20% down. See how it's paid, when federal rules end it, and a NYC condo cost example."
-updated: "2026-10-03"
+updated: "2026-10-04"
 category: "buying"
 sources:
   - label: "Consumer Financial Protection Bureau: What is private mortgage insurance?"
@@ -32,6 +32,6 @@ PMI is not forever. For a single-family principal residence loan closed on or af
 
 ## Worked example
 
-An $800,000 condo with 10% down means a $720,000 loan. This site's calculators use an illustrative PMI rate of 0.70% a year at 10-15% down (not a quote; your rate depends on credit score and the insurer), so PMI runs $720,000 × 0.70% = $5,040 a year, or **$420 a month** on top of principal and interest. At this site's default 6.95% rate on a 30-year loan with no extra payments, the balance is scheduled to reach 80% of the $800,000 price ($640,000) after 100 payments, about 8 years 4 months, and 78% ($624,000) after 115 payments. Extra principal payments pull the request date earlier.
+An $800,000 condo with 10% down means a $720,000 loan. This site's calculators use an illustrative PMI rate of 0.70% a year at 10-15% down (not a quote; your rate depends on credit score and the insurer), so PMI runs $720,000 × 0.70% = $5,040 a year, or **$420 a month** on top of principal and interest. At this site's default 7.28% rate on a 30-year loan with no extra payments, the balance is scheduled to reach 80% of the $800,000 price ($640,000) after 104 payments, about 8 years 8 months, and 78% ($624,000) after 119 payments. Extra principal payments pull the request date earlier.
 
 See how PMI moves your maximum price on the [Condo Calculator](/condo/), or read [PMI on NYC condos](/guides/pmi-on-nyc-condos-explained/) for the rate tiers by down payment.

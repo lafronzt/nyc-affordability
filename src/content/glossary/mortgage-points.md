@@ -2,7 +2,7 @@
 term: "Mortgage Points (Discount Points)"
 shortDefinition: "An upfront fee paid at closing to buy a lower interest rate. One point equals 1% of the loan amount."
 metaDescription: "Mortgage discount points trade cash at closing for a lower rate: one point is 1% of the loan. See how to find the break-even month on an NYC loan."
-updated: "2026-10-03"
+updated: "2026-10-04"
 category: "buying"
 sources:
   - label: "Consumer Financial Protection Bureau: How should I use lender credits and points (also called discount points)?"
@@ -31,6 +31,6 @@ Taxes, briefly: points are prepaid interest, so they're generally deductible ove
 
 ## Worked example
 
-On a $600,000, 30-year loan at this site's default 6.95% rate, principal and interest is about $3,971.69 a month. One point costs $600,000 × 1% = **$6,000** at closing. Suppose, hypothetically, that point lowers the rate to 6.70% (a made-up figure for illustration, not a market quote). The payment drops to about $3,871.67, saving roughly $100.02 a month. Break-even is $6,000 ÷ $100.02 ≈ **60 months**, about five years. Keep the loan longer and the point pays off; sell or refinance sooner and it doesn't.
+On a $600,000, 30-year loan at this site's default 7.28% rate, principal and interest is about $4,105.27 a month. One point costs $600,000 × 1% = **$6,000** at closing. Suppose, hypothetically, that point lowers the rate to 7.03% (a made-up figure for illustration, not a market quote). The payment drops to about $4,003.91, saving roughly $101.36 a month. Break-even is $6,000 ÷ $101.36 ≈ **59 months**, about five years. Keep the loan longer and the point pays off; sell or refinance sooner and it doesn't.
 
 To see how much a rate change moves your maximum price, try the [Rate Sensitivity tool](/rate-sensitivity/), or read [how mortgage rates affect NYC affordability](/guides/how-mortgage-rates-affect-nyc-affordability/).

@@ -2,7 +2,7 @@
 title: "Co-op Maintenance Explained: What You're Paying For"
 metaDescription: "NYC co-op maintenance bundles the building's mortgage, property taxes, staff, and upkeep, split by shares. See what's deductible and how boards count it in DTI."
 intro: "Co-op maintenance is the one number that quietly decides how much apartment you can buy. It's your slice of the building's entire budget, including its mortgage and its tax bill, and boards and lenders count every dollar of it against your income before they think about your own mortgage."
-updated: "2026-10-03"
+updated: "2026-10-04"
 category: "coop"
 sources:
   - label: "Brick Underground: Why do NYC co-op maintenance fees vary so much from building to building?"
@@ -84,8 +84,8 @@ All building figures here are hypothetical. The $1,200/month maintenance matches
 
 **The deductible slice.** Say the building pays $500,000 in real estate taxes and $280,000 in interest on its underlying mortgage. Per share, that's $25 of tax and $14 of interest. For 200 shares: $5,000 + $2,800 = **$7,800**, or about 54% of the year's maintenance, potentially deductible if you itemize. Your building's percentage will differ, sometimes a lot; ask the managing agent for the figure.
 
-**The DTI hit.** A buyer earns $150,000 ($12,500 a month). At a 28% cap, the board allows $3,500 a month for housing. Subtract $1,200 of maintenance and $2,300 is left for principal and interest. At 6.95% (the Freddie Mac 30-year average as of September 17, 2026), that supports a loan of about $347,000, and with 20% down, a maximum price of about **$434,000**, calculated with this site's co-op engine.
+**The DTI hit.** A buyer earns $150,000 ($12,500 a month). At a 28% cap, the board allows $3,500 a month for housing. Subtract $1,200 of maintenance and $2,300 is left for principal and interest. At 7.28% (the Freddie Mac 30-year average as of October 1, 2026), that supports a loan of about $336,000, and with 20% down, a maximum price of about **$420,000**, calculated with this site's co-op engine.
 
-Same buyer, building with $1,600 maintenance: only $1,900 is left for the mortgage, and the maximum price drops to about **$359,000**. That $400 a month of maintenance costs roughly **$76,000** of purchasing power. Plug in a real building's numbers on the [Co-op Calculator](/coop/), or see [income needed to buy in NYC](/guides/income-needed-to-buy-nyc-apartment/) and [co-op vs condo costs](/guides/coop-vs-condo-nyc-costs/) for the bigger picture.
+Same buyer, building with $1,600 maintenance: only $1,900 is left for the mortgage, and the maximum price drops to about **$347,000**. That $400 a month of maintenance costs roughly **$73,000** of purchasing power. Plug in a real building's numbers on the [Co-op Calculator](/coop/), or see [income needed to buy in NYC](/guides/income-needed-to-buy-nyc-apartment/) and [co-op vs condo costs](/guides/coop-vs-condo-nyc-costs/) for the bigger picture.
 
 Since maintenance is paid with after-tax dollars, it's also worth knowing what your paycheck actually nets as an NYC resident; see [NYC city income tax explained](/guides/nyc-city-income-tax-explained/).
