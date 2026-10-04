@@ -2,6 +2,34 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Phase 5c: Compare two scenarios (A/B)
+
+**User-visible changes**
+- **"Compare two scenarios" on `/my-data/`.** Pick any two of "What's saved now" and your saved scenarios. It shows:
+  - A plain-language summary of how far each ceiling moves: rent, co-op, condo.
+  - A side-by-side table with a difference column, split into "Your numbers" (income, debts, cash, rates, down payments, charges) and three "Calculated" sections: max rent or price, monthly cost, cash needed, and what limits it.
+  - Bold marks the side that comes out ahead only where that's clear-cut. Down payment and lease cash are never called better or worse.
+  - Any value a scenario didn't save is tagged **default**, and the summary says so. That way a scenario saved before a rate change isn't quietly compared at today's rate.
+- Each scenario has a **Compare** button that opens it against what's saved now.
+- `/compare/` links to it from the what-if panel.
+
+**Code**
+- New `src/lib/housingOptions.ts`: the `/compare/` model (normalize accounts; run rent/co-op/condo from a profile plus the saved assumption sets), moved verbatim out of `src/scripts/compare.ts`. `/compare/` now imports it, so `/compare/` and A/B can't drift. No formula changes.
+- New `src/lib/scenarioCompare.ts` (pure): `scenarioModel`, `scenarioOutcome`, `compareScenarios` and `summarize`. Saved values are only read if numeric, and fall back per field. Dollar differences use whole dollars, so the difference column always equals B minus A as displayed.
+
+**Validation**
+- New `test/scenarioCompare.test.ts` (9 tests):
+  - housingOptions equals direct engine calls.
+  - Empty, junk and partial snapshots fall back visibly.
+  - A scenario keeps its saved rate.
+  - Identical scenarios show no differences.
+  - better/worse flags, per-side default flags, and the summary wording.
+- `npm test` 318/318; `npm run build` is clean, including `check-csp`.
+- Browser:
+  - **`/compare/` refactor parity:** every result cell matched the 5b build exactly, with the sample profile, with a saved profile and co-op assumptions, and with the what-if sliders moved.
+  - **A/B at 390 and 1280px under CSP:** the empty state, picking, picking the same item on both sides, and the Compare button all worked. No console errors and no horizontal overflow.
+  - The browser check caught one bug, fixed and rechecked: differences were taken before rounding (+$116,128 next to values $116,129 apart).
+
 ## 2026-10-04: Phase 5b: Your Saved Data (scenarios, export/import, reset)
 
 **User-visible changes**

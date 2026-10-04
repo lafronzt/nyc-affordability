@@ -98,7 +98,7 @@ Neighborhood schema migration (**3a done**: `figures` list + quality-gate test) 
 Index history file, condo median once a stable citywide source is confirmed, charts that separate measured from calculated (**4b done**: /neighborhoods/ cited rents vs calculated income), `/data/*.json` + CSV downloads with license (**4a done**: CC0, five datasets), and a scheduled GitHub Action that **opens PRs only** (PMMS weekly; HUD AMI/tax tables yearly) (**4c done**: PMMS weekly, HPD AMI monthly, tax checklist issue yearly).
 
 ### Phase 5: Personalized planning + trust
-Profile v2 (named scenarios, import/export JSON, reset) (**5b done**), scenario A/B, `/plan/` with binding-constraint sentences, sanitized share links (replace co-op's balance-bearing hash) (**5a done**), methodology/changelog/corrections/reviewer line.
+Profile v2 (named scenarios, import/export JSON, reset) (**5b done**), scenario A/B (**5c done**), `/plan/` with binding-constraint sentences, sanitized share links (replace co-op's balance-bearing hash) (**5a done**), methodology/changelog/corrections/reviewer line.
 
 ## 6. Questions for you (need answers before the affected phase)
 

@@ -105,6 +105,26 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
     <p class="empty" id="scenario-empty">No scenarios yet.</p>
   </section>
 
+  <section class="card" id="compare" aria-labelledby="h-ab">
+    <h3 id="h-ab">Compare two scenarios</h3>
+    <p>Pick two, and see what each one can afford side by side: rent, co-op, and condo. It's the same math as <a href="/compare/">Compare rent, co-op, condo</a>, run on each scenario's saved profile and assumptions. Anything a scenario didn't save uses the site default, and is marked <span class="dflt">default</span>.</p>
+    <div class="ab-pick">
+      <label>A <select id="ab-a"></select></label>
+      <label>B <select id="ab-b"></select></label>
+    </div>
+    <p class="empty" id="ab-empty">Save a scenario above to compare it with what's saved now.</p>
+    <div id="ab-result" hidden>
+      <ul class="ab-summary" id="ab-summary" aria-live="polite"></ul>
+      <div class="table-wrap">
+        <table class="ab-table">
+          <thead><tr><th scope="col"><span class="sr-only">Item</span></th><th scope="col" id="ab-head-a">A</th><th scope="col" id="ab-head-b">B</th><th scope="col">B vs A</th></tr></thead>
+          <tbody id="ab-body"></tbody>
+        </table>
+      </div>
+      <p class="note">Calculated rows are estimates from this site's formulas, not quotes or approvals. Bold marks the side that comes out ahead where that's clear-cut; a bigger down payment or a pricier lease isn't better or worse on its own.</p>
+    </div>
+  </section>
+
   <section class="card" aria-labelledby="h-move">
     <h3 id="h-move">Export and import</h3>
     <p>Export downloads one JSON file with your saved inputs and scenarios. Import it on another browser or device to pick up where you left off. The file is plain text with your income and balances in it, so keep it somewhere you'd keep a bank statement.</p>
@@ -262,6 +282,23 @@ tr.is-saved .state { color: #15803d !important; }
 .mode label { font-size: 13.5px; color: var(--g700); display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; }
 .mode input { margin-top: 4px; }
 
+.dflt { display: inline-block; font-size: 10.5px; font-weight: 700; color: var(--g500); border: 1px dashed var(--g300); border-radius: 999px; padding: 0 6px; vertical-align: 1px; }
+.ab-pick { display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 12px 0; }
+.ab-pick label { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 800; color: var(--g800); flex: 1 1 220px; min-width: 0; }
+.ab-pick select { flex: 1; min-width: 0; font: inherit; font-size: 14px; font-weight: 500; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--g900); }
+.ab-summary { margin: 4px 0 12px 18px; font-size: 13.5px; color: var(--g700); line-height: 1.7; }
+.ab-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.ab-table th, .ab-table td { text-align: right; padding: 8px 8px; border-bottom: 1px solid var(--border); color: var(--g700); vertical-align: top; }
+.ab-table thead th { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: var(--g500); font-weight: 700; border-bottom: 2px solid var(--border); overflow-wrap: anywhere; }
+.ab-table :global(th[scope="row"]) { text-align: left; font-weight: 600; color: var(--g800); }
+.ab-table :global(tr.ab-section th) { text-align: left; padding-top: 16px; font-size: 13px; font-weight: 800; color: var(--g900); border-bottom: 2px solid var(--border); }
+.ab-table :global(td) { font-variant-numeric: tabular-nums; }
+.ab-table :global(td.win) { font-weight: 800; color: var(--g900); }
+.ab-table :global(td.text) { font-size: 12.5px; }
+.ab-table :global(td.delta) { color: var(--g500); white-space: nowrap; }
+.ab-table :global(.dflt) { display: inline-block; margin-left: 4px; font-size: 10px; font-weight: 700; color: var(--g500); border: 1px dashed var(--g300); border-radius: 999px; padding: 0 5px; }
+.ab-table :global(.kind) { margin-left: 6px; font-size: 10.5px; font-weight: 700; color: var(--g500); text-transform: none; letter-spacing: 0; }
+
 @media (max-width: 720px) {
   .page { padding: 28px 16px 48px; }
   .card { padding: 22px 16px 24px; }
@@ -275,5 +312,7 @@ tr.is-saved .state { color: #15803d !important; }
     letter-spacing: .6px; color: var(--g500); margin-right: 4px;
   }
   .row .btn { flex: 1 1 auto; }
+  .ab-table { font-size: 12.5px; }
+  .ab-table th, .ab-table td { padding: 7px 4px; }
 }
 </style>
