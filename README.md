@@ -81,7 +81,7 @@ src/
 ├── pages/            File-based routes (one folder per page; [param] folders are generated from fixed lists)
 ├── layouts/          BaseLayout.astro: <html>/<head> shell, SEO tags, the AdSense loader when ads are on
 ├── components/       SiteHeader / AppHeader / NavLinks, Footer, Breadcrumbs, AdSlot, Byline,
-│                     ChangeEntry, MiniCalcWidget, RelatedBudgets, charts/NeighborhoodCharts
+│                     ChangeEntry, CensusCard, MiniCalcWidget, RelatedBudgets, charts/NeighborhoodCharts
 ├── styles/tokens.css Shared design tokens and base rules
 ├── scripts/          Browser code for each interactive page (coop.ts, rent.ts, plan.ts, my-data.ts, …)
 ├── lib/
@@ -100,6 +100,7 @@ src/
 │   │                    source, dates, and the calculator inputs it backs
 │   ├── sourceTables.ts  Tax tables and rate tiers with their sources
 │   ├── affordabilityIndex.ts, boroughs.ts, priceGrids.ts
+│   ├── censusAcs.ts     Census ACS 2024: what residents earn and pay, by borough (survey estimates, with margins)
 │   ├── siteChanges.ts   The public changelog and corrections
 │   └── editorial.ts     Maintainer and (optional) reviewer shown in bylines
 └── content/          Markdown collections: guides/, glossary/, neighborhoods/ (schemas in content.config.ts)
@@ -132,12 +133,13 @@ Guides and glossary pages show a byline from `src/data/editorial.ts`. A page aff
 
 ## Data and how it stays current
 
-- **`/data/`** publishes the cited market figures, assumptions, AMI table, Affordability Index, and calculated income-needed figures as JSON and CSV under CC0. They're generated at build time from the same files the pages read.
+- **`/data/`** publishes the cited market figures, assumptions, AMI table, Affordability Index, Census ACS figures, and calculated income-needed figures as JSON and CSV under CC0. They're generated at build time from the same files the pages read.
 - **Scheduled checks** (`.github/workflows/`) never change the site on their own. They open a PR or an issue for a person to review:
   - `data-update-pmms.yml`, weekly: a new Freddie Mac 30-year rate opens a draft PR on `data/pmms-rate`.
   - `data-check-ami.yml`, monthly: a new HPD AMI chart opens a draft PR on `data/hpd-ami`.
   - `data-reminder-tax.yml`, every December: a checklist issue for next year's tax tables.
   - `check-links.yml`, monthly: an issue listing broken external links (`npm run check-links`).
+- **Census ACS figures** (`src/data/censusAcs.ts`) are updated yearly by hand when the next 1-year release is out: swap `test/fixtures/acs-2024-nyc.txt` for the new year's lines, and `test/censusAcs.test.ts` lists every value to change.
 - **The Affordability Index** (`src/data/affordabilityIndex.ts`) is updated by hand. Its sources publish reports, not data a script can read, and StreetEasy blocks automated requests. The array is append-only and is the index's history: the page and `/data/affordability-index.*` read every entry.
 - **Every change that moves a number** goes in `src/data/siteChanges.ts`, which renders on `/methodology/changelog/` (and `/methodology/corrections/` for mistakes). `change-log.md` is the detailed engineering log; a test requires every `Fix:` entry there to have a public correction.
 
