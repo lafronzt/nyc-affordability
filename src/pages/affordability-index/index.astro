@@ -96,7 +96,9 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   <Breadcrumbs items={breadcrumbItems} />
 
   <div class="card process-note">
-    <p><strong>How this actually gets updated:</strong> this site has no backend or scheduled job, so "updated monthly" here means a real editorial process, not an automatic one. Someone checks the latest reports and edits this page's data file by hand. Below is exactly one snapshot so far ({latest.publishedMonth}); history builds up as future updates are added. We won't claim a monthly cadence has happened until it actually has.</p>
+    <p><strong>How this actually gets updated:</strong> by hand. The site does run scheduled checks for the mortgage rate and HPD's AMI chart, but nothing watches these figures: the sources publish reports, not data a script can read reliably, and some block automated requests. Someone checks the latest reports and adds a dated snapshot to this page's data file. {AFFORDABILITY_INDEX.length === 1
+      ? <>There is one snapshot so far ({latest.publishedMonth}); history builds up as updates are added.</>
+      : <>There are {AFFORDABILITY_INDEX.length} snapshots so far, the latest from {latest.publishedMonth}.</>} We won't claim a monthly cadence that hasn't happened.</p>
   </div>
 
   <div class="stat-grid">
