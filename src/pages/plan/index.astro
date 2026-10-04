@@ -1,0 +1,196 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN, PLAN_LINK } from '../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+
+/* ============================================================
+   My NYC Plan
+   ============================================================
+   A read-only dashboard over what's saved in this browser: for rent,
+   co-op, and condo, the ceiling, what sets it, and what would move it.
+   All of it is built by src/scripts/plan.ts from src/lib/plan.ts (pure,
+   tested). This page saves nothing and sends nothing; inputs are edited
+   on the calculators or /compare/. No ads on this page.
+   ============================================================ */
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'My NYC Plan',
+  url: 'https://www.nyc-affordability.com/plan/',
+  description: 'What you can afford to rent, or buy as a co-op or condo, in NYC: what sets each limit, and what would move it. Runs in your browser on the numbers you saved.',
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: 'https://www.nyc-affordability.com/' },
+};
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'My NYC plan', path: PLAN_LINK.href! },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+
+const PATHS = [
+  { id: 'rent', title: 'Renting', calc: { href: '/rent/', label: 'Open the rent calculator' }, more: [
+    { href: '/cost-to-move/', label: 'Cost to move' },
+    { href: '/required-salary/', label: 'Salary I need' },
+  ] },
+  { id: 'coop', title: 'Buying a co-op', calc: { href: '/coop/', label: 'Open the co-op calculator' }, more: [
+    { href: '/afford-more/', label: 'How do I afford more?' },
+    { href: '/savings-planner/', label: 'Savings plan' },
+    { href: '/rate-sensitivity/', label: 'What if rates move?' },
+  ] },
+  { id: 'condo', title: 'Buying a condo', calc: { href: '/condo/', label: 'Open the condo calculator' }, more: [
+    { href: '/afford-more/', label: 'How do I afford more?' },
+    { href: '/savings-planner/', label: 'Savings plan' },
+    { href: '/rate-sensitivity/', label: 'What if rates move?' },
+  ] },
+];
+---
+<BaseLayout
+  variant="site"
+  pageTitle="My NYC Plan: What Limits Your Rent or Purchase, and What Moves It | NYC Affordability"
+  metaDescription="See what you can afford to rent or buy in NYC, whether income or cash is the limit for a rental, a co-op, and a condo, and which single change would raise each one most. Runs in your browser."
+  canonicalPath="/plan/"
+  ogTitle="My NYC Plan: What Limits You, and What Moves It"
+  ogDescription="Rent, co-op, and condo ceilings from your saved numbers, with what sets each one and what would raise it."
+  ogImage="/images/compare-og.png"
+  ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
+  twitterTitle="My NYC Plan"
+  twitterDescription="Rent, co-op, and condo ceilings from your saved numbers, with what sets each one and what would raise it."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">My NYC plan</div>
+  <h2>What's holding you back, and what would move it</h2>
+  <p>Your rent, co-op, and condo ceilings from the numbers saved in this browser. For each one: whether income or cash sets the limit, and which single change would raise it most.</p>
+</div>
+<div class="page">
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <section class="card profile" aria-labelledby="h-profile">
+    <h3 id="h-profile">Your numbers</h3>
+    <p class="sample" id="sample-note" hidden>Nothing is saved in this browser yet, so this plan uses a <strong>sample profile</strong>. Enter yours on <a href="/reality-check/">Start here</a> or <a href="/compare/">Compare</a> with "Save" turned on, then come back.</p>
+    <dl class="facts">
+      <div><dt>Income</dt><dd id="p-income">-</dd></div>
+      <div><dt>Other debts</dt><dd id="p-debts">-</dd></div>
+      <div><dt>Cash you can count</dt><dd id="p-cash">-</dd></div>
+    </dl>
+    <p class="note" id="defaults-note" hidden></p>
+    <p class="links"><a href="/compare/">Edit income, debts, and accounts</a> · <a href="/my-data/">Save this as a scenario</a> · <a href="/my-data/#compare">Compare scenarios</a></p>
+    <noscript><p class="warn">This page needs JavaScript to read what your browser saved. Nothing is sent anywhere.</p></noscript>
+  </section>
+
+  <div class="paths">
+    {PATHS.map((p) => (
+      <section class="card path" id={`path-${p.id}`} aria-labelledby={`h-${p.id}`}>
+        <h3 id={`h-${p.id}`}>{p.title} <span class="badge">Calculated</span></h3>
+        <p class="max"><span class="max-n" data-f="max">-</span><span class="max-l" data-f="max-label"></span></p>
+        <p class="limit" data-f="limit"></p>
+        <p data-f="why"></p>
+        <p data-f="other"></p>
+        <p class="lift" data-f="lift"></p>
+        <h4>Biggest single moves</h4>
+        <ol class="steps" data-f="steps"></ol>
+        <p class="links">
+          <a href={p.calc.href}>{p.calc.label}</a>
+          {p.more.map((m) => <> · <a href={m.href}>{m.label}</a></>)}
+        </p>
+      </section>
+    ))}
+  </div>
+
+  <div class="card">
+    <h3>How this works</h3>
+    <p>It's the same math as <a href="/compare/">Compare rent, co-op, condo</a>: your saved income, debts, and accounts, plus the rate, down payment, and building costs you last saved on each calculator. Anything you never set uses the <a href="/methodology/sources/">site's sourced defaults</a>. Each ceiling is the lower of two limits: what your income supports under the debt-to-income or 40× rule, and what your cash covers once the down payment, closing costs, deposits, and any required reserves are paid.</p>
+    <p>"Biggest single moves" change one thing at a time and rerun the calculator. They don't stack, so two together can be worth less than their sum once the other limit takes over. The lift amounts are the smallest change that brings the binding side level with the other one.</p>
+    <p>These are estimates from this site's formulas, not advice, a pre-approval, or a board decision. Buildings and lenders set their own rules. This page reads your browser's saved data and nothing leaves your device.</p>
+  </div>
+</div>
+</main>
+<Footer
+  variant="site"
+  disclaimer="NYC Affordability is for informational purposes only and does not constitute financial, legal, tax, or mortgage advice. Verify any figure that matters to your decision with a licensed professional."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<script>
+  import '../../scripts/plan';
+</script>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 660px; margin: 0 auto; line-height: 1.7; }
+
+.page { max-width: 1100px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 26px 26px 28px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card h4 { font-size: 12px; font-weight: 800; color: var(--g500); text-transform: uppercase; letter-spacing: .8px; margin: 16px 0 6px; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.7; margin-bottom: 8px; }
+.card p:empty { display: none; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+.note { font-size: 12.5px !important; color: var(--g500) !important; }
+.warn { color: #9a3412 !important; font-weight: 600; }
+.links { font-size: 13px !important; margin-top: 12px; }
+
+.profile { background: var(--blue-xlt); border-color: var(--blue-lt); }
+.sample { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 10px 12px; color: #7c2d12 !important; }
+.sample[hidden] { display: none; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 6px 0 10px; }
+.facts div { background: #fff; border: 1px solid var(--blue-lt); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+.facts dt { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--g500); }
+.facts dd { font-size: 18px; font-weight: 800; color: var(--g900); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+.paths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-bottom: 20px; }
+.path { margin-bottom: 0; display: flex; flex-direction: column; }
+/* Links sit at the bottom so the three cards line up; the rule marks the
+   empty space above them as intentional. Each link wraps as a unit. */
+.path .links { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); line-height: 1.9; }
+.links a { white-space: nowrap; }
+.badge {
+  display: inline-block; font-size: 10.5px; font-weight: 700; color: #475569; background: #f8fafc;
+  border: 1px dashed #cbd5e1; border-radius: 999px; padding: 1px 8px; vertical-align: 2px; margin-left: 4px;
+}
+.max { margin: 2px 0 6px !important; }
+.max-n { font-size: 30px; font-weight: 850; color: var(--g900); letter-spacing: -.8px; font-variant-numeric: tabular-nums; }
+.max-l { font-size: 14px; font-weight: 600; color: var(--g500); margin-left: 4px; }
+.limit { display: inline-block; align-self: flex-start; font-size: 12px !important; font-weight: 800; border-radius: 999px; padding: 2px 10px; margin-bottom: 10px !important; }
+.path :global(.limit.is-income) { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
+.path :global(.limit.is-cash) { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.lift { color: var(--g800) !important; font-weight: 600; }
+.steps { margin: 0 0 4px 18px; padding: 0; font-size: 13.5px; color: var(--g700); line-height: 1.6; }
+.steps :global(li) { margin-bottom: 4px; }
+.steps :global(.gain) { font-weight: 800; color: var(--g900); white-space: nowrap; }
+.steps :global(li.none) { list-style: none; margin-left: -18px; color: var(--g500); font-style: italic; }
+
+@media (max-width: 960px) {
+  .paths { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .page { padding: 28px 16px 48px; }
+  .card { padding: 22px 16px 24px; }
+  .facts { grid-template-columns: 1fr; gap: 8px; }
+  .facts div { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .facts dd { font-size: 16px; }
+}
+</style>
