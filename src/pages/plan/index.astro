@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN, PLAN_LINK } from '../../lib/footerLinks';
@@ -14,7 +16,7 @@ import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
    co-op, and condo, the ceiling, what sets it, and what would move it.
    All of it is built by src/scripts/plan.ts from src/lib/plan.ts (pure,
    tested). This page saves nothing and sends nothing; inputs are edited
-   on the calculators or /compare/. No ads on this page.
+   on the calculators or /compare/.
    ============================================================ */
 
 const footerColumns: FooterColumn[] = [
@@ -57,6 +59,7 @@ const PATHS = [
 ---
 <BaseLayout
   variant="site"
+  ads
   pageTitle="My NYC Plan: What Limits Your Rent or Purchase, and What Moves It | NYC Affordability"
   metaDescription="See what you can afford to rent or buy in NYC, whether income or cash is the limit for a rental, a co-op, and a condo, and which single change would raise each one most. Runs in your browser."
   canonicalPath="/plan/"
@@ -108,6 +111,10 @@ const PATHS = [
         </p>
       </section>
     ))}
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
   </div>
 
   <div class="card">

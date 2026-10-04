@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
@@ -39,6 +41,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 ---
 <BaseLayout
   variant="site"
+  ads
   pageTitle="Methodology: How the NYC Housing Math Works | NYC Affordability"
   metaDescription="How NYC Affordability calculates what you can rent or buy: what's sourced versus calculated, which numbers are laws versus conventions, how defaults are reviewed, and why a lender or co-op board may still disagree."
   canonicalPath="/methodology/"
@@ -122,6 +125,10 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
       <li><strong>Discretion:</strong> boards and landlords can say no for reasons that aren't in any formula.</li>
     </ul>
     <p>Use the numbers here to plan and to ask better questions, then confirm with a licensed mortgage professional and a real estate attorney.</p>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
   </div>
 
   <div class="card">

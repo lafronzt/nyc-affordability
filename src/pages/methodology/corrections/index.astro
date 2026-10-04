@@ -2,6 +2,8 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import Footer from '../../../components/Footer.astro';
+import AdSlot from '../../../components/AdSlot.astro';
+import { AD_IN_ARTICLE } from '../../../lib/adSlots';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import ChangeEntry from '../../../components/ChangeEntry.astro';
 import Byline from '../../../components/Byline.astro';
@@ -41,6 +43,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 ---
 <BaseLayout
   variant="site"
+  ads
   pageTitle="Corrections: What We Got Wrong and Fixed | NYC Affordability"
   metaDescription="How NYC Affordability handles mistakes, and every correction to a figure on the site: what was wrong, what's right now, which pages showed it, and the code that fixed it."
   canonicalPath="/methodology/corrections/"
@@ -78,6 +81,10 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   <div class="card">
     <h3>Found one?</h3>
     <p>Tell us on the <a href="/contact/">contact page</a> or open an issue on <a href="https://github.com/lafronzt/nyc-affordability/issues" target="_blank" rel="noopener noreferrer">GitHub ↗</a>. It helps to include the page, the inputs you used, the number you saw, and where the right number comes from.</p>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
   </div>
 
   <section class="card" aria-labelledby="h-list">

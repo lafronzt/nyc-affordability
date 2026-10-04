@@ -4,6 +4,8 @@ import { BOROUGH_HUBS } from '../../data/boroughs';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import {
@@ -130,6 +132,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 ---
 <BaseLayout
   variant="site"
+  ads
   pageTitle="Site Directory: Every NYC Housing Calculator, Guide & Page | NYC Affordability"
   metaDescription="Every calculator, guide, glossary term, income, salary, rent and purchase-price page, and neighborhood on NYC Affordability, in one place."
   canonicalPath="/explore/"
@@ -205,6 +208,10 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
       </div>
     ))}
   </section>
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
+  </div>
 
   <section class="card" id="neighborhoods" aria-labelledby="h-hoods">
     <h3 id="h-hoods">Neighborhoods <span class="count">{hoods.length}</span></h3>
