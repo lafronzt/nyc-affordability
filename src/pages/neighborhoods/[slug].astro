@@ -80,6 +80,15 @@ const jsonLd = {
   url: `${SITE_ORIGIN}${canonicalPath}`,
   datePublished: data.updated,
   dateModified: data.updated,
+  about: {
+    '@type': 'Place',
+    name: `${data.name}, ${BOROUGH_LABELS[data.borough]}, New York City`,
+    containedInPlace: {
+      '@type': 'AdministrativeArea',
+      name: `${BOROUGH_LABELS[data.borough]}, New York City`,
+      ...(BOROUGH_HUBS.some((b) => b.slug === data.borough) ? { url: `${SITE_ORIGIN}/${data.borough}/` } : {}),
+    },
+  },
   isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` },
 };
 

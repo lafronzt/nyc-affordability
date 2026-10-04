@@ -10,6 +10,7 @@ import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { fmtMoney } from '../../lib/format';
 import { AFFORDABILITY_INDEX } from '../../data/affordabilityIndex';
+import { DATA_LICENSE } from '../../lib/dataExport';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -54,7 +55,13 @@ const jsonLd = {
     name: 'NYC Affordability',
     url: `${SITE_ORIGIN}/`,
   },
-  license: `${SITE_ORIGIN}/terms/`,
+  license: DATA_LICENSE.url,
+  isAccessibleForFree: true,
+  // The same figures as files, from /data/ (src/pages/data/[file].ts).
+  distribution: [
+    { '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: `${SITE_ORIGIN}/data/affordability-index.json` },
+    { '@type': 'DataDownload', encodingFormat: 'text/csv', contentUrl: `${SITE_ORIGIN}/data/affordability-index.csv` },
+  ],
 };
 const breadcrumbItems = [
   { name: 'Home', path: '/' },

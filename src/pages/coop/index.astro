@@ -100,60 +100,9 @@ const faqSchema = {
   ],
 };
 
-// Steps mirror the calculator's own visibly numbered input cards (1-5, each
-// rendered with a <span class="snum"> on this page) plus the results panel.
-const howToSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'HowTo',
-  name: 'How to use the NYC Co-op Affordability Calculator',
-  description: 'Reverse-engineer your maximum NYC co-op purchase price from your income, assets, and a building’s board requirements.',
-  step: [
-    {
-      '@type': 'HowToStep',
-      position: 1,
-      name: 'Account Balances',
-      text: 'List your checking, savings, and investment accounts, each with a balance, a Reserve % weighting, and whether it is available at closing.',
-      url: 'https://www.nyc-affordability.com/coop/#card-body-1',
-    },
-    {
-      '@type': 'HowToStep',
-      position: 2,
-      name: 'Income & Existing Debts',
-      text: 'Enter your annual gross income and any existing monthly debts.',
-      url: 'https://www.nyc-affordability.com/coop/#card-body-2',
-    },
-    {
-      '@type': 'HowToStep',
-      position: 3,
-      name: 'Mortgage Assumptions',
-      text: 'Set your expected mortgage rate, loan term, and down payment percentage.',
-      url: 'https://www.nyc-affordability.com/coop/#card-body-3',
-    },
-    {
-      '@type': 'HowToStep',
-      position: 4,
-      name: 'Co-op Requirements',
-      text: "Set the building's required post-close reserve months and its maximum board debt-to-income ratio.",
-      url: 'https://www.nyc-affordability.com/coop/#card-body-4',
-    },
-    {
-      '@type': 'HowToStep',
-      position: 5,
-      name: 'Closing Costs',
-      text: 'Enter estimated attorney, bank attorney, co-op application, and move-in fees.',
-      url: 'https://www.nyc-affordability.com/coop/#card-body-5',
-    },
-    {
-      '@type': 'HowToStep',
-      position: 6,
-      name: 'Your Max Affordable Price',
-      text: 'View your maximum affordable purchase price, which constraint (cash or DTI) is binding, and the full cost breakdown.',
-      url: 'https://www.nyc-affordability.com/coop/',
-    },
-  ],
-};
-
-const jsonLd = [webAppSchema, faqSchema, howToSchema];
+// No HowTo markup: Google retired HowTo rich results in 2023, so it only
+// added weight. The numbered input cards on the page still show the steps.
+const jsonLd = [webAppSchema, faqSchema];
 ---
 <BaseLayout
   variant="app"
