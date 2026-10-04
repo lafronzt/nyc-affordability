@@ -10,7 +10,7 @@ Multi-file changes, newest first. Each entry gives the user-visible effect and h
   - How a mistake is handled: a failing test first, numbers in the notice, a dated note on the page, and the correction stays listed.
   - How to report one.
   - Every correction with "What was wrong" and "What's right now", from the renter move-in fee (#88) back to the condo mortgage recording tax (#42).
-- **A byline on every guide and glossary term**, plus the changelog and corrections pages: "Maintained by lafronzt. Last updated … Not reviewed by a licensed attorney, accountant, or mortgage professional." It links "How we check figures" and "Corrections". A page affected by a correction also shows a dated note linking to it (the AMI guide today).
+- **A byline on every guide and glossary term**, plus the changelog and corrections pages: "Maintained by Tyler La Fronz (linking to tylerlafronz.com/Links/). Last updated … Not reviewed by a licensed attorney, accountant, or mortgage professional." `/about/` names the maintainer from the same config. It links "How we check figures" and "Corrections". A page affected by a correction also shows a dated note linking to it (the AMI guide today).
 - Guide Article JSON-LD gains `author`. `reviewedBy` appears only once a reviewer is set.
 - **`/methodology/` updates:**
   - The stale "There's no automatic refresh" line now describes the scheduled rate and AMI checks, with a person reviewing each update.

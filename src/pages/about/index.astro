@@ -8,6 +8,7 @@ import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN, ABOUT_LINK } from '../../lib/footerLinks';
 import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+import { MAINTAINER } from '../../data/editorial';
 
 const footerColumns: FooterColumn[] = [
   { heading: 'Calculators', links: ALL_CALCULATORS },
@@ -109,8 +110,8 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   <div class="card">
     <h3>Who maintains this</h3>
     <div class="maintainer-row">
-      <span class="maintainer-badge" aria-hidden="true">L</span>
-      <p style="margin:0;">NYC Affordability is an independent, open-source project maintained by <strong>lafronzt</strong>. The full source code, including every formula and assumption used in these calculators, is public on GitHub.</p>
+      <span class="maintainer-badge" aria-hidden="true">{MAINTAINER.name[0]}</span>
+      <p style="margin:0;">NYC Affordability is an independent, open-source project maintained by <a href={MAINTAINER.url} target="_blank" rel="noopener noreferrer"><strong>{MAINTAINER.name}</strong></a>. The full source code, including every formula and assumption used in these calculators, is public on GitHub.</p>
     </div>
     <p style="margin-top:14px;">
       <a href="https://github.com/lafronzt/nyc-affordability" target="_blank" rel="noopener noreferrer">View the source on GitHub &rarr;</a><br>
