@@ -21,6 +21,7 @@
 import type { Assumption } from '../data/assumptions.ts';
 import type { IndexSnapshot, IndexMetric } from '../data/affordabilityIndex.ts';
 import { firstRent, type MarketFigure } from './marketFigures.ts';
+import { ACS_SOURCE, ACS_YEAR, ACS_TABLES, rentBurden, type AcsArea } from '../data/censusAcs.ts';
 import { requiredIncomeForRent, requiredIncomeForPrice, DEFAULT_ASSUMPTIONS } from './afford.ts';
 
 export const DATA_LICENSE = {
@@ -216,6 +217,54 @@ export function amiDataset(amiBase: Record<number, number>, sourceUrl: string, y
       { key: 'ami_100_pct', description: '100% AMI, US dollars per year.' },
       { key: 'source', description: 'Publisher.' },
       { key: 'source_url', description: 'Where it was published.' },
+    ],
+    rows,
+  };
+}
+
+/**
+ * Census ACS figures for NYC and each borough. Estimates and household
+ * counts are cited (with their 90% margins of error); the rent-burden
+ * shares are this site's division of the Census counts, so they're
+ * marked calculated.
+ */
+export function censusDataset(areas: AcsArea[]): Dataset {
+  const url = (t: keyof typeof ACS_TABLES) => ACS_TABLES[t].url;
+  const rows: Row[] = areas.flatMap((a) => {
+    const b = rentBurden(a);
+    const cited = (measure: string, value: number, moe: number | null, unit: string, table: keyof typeof ACS_TABLES): Row =>
+      ({ kind: 'cited', year: ACS_YEAR, area_slug: a.slug, area_name: a.name, measure, value, moe, unit, table, method: null, source: ACS_SOURCE, source_url: url(table) });
+    const calc = (measure: string, value: number, method: string): Row =>
+      ({ kind: 'calculated', year: ACS_YEAR, area_slug: a.slug, area_name: a.name, measure, value: Math.round(value * 1000) / 1000, moe: null, unit: 'share', table: 'B25070', method, source: ACS_SOURCE, source_url: url('B25070') });
+    return [
+      cited('median_household_income', a.medianHouseholdIncome.value, a.medianHouseholdIncome.moe, 'USD/yr', 'B19013'),
+      cited('renter_median_household_income', a.renterMedianIncome.value, a.renterMedianIncome.moe, 'USD/yr', 'B25119'),
+      cited('owner_median_household_income', a.ownerMedianIncome.value, a.ownerMedianIncome.moe, 'USD/yr', 'B25119'),
+      cited('median_gross_rent', a.medianGrossRent.value, a.medianGrossRent.moe, 'USD/mo', 'B25064'),
+      cited('households', a.households.total, null, 'count', 'B25003'),
+      cited('renter_households', a.households.renter, null, 'count', 'B25003'),
+      calc('renters_paying_30pct_plus', b.atLeast30, 'Renter households paying 30%+ of income in gross rent, divided by renter households with a computed ratio (B25070 E007-E010 / (E001 - E011)).'),
+      calc('renters_paying_50pct_plus', b.atLeast50, 'Renter households paying 50%+ of income in gross rent, divided by renter households with a computed ratio (B25070 E010 / (E001 - E011)).'),
+    ];
+  });
+  return {
+    id: `census-acs-${ACS_YEAR}`,
+    title: `What New Yorkers earn and pay (Census ACS ${ACS_YEAR})`,
+    description: `Median household income, renter and owner incomes, median gross rent actually paid, and rent burden for NYC and each borough, from the Census Bureau's ${ACS_YEAR} American Community Survey 1-year estimates. Survey estimates of residents, not market asking rents.`,
+    kind: 'mixed',
+    columns: [
+      { key: 'kind', description: '"cited" (a Census estimate) or "calculated" (a share this site computed from Census counts).' },
+      { key: 'year', description: 'ACS survey year.' },
+      { key: 'area_slug', description: '"nyc" or a borough slug.' },
+      { key: 'area_name', description: 'Area name.' },
+      { key: 'measure', description: 'What the row measures.' },
+      { key: 'value', description: 'The estimate (US dollars, a household count, or a share from 0 to 1).' },
+      { key: 'moe', description: '90% margin of error as published, where the Census gives one for this row.' },
+      { key: 'unit', description: 'USD/yr, USD/mo, count, or share.' },
+      { key: 'table', description: 'ACS table the figure comes from.' },
+      { key: 'method', description: 'How a calculated share was computed.' },
+      { key: 'source', description: 'Publisher.' },
+      { key: 'source_url', description: 'The table on data.census.gov.' },
     ],
     rows,
   };

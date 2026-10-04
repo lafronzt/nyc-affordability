@@ -10,6 +10,7 @@ import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
 import { fmtMoney } from '../../lib/format';
 import { AFFORDABILITY_INDEX } from '../../data/affordabilityIndex';
+import CensusCard from '../../components/CensusCard.astro';
 import { DATA_LICENSE } from '../../lib/dataExport';
 
 const footerColumns: FooterColumn[] = [
@@ -120,6 +121,12 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   </div>
 
   <p class="mismatch-note">Note the rent and co-op figures above are from different periods ({latest.medianRent.asOf} vs. {latest.medianCoopPrice.asOf}); each is the most recent figure we could verify against a stable, dated source at the time this was built. We'd rather show you the real gap than paper over it with a single invented "as of" date.</p>
+
+  <CensusCard
+    slug="nyc"
+    title="What New Yorkers actually earn and pay"
+    marketRent={{ label: 'Citywide median rent', value: latest.medianRent.value, period: latest.medianRent.asOf }}
+  />
 
   <div class="card">
     <h3>Rent trend</h3>

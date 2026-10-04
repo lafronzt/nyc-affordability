@@ -4,10 +4,11 @@
 import { getCollection } from 'astro:content';
 import { ASSUMPTIONS } from '../data/assumptions.ts';
 import { AFFORDABILITY_INDEX } from '../data/affordabilityIndex.ts';
+import { ACS_AREAS } from '../data/censusAcs.ts';
 import { BOROUGH_HUBS } from '../data/boroughs.ts';
 import { AMI_BASE, AMI_SOURCE_URL, AMI_YEAR } from './amiTable.ts';
 import {
-  marketFiguresDataset, incomeNeededDataset, affordabilityIndexDataset, amiDataset, assumptionsDataset,
+  marketFiguresDataset, incomeNeededDataset, affordabilityIndexDataset, amiDataset, censusDataset, assumptionsDataset,
   type AreaFigures, type Dataset,
 } from './dataExport.ts';
 
@@ -23,6 +24,7 @@ export async function loadDatasets(): Promise<Dataset[]> {
     incomeNeededDataset(areas),
     affordabilityIndexDataset(AFFORDABILITY_INDEX),
     amiDataset(AMI_BASE, AMI_SOURCE_URL, AMI_YEAR),
+    censusDataset(ACS_AREAS),
     assumptionsDataset(ASSUMPTIONS),
   ];
 }

@@ -2,6 +2,26 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Data: Census ACS 2024 (what New Yorkers earn and pay)
+
+**User-visible changes**
+- New source: Census Bureau American Community Survey 2024 1-year estimates for NYC and each borough. It covers median household income, renter vs owner median income, median gross rent actually paid, renters paying 30%+ and 50%+ of income, and the renter share. Each estimate carries its 90% margin of error, and wide ones (over 10%) are flagged.
+- **Borough hubs** (`/manhattan/`, `/brooklyn/`, `/queens/`): a "Who lives in …" card, labeled "Census survey". It sets the median rent residents pay beside the hub's cited new-lease rent (Brooklyn: $1,837 paid vs $4,368 on new leases) and explains the gap: stabilized leases, renewals, long tenancies.
+- **`/affordability-index/`:** the same card citywide: $81,228 household income, $64,866 for renters, $1,811 rent paid; 52% of renters pay 30%+ of income and 29% pay half or more.
+- **Every `/income/<amount>/` page:** "How $X compares" against the citywide and renter median incomes, plus each borough's median.
+- **`/data/census-acs-2024.{json,csv}`:** a new dataset. Estimates are "cited" with their margins; the burden shares are "calculated", with the method stated.
+- **`outputs/2026-10-04_data-sources.md`:** every source evaluated, what it would add, and the ones that need a decision (Redfin borough sale prices, Bronx and Staten Island hubs).
+
+**Code**
+- `src/data/censusAcs.ts`: values plus `rentBurden`, `renterShare`, `isWide` and `relativeTo`.
+- `parseAcsTable` in `src/lib/sourceParsers.ts`.
+- `src/components/CensusCard.astro`.
+- `censusDataset` in `src/lib/dataExport.ts`.
+
+**Validation**
+- New `test/censusAcs.test.ts` (7 tests) re-parses verbatim lines from the Census summary files (`test/fixtures/acs-2024-nyc.txt`) and checks every value and margin in the data file. It also checks the burden arithmetic, the wide-margin flag, the comparison wording, and the `/data/` rows.
+- `npm test` 346/346; `npm run build` is clean, including `check-csp`.
+- Browser at 390px and 1280px: no overflow and no errors on `/brooklyn/`, `/affordability-index/` and `/income/150000/`. The card first rendered without padding, because the page's `.card` style is scoped; it now has its own styles.
 ## 2026-10-04: Workflows: Node 24 actions; link-check report on the run page
 
 **What changed**
