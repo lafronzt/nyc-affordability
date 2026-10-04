@@ -11,8 +11,9 @@ import { coopInputsFromDefaults, condoInputsFromDefaults, rentInputsFromDefaults
    engines as the calculators. Fields outside those sets use the sourced
    defaults (engines/defaults.ts).
 
-   Used by /compare/ (src/scripts/compare.ts) and the scenario A/B view
-   on /my-data/ (src/lib/scenarioCompare.ts), so the two always agree.
+   Used by /compare/ (src/scripts/compare.ts), the scenario A/B view on
+   /my-data/ (src/lib/scenarioCompare.ts), and /plan/ (src/lib/plan.ts),
+   so all three always agree.
    Pure and DOM-free.
    ============================================================ */
 
@@ -78,13 +79,36 @@ export function weightedAssets(accounts: Account[]): number {
   return accounts.reduce((s, a) => s + a.balance * a.liquidity / 100, 0);
 }
 
+// Engine inputs for each path. /plan/ (lib/plan.ts) reads the engines'
+// full results from these same inputs.
+export const rentInputs = (base: BaseInputs, asmp: SharedAssumptions) => rentInputsFromDefaults({
+  ...base,
+  incomeMult: asmp.rent.incomeMult,
+  rentersInsurance: asmp.rent.rentersInsurance,
+  reserveMonths: asmp.rent.reserveMonths,
+});
+
+export const coopInputs = (base: BaseInputs, asmp: SharedAssumptions, rateOverride?: number) => coopInputsFromDefaults({
+  ...base,
+  mortgageRate: rateOverride ?? asmp.coop.mortgageRate,
+  dpPct: asmp.coop.dpPct,
+  reserveMo: asmp.coop.reserveMo,
+  maxDTIPct: asmp.coop.maxDTIPct,
+  maint: asmp.coop.maint,
+});
+
+export const condoInputs = (base: BaseInputs, asmp: SharedAssumptions, rateOverride?: number) => condoInputsFromDefaults({
+  ...base,
+  mortgageRate: rateOverride ?? asmp.condo.mortgageRate,
+  dpPct: asmp.condo.dpPct,
+  maxDtiPct: asmp.condo.maxDtiPct,
+  commonCharges: asmp.condo.commonCharges,
+  propTaxes: asmp.condo.propTaxes,
+  hoInsurance: asmp.condo.hoInsurance,
+});
+
 export function rentOption(base: BaseInputs, asmp: SharedAssumptions): RentResult {
-  const inp = rentInputsFromDefaults({
-    ...base,
-    incomeMult: asmp.rent.incomeMult,
-    rentersInsurance: asmp.rent.rentersInsurance,
-    reserveMonths: asmp.rent.reserveMonths,
-  });
+  const inp = rentInputs(base, asmp);
   const r = calculateRent(inp);
   const snap = rentSnapshot(r.maxRent, inp, r);
   return {
@@ -98,14 +122,7 @@ export function rentOption(base: BaseInputs, asmp: SharedAssumptions): RentResul
 }
 
 export function coopOption(base: BaseInputs, asmp: SharedAssumptions, rateOverride?: number): BuyResult {
-  const r = calculateCoop(coopInputsFromDefaults({
-    ...base,
-    mortgageRate: rateOverride ?? asmp.coop.mortgageRate,
-    dpPct: asmp.coop.dpPct,
-    reserveMo: asmp.coop.reserveMo,
-    maxDTIPct: asmp.coop.maxDTIPct,
-    maint: asmp.coop.maint,
-  }));
+  const r = calculateCoop(coopInputs(base, asmp, rateOverride));
   return {
     maxPrice: r.maxPrice,
     cashRequired: r.totalCash,
@@ -117,15 +134,7 @@ export function coopOption(base: BaseInputs, asmp: SharedAssumptions, rateOverri
 }
 
 export function condoOption(base: BaseInputs, asmp: SharedAssumptions, rateOverride?: number): BuyResult {
-  const r = calculateCondo(condoInputsFromDefaults({
-    ...base,
-    mortgageRate: rateOverride ?? asmp.condo.mortgageRate,
-    dpPct: asmp.condo.dpPct,
-    maxDtiPct: asmp.condo.maxDtiPct,
-    commonCharges: asmp.condo.commonCharges,
-    propTaxes: asmp.condo.propTaxes,
-    hoInsurance: asmp.condo.hoInsurance,
-  }));
+  const r = calculateCondo(condoInputs(base, asmp, rateOverride));
   return {
     maxPrice: r.maxPrice,
     cashRequired: r.totalCash,

@@ -6,7 +6,7 @@ import {
   GUIDE_CLOSING_COSTS, GUIDE_COOP_VS_CONDO, GUIDE_COOP_RESERVE, GUIDE_MANSION_TAX,
   GUIDE_SELLER_CLOSING_COSTS, GUIDE_FLIP_TAX, GUIDE_AMI,
   GUIDES_INDEX_LINK, GLOSSARY_INDEX_LINK, INCOME_INDEX_LINK, BUY_INDEX_LINK, RENT_PRICES_INDEX_LINK,
-  NEIGHBORHOODS_INDEX_LINK, AFFORDABILITY_INDEX_LINK, SALARY_INDEX_LINK, SITE_DIRECTORY_LINK, METHODOLOGY_LINK, DATA_LINK, MY_DATA_LINK,
+  NEIGHBORHOODS_INDEX_LINK, AFFORDABILITY_INDEX_LINK, SALARY_INDEX_LINK, SITE_DIRECTORY_LINK, METHODOLOGY_LINK, DATA_LINK, MY_DATA_LINK, PLAN_LINK,
   type FooterLink,
 } from './footerLinks.ts';
 import { BOROUGH_HUBS } from '../data/boroughs.ts';
@@ -41,6 +41,7 @@ const to = (l: FooterLink, label = l.label): NavLink => ({ label, href: l.href! 
 export const NAV: NavEntry[] = [
   { kind: 'link', ...to(HUB_LINK, 'Home') },
   { kind: 'link', ...to(CALC_REALITY_CHECK, 'Start here') },
+  { kind: 'link', ...to(PLAN_LINK, 'My plan') },
   {
     kind: 'group', id: 'rent', label: 'Rent', intro: 'I want to rent',
     tools: [

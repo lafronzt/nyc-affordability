@@ -2,6 +2,42 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Phase 5d: My NYC Plan (`/plan/`)
+
+**User-visible changes**
+- **New `/plan/` page.** It's read-only and built from what's saved in this browser. For renting, a co-op and a condo it shows:
+  - **The ceiling**, labeled Calculated.
+  - **"Limited by income" or "Limited by cash"**, and a sentence explaining why. For example: "Cash sets it. The 25% down payment, closing costs, and 18 months of post-closing reserves the board wants to see use the $203,000 you can count."
+  - **What the other side alone would allow.**
+  - **The lift:** how much more saved (or earned a year) would bring the binding side level with the other one, after which the other limit takes over.
+  - **Up to three single changes** that move the ceiling, best first: save $10K, earn $10K, pay off debts, rates down half a point. A step that runs into the other limit says so ("then cash is the limit"). Changes that wouldn't help aren't listed.
+- **No saved profile:** it runs on the sample profile with a clear notice. Assumptions that were never saved use the site defaults, and the page says so, naming today's rate.
+- It updates live when another tab saves.
+- **Plausibility limits:**
+  - For rent, it says when cash "isn't close to limiting this" instead of quoting a cash ceiling of $100,000/mo.
+  - It won't quote an income lift that would more than double income.
+- **Links:** a new top-level nav link "My plan", the footer Explore column, links from `/compare/` and `/my-data/`, and the sitemap. No ads on the page.
+
+**Code**
+- New `src/lib/plan.ts` (pure): `ceiling`, `liftToOtherSide`, `nextSteps` and `buildPlan`. Each number is the calculators' engine rerun with one input changed, so it can be reproduced on `/coop/`, `/condo/` or `/rent/`.
+- `src/lib/housingOptions.ts` exports the engine-input builders (`rentInputs`, `coopInputs`, `condoInputs`), so `/plan/`, `/compare/` and A/B share them. `/compare/`'s output is unchanged; all 318 existing tests pass without edits.
+- New `src/scripts/plan.ts` renders the page with `textContent` only and never writes.
+
+**Validation**
+- New `test/plan.test.ts` (10 tests):
+  - Ceilings equal `/compare/`'s.
+  - The binding side is the lower ceiling.
+  - Lift amounts are exact to the dollar (one dollar less isn't enough), including the 40× rent case.
+  - Steps only include changes that help, ranked and reproducible.
+  - Capped steps land on the other ceiling.
+  - Sentence wording; the sample-profile fallback.
+  - The two plausibility rules were written as failing tests first.
+- `npm test` 329/329; `npm run build` is clean, including `check-csp`.
+- Browser (CSP served):
+  - Sample and saved states, live updates from another tab, no console errors.
+  - No horizontal overflow at 390px and 1280px.
+  - With "My plan" added, the desktop nav still fits at 1100px; the hamburger breakpoint stays at 1024px.
+
 ## 2026-10-04: Phase 5c: Compare two scenarios (A/B)
 
 **User-visible changes**

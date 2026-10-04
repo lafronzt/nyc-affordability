@@ -94,6 +94,7 @@ export const NEIGHBORHOODS_INDEX_LINK: FooterLink = { label: 'NYC Neighborhood A
 export const AFFORDABILITY_INDEX_LINK: FooterLink = { label: 'NYC Affordability Index', href: '/affordability-index/' };
 export const SALARY_INDEX_LINK: FooterLink = { label: 'Salary After Taxes in NYC', href: '/salary/' };
 export const SITE_DIRECTORY_LINK: FooterLink = { label: 'Site Directory (All Pages)', href: '/explore/' };
+export const PLAN_LINK: FooterLink = { label: 'My NYC Plan', href: '/plan/' };
 export const DATA_LINK: FooterLink = { label: 'Data Downloads (JSON & CSV)', href: '/data/' };
 
 /** Index-only links for the enumerated-parameter page types (income/buy) plus the
@@ -108,6 +109,7 @@ export const EXPLORE_LINKS: FooterLink[] = [
   NEIGHBORHOODS_INDEX_LINK,
   AFFORDABILITY_INDEX_LINK,
   SALARY_INDEX_LINK,
+  PLAN_LINK,
   DATA_LINK,
   SITE_DIRECTORY_LINK,
 ];
