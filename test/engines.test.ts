@@ -37,8 +37,14 @@ const RENT_ACCOUNTS: RentAccount[] = [
   { name: 'Brokerage', balance: 20000, liquidity: 80 },
 ];
 
-const coop = (o = {}) => calculateCoop(coopInputsFromDefaults({ accounts: COOP_ACCOUNTS, annualIncome: 150_000, ...o }));
-const condo = (o = {}) => calculateCondo(condoInputsFromDefaults({ accounts: CONDO_ACCOUNTS, annualIncome: 225_000, ...o }));
+// Behavior tests use a fixed rate, not the site default, so they keep testing
+// the same scenario when the weekly PMMS update moves the default (see
+// .github/workflows/data-update-pmms.yml). Default-dependent figures are
+// checked in test/afford.test.ts and test/guideExamples.test.ts instead.
+const TEST_RATE = 6.95;
+
+const coop = (o = {}) => calculateCoop(coopInputsFromDefaults({ accounts: COOP_ACCOUNTS, annualIncome: 150_000, mortgageRate: TEST_RATE, ...o }));
+const condo = (o = {}) => calculateCondo(condoInputsFromDefaults({ accounts: CONDO_ACCOUNTS, annualIncome: 225_000, mortgageRate: TEST_RATE, ...o }));
 
 // ---- Co-op ----
 

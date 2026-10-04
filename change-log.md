@@ -2,6 +2,20 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Tests: behavior tests use a fixed rate, not the site default
+
+**What changed**
+- Engine behavior tests now pass `mortgageRate: TEST_RATE` (6.95%) instead of inheriting `mortgageRatePct` from the registry. The tests live in `engines`, `levers`, `sensitivity`, `rentVsBuy`, `savings` and `moveCost`.
+- **Why:** with the weekly PMMS job (#90), the default rate changes regularly. In the first update (#93, 6.95% to 7.28%), two of these tests stopped testing what they describe:
+  - The condo "cash binds" scenario was no longer cash-bound.
+  - "Saving helps only until income becomes the limit" fell from $10,745 to $2,361 at the new rate.
+- Updating their numbers would have hidden that. With a fixed rate they keep testing the same scenario.
+- **Unchanged on purpose:** `test/afford.test.ts` pins what the homepage and income pages show at the default, and `test/guideExamples.test.ts` checks guide prose against the default. Those should still move with the rate. Parity tests that compare two modules at the default still use it on both sides.
+
+**Validation**
+- `npm test` 289/289 at the current 6.95% default.
+- With these tests on #93's branch (default 7.28%), failures drop from 29 to 17: the 5 afford goldens plus 12 guide checks, all intended. No behavior test fails.
+
 ## 2026-10-04: Phase 4b: Charts that keep cited and calculated figures apart (/neighborhoods/)
 
 **User-visible changes**
