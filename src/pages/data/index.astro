@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import Footer from '../../components/Footer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN } from '../../lib/footerLinks';
@@ -60,6 +62,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 ---
 <BaseLayout
   variant="site"
+  ads
   pageTitle="NYC Housing Data Downloads: JSON & CSV, Public Domain | NYC Affordability"
   metaDescription="Download the cited NYC rent and sale figures, calculator assumptions, AMI limits, and income-needed calculations behind this site as JSON or CSV. Public domain (CC0)."
   canonicalPath="/data/"
@@ -141,6 +144,10 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
       </div>
     </section>
   ))}
+
+  <div style="margin-bottom:20px;">
+    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
+  </div>
 
   <div class="card">
     <h3>How fresh is it?</h3>
