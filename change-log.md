@@ -2,6 +2,31 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-04: Phase 5b: Your Saved Data (scenarios, export/import, reset)
+
+**User-visible changes**
+- **New `/my-data/` page.** It lists every tool that can save inputs in this browser, shows which have data, and marks the ones that can hold income, debts or balances as Personal.
+  - **Scenarios.** Save everything currently saved under a name, then load, rename or delete it (up to 20). Saving under an existing name updates that scenario. Loading replaces the calculators' current saved inputs.
+  - **Export and import.** Export downloads a JSON file built in the browser. Import reads a file you pick and previews it, then merges or replaces. Only known keys with valid JSON are written; anything else is listed as skipped. It also accepts the "Download my saved data" file from the legacy co-op domain.
+  - **Delete everything**, with a confirmation step. It removes only this site's keys.
+  - No ads on the page, and no network requests.
+- **Privacy page.** The storage-key table now renders from the same registry, which adds the 6 keys it was missing plus `nyc_scenarios`. The legacy-domain paragraph now describes the 5a behavior: only settings travel, and personal figures are offered as a download. Last updated October 4, 2026.
+- The legacy co-op page's download note now points to `/my-data/` for importing.
+- Linked from the nav (Learn), the footer About column, and the site directory. Added to the sitemap.
+
+**Code**
+- New `src/lib/profileStore.ts`: `STORAGE_KEYS` registry, scenarios, export, `parseImport`, `applyImport`, `resetAll`. It's pure apart from the Storage object passed in.
+- New `src/scripts/my-data.ts`, which only wires that to the page. Strings from storage or files go in with `textContent`.
+
+**Validation**
+- New `test/profileStore.test.ts` (13 tests): save/load/rename/delete, same-name replace, the limit, the export/import round trip, merge renames ("(imported)", then "(imported 2)"), the legacy file, rejecting unknown keys and bad files, the size cap, and reset leaving other sites' keys alone. A drift test fails if any `nyc_*` key used in `src/` isn't in the registry.
+- `npm test` 309/309; `npm run build` is clean, including `check-csp`.
+- Browser (CSP served, 390 and 1280px, no console errors, no horizontal overflow):
+  - Saved, renamed, loaded and deleted scenarios. A scenario named with an `<img onerror>` tag rendered as text.
+  - Export downloaded `nyc-affordability-saved-data-2026-10-04.json`. Reset emptied storage. Importing that file (replace) restored both tools and both scenarios. The legacy file imported its co-op inputs and skipped its unknown key. A foreign JSON file was rejected.
+  - End to end: saved a 6.25% co-op as a scenario, changed `/coop/` to 8%, loaded the scenario, and `/coop/` reopened at 6.25%.
+  - Caught and fixed in the browser check: `.row { display: flex }` overrode `hidden`, so the reset confirmation showed before it was clicked.
+
 ## 2026-10-04: Phase 5a: No personal finances in URLs
 
 **User-visible changes**

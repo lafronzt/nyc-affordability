@@ -1,0 +1,279 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import type { FooterColumn } from '../../lib/footerLinks';
+import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN, MY_DATA_LINK } from '../../lib/footerLinks';
+import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
+import { STORAGE_KEYS, MAX_SCENARIOS } from '../../lib/profileStore';
+
+/* ============================================================
+   Your saved data: what's in this browser, named scenarios,
+   export/import, reset
+   ============================================================
+   The table is rendered from STORAGE_KEYS at build time; the script
+   (src/scripts/my-data.ts) only fills in which rows have data and
+   handles the buttons. Nothing on this page sends anything anywhere.
+   No ads on this page (BaseLayout's `ads` is left off).
+   ============================================================ */
+
+const footerColumns: FooterColumn[] = [
+  { heading: 'Calculators', links: ALL_CALCULATORS },
+  { heading: 'Guides', links: ALL_GUIDES },
+  { heading: 'Explore', links: EXPLORE_LINKS },
+  STANDARD_ABOUT_COLUMN,
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Your Saved Data',
+  url: 'https://www.nyc-affordability.com/my-data/',
+  description: 'See, name, export, import, and delete the calculator inputs this site saved in your browser. Nothing is stored on a server.',
+  isPartOf: { '@type': 'WebSite', name: 'NYC Affordability', url: 'https://www.nyc-affordability.com/' },
+};
+const breadcrumbItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Your saved data', path: MY_DATA_LINK.href! },
+];
+const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+---
+<BaseLayout
+  variant="site"
+  pageTitle="Your Saved Data: Scenarios, Export & Reset | NYC Affordability"
+  metaDescription="See which calculators saved your inputs in this browser, keep named scenarios, export them to a file, import them on another device, or delete everything. Nothing is stored on a server."
+  canonicalPath="/my-data/"
+  ogTitle="NYC Affordability: Your Saved Data"
+  ogDescription="Named scenarios, export, import, and reset for the inputs saved in your browser. Nothing leaves your device."
+  ogImage="/images/general-og.png"
+  ogImageAlt="NYC Affordability calculators for rent, co-op, and condo housing."
+  twitterTitle="NYC Affordability: Your Saved Data"
+  twitterDescription="Named scenarios, export, import, and reset for the inputs saved in your browser. Nothing leaves your device."
+  jsonLd={[jsonLd, breadcrumbJsonLd]}
+>
+<SiteHeader />
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Your data</div>
+  <h2>Your saved data</h2>
+  <p>Everything the calculators remember lives in this browser, on this device. Here's all of it, with a way to name it, move it, or throw it out.</p>
+</div>
+<div class="page">
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <div class="card summary">
+    <h3>Nothing here goes to a server</h3>
+    <p>There's no account and no server copy. This page reads your browser's local storage and writes files your browser downloads. Another browser, another device, or a private window won't see any of it unless you export a file and import it there. Clearing this site's data in your browser settings deletes it all, and so does the reset button below.</p>
+  </div>
+
+  <section class="card" aria-labelledby="h-saved">
+    <h3 id="h-saved">What's saved in this browser</h3>
+    <p>A calculator saves only after you turn on its "Save inputs" or "Save profile" toggle. Rows marked <span class="badge badge--personal">Personal</span> can hold your income, debts, or account balances.</p>
+    <p class="status" id="saved-summary" aria-live="polite">Checking this browser…</p>
+    <div class="table-wrap">
+      <table class="key-table">
+        <thead><tr><th scope="col">Tool</th><th scope="col">What it holds</th><th scope="col">In this browser</th></tr></thead>
+        <tbody>
+          {STORAGE_KEYS.map((k) => (
+            <tr data-key={k.key}>
+              <th scope="row">
+                <a href={k.href}>{k.label}</a>
+                {k.personal && <span class="badge badge--personal">Personal</span>}
+                <code class="key">{k.key}</code>
+              </th>
+              <td data-label="Holds">{k.purpose}</td>
+              <td data-label="Saved" class="state">-</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <noscript><p class="warn">This page needs JavaScript to read your browser's storage. Nothing on it works without it, and nothing is sent anywhere with it.</p></noscript>
+  </section>
+
+  <section class="card" aria-labelledby="h-scen">
+    <h3 id="h-scen">Scenarios</h3>
+    <p>A scenario is a named copy of everything saved above, like "Astoria co-op, 20% down" or "Brooklyn rent with a guarantor". Save one, change the calculators, save another, and switch between them here. Loading a scenario replaces what the calculators have saved now. Up to {MAX_SCENARIOS}.</p>
+    <form class="row" id="save-form">
+      <label for="scenario-name" class="sr-only">Scenario name</label>
+      <input id="scenario-name" type="text" maxlength="60" placeholder="Name this scenario" autocomplete="off" />
+      <button type="submit" class="btn btn-primary">Save current inputs</button>
+    </form>
+    <p class="status" id="scenario-status" aria-live="polite"></p>
+    <ul class="scenarios" id="scenario-list"></ul>
+    <p class="empty" id="scenario-empty">No scenarios yet.</p>
+  </section>
+
+  <section class="card" aria-labelledby="h-move">
+    <h3 id="h-move">Export and import</h3>
+    <p>Export downloads one JSON file with your saved inputs and scenarios. Import it on another browser or device to pick up where you left off. The file is plain text with your income and balances in it, so keep it somewhere you'd keep a bank statement.</p>
+    <div class="row">
+      <button type="button" class="btn btn-primary" id="export-btn">Download my data</button>
+      <label class="btn btn-secondary file-btn">
+        Import a file…
+        <input type="file" id="import-file" accept="application/json,.json" />
+      </label>
+    </div>
+    <p class="note">Import also accepts the "Download my saved data" file from the old nyc-co-op-affordability.com address.</p>
+    <p class="status" id="export-status" aria-live="polite"></p>
+    <div class="preview" id="import-preview" hidden>
+      <h4>Import this file?</h4>
+      <p id="import-summary"></p>
+      <ul id="import-keys" class="keys"></ul>
+      <p id="import-skipped" class="note" hidden></p>
+      <fieldset class="mode">
+        <legend>What to do with what's saved now</legend>
+        <label><input type="radio" name="import-mode" value="merge" checked /> Merge: keep it, and let the file overwrite only the tools it has</label>
+        <label><input type="radio" name="import-mode" value="replace" /> Replace: clear the calculators first, then import (your scenarios stay)</label>
+      </fieldset>
+      <div class="row">
+        <button type="button" class="btn btn-primary" id="import-confirm">Import</button>
+        <button type="button" class="btn btn-secondary" id="import-cancel">Cancel</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card danger" aria-labelledby="h-reset">
+    <h3 id="h-reset">Delete everything</h3>
+    <p>Removes every calculator input, the shared profile, and every scenario this site saved in this browser. It doesn't touch other sites. Export first if you might want it back.</p>
+    <div class="row" id="reset-start">
+      <button type="button" class="btn btn-danger" id="reset-btn">Delete all saved data…</button>
+    </div>
+    <div class="row" id="reset-confirm" hidden>
+      <span class="confirm-text">This can't be undone.</span>
+      <button type="button" class="btn btn-danger" id="reset-yes">Yes, delete everything</button>
+      <button type="button" class="btn btn-secondary" id="reset-no">Cancel</button>
+    </div>
+    <p class="status" id="reset-status" aria-live="polite"></p>
+  </section>
+
+  <div class="card">
+    <h3>Fine print</h3>
+    <p>The full list of storage keys and what each one is for is also on the <a href="/privacy/">privacy page</a>. Shared result links and share text never include balances or other saved inputs. This page loads no ads.</p>
+    <p>Saved scenarios are your own numbers run through the site's calculators. They're estimates, not advice, and they don't update themselves when rates or prices move. Open the calculator again to see the current math.</p>
+  </div>
+</div>
+</main>
+<Footer
+  variant="site"
+  disclaimer="NYC Affordability is for informational purposes only and does not constitute financial, legal, tax, or mortgage advice. Verify any figure that matters to your decision with a licensed professional."
+  columns={footerColumns}
+/>
+</BaseLayout>
+
+<script>
+  import '../../scripts/my-data';
+</script>
+
+<style>
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #0d1f3c 55%, #142240 100%);
+  padding: 52px 24px 44px; text-align: center; color: #e2e8f0;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.hero h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; color: #f0f9ff; }
+.hero p { font-size: 15px; color: #93b4d0; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+
+.page { max-width: 960px; margin: 0 auto; padding: 44px 24px 64px; flex: 1; }
+
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 28px 28px 30px; margin-bottom: 20px;
+}
+.card h3 { font-size: 17px; font-weight: 800; color: var(--g900); margin-bottom: 10px; letter-spacing: -.2px; }
+.card h4 { font-size: 14.5px; font-weight: 800; color: var(--g900); margin-bottom: 6px; }
+.card p { font-size: 14px; color: var(--g600); line-height: 1.75; margin-bottom: 10px; }
+.card a { color: var(--blue); text-decoration: none; }
+.card a:hover { text-decoration: underline; }
+.summary { background: var(--blue-xlt); border-color: var(--blue-lt); }
+.danger { border-color: #fecaca; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.note { font-size: 12.5px !important; color: var(--g500) !important; }
+.status { font-size: 13.5px !important; font-weight: 600; color: var(--g700) !important; min-height: 1px; }
+.status:empty { display: none; }
+.warn { color: #9a3412 !important; font-weight: 600; }
+.empty { font-size: 13.5px !important; color: var(--g500) !important; font-style: italic; }
+
+.badge {
+  display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .2px; white-space: nowrap;
+  border-radius: 999px; padding: 1px 8px; border: 1px solid transparent; vertical-align: 1px;
+}
+.badge--personal { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
+
+.table-wrap { overflow-x: auto; margin: 6px -4px 0; }
+.key-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.key-table th, .key-table td { text-align: left; vertical-align: top; padding: 10px 8px; border-bottom: 1px solid var(--border); color: var(--g700); }
+.key-table thead th { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--g500); font-weight: 700; border-bottom: 2px solid var(--border); }
+.key-table tbody th { font-weight: 650; color: var(--g900); min-width: 200px; }
+.key-table tbody th a { margin-right: 6px; }
+.key { display: block; margin-top: 3px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; font-weight: 400; color: var(--g500); }
+.state { white-space: nowrap; font-weight: 700; color: var(--g400) !important; }
+tr.is-saved .state { color: #15803d !important; }
+
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0; }
+/* display: flex would otherwise beat the hidden attribute. */
+.row[hidden], .preview[hidden] { display: none; }
+.row input[type="text"] {
+  flex: 1 1 240px; min-width: 0; font: inherit; font-size: 14px; padding: 9px 12px;
+  border: 1px solid var(--border); border-radius: 8px; color: var(--g900); background: #fff;
+}
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  font: inherit; font-size: 13.5px; font-weight: 700; padding: 9px 16px; min-height: 40px;
+  border-radius: 8px; border: 1px solid transparent; cursor: pointer; text-decoration: none; white-space: nowrap;
+}
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-secondary { background: #fff; color: var(--g800); border-color: var(--border); }
+.btn-secondary:hover { background: var(--g50); }
+.btn-danger { background: #fff; color: #b91c1c; border-color: #fca5a5; }
+.btn-danger:hover { background: #fef2f2; }
+#reset-yes { background: #b91c1c; color: #fff; border-color: #b91c1c; }
+.btn:focus-visible, .row input:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.file-btn { position: relative; }
+.file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.file-btn:focus-within { outline: 2px solid var(--blue); outline-offset: 2px; }
+.confirm-text { font-size: 13.5px; font-weight: 700; color: #b91c1c; }
+
+/* The scenario list and import preview items are built by the script, so
+   their rules need :global() (scoped styles don't reach them). */
+.scenarios { list-style: none; padding: 0; margin: 4px 0 0; }
+.scenarios :global(li) {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+  padding: 12px 0; border-top: 1px solid var(--border);
+}
+.scenarios :global(.s-form) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; flex: 1 1 100%; }
+.scenarios :global(.s-main) { flex: 1 1 220px; min-width: 0; }
+.scenarios :global(.s-name) { display: block; font-weight: 750; color: var(--g900); font-size: 14.5px; overflow-wrap: anywhere; }
+.scenarios :global(.s-meta) { display: block; font-size: 12.5px; color: var(--g500); }
+.scenarios :global(.s-actions) { display: flex; flex-wrap: wrap; gap: 8px; }
+.scenarios :global(.btn) { padding: 6px 12px; min-height: 36px; font-size: 13px; }
+.scenarios :global(input[type="text"]) {
+  width: 100%; font: inherit; font-size: 14px; padding: 7px 10px;
+  border: 1px solid var(--border); border-radius: 8px;
+}
+
+.preview { border: 1px solid var(--blue-lt); background: var(--blue-xlt); border-radius: 10px; padding: 16px 18px; margin-top: 8px; }
+.keys { margin: 0 0 10px 18px; font-size: 13.5px; color: var(--g700); line-height: 1.7; }
+.mode { border: 0; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; }
+.mode legend { font-size: 13px; font-weight: 700; color: var(--g800); margin-bottom: 4px; }
+.mode label { font-size: 13.5px; color: var(--g700); display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; }
+.mode input { margin-top: 4px; }
+
+@media (max-width: 720px) {
+  .page { padding: 28px 16px 48px; }
+  .card { padding: 22px 16px 24px; }
+  .key-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .key-table, .key-table tbody, .key-table tr, .key-table th, .key-table td { display: block; width: 100%; }
+  .key-table tr { border-bottom: 1px solid var(--border); padding: 10px 0; }
+  .key-table th, .key-table td { border: 0; padding: 3px 0; }
+  .key-table tbody th { min-width: 0; }
+  .key-table td[data-label]::before {
+    content: attr(data-label) ': '; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .6px; color: var(--g500); margin-right: 4px;
+  }
+  .row .btn { flex: 1 1 auto; }
+}
+</style>

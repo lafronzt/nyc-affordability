@@ -173,7 +173,7 @@ button{font:inherit;font-size:14px;font-weight:600;padding:9px 14px;border-radiu
 <h2>Your saved numbers stay here</h2>
 <p>This browser saved some personal figures on the old address. We don't put income, debts or account balances in a web address, because addresses end up in your browser history. Your calculator settings (rate, down payment, fees) will carry over; re-enter these on the new page:</p>
 <ul id="saved"></ul>
-<p>Or download them as a file. It stays on your device; keep it private.</p>
+<p>Or download them as a file and import it on the new site's <a href="https://www.nyc-affordability.com/my-data/">Your Saved Data</a> page. The file stays on your device; keep it private.</p>
 <div class="actions"><button type="button" id="download">Download my saved data</button></div>
 </section>
 <p><a id="continue" href="${canonical}">Continue to the co-op calculator</a></p>
