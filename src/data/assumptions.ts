@@ -53,15 +53,15 @@ const asm = <T extends Record<string, Assumption>>(t: T) => t;
 export const ASSUMPTIONS = asm({
   // ---- Mortgage ----
   mortgageRatePct: {
-    value: 7.28,
+    value: 7.4,
     unit: '%',
     label: '30-year fixed mortgage rate',
     basis: 'official-data',
     sourceOrg: 'Freddie Mac Primary Mortgage Market Survey',
     sourceUrl: 'https://www.freddiemac.com/pmms',
-    effectiveDate: '2026-10-01',
-    lastVerified: '2026-10-04',
-    notes: 'Freddie Mac PMMS 30-year fixed average for the week of 2026-10-01: conventional, conforming, 20% down, excellent credit. Jumbo loans and lender overlays can differ materially. Updated by the weekly PMMS job.',
+    effectiveDate: '2026-10-08',
+    lastVerified: '2026-10-09',
+    notes: 'Freddie Mac PMMS 30-year fixed average for the week of 2026-10-08: conventional, conforming, 20% down, excellent credit. Jumbo loans and lender overlays can differ materially. Updated by the weekly PMMS job.',
     inputs: [{ page: 'coop', id: 'mtg-rate' }, { page: 'condo', id: 'mtg-rate' }],
   },
   loanTermYears: {
