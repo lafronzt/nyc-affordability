@@ -6,8 +6,10 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { parseHpdAmiPage } from '../../src/lib/sourceParsers.ts';
 import { AMI_BASE, AMI_YEAR, AMI_SOURCE_URL } from '../../src/lib/amiTable.ts';
 import { fetchText, setOutput, findMentions, runTests } from './shared.ts';
+import { amiChangeEntry, insertChange } from './changelog.ts';
 
 const TABLE_FILE = 'src/lib/amiTable.ts';
+const CHANGES_FILE = 'src/data/siteChanges.ts';
 const reportPath = process.argv[2] ?? 'ami-report.md';
 const hpd = parseHpdAmiPage(await fetchText(AMI_SOURCE_URL, 'AMI_SOURCE_FILE'));
 const sizes = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -23,9 +25,14 @@ for (const s of sizes) src = src.replace(new RegExp(`(\\n  ${s}: )\\d+,`), `$1${
 src = src.replace(/export const AMI_YEAR = \d{4};/, `export const AMI_YEAR = ${hpd.year};`);
 writeFileSync(TABLE_FILE, src);
 
+// The public changelog (/methodology/changelog/).
+const today = new Date().toISOString().slice(0, 10);
+const entry = amiChangeEntry({ oldYear: AMI_YEAR, newYear: hpd.year, oldBase: AMI_BASE, newBase: hpd.base, date: today })!;
+writeFileSync(CHANGES_FILE, insertChange(readFileSync(CHANGES_FILE, 'utf8'), entry));
+
 const fmt = (n: number) => `$${n.toLocaleString('en-US')}`;
 const rows = sizes.map((s) => `| ${s} | ${fmt(AMI_BASE[s])} | **${fmt(hpd.base[s])}** |`).join('\n');
-const mentions = sizes.flatMap((s) => findMentions(fmt(AMI_BASE[s]), [TABLE_FILE]));
+const mentions = sizes.flatMap((s) => findMentions(fmt(AMI_BASE[s]), [TABLE_FILE, CHANGES_FILE]));
 const tests = runTests();
 
 writeFileSync(reportPath, `Automated monthly check of [NYC HPD's AMI chart](${AMI_SOURCE_URL}) found figures that differ from the site's table.
@@ -36,6 +43,7 @@ ${rows}
 
 ## Changed automatically
 - \`${TABLE_FILE}\`: \`AMI_BASE\`${hpd.year !== AMI_YEAR ? ` and \`AMI_YEAR\` (${AMI_YEAR} → ${hpd.year})` : ''}.
+- \`${CHANGES_FILE}\`: changelog entry "${entry.title}" dated ${today} (shown on \`/methodology/changelog/\`). Its \`pr\` is filled in with this PR's number.
 
 ## Needs a person before merging
 - Tests: **${tests.fail} failing** (${tests.pass} passing). \`test/amiTable.test.ts\` pins HPD's chart on purpose, so it fails until someone checks the new figures against HPD's page and updates the pinned values. Other failures:
@@ -45,6 +53,7 @@ ${tests.failures}
 \`\`\`
 - Text that quotes the old figures — update each (guides, glossary, \`/affordable/\` copy, \`src/data/sourceTables.ts\` vintage and last-verified date):
 ${mentions.length ? mentions.map((m) => `  - \`${m.replace(/`/g, "'")}\``).join('\n') : '  - none found'}
+- Changelog entry: if this merges after ${today}, change its \`date\` to the merge day (keep entries newest first), and check its summary against HPD's page. If you edit guides by hand, add a \`change-log.md\` entry and set \`logHeading\` to its heading.
 - If the year changed, rename \`ami-${AMI_YEAR}\` references (the \`/data/ami-${hpd.year}\` download follows \`AMI_YEAR\` automatically).
 
 This PR was opened by \`.github/workflows/data-check-ami.yml\`. It never merges itself.

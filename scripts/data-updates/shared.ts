@@ -43,7 +43,11 @@ export function findMentions(needle: string, skip: string[] = []): string[] {
 export function runTests(): { pass: number; fail: number; failures: string } {
   let output = '';
   try {
-    output = execSync('npm test 2>&1', { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+    // TAP, which the parsing below expects; Node 23+ defaults to the spec reporter even when piped.
+    output = execSync('npm test 2>&1', {
+      encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
+      env: { ...process.env, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --test-reporter=tap`.trim() },
+    });
   } catch (e) {
     output = (e as { stdout?: string }).stdout ?? String(e);
   }
