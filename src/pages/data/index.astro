@@ -35,6 +35,8 @@ const KIND_LABEL: Record<Dataset['kind'], string> = {
 };
 
 const SITE_ORIGIN = 'https://www.nyc-affordability.com';
+// Google's Dataset rich results flag items without a creator; same publisher as /affordability-index/.
+const creator = { '@type': 'Organization', name: 'NYC Affordability', url: `${SITE_ORIGIN}/` };
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'DataCatalog',
@@ -46,6 +48,7 @@ const jsonLd = {
     '@type': 'Dataset',
     name: d.title,
     description: d.description,
+    creator,
     license: DATA_LICENSE.url,
     isAccessibleForFree: true,
     distribution: [
