@@ -2,6 +2,23 @@
 
 Multi-file changes, newest first. Each entry gives the user-visible effect and how it was validated.
 
+## 2026-10-14: Data: default mortgage rate 7.28% → 7.40% (PMMS, week of October 8, 2026)
+
+**User-visible changes**
+- The weekly PMMS job opened #112 (`data/pmms-rate`). It updated `mortgageRatePct` and the rate inputs on `/coop/`, `/condo/` and `/compare/`. Every calculator and build-time page (homepage table, `/income/`, `/buy/`, neighborhood and borough pages, `/data/`) now computes at 7.40%.
+- Source: Freddie Mac PMMS page, "Mortgage Rates Average 7.40%". The 30-year fixed averaged 7.40% as of October 8, 2026, up from 7.28% the week before (6.30% a year earlier).
+- #112 merged with only the automated changes, which left `main` with 17 failing tests (5 afford goldens, 12 guide checks). **Hand updates, in a follow-up PR:**
+  - Seven guides' worked examples were recomputed at 7.40%: rates, income needed, reserves, down payment, rent vs buy, common charges, maintenance. The rates guide's "where rates are now" paragraph and its source were updated to the October 8 release; its tables replace the 7.28% row with a bold 7.40% row.
+  - The mortgage-points, rate-lock and PMI glossary examples were recomputed. The hypothetical rates move with the default (points: 7.40% → 7.15%; lock: 7.40% → 7.65%). PMI now reaches 80% LTV after 105 payments, and 78% after 120.
+  - The `/coop/` and `/condo/` rate hints now cite the October 8 release. The co-op median now needs about $172K of income.
+  - `test/afford.test.ts` goldens were recaptured at 7.40%.
+- This entry and its public changelog row were added by hand. Later PMMS/AMI job PRs write their own entries (#115).
+
+**Validation**
+- `npm test` 401/401; `npm run build` is clean, including `check-csp`.
+- No remaining "7.28%" in `src/`, other than the rates guide's own history ("up from 7.28% the week before") and the changelog.
+- No remaining dollar figures derived from 7.28% ($420K, $557K, $170K, $3,832 and others).
+
 ## 2026-10-04: Data: Census ACS 2024 (what New Yorkers earn and pay)
 
 **User-visible changes**
