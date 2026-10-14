@@ -6,9 +6,11 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { parsePmmsCsv, setInputValue } from '../../src/lib/sourceParsers.ts';
 import { ASSUMPTIONS } from '../../src/data/assumptions.ts';
 import { fetchText, setOutput, findMentions, runTests } from './shared.ts';
+import { rateChangeEntry, insertChange } from './changelog.ts';
 
 const PMMS_CSV = 'https://www.freddiemac.com/pmms/docs/PMMS_history.csv';
 const ASSUMPTIONS_FILE = 'src/data/assumptions.ts';
+const CHANGES_FILE = 'src/data/siteChanges.ts';
 // Every <input> that defaults to the mortgage rate.
 const RATE_INPUTS = [
   { file: 'src/pages/coop/index.astro', id: 'mtg-rate' },
@@ -53,9 +55,15 @@ for (const { file, id } of RATE_INPUTS) {
   if (r.changed) { writeFileSync(file, r.src); inputsChanged.push(`${file} #${id}`); }
 }
 
-// 3. What a person still has to check: prose that quotes the old rate, and failing tests.
+// 3. The public changelog (/methodology/changelog/), unless only the survey week moved.
+const entry = rateChangeEntry({ oldRate: cur.value, newRate: week.rate30, surveyDate: week.date, date: today });
+if (entry) writeFileSync(CHANGES_FILE, insertChange(readFileSync(CHANGES_FILE, 'utf8'), entry));
+
+// 4. What a person still has to check: prose that quotes the old rate, and failing tests.
+// Guides print table rates with two decimals (7.40%), the registry may not (7.4).
 const oldRate = `${cur.value}%`;
-const mentions = findMentions(oldRate, [ASSUMPTIONS_FILE]);
+const oldRateForms = [...new Set([oldRate, `${cur.value.toFixed(2)}%`])];
+const mentions = [...new Set(oldRateForms.flatMap((r) => findMentions(r, [ASSUMPTIONS_FILE, CHANGES_FILE])))];
 const tests = runTests();
 
 const report = `Automated weekly check of the [Freddie Mac PMMS](https://www.freddiemac.com/pmms) found a newer survey week.
@@ -69,10 +77,11 @@ Source file: ${PMMS_CSV}
 ## Changed automatically
 - \`${ASSUMPTIONS_FILE}\`: \`mortgageRatePct\` value, effectiveDate, lastVerified (${today}), notes.
 ${inputsChanged.map((s) => `- \`${s}\` default value`).join('\n') || '- (no calculator inputs needed changing)'}
+${entry ? `- \`${CHANGES_FILE}\`: changelog entry "${entry.title}" dated ${today} (shown on \`/methodology/changelog/\`). Its \`pr\` is filled in with this PR's number.` : `- No changelog entry: the rate is unchanged (${cur.value}%), only the survey week moved.`}
 
 ## Needs a person before merging
 ${tests.fail === 0 ? `- Tests: **${tests.pass} passed, 0 failed.**` : `- Tests: **${tests.fail} failing** (${tests.pass} passing). Two kinds are expected on every rate change: engine golden tests that pin results at the default rate (each message shows the expected and actual value), and guide worked examples that quote figures computed at the old rate (\`test/guideExamples.test.ts\` lists the exact text each should now say). Update both, then rerun \`npm test\`:\n\n\`\`\`\n${tests.failures}\n\`\`\``}
-- Text that still quotes the old rate (${oldRate}) — update or confirm each:
+${entry ? `- Changelog entry: if this merges after ${today}, change its \`date\` to the merge day (keep entries newest first). Its summary says guide worked examples were recomputed at the new rate, which is true once \`test/guideExamples.test.ts\` passes. If you edit guides by hand, add a \`change-log.md\` entry and set \`logHeading\` to its heading.\n` : ''}- Text that still quotes the old rate (${oldRateForms.join(' or ')}) — update or confirm each:
 ${mentions.length ? mentions.map((m) => `  - \`${m.replace(/`/g, "'")}\``).join('\n') : '  - none found'}
 
 This PR was opened by \`.github/workflows/data-update-pmms.yml\`. It never merges itself; nothing reaches the site until someone reviews and merges it.

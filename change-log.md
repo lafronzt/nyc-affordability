@@ -19,6 +19,24 @@ Multi-file changes, newest first. Each entry gives the user-visible effect and h
 - No remaining "7.28%" in `src/`, other than the rates guide's own history ("up from 7.28% the week before") and the changelog.
 - No remaining dollar figures derived from 7.28% ($420K, $557K, $170K, $3,832 and others).
 
+## 2026-10-14: Workflows: data updates add their own public changelog entry
+
+**What changed**
+- The weekly PMMS job and the monthly HPD AMI check now add an entry to `SITE_CHANGES` (`src/data/siteChanges.ts`) in the PR they open, so `/methodology/changelog/` records each update. Before this, #112 (7.28% → 7.40%) merged with no changelog entry.
+  - Rate: kind `data`, "Default mortgage rate 7.28% → 7.40%", Freddie Mac's survey date in the summary, and the same `affects` as the hand-written #93 entry. No entry when only the survey week moved.
+  - AMI: "AMI figures updated to HPD's 2027 chart" (or "revised 2026 chart"), with the 3- and 4-person figures before and after.
+- **PR number:** written as `pr: null` with a marker comment; `open-pr.sh` fills in the number (`fill-pr.ts`) when refreshing an open PR, or amends the commit right after creating one.
+- **Date:** the day the job ran. The PR report asks the reviewer to move it to the merge day.
+- **No `logHeading`:** the bot can't say how hand edits were validated, so the report asks whoever finishes the PR to add a `change-log.md` entry and set `logHeading`.
+- **Stale guides:** the entry's summary says guide worked examples were recomputed, which is true only once `test/guideExamples.test.ts` passes. The report already lists each failing guide check with the text to paste. It now says that too, and searches for both `7.4%` and `7.40%`.
+- **Fixed:** `runTests()` parsed TAP output, but Node 23+ prints the spec format even when piped, so local dry runs reported 0 failing. It now forces `--test-reporter=tap`.
+
+**Validation**
+- New `test/dataUpdateChangelog.test.ts` (6 tests). The generated rate entry reproduces the hand-written 6.95% → 7.28% entry exactly. Inserted entries load back unchanged and newest first. Quotes survive. `fillPr` sets the number.
+- Dry run of `update-pmms.ts` with a sample 6.90% week (`PMMS_SOURCE_FILE`): updates the registry and the four inputs, adds "Default mortgage rate 7.40% → 6.90%", and reports 17 failing tests. `fill-pr.ts 999` then sets `pr: 999`.
+- Dry run of `check-hpd-ami.ts` with the 2026 fixture edited to read 2027: adds "AMI figures updated to HPD's 2027 chart". The new tests pass on both dirty trees.
+- `npm run build` is clean. `npm test`: 390 pass, 17 fail. All 17 failures were already on `main`: #112 merged 7.40% without recomputing guide examples or the `afford` goldens.
+
 ## 2026-10-04: Data: Census ACS 2024 (what New Yorkers earn and pay)
 
 **User-visible changes**

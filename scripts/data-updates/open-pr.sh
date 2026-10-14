@@ -24,9 +24,14 @@ if [ -n "$existing" ] && git fetch -q origin "$BRANCH"; then
   fi
 fi
 
+fill_pr() { node --experimental-strip-types scripts/data-updates/fill-pr.ts "$1"; }
+commit() { git add -A src; git commit -q "$@" -m "$TITLE" -m "Opened by the ${GITHUB_WORKFLOW:-data update} workflow. Review before merging."; }
+
 git checkout -B "$BRANCH"
-git add -A src
-git commit -q -m "$TITLE" -m "Opened by the ${GITHUB_WORKFLOW:-data update} workflow. Review before merging."
+# The update script's changelog entry has `pr: null` until the PR number is
+# known: fill it now when refreshing, or right after creating the PR.
+if [ -n "$existing" ]; then fill_pr "$existing"; fi
+commit
 git push -q --force origin "$BRANCH"
 
 if [ -n "$existing" ]; then
@@ -34,6 +39,12 @@ if [ -n "$existing" ]; then
   echo "Refreshed PR #$existing"
 else
   # Draft when the plan supports it; otherwise a regular PR.
-  gh pr create --draft --base "$BASE" --head "$BRANCH" --title "$TITLE" --body-file "$REPORT" \
-    || gh pr create --base "$BASE" --head "$BRANCH" --title "$TITLE" --body-file "$REPORT"
+  url="$(gh pr create --draft --base "$BASE" --head "$BRANCH" --title "$TITLE" --body-file "$REPORT" \
+    || gh pr create --base "$BASE" --head "$BRANCH" --title "$TITLE" --body-file "$REPORT")"
+  echo "Opened $url"
+  fill_pr "${url##*/}"
+  if ! git diff --quiet src; then
+    commit --amend
+    git push -q --force origin "$BRANCH"
+  fi
 fi
