@@ -1,13 +1,13 @@
 ---
 title: "How Mortgage Rates Change What You Can Afford in NYC"
-metaDescription: "At a 7.28% mortgage rate, a $150,000 income qualifies for about $420K in NYC co-op or $557K in condo, per this site's DTI math. See how each half-point of rate moves your max price and the income you need."
+metaDescription: "At a 7.4% mortgage rate, a $150,000 income qualifies for about $415K in NYC co-op or $551K in condo, per this site's DTI math. See how each half-point of rate moves your max price and the income you need."
 intro: "Mortgage rates don't just change your monthly payment. Through a lender's or co-op board's debt-to-income limit, they change the maximum price you can qualify for at all. Here's how much buying power a rate move is worth in NYC, calculated with the same assumptions this site's calculators use."
-updated: "2026-10-04"
+updated: "2026-10-14"
 category: "buying"
 sources:
   - label: "Freddie Mac: Primary Mortgage Market Survey (PMMS)"
     url: "https://www.freddiemac.com/pmms"
-  - label: "Freddie Mac: Mortgage Rates Average 7.28% (PMMS, October 1, 2026)"
+  - label: "Freddie Mac: Mortgage Rates Average 7.40% (PMMS, October 8, 2026)"
     url: "https://www.freddiemac.com/pmms"
   - label: "Bankrate: Compare Today's 30-Year Mortgage Rates"
     url: "https://www.bankrate.com/mortgages/30-year-mortgage-rates/"
@@ -37,7 +37,7 @@ The mortgage rate decides how big a loan that fixed monthly budget buys. When ra
 
 ## Where rates are now
 
-Freddie Mac's weekly survey put the 30-year fixed average at **7.28% on October 1, 2026**, up from 7.03% the week before, 6.95% in mid-September, and about 6.3% in late April. A year earlier it was 6.34%. This site's calculators now default to 7.28%. Your own quoted rate will differ with credit score, loan size (jumbo loans price differently), points, and property type.
+Freddie Mac's weekly survey put the 30-year fixed average at **7.4% on October 8, 2026**, up from 7.28% the week before, 6.95% in mid-September, and about 6.3% in late April. A year earlier it was 6.30%. This site's calculators now default to 7.4%. Your own quoted rate will differ with credit score, loan size (jumbo loans price differently), points, and property type.
 
 <!-- Editors: the figures in this section are recomputed from the calculator engine by test/guideExamples.test.ts. If you change a default (rate, maintenance, DTI) or this example, `npm test` lists every number to update. -->
 
@@ -50,10 +50,10 @@ The table uses this site's default assumptions: 20% down, a 30-year fixed loan, 
 | 5.50% | $568 | $506,000 | $671,000 |
 | 6.00% | $600 | $480,000 | $636,000 |
 | 6.30% | $619 | $464,000 | $616,000 |
-| **7.28%** | **$684** | **$420,000** | **$557,000** |
+| **7.40%** | **$692** | **$415,000** | **$551,000** |
 | 7.50% | $699 | $411,000 | $545,000 |
 
-Going from April's ~6.3% to October's 7.28% cut this buyer's maximum co-op price by about **$40,000** and their maximum condo price by about **$60,000**. As a rule of thumb from the table, each half-point of rate is worth roughly **5% of buying power** at these assumptions.
+Going from April's ~6.3% to October's 7.4% cut this buyer's maximum co-op price by about **$50,000** and their maximum condo price by about **$70,000**. As a rule of thumb from the table, each half-point of rate is worth roughly **5% of buying power** at these assumptions.
 
 These are DTI-only figures. They don't check whether you also have the cash for the down payment, closing costs, and (for a co-op) post-closing reserves. See the [income-needed guide](/guides/income-needed-to-buy-nyc-apartment/) for how the two limits interact, or look up a specific income on the [What Can I Afford by Income](/income/150000/) pages.
 
@@ -65,7 +65,7 @@ Flip the question around. To buy an **$800,000** apartment with 20% down, here's
 | --- | --- | --- |
 | 6.00% | $215,900 | $172,000 |
 | 6.30% | $221,200 | $175,400 |
-| **7.28%** | **$239,100** | **$187,100** |
+| **7.40%** | **$241,300** | **$188,500** |
 | 7.50% | $243,200 | $189,800 |
 
 The co-op column moves faster because a board's 28% ceiling magnifies every extra dollar of monthly payment: each $1 of added P&I requires about $3.57 of added monthly income, versus about $2.33 under a 43% lender ceiling. Tighter DTI limits make co-op buyers more sensitive to rate changes, not less. See the full [$800K purchase breakdown](/buy/800000/) for cash needs at today's default rate.

@@ -35,6 +35,15 @@ export interface SiteChange {
 
 export const SITE_CHANGES: SiteChange[] = [
   {
+    date: '2026-10-14',
+    kind: 'data',
+    title: 'Default mortgage rate 7.28% → 7.40%',
+    summary: 'Freddie Mac\'s weekly survey put the 30-year fixed at 7.40% as of October 8, 2026. Every calculator and pre-built page now starts from that rate, and guide worked examples were recomputed at it. At $150,000 of income, the maximum co-op price falls from about $420,000 to $415,000, and the condo maximum from about $557,000 to $551,000.',
+    affects: ['/coop/', '/condo/', '/compare/', '/buy/', '/income/', '/neighborhoods/', '/affordability-index/'],
+    pr: 112,
+    logHeading: '2026-10-14: Data: default mortgage rate 7.28% → 7.40% (PMMS, week of October 8, 2026)',
+  },
+  {
     date: '2026-10-04',
     kind: 'data',
     title: 'Default renter\'s insurance $15 → $18 a month',
