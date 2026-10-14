@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import { isNoindexPath } from './src/lib/indexPolicy.ts';
 
 // Per-page metadata for the generated sitemap (matches the hand-maintained
 // sitemap.xml this replaces). Keyed by pathname; falls back to sane defaults
@@ -41,7 +42,7 @@ const SITEMAP_PAGE_META = {
   '/data/':              { changefreq: 'weekly',  priority: 0.5, lastmod: '2026-10-04' },
   '/plan/':              { changefreq: 'monthly', priority: 0.6, lastmod: '2026-10-04' },
   '/my-data/':           { changefreq: 'monthly', priority: 0.3, lastmod: '2026-10-04' },
-  '/about/':      { changefreq: 'yearly',  priority: 0.5, lastmod: '2026-08-02' },
+  '/about/':      { changefreq: 'yearly',  priority: 0.5, lastmod: '2026-10-14' },
   '/contact/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-11' },
   '/privacy/':    { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-10-04' },
   '/terms/':      { changefreq: 'yearly',  priority: 0.4, lastmod: '2026-08-11' },
@@ -63,8 +64,8 @@ const ENUMERATED_ROUTE_META = [
 // so the content collections' frontmatter is read directly off disk here
 // (`astro:content` isn't available this early in config loading). Two things
 // come out of it:
-//   - draft slugs, which render noindex but still get built as real pages and
-//     need to be excluded from the sitemap;
+//   - draft slugs, which are only built by `astro dev` (see each collection's
+//     [slug].astro getStaticPaths) but are excluded here too as a backstop;
 //   - each published entry's own `updated` date, used as its <lastmod> so the
 //     sitemap reports when the content actually changed instead of omitting
 //     it (or inventing one).
@@ -112,6 +113,9 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (url) => {
+        // Pre-built number pages are noindex (see src/lib/indexPolicy.ts), so
+        // listing them in the sitemap would only send mixed signals.
+        if (isNoindexPath(new URL(url).pathname)) return false;
         const match = new URL(url).pathname.match(/^\/(guides|glossary|neighborhoods)\/([^/]+)\/$/);
         return !match || !COLLECTIONS[match[1]].drafts.has(match[2]);
       },

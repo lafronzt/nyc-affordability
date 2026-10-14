@@ -30,7 +30,8 @@ const BOROUGH_LABELS: Record<string, string> = {
 };
 
 export async function getStaticPaths() {
-  const hoods = await getCollection('neighborhoods');
+  // Drafts are previewable in `astro dev` only; production never builds them.
+  const hoods = await getCollection('neighborhoods', ({ data }) => import.meta.env.DEV || !data.draft);
   return hoods.map((hood) => ({
     params: { slug: hood.id },
     props: { hood },

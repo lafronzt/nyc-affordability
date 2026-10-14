@@ -19,7 +19,8 @@ const footerColumns: FooterColumn[] = [
 ];
 
 export async function getStaticPaths() {
-  const terms = await getCollection('glossary');
+  // Drafts are previewable in `astro dev` only; production never builds them.
+  const terms = await getCollection('glossary', ({ data }) => import.meta.env.DEV || !data.draft);
   return terms.map((term) => ({
     params: { slug: term.id },
     props: { term },

@@ -2,13 +2,12 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import Footer from '../../../components/Footer.astro';
-import AdSlot from '../../../components/AdSlot.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import RelatedBudgets from '../../../components/RelatedBudgets.astro';
 import MiniCalcWidget from '../../../components/MiniCalcWidget.astro';
 import type { FooterColumn } from '../../../lib/footerLinks';
 import { ALL_CALCULATORS, ALL_GUIDES, STANDARD_ABOUT_COLUMN, EXPLORE_LINKS } from '../../../lib/footerLinks';
-import { AD_IN_ARTICLE } from '../../../lib/adSlots';
+import { NOINDEX_ROBOTS } from '../../../lib/indexPolicy';
 import { buildBreadcrumbJsonLd } from '../../../lib/breadcrumbs';
 import { fmtMoney } from '../../../lib/format';
 import { requiredIncomeForPrice, maxAffordableRent, DEFAULT_ASSUMPTIONS } from '../../../lib/afford';
@@ -62,7 +61,7 @@ const relatedRentPrice = nearest(maxAffordableRent({ annualIncome: condo.annualI
 ---
 <BaseLayout
   variant="site"
-  ads
+  robots={NOINDEX_ROBOTS}
   pageTitle={pageTitle}
   metaDescription={metaDescription}
   canonicalPath={canonicalPath}
@@ -122,10 +121,6 @@ const relatedRentPrice = nearest(maxAffordableRent({ annualIncome: condo.annualI
         <tr class="total-row"><td>Total est. cash needed</td><td>{fmtMoney(coop.estimatedCashNeeded)}</td><td>{fmtMoney(condo.estimatedCashNeeded)}</td></tr>
       </tbody>
     </table>
-  </div>
-
-  <div style="margin-bottom:20px;">
-    <AdSlot slot={AD_IN_ARTICLE} format="in-article" maxWidth="100%" sidePadding="0" />
   </div>
 
   <RelatedBudgets

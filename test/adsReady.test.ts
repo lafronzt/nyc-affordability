@@ -4,9 +4,12 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ADS_ENABLED } from '../src/lib/adsConfig.ts';
+import { NO_AD_PAGES } from '../src/lib/indexPolicy.ts';
 
 // Ads are off until AdSense approves the site. When they go on, it's one
-// flag (src/lib/adsConfig.ts); these checks keep every page ready for it.
+// flag (src/lib/adsConfig.ts); these checks keep every content page ready
+// for it. Pages in NO_AD_PAGES (src/lib/indexPolicy.ts) are checked the other
+// way, in test/indexPolicy.test.ts.
 
 const PAGES = fileURLToPath(new URL('../src/pages/', import.meta.url));
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
@@ -20,6 +23,7 @@ test('found the pages', () => assert.ok(layouts.length >= 30, `only ${layouts.le
 
 for (const f of layouts) {
   const rel = f.slice(PAGES.length);
+  if (NO_AD_PAGES.includes(rel)) continue;
   test(`${rel}: opts in to ads (BaseLayout \`ads\` prop) and has an ad slot`, () => {
     const src = readFileSync(f, 'utf8');
     const tag = src.slice(src.indexOf('<BaseLayout'), src.indexOf('>', src.indexOf('<BaseLayout')));
