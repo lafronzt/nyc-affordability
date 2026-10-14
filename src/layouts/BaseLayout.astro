@@ -35,7 +35,8 @@ const {
   robots,
 } = Astro.props;
 
-const showAds = ads && ADS_ENABLED;
+// A page search engines are told to skip never loads ads either.
+const showAds = ads && ADS_ENABLED && !robots?.includes('noindex');
 ---
 <!doctype html>
 <html lang="en">

@@ -20,7 +20,8 @@ const footerColumns: FooterColumn[] = [
 ];
 
 export async function getStaticPaths() {
-  const guides = await getCollection('guides');
+  // Drafts are previewable in `astro dev` only; production never builds them.
+  const guides = await getCollection('guides', ({ data }) => import.meta.env.DEV || !data.draft);
   return guides.map((guide) => ({
     params: { slug: guide.id },
     props: { guide },

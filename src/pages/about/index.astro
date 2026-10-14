@@ -5,6 +5,7 @@ import Footer from '../../components/Footer.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import type { FooterColumn } from '../../lib/footerLinks';
+import { getCollection } from 'astro:content';
 import { ALL_CALCULATORS, ALL_GUIDES, EXPLORE_LINKS, STANDARD_ABOUT_COLUMN, ABOUT_LINK } from '../../lib/footerLinks';
 import { AD_IN_ARTICLE } from '../../lib/adSlots';
 import { buildBreadcrumbJsonLd } from '../../lib/breadcrumbs';
@@ -31,6 +32,11 @@ const breadcrumbItems = [
   { name: ABOUT_LINK.label, path: ABOUT_LINK.href! },
 ];
 const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
+
+const published = ({ data }: { data: { draft: boolean } }) => !data.draft;
+const guideCount = (await getCollection('guides', published)).length;
+const termCount = (await getCollection('glossary', published)).length;
+const hoodCount = (await getCollection('neighborhoods', published)).length;
 ---
 <BaseLayout
   variant="site"
@@ -53,7 +59,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
   <div class="hero-eyebrow">About This Project</div>
   <h2>Built because NYC housing math<br>doesn't fit generic calculators.</h2>
   <p>NYC Affordability is a free, open-source set of tools that model how buying and renting actually work in New York City (board reserves, mansion tax cliffs, mortgage recording tax, FARE Act broker rules, and HPD's AMI framework) instead of the national rules of thumb most calculators fall back on.</p>
-  <span class="updated">Last updated: August 2, 2026</span>
+  <span class="updated">Last updated: October 14, 2026</span>
 </div>
 
 <div class="page">
@@ -68,17 +74,18 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
   <div class="card">
     <h3>What's here</h3>
-    <p>Free calculators, all running entirely in your browser:</p>
+    <p>{ALL_CALCULATORS.length} free calculators, all running entirely in your browser:</p>
     <div class="tool-grid">
-      <a href="/reality-check/">NYC Housing Reality Check</a>
-      <a href="/coop/">NYC Co-op Affordability</a>
-      <a href="/condo/">NYC Condo Affordability</a>
-      <a href="/rent/">NYC Rent Affordability</a>
-      <a href="/affordable/">NYC Affordable Housing Finder</a>
-      <a href="/compare/">Compare All Options</a>
-      <a href="/sell/">NYC Sale Net Proceeds</a>
-      <a href="/">NYC Affordability Hub</a>
+      {ALL_CALCULATORS.map((c) => <a href={c.href}>{c.label}</a>)}
     </div>
+    <p style="margin-top:16px;">And the reading behind them, each citing dated sources:</p>
+    <ul>
+      <li><a href="/guides/">{guideCount} guides</a> on renting, buying, co-ops, taxes, and affordable housing in New York City</li>
+      <li><a href="/glossary/">{termCount} glossary terms</a>, from the 40x rule to the mortgage recording tax</li>
+      <li><a href="/neighborhoods/">{hoodCount} neighborhood pages</a> with cited market figures, plus borough hubs</li>
+      <li><a href="/data/">Data downloads</a> of every cited figure and default assumption, in JSON and CSV</li>
+    </ul>
+    <p>The site is maintained continuously: defaults are re-checked against their sources on a schedule, and every change that could move a number is logged on the <a href="/methodology/changelog/">changelog</a>, with mistakes listed on the <a href="/methodology/corrections/">corrections page</a>.</p>
   </div>
 
   <div class="card">
