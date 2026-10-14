@@ -2,7 +2,7 @@
 title: "Co-op Maintenance Explained: What You're Paying For"
 metaDescription: "NYC co-op maintenance bundles the building's mortgage, property taxes, staff, and upkeep, split by shares. See what's deductible and how boards count it in DTI."
 intro: "Co-op maintenance is the one number that quietly decides how much apartment you can buy. It's your slice of the building's entire budget, including its mortgage and its tax bill, and boards and lenders count every dollar of it against your income before they think about your own mortgage."
-updated: "2026-10-04"
+updated: "2026-10-14"
 category: "coop"
 sources:
   - label: "Brick Underground: Why do NYC co-op maintenance fees vary so much from building to building?"
@@ -18,6 +18,7 @@ sources:
   - label: "Fannie Mae Selling Guide B3-6-03, Monthly Housing Expense for the Subject Property"
     url: "https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property"
 relatedGuides:
+  - coop-special-assessments-vs-maintenance-increases
   - coop-vs-condo-nyc-costs
   - nyc-coop-condo-property-tax-abatement
   - coop-board-approval-process
@@ -52,7 +53,7 @@ Other things can push the number around: commercial space that does or doesn't p
 
 Maintenance isn't split evenly by apartment. It's allocated in proportion to the shares tied to your unit under your [proprietary lease](/glossary/proprietary-lease/): the building's annual budget, divided by total shares outstanding, times your shares. How many shares each apartment got in the first place is, as one broker told Brick Underground, an "inexact science" based on things like the view, whether it's a corner unit, and how close it is to the trash compactor. That's why two neighbors with similar layouts can pay noticeably different amounts.
 
-A [special assessment](/glossary/special-assessment/) is a separate, temporary charge for something outside the regular budget. It's usually split by shares too, but it isn't maintenance, and it ends when the money is raised.
+A [special assessment](/glossary/special-assessment/) is a separate, temporary charge for something outside the regular budget. It's usually split by shares too, but it isn't maintenance, and it ends when the money is raised. Some buildings keep maintenance flat for years and rely on assessments instead, which can make the listed maintenance understate the real cost; see [special assessments vs. maintenance increases](/guides/coop-special-assessments-vs-maintenance-increases/).
 
 ## The tax-deductible part
 

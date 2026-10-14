@@ -19,6 +19,7 @@ sources:
     url: "https://www.hauseit.com/condo-common-charges-vs-co-op-maintenance-fee-nyc/"
 relatedGuides:
   - coop-vs-condo-nyc-costs
+  - coop-special-assessments-vs-maintenance-increases
   - income-needed-to-buy-nyc-apartment
   - how-much-down-payment-nyc-apartment
   - rent-vs-buy-nyc
@@ -39,7 +40,7 @@ cta:
 
 A condo building has bills no single owner pays directly: staff salaries, building insurance, common-area utilities, supplies, repairs, and contributions to a reserve fund for big-ticket replacements. Common charges are how owners split those bills. Hauseit, a NYC brokerage, lists exactly those items as what condo fees cover in NYC, along with some utilities such as water and gas; your own electricity and internet usually aren't included.
 
-What they don't cover: anything inside your unit, and one-time [special assessments](/glossary/special-assessment/) when the reserve fund can't cover a big project. Check a building's assessment history before you assume the monthly number is the whole story.
+What they don't cover: anything inside your unit, and one-time [special assessments](/glossary/special-assessment/) when the reserve fund can't cover a big project. Check a building's assessment history before you assume the monthly number is the whole story; [special assessments vs. maintenance increases](/guides/coop-special-assessments-vs-maintenance-increases/) covers what to look for.
 
 ## How your share is set
 

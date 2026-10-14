@@ -2,7 +2,7 @@
 term: "Special Assessment"
 shortDefinition: "A temporary extra charge a co-op or condo board levies on owners to pay for something the regular budget doesn't cover, usually a big repair. In a co-op it's typically split by shares and billed alongside maintenance."
 metaDescription: "A NYC co-op special assessment is a temporary charge on top of maintenance, usually split by shares. See how it's calculated and who pays during a sale."
-updated: "2026-10-03"
+updated: "2026-10-14"
 category: "coop"
 sources:
   - label: "CooperatorNews: Q&A: Calculating Assessments"
@@ -16,6 +16,7 @@ relatedTerms:
   - common-charges
   - contract-of-sale
 relatedGuides:
+  - coop-special-assessments-vs-maintenance-increases
   - coop-board-reserve-requirements
   - coop-vs-condo-nyc-costs
 relatedCalculators:
@@ -23,7 +24,7 @@ relatedCalculators:
 draft: false
 ---
 
-[Maintenance](/glossary/maintenance-coop/) is the bill you plan for. A special assessment is the one you didn't: an additional, temporary charge the board levies to pay for something outside the operating budget, most often a façade, roof, elevator, or heating-system job, sometimes to rebuild a thin reserve fund or pay down building debt. Condos levy them too, on top of [common charges](/glossary/common-charges/). Boards often prefer an assessment to a maintenance increase because it ends when the money is raised, while a maintenance increase tends to stick.
+[Maintenance](/glossary/maintenance-coop/) is the bill you plan for. A special assessment is the one you didn't: an additional, temporary charge the board levies to pay for something outside the operating budget, most often a façade, roof, elevator, or heating-system job, sometimes to rebuild a thin reserve fund or pay down building debt. Condos levy them too, on top of [common charges](/glossary/common-charges/). Boards often prefer an assessment to a maintenance increase because it ends when the money is raised, while a maintenance increase tends to stick. A building that assesses every year to cover operating shortfalls is a different story; see [special assessments vs. maintenance increases](/guides/coop-special-assessments-vs-maintenance-increases/).
 
 In a co-op, the rules for allocating an assessment are usually in the proprietary lease and sometimes the bylaws, and in almost every co-op it's charged in proportion to share ownership: total assessment ÷ shares outstanding = a per-share charge, multiplied by your shares. The authority to levy one generally sits with the board under the building's governing documents. Payment is typically spread in installments, commonly over 12 to 36 months, though a board can bill a lump sum when repairs are urgent and reserves are thin. Once it's levied, your share isn't negotiable.
 
