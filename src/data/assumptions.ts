@@ -59,9 +59,9 @@ export const ASSUMPTIONS = asm({
     basis: 'official-data',
     sourceOrg: 'Freddie Mac Primary Mortgage Market Survey',
     sourceUrl: 'https://www.freddiemac.com/pmms',
-    effectiveDate: '2026-10-08',
-    lastVerified: '2026-10-09',
-    notes: 'Freddie Mac PMMS 30-year fixed average for the week of 2026-10-08: conventional, conforming, 20% down, excellent credit. Jumbo loans and lender overlays can differ materially. Updated by the weekly PMMS job.',
+    effectiveDate: '2026-10-15',
+    lastVerified: '2026-10-16',
+    notes: 'Freddie Mac PMMS 30-year fixed average for the week of 2026-10-15: conventional, conforming, 20% down, excellent credit. Jumbo loans and lender overlays can differ materially. Updated by the weekly PMMS job.',
     inputs: [{ page: 'coop', id: 'mtg-rate' }, { page: 'condo', id: 'mtg-rate' }],
   },
   loanTermYears: {
