@@ -35,6 +35,14 @@ export interface SiteChange {
 
 export const SITE_CHANGES: SiteChange[] = [
   {
+    date: '2026-10-23',
+    kind: 'data',
+    title: 'Default mortgage rate 7.40% → 7.32%',
+    summary: 'Freddie Mac\'s weekly survey put the 30-year fixed at 7.32% as of October 22, 2026. Every calculator and pre-built page now starts from that rate, and guide worked examples were recomputed at it. Lower rates raise what income supports.',
+    affects: ['/coop/', '/condo/', '/compare/', '/buy/', '/income/', '/neighborhoods/', '/affordability-index/'],
+    pr: 120,
+  },
+  {
     date: '2026-10-14',
     kind: 'data',
     title: 'Default mortgage rate 7.28% → 7.40%',
