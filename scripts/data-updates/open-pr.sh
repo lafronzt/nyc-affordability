@@ -4,12 +4,14 @@
 #   BRANCH  bot-owned branch, e.g. data/pmms-rate
 #   TITLE   PR title (also the commit subject)
 #   REPORT  Markdown file for the PR body
+#   PR_ASSIGNEE  optional; defaults to lafronzt
 #   GH_TOKEN, GITHUB_REF_NAME, GITHUB_WORKFLOW come from Actions.
 # If people have pushed their own commits to the branch (say, updating
 # golden tests for the last rate change), it comments the new figures on the
 # PR instead of force-pushing over their work.
 set -euo pipefail
 BASE="${GITHUB_REF_NAME:-main}"
+ASSIGNEE="${PR_ASSIGNEE:-lafronzt}"
 BOT_EMAIL="41898282+github-actions[bot]@users.noreply.github.com"
 git config user.name "github-actions[bot]"
 git config user.email "$BOT_EMAIL"
@@ -36,11 +38,12 @@ git push -q --force origin "$BRANCH"
 
 if [ -n "$existing" ]; then
   gh pr edit "$existing" --title "$TITLE" --body-file "$REPORT"
+  gh pr edit "$existing" --add-assignee "$ASSIGNEE" || true
+  gh pr ready "$existing" 2>/dev/null || true
   echo "Refreshed PR #$existing"
 else
-  # Draft when the plan supports it; otherwise a regular PR.
-  url="$(gh pr create --draft --base "$BASE" --head "$BRANCH" --title "$TITLE" --body-file "$REPORT" \
-    || gh pr create --base "$BASE" --head "$BRANCH" --title "$TITLE" --body-file "$REPORT")"
+  # Opened ready for review (not draft) and assigned to the maintainer.
+  url="$(gh pr create --base "$BASE" --head "$BRANCH" --title "$TITLE" --body-file "$REPORT" --assignee "$ASSIGNEE")"
   echo "Opened $url"
   fill_pr "${url##*/}"
   if ! git diff --quiet src; then
